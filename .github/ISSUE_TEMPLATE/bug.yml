@@ -1,0 +1,45 @@
+name: Error
+description: Registrar un problema reproducible
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidad
+      options:
+        - P0 - Bloqueante
+        - P1 - Alta
+        - P2 - Media
+        - P3 - Baja
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      placeholder: |
+        1. Abrir...
+        2. Enviar...
+        3. Observar...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado obtenido y evidencia
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Entorno o rama
+      placeholder: develop / local / AWS
+    validations:
+      required: true
