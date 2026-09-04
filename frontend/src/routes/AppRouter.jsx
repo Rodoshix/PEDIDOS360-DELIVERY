@@ -1,29 +1,16 @@
-import { Link, Route, Routes } from 'react-router'
+import { Route, Routes } from 'react-router'
+import MainLayout from '../layouts/MainLayout.jsx'
+import HomePage from '../pages/HomePage.jsx'
+import NotFoundPage from '../pages/NotFoundPage.jsx'
 import { ROUTE_PATHS } from './routePaths.js'
-
-function HomePlaceholder() {
-  return (
-    <main>
-      <h1>Pedidos360 Delivery</h1>
-      <p>Aplicación base en construcción.</p>
-    </main>
-  )
-}
-
-function NotFoundPlaceholder() {
-  return (
-    <main>
-      <h1>Página no encontrada</h1>
-      <Link to={ROUTE_PATHS.home}>Volver al inicio</Link>
-    </main>
-  )
-}
 
 function AppRouter() {
   return (
     <Routes>
-      <Route path={ROUTE_PATHS.home} element={<HomePlaceholder />} />
-      <Route path={ROUTE_PATHS.notFound} element={<NotFoundPlaceholder />} />
+      <Route element={<MainLayout />}>
+        <Route path={ROUTE_PATHS.home} element={<HomePage />} />
+        <Route path={ROUTE_PATHS.notFound} element={<NotFoundPage />} />
+      </Route>
     </Routes>
   )
 }
