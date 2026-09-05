@@ -94,5 +94,62 @@ class RepartidorAdminApiTests extends RepartidorApiTestBase {
         assertThat(llamar("GET", "/repartidores/-1", null).statusCode()).isEqualTo(400);
         assertThat(llamar("GET", "/repartidores?pagina=-1", null).statusCode()).isEqualTo(400);
         assertThat(llamar("GET", "/repartidores?tamanio=101", null).statusCode()).isEqualTo(400);
+        assertThat(llamar("PUT", "/repartidores/1/disponibilidad",
+                Map.of("estado", "INEXISTENTE")).statusCode()).isEqualTo(400);
+        assertThat(llamar("PUT", "/repartidores/1/disponibilidad", Map.of()).statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void recorreFlujoCompletoDeDisponibilidad() throws Exception {
+        var repartidor = guardar(TENANT, UUID.randomUUID());
+        for (String estado : new String[]{"OCUPADO", "EN_CAMINO", "EN_PAUSA",
+                "DESCONECTADO", "INACTIVO", "SUSPENDIDO"}) {
+            var cambio = llamar("PUT", "/repartidores/" + repartidor.getId() + "/disponibilidad",
+                    Map.of("estado", estado));
+            assertThat(cambio.statusCode()).as(estado).isEqualTo(200);
+            assertThat(json(cambio).get("estadoDisponibilidad").asString()).isEqualTo(estado);
+        }
+    }
+
+    @Test
+    void rechazaCamposNoPermitidosEnElJson() throws Exception {
+        var payload = new java.util.HashMap<String, Object>(Map.of(
+                "nombre", "X", "vehiculo", "MOTO"));
+        payload.put("id", 99);
+        payload.put("version", 99);
+        payload.put("rol", "ADMIN");
+        assertThat(llamar("POST", "/repartidores", payload).statusCode()).isEqualTo(400);
+        assertThat(repartidores.count()).isZero();
+
+        var cambio = new java.util.HashMap<String, Object>(Map.of("estado", "OCUPADO"));
+        cambio.put("pedidoId", 999L);
+        assertThat(llamar("POST", "/repartidores",
+                Map.of("nombre", "Y", "vehiculo", "MOTO")).statusCode()).isEqualTo(201);
+        var creado = repartidores.findAll().get(0);
+        assertThat(llamar("PUT", "/repartidores/" + creado.getId() + "/disponibilidad",
+                cambio).statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void conflictoNoFiltraDetallesDeLaBaseNiCreaDuplicado() throws Exception {
+        guardar(TENANT, OBJECT_ID);
+        var respuesta = llamar("POST", "/repartidores",
+                Map.of("nombre", "Dup", "vehiculo", "MOTO"));
+        assertThat(respuesta.statusCode()).isEqualTo(409);
+        assertThat(json(respuesta).get("status").asInt()).isEqualTo(409);
+        assertThat(json(respuesta).get("detail").asString()).isNotBlank();
+        assertThat(respuesta.body()).doesNotContain("INSERT", "SELECT", "stackTrace", "uk_repartidores");
+        assertThat(repartidores.count()).isEqualTo(1);
+    }
+
+    @Test
+    void rechazaNotaDemasiadoLargaYAsignacionPersonaInvalida() throws Exception {
+        var repartidor = guardar(TENANT, UUID.randomUUID());
+        String nota = "a".repeat(501);
+        assertThat(llamar("POST", "/repartidores/" + repartidor.getId() + "/asignaciones",
+                Map.of("pedidoId", 300L, "nota", nota)).statusCode()).isEqualTo(400);
+        assertThat(llamar("POST", "/repartidores/" + repartidor.getId() + "/asignaciones",
+                Map.of("pedidoId", 0L)).statusCode()).isEqualTo(400);
+        assertThat(asignaciones.count()).isZero();
     }
 }
