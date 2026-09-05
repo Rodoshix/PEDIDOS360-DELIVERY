@@ -5,6 +5,7 @@ import { MsalProvider } from '@azure/msal-react'
 import { AuthConfigurationError } from './auth/authConfiguration.js'
 import { initializeMsal } from './auth/msalClient.js'
 import AuthStartupStatus from './auth/AuthStartupStatus.jsx'
+import { AuthSessionProvider } from './auth/AuthSessionProvider.jsx'
 import './styles/global.css'
 import App from './App.jsx'
 
@@ -13,13 +14,15 @@ root.render(<AuthStartupStatus />)
 
 async function bootstrap() {
   try {
-    const { instance } = await initializeMsal()
+    const { instance, tenantId, initialError } = await initializeMsal()
     root.render(
       <StrictMode>
         <MsalProvider instance={instance}>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
+          <AuthSessionProvider tenantId={tenantId} initialError={initialError}>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </AuthSessionProvider>
         </MsalProvider>
       </StrictMode>,
     )

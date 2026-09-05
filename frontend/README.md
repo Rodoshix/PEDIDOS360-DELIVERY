@@ -2,7 +2,7 @@
 
 Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout y cliente HTTP. Se está incorporando autenticación con Microsoft Entra ID en el Issue #11.
 
-Estado de este bloque: MSAL instalado e inicializado mediante un proveedor compartido, con validación de configuración. Todavía no hay botones de login/logout, rutas privadas ni envío de tokens por Axios; inicializar MSAL no acredita autenticación real.
+Estado de este bloque: configuración MSAL, botones de login/logout por redirección y cuenta activa en el encabezado. Todavía no hay rutas privadas ni envío de tokens por Axios. El responsable confirmó la prueba manual de login, persistencia al recargar y logout con la cuenta del equipo. Las 25 pruebas automatizadas usan dobles de MSAL, no credenciales reales.
 
 ## Instalación y ejecución
 
@@ -51,9 +51,21 @@ Las variables `VITE_*` se incorporan al código visible del navegador: no coloca
 - El retorno después del logout usará la misma URI. La caché de MSAL se configura en `sessionStorage`; no registrar tokens ni datos personales en consola.
 - Si una variable falta o es inválida, se muestra una pantalla explicativa y no se monta la aplicación con una identidad simulada. La validación de formato no comprueba por sí sola que los registros existan ni que el consentimiento sea correcto.
 
-En el portal se configuraron frontend SPA, API con `access_as_user`, consentimiento concedido y rol CLIENTE asignado a la cuenta de prueba. Los roles CLIENTE/ADMIN pertenecen a la API; no se debe asumir que aparecen en el ID token del frontend. Las pruebas reales de login y la validación de tokens en BFF/servicios siguen pendientes.
+En el portal se configuraron frontend SPA, API con `access_as_user`, consentimiento concedido y rol CLIENTE asignado a la cuenta de prueba. Los roles CLIENTE/ADMIN pertenecen a la API; no se debe asumir que aparecen en el ID token del frontend. Login y logout reales fueron confirmados por el responsable; la validación de tokens en BFF/servicios sigue pendiente.
 
 Referencia: [inicialización de MSAL React](https://learn.microsoft.com/en-us/entra/msal/javascript/react/getting-started).
+
+### Iniciar y cerrar sesión
+
+1. Abre `http://localhost:5173` y pulsa **Iniciar sesión con Microsoft**. Se abre Microsoft en la misma pestaña; las credenciales y MFA se introducen allí, nunca en formularios propios ni en el repositorio.
+2. Selecciona la cuenta del directorio configurado y completa el acceso. Al regresar, el encabezado debe mostrar su nombre y cuenta sin recargar manualmente.
+3. Recarga: se conserva la cuenta de la caché de esa pestaña. Si hay varias cuentas y ninguna activa, se pide una selección mediante el botón de login, sin elegir arbitrariamente la primera.
+4. Pulsa **Cerrar sesión** y completa la salida de Microsoft. Debe regresar al inicio con el botón de login. No basta con cerrar la pestaña para garantizar la salida de Microsoft.
+5. Si cancelas o falla el acceso, se muestra un mensaje controlado y puedes intentarlo otra vez. No se reintenta automáticamente y los botones se bloquean durante una operación.
+
+El retorno se procesa con `handleRedirectPromise` antes de montar las rutas. Este bloque usa únicamente `loginRedirect`/`logoutRedirect`, con la URI raíz ya registrada. No usa popup ni `ssoSilent`; esas modalidades de MSAL Browser 5 requieren una página de redirect bridge dedicada y su registro en Entra. La renovación silenciosa de tokens y sus alternativas se revisarán en el bloque de acceso a la API.
+
+Login solicita `openid` y `profile`. El permiso `access_as_user` está configurado para el siguiente bloque de adquisición de tokens; aún no hay peticiones autenticadas al backend. Mostrar una cuenta no acredita autorización ni rol ADMIN. Las verificaciones del directorio en la UI tampoco sustituyen la validación criptográfica de tokens en el backend.
 
 ## Comandos disponibles
 
@@ -64,7 +76,7 @@ Ejecutar desde `frontend/`:
 | `npm ci` | Instalar las versiones de `package-lock.json`. |
 | `npm run dev` | Iniciar el servidor de desarrollo. |
 | `npm run lint` | Revisar el código con Oxlint. |
-| `npm test` | Probar la validación de configuración con Node.js, sin Azure ni credenciales. |
+| `npm test` | Probar configuración y gestión de sesión con Node.js, sin Azure ni credenciales. |
 | `npm run build` | Generar la aplicación en `dist/`. |
 | `npm run preview` | Revisar localmente el resultado de build. |
 
@@ -82,7 +94,7 @@ Para agregar una dependencia, usar `npm install nombre-paquete` y guardar juntos
 | `config/` | Lectura de variables de entorno. |
 | `styles/` | Estilos y colores base. |
 | `components/`, `hooks/`, `context/`, `utils/` | Elementos reutilizables entre módulos. |
-| `auth/` | Configuración validada de Entra, inicialización única de MSAL y estado de arranque. |
+| `auth/` | Configuración de Entra, inicialización de MSAL, cuenta activa y controles de sesión. |
 | `assets/` | Recursos gráficos. |
 
 Los `.gitkeep` conservan carpetas vacías en Git; pueden retirarse cuando contengan código.
