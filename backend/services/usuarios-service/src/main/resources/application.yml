@@ -3,6 +3,9 @@ spring:
     import: optional:file:.env.local[.properties]
   application:
     name: usuarios-service
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5433/pedidos360_usuarios}
     username: ${DB_USERNAME:pedidos360_usuarios}
@@ -24,6 +27,13 @@ spring:
 server:
   port: ${SERVER_PORT:8081}
   address: ${SERVER_ADDRESS:127.0.0.1}
+
+usuarios:
+  identidad-local:
+    enabled: ${LOCAL_IDENTITY_ENABLED:false}
+    tenant-id: ${LOCAL_TENANT_ID:}
+    object-id: ${LOCAL_OBJECT_ID:}
+    roles: ${LOCAL_ROLES:CLIENTE}
 
 management:
   endpoints:

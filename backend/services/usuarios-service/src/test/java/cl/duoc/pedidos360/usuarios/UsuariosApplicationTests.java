@@ -24,6 +24,22 @@ class UsuariosApplicationTests {
     private int port;
 
     @Test
+    void bloqueaUsuariosSinIdentidadLocalAunqueSeEnvieUnTokenFalso() throws Exception {
+        try (var client = HttpClient.newHttpClient()) {
+            var request = HttpRequest.newBuilder()
+                    .uri(URI.create("http://127.0.0.1:" + port + "/usuarios/me"))
+                    .timeout(Duration.ofSeconds(5))
+                    .header("Authorization", "Bearer token-falso")
+                    .header("X-Roles", "ADMIN")
+                    .GET().build();
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            assertThat(response.statusCode()).isEqualTo(401);
+            assertThat(response.headers().firstValue("Content-Type").orElse(""))
+                    .startsWith("application/problem+json");
+        }
+    }
+
+    @Test
     void healthRespondeUpConPostgresSinAzure() throws Exception {
         try (var client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5)).build()) {
