@@ -29,4 +29,4 @@ VALUES
     'Ensaladas, bowls y opciones saludables',
     'Calle Nueva 654',
     'INACTIVO'
-);
+); 
