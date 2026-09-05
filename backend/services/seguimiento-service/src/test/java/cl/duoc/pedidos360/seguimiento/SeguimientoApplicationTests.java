@@ -10,19 +10,21 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import tools.jackson.databind.json.JsonMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = "server.address=127.0.0.1")
+@Import(PostgresTestConfiguration.class)
 class SeguimientoApplicationTests {
 
     @Value("${local.server.port}")
     private int port;
 
     @Test
-    void healthRespondeUpSinBaseDeDatosNiAzure() throws Exception {
+    void healthRespondeUpConPostgresSinAzure() throws Exception {
         try (var client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5)).build()) {
             var request = HttpRequest.newBuilder()
