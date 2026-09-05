@@ -69,4 +69,74 @@ class UsuarioClienteApiTests extends UsuarioApiTestBase {
         assertThat(llamar("GET", "/usuarios?pagina=-1", null).statusCode()).isEqualTo(400);
         assertThat(llamar("GET", "/usuarios?tamanio=101", null).statusCode()).isEqualTo(400);
     }
+
+    @Test
+    void actualizacionRechazadaConservaPerfilEIdentidad() throws Exception {
+        var usuario = guardar(TENANT, OBJECT_ID);
+        for (String campo : new String[]{"rol", "roles", "tenantId", "entraObjectId", "activo", "id"}) {
+            var payload = new HashMap<String, Object>(PERFIL);
+            payload.put(campo, "ADMIN");
+            assertThat(llamar("PUT", "/usuarios/" + usuario.getId(), payload).statusCode())
+                    .as(campo).isEqualTo(400);
+        }
+        assertThat(llamar("PUT", "/usuarios/" + usuario.getId(), Map.of("nombre", "Cambio"))
+                .statusCode()).isEqualTo(400);
+        var guardado = usuarios.findById(usuario.getId()).orElseThrow();
+        assertThat(guardado.getNombre()).isEqualTo(usuario.getNombre());
+        assertThat(guardado.getEmail()).isEqualTo(usuario.getEmail());
+        assertThat(guardado.getTenantId()).isEqualTo(TENANT);
+        assertThat(guardado.getEntraObjectId()).isEqualTo(OBJECT_ID);
+        assertThat(guardado.getVersion()).isEqualTo(usuario.getVersion());
+        assertThat(llamar("GET", "/usuarios", null).statusCode()).isEqualTo(403);
+    }
+
+    @Test
+    void respetaLongitudesMaximasYNoPersisteUnPerfilInvalido() throws Exception {
+        var limites = new HashMap<String, String>(PERFIL);
+        limites.put("nombre", "a".repeat(100));
+        limites.put("apellido", "b".repeat(100));
+        limites.put("telefono", "1".repeat(30));
+        var creado = llamar("POST", "/usuarios", limites);
+        assertThat(creado.statusCode()).isEqualTo(201);
+        long id = json(creado).get("id").asLong();
+
+        for (var exceso : Map.of("nombre", "a".repeat(101), "apellido", "b".repeat(101),
+                "telefono", "1".repeat(31), "email", "a".repeat(255) + "@example.test").entrySet()) {
+            var payload = new HashMap<>(limites);
+            payload.put(exceso.getKey(), exceso.getValue());
+            var respuesta = llamar("PUT", "/usuarios/" + id, payload);
+            assertThat(respuesta.statusCode()).as(exceso.getKey()).isEqualTo(400);
+            assertThat(json(respuesta).has("errores")).as(respuesta.body()).isTrue();
+            assertThat(json(respuesta).get("errores").has(exceso.getKey())).isTrue();
+        }
+        var guardado = usuarios.findById(id).orElseThrow();
+        assertThat(guardado.getNombre()).hasSize(100);
+        assertThat(guardado.getApellido()).hasSize(100);
+        assertThat(guardado.getTelefono()).hasSize(30);
+        assertThat(guardado.getVersion()).isZero();
+    }
+
+    @Test
+    void rechazaJsonRotoTiposIncorrectosYCuerpoVacio() throws Exception {
+        for (String body : new String[]{"{", "", "null", "[]", "{\"nombre\":{\"valor\":\"Ana\"}}"}) {
+            var respuesta = enviarTexto("POST", "/usuarios", body, "application/json", Map.of());
+            assertThat(respuesta.statusCode()).as(body).isEqualTo(400);
+            assertThat(json(respuesta).get("status").asInt()).isEqualTo(400);
+            assertThat(json(respuesta).get("instance").asString()).isEqualTo("/usuarios");
+        }
+        assertThat(enviarTexto("POST", "/usuarios", mapper.writeValueAsString(PERFIL),
+                "text/plain", Map.of()).statusCode()).isEqualTo(415);
+        assertThat(usuarios.count()).isZero();
+    }
+
+    @Test
+    void conflictoNoFiltraDetallesDeLaBaseNiCreaDuplicado() throws Exception {
+        guardar(TENANT, OBJECT_ID);
+        var respuesta = llamar("POST", "/usuarios", PERFIL);
+        assertThat(respuesta.statusCode()).isEqualTo(409);
+        assertThat(json(respuesta).get("status").asInt()).isEqualTo(409);
+        assertThat(json(respuesta).get("detail").asString()).isNotBlank();
+        assertThat(respuesta.body()).doesNotContain("INSERT", "SELECT", "stackTrace", "uk_usuarios");
+        assertThat(usuarios.count()).isEqualTo(1);
+    }
 }

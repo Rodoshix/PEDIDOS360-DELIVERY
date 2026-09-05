@@ -39,4 +39,16 @@ class LocalIdentityConfigurationTests {
         context.withPropertyValues("spring.profiles.active=local", "usuarios.identidad-local.enabled=false")
                 .run(result -> assertThat(result).doesNotHaveBean(IdentidadUsuario.class));
     }
+
+    @Test
+    void rechazaIdentidadIncompletaYRolesDesconocidos() {
+        context.withPropertyValues("spring.profiles.active=local", "usuarios.identidad-local.object-id=")
+                .run(result -> assertThat(result).hasFailed());
+        context.withPropertyValues("spring.profiles.active=local", "usuarios.identidad-local.tenant-id=")
+                .run(result -> assertThat(result).hasFailed());
+        context.withPropertyValues("spring.profiles.active=local", "usuarios.identidad-local.roles=")
+                .run(result -> assertThat(result).hasFailed());
+        context.withPropertyValues("spring.profiles.active=local", "usuarios.identidad-local.roles=SUPERADMIN")
+                .run(result -> assertThat(result).hasFailed());
+    }
 }

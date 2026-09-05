@@ -34,4 +34,37 @@ class UsuarioAdminApiTests extends UsuarioApiTestBase {
         assertThat(llamar("PUT", "/usuarios/" + otro.getId(), PERFIL).statusCode()).isEqualTo(409);
         assertThat(llamar("GET", "/usuarios/9223372036854775807", null).statusCode()).isEqualTo(404);
     }
+
+    @Test
+    void adminDesactivadoPierdeAccesoSinImportarSuRol() throws Exception {
+        var admin = guardar(TENANT, OBJECT_ID);
+        admin.desactivar();
+        usuarios.saveAndFlush(admin);
+        var otro = guardar(TENANT, UUID.randomUUID());
+
+        assertThat(llamar("GET", "/usuarios", null).statusCode()).isEqualTo(403);
+        assertThat(llamar("GET", "/usuarios/me", null).statusCode()).isEqualTo(403);
+        assertThat(llamar("GET", "/usuarios/" + otro.getId(), null).statusCode()).isEqualTo(403);
+        assertThat(llamar("PUT", "/usuarios/" + otro.getId(), PERFIL).statusCode()).isEqualTo(403);
+        assertThat(llamar("DELETE", "/usuarios/" + otro.getId(), null).statusCode()).isEqualTo(403);
+        assertThat(llamar("POST", "/usuarios", PERFIL).statusCode()).isEqualTo(403);
+        assertThat(usuarios.findById(otro.getId()).orElseThrow().isActivo()).isTrue();
+    }
+
+    @Test
+    void devuelvePaginaVaciaY404SinCambiarOtrosPerfiles() throws Exception {
+        var vacia = llamar("GET", "/usuarios", null);
+        assertThat(vacia.statusCode()).isEqualTo(200);
+        assertThat(json(vacia).get("contenido").isEmpty()).isTrue();
+        assertThat(json(vacia).get("totalElementos").asLong()).isZero();
+        var existente = guardar(TENANT, UUID.randomUUID());
+        String ausente = "/usuarios/9223372036854775807";
+        assertThat(llamar("PUT", ausente, PERFIL).statusCode()).isEqualTo(404);
+        assertThat(llamar("DELETE", ausente, null).statusCode()).isEqualTo(404);
+        var fueraDeRango = llamar("GET", "/usuarios?pagina=100&tamanio=1", null);
+        assertThat(fueraDeRango.statusCode()).isEqualTo(200);
+        assertThat(json(fueraDeRango).get("contenido").isEmpty()).isTrue();
+        assertThat(json(fueraDeRango).get("totalElementos").asLong()).isEqualTo(1);
+        assertThat(usuarios.findById(existente.getId()).orElseThrow().isActivo()).isTrue();
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.method.ParameterErrors;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -43,8 +44,28 @@ public class ApiExceptionHandler {
                 request);
     }
 
-    @ExceptionHandler({MethodArgumentTypeMismatchException.class, HandlerMethodValidationException.class,
-            ConstraintViolationException.class})
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    ProblemDetail validacionMetodo(HandlerMethodValidationException error, HttpServletRequest request) {
+        if (error.isForReturnValue()) {
+            return problema(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo completar la operación.", request);
+        }
+        var problem = problema(HttpStatus.BAD_REQUEST, "Revisa los campos enviados.", request);
+        var campos = new LinkedHashMap<String, String>();
+        for (var resultado : error.getParameterValidationResults()) {
+            if (resultado instanceof ParameterErrors errores) {
+                errores.getFieldErrors()
+                        .forEach(field -> campos.putIfAbsent(field.getField(), field.getDefaultMessage()));
+            } else {
+                var nombre = resultado.getMethodParameter().getParameterName();
+                resultado.getResolvableErrors().forEach(detalle -> campos.putIfAbsent(
+                        nombre != null ? nombre : "parametro", detalle.getDefaultMessage()));
+            }
+        }
+        problem.setProperty("errores", campos);
+        return problem;
+    }
+
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, ConstraintViolationException.class})
     ProblemDetail parametros(HttpServletRequest request) {
         return problema(HttpStatus.BAD_REQUEST, "Los datos o parámetros no son válidos.", request);
     }

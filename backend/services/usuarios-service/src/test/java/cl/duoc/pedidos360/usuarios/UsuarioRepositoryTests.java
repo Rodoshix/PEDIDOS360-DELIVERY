@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -102,6 +103,22 @@ class UsuarioRepositoryTests {
         assertThat(migraciones).isEqualTo(1);
         assertThat(usuarios.findByTenantIdAndEntraObjectId(
                 UUID.randomUUID(), UUID.randomUUID())).isEmpty();
+    }
+
+    @Test
+    void unaEdicionAntiguaNoSobrescribeUnaVersionMasReciente() {
+        var primeraCopia = usuarios.saveAndFlush(nuevoUsuario(UUID.randomUUID(), UUID.randomUUID()));
+        entityManager.detach(primeraCopia);
+        var segundaCopia = usuarios.findById(primeraCopia.getId()).orElseThrow();
+        entityManager.detach(segundaCopia);
+
+        primeraCopia.actualizarPerfil("Actualizado", "Pérez", "primero@example.test", null);
+        var guardado = usuarios.saveAndFlush(primeraCopia);
+        assertThat(guardado.getVersion()).isGreaterThan(segundaCopia.getVersion());
+        segundaCopia.actualizarPerfil("Obsoleto", "Pérez", "segundo@example.test", null);
+
+        assertThatThrownBy(() -> usuarios.saveAndFlush(segundaCopia))
+                .isInstanceOf(ObjectOptimisticLockingFailureException.class);
     }
 
     private Usuario nuevoUsuario(UUID tenant, UUID objectId) {

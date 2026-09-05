@@ -53,14 +53,20 @@ abstract class UsuarioApiTestBase {
 
     HttpResponse<String> llamar(String metodo, String ruta, Object body,
                                Map<String, String> headers) throws Exception {
+        return enviarTexto(metodo, ruta, body == null ? null : mapper.writeValueAsString(body),
+                "application/json", headers);
+    }
+
+    HttpResponse<String> enviarTexto(String metodo, String ruta, String body,
+                                    String contentType, Map<String, String> headers) throws Exception {
         try (var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build()) {
             var builder = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + ruta))
                     .timeout(Duration.ofSeconds(10));
             headers.forEach(builder::header);
             var contenido = HttpRequest.BodyPublishers.noBody();
             if (body != null) {
-                builder.header("Content-Type", "application/json");
-                contenido = HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(body));
+                builder.header("Content-Type", contentType);
+                contenido = HttpRequest.BodyPublishers.ofString(body);
             }
             return client.send(builder.method(metodo, contenido).build(),
                     HttpResponse.BodyHandlers.ofString());
