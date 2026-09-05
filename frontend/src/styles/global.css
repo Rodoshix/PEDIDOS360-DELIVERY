@@ -89,6 +89,15 @@ h3 {
   flex-direction: column;
 }
 
+.auth-startup {
+  padding-block: 64px;
+  overflow-wrap: anywhere;
+}
+
+.auth-startup h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
 .skip-link {
   position: fixed;
   top: 12px;
