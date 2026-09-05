@@ -26,6 +26,13 @@ server:
   port: ${SERVER_PORT:8087}
   address: ${SERVER_ADDRESS:127.0.0.1}
 
+repartidores:
+  identidad-local:
+    enabled: ${LOCAL_IDENTITY_ENABLED:false}
+    tenant-id: ${LOCAL_TENANT_ID:}
+    object-id: ${LOCAL_OBJECT_ID:}
+    roles: ${LOCAL_ROLES:ADMIN}
+
 management:
   endpoints:
     web:

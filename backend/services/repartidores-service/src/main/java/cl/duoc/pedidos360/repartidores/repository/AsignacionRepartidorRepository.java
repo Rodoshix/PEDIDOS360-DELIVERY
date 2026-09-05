@@ -10,5 +10,7 @@ public interface AsignacionRepartidorRepository extends JpaRepository<Asignacion
 
     List<AsignacionRepartidor> findByRepartidorIdOrderByAsignadaEnAsc(Long repartidorId);
 
+    Optional<AsignacionRepartidor> findByPedidoId(Long pedidoId);
+
     boolean existsByPedidoId(Long pedidoId);
 }
