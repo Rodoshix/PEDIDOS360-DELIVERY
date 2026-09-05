@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: repartidores-service
+
+server:
+  port: ${SERVER_PORT:8087}
+  address: ${SERVER_ADDRESS:127.0.0.1}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
