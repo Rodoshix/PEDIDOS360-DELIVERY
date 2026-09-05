@@ -88,4 +88,49 @@ class SeguimientoAdminApiTests extends SeguimientoApiTestBase {
         assertThat(llamar("GET", "/seguimientos?pagina=-1", null).statusCode()).isEqualTo(400);
         assertThat(llamar("GET", "/seguimientos?tamanio=101", null).statusCode()).isEqualTo(400);
     }
+
+    @Test
+    void rechazaCamposNoPermitidosEnElJson() throws Exception {
+        var payload = new java.util.HashMap<String, Object>(Map.of(
+                "pedidoId", 700L, "estadoInicial", "RECIBIDO"));
+        payload.put("id", 99);
+        payload.put("version", 99);
+        payload.put("actor", "ADMIN");
+        assertThat(llamar("POST", "/seguimientos", payload).statusCode()).isEqualTo(400);
+        assertThat(seguimientos.count()).isZero();
+
+        var cambio = new java.util.HashMap<String, Object>(Map.of("estado", "ENTREGADO"));
+        cambio.put("pedidoId", 700L);
+        cambio.put("rol", "ADMIN");
+        assertThat(llamar("POST", "/seguimientos",
+                Map.of("pedidoId", 701L, "estadoInicial", "RECIBIDO")).statusCode()).isEqualTo(201);
+        assertThat(llamar("PUT", "/seguimientos/701/estado", cambio).statusCode()).isEqualTo(400);
+    }
+
+    @Test
+    void conflictoNoFiltraDetallesDeLaBaseNiCreaDuplicado() throws Exception {
+        guardar(800L, EstadoSeguimiento.RECIBIDO);
+        var respuesta = llamar("POST", "/seguimientos",
+                Map.of("pedidoId", 800L, "estadoInicial", "RECIBIDO"));
+        assertThat(respuesta.statusCode()).isEqualTo(409);
+        assertThat(json(respuesta).get("status").asInt()).isEqualTo(409);
+        assertThat(json(respuesta).get("detail").asString()).isNotBlank();
+        assertThat(respuesta.body()).doesNotContain("INSERT", "SELECT", "stackTrace", "uk_seguimientos");
+        assertThat(seguimientos.count()).isEqualTo(1);
+    }
+
+    @Test
+    void recorreFlujoCompletoDeEstados() throws Exception {
+        var creado = llamar("POST", "/seguimientos",
+                Map.of("pedidoId", 900L, "estadoInicial", "RECIBIDO"));
+        assertThat(creado.statusCode()).isEqualTo(201);
+
+        for (String estado : new String[]{"EN_PREPARACION", "LISTO", "EN_CAMINO", "ENTREGADO"}) {
+            var cambio = llamar("PUT", "/seguimientos/900/estado", Map.of("estado", estado));
+            assertThat(cambio.statusCode()).as(estado).isEqualTo(200);
+            assertThat(json(cambio).get("estadoActual").asString()).isEqualTo(estado);
+        }
+        var historial = llamar("GET", "/seguimientos/900/historial", null);
+        assertThat(json(historial).get("eventos").size()).isEqualTo(5);
+    }
 }
