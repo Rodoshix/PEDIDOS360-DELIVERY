@@ -1,6 +1,25 @@
 spring:
+  config:
+    import: optional:file:.env.local[.properties]
   application:
     name: usuarios-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5433/pedidos360_usuarios}
+    username: ${DB_USERNAME:pedidos360_usuarios}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: usuarios
+        jdbc:
+          time_zone: UTC
+  flyway:
+    default-schema: usuarios
+    schemas: usuarios
+    clean-disabled: true
 
 server:
   port: ${SERVER_PORT:8081}
