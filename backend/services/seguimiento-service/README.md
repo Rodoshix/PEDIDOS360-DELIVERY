@@ -4,9 +4,9 @@ Servicio de seguimiento de pedidos de Pedidos360. Java 21, Spring Boot 4.1.1 y M
 
 ## Estado
 
-Implementados: entidades `Seguimiento` (estado actual) y `SeguimientoEvento` (historial), repositorios JPA y migración Flyway para PostgreSQL.
-Todavía no hay endpoints de seguimiento ni autenticación; se incorporan en el siguiente bloque.
+Implementados: entidades `Seguimiento` (estado actual) y `SeguimientoEvento` (historial), repositorios JPA, migración Flyway, endpoints REST de consulta y actualización de estados, validación y manejo de errores.
 La base final estará en AWS RDS. El PostgreSQL de Docker es exclusivamente para desarrollo local.
+La autorización real y la integración con Entra ID quedan pendientes; se usa una identidad local de prueba solo en desarrollo.
 
 ## Modelo
 
@@ -15,6 +15,25 @@ La base final estará en AWS RDS. El PostgreSQL de Docker es exclusivamente para
 - `SeguimientoEvento`: historial de cambios de estado con fecha de ocurrencia y nota opcional.
 - Fechas en UTC y versión en `Seguimiento` para detectar actualizaciones concurrentes.
 - No guarda datos sensibles del pedido; solo la referencia `pedidoId` y el estado.
+
+## API
+
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/seguimientos` | Listar seguimientos (pagina, tamanio). Solo ADMIN. |
+| GET | `/seguimientos/{pedidoId}` | Estado actual de un pedido. |
+| GET | `/seguimientos/{pedidoId}/historial` | Estado actual más historial de cambios de un pedido. |
+| POST | `/seguimientos` | Iniciar el seguimiento de un pedido (`pedidoId`, `estadoInicial`). |
+| PUT | `/seguimientos/{pedidoId}/estado` | Cambiar el estado (`estado`, nota opcional) y registrar el evento. |
+
+Los cuerpos se envían en JSON (`application/json`). Los errores usan `application/problem+json`.
+
+## Seguridad
+
+- Los endpoints `/seguimientos` y `/seguimientos/**` requieren autenticación.
+- `/actuator/health` y `/actuator/health/**` son públicos.
+- La identidad local de prueba se activa solo con `seguimiento.identidad-local.enabled=true`, el perfil `local` y escucha en loopback (`127.0.0.1`).
+- La validación de tokens Entra ID/JWT se incorporará en un bloque posterior; esta rama no acredita autenticación de producción.
 
 ## Base local
 
@@ -43,6 +62,8 @@ docker compose --env-file .env.local down
 
 Las variables iniciales de usuario y contraseña de PostgreSQL se aplican al crear el volumen por primera vez; editar el archivo después no cambia las credenciales de una base existente.
 
+Para probar la API localmente con la identidad simulada, habilitar `LOCAL_IDENTITY_ENABLED=true` en `.env.local`, usar el perfil `local` y definir `LOCAL_ROLES` (ADMIN o CLIENTE).
+
 ## Configuración
 
 | Variable | Uso |
@@ -53,6 +74,9 @@ Las variables iniciales de usuario y contraseña de PostgreSQL se aplican al cre
 | `DB_NAME`, `DB_PORT` | Nombre de base y puerto publicado por el Compose local. |
 | `SERVER_PORT` | Puerto HTTP; 8088 por defecto. |
 | `SERVER_ADDRESS` | Dirección de escucha; 127.0.0.1 por defecto. |
+| `LOCAL_IDENTITY_ENABLED` | Activa la identidad simulada (solo perfil local y loopback). |
+| `LOCAL_TENANT_ID`, `LOCAL_OBJECT_ID` | Identidad simulada. |
+| `LOCAL_ROLES` | Roles simulados: ADMIN o CLIENTE. |
 
 En AWS se configurarán `DB_URL`, `DB_USERNAME` y `DB_PASSWORD` para RDS desde el entorno de despliegue, con TLS y acceso de red autorizado. No usar el Compose local para desplegar RDS ni subir credenciales.
 
@@ -66,7 +90,7 @@ Con Docker Desktop funcionando:
 .\mvnw.cmd verify
 ```
 
-Las pruebas levantan PostgreSQL 17 temporal mediante Testcontainers, ejecutan la migración y verifican persistencia, unicidad por pedido, historial y salud HTTP. Usan una base aislada, no RDS ni el volumen de desarrollo. Los contenedores de prueba se eliminan al terminar.
+Las pruebas levantan PostgreSQL 17 temporal mediante Testcontainers, ejecutan la migración y verifican persistencia, unicidad por pedido, historial, CRUD HTTP, validaciones, manejo de errores y roles CLIENTE/ADMIN. Usan una base aislada, no RDS ni el volumen de desarrollo. Los contenedores de prueba se eliminan al terminar.
 
 Para comprobar únicamente la compilación:
 
