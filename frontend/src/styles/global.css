@@ -376,6 +376,32 @@ h3 {
   background: var(--color-surface);
 }
 
+.site-header nav,
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.account-section {
+  padding-block: 72px;
+  overflow-wrap: anywhere;
+}
+
+.account-section h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+.account-section > p:not(.eyebrow) {
+  max-width: 650px;
+  line-height: 1.65;
+}
+
+.account-note {
+  color: var(--color-text-muted);
+}
+
 .session-controls {
   display: flex;
   flex-wrap: wrap;
@@ -436,7 +462,8 @@ h3 {
   }
 
   .site-header nav {
-    display: none;
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 
   .hero-section__content {

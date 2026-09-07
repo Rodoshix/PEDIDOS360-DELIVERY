@@ -5,14 +5,15 @@ import { createSessionActions, selectSessionAccount } from './session.js'
 
 import { AuthSessionContext } from './useAuthSession.js'
 
-export function AuthSessionProvider({ tenantId, initialError, children }) {
+export function AuthSessionProvider({ tenantId, initialError, returnDestinationStore, children }) {
   const { instance, accounts, inProgress } = useMsal()
   const [error, setError] = useState(initialError)
   const [pending, setPending] = useState(null)
   const actions = useMemo(() => createSessionActions(instance, {
     onPending: setPending,
     onError: setError,
-  }), [instance])
+    returnDestinationStore,
+  }), [instance, returnDestinationStore])
   const account = selectSessionAccount(accounts, instance.getActiveAccount(), tenantId)
   const busy = pending !== null || inProgress !== InteractionStatus.None
 
@@ -25,7 +26,7 @@ export function AuthSessionProvider({ tenantId, initialError, children }) {
     error,
     busy,
     pending,
-    login: () => { if (!busy) return actions.login() },
+    login: destination => { if (!busy) return actions.login(destination) },
     logout: () => { if (!busy) return actions.logout(account) },
   }
 

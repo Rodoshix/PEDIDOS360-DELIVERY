@@ -14,11 +14,11 @@ root.render(<AuthStartupStatus />)
 
 async function bootstrap() {
   try {
-    const { instance, tenantId, initialError } = await initializeMsal()
+    const { instance, tenantId, initialError, returnDestinationStore } = await initializeMsal()
     root.render(
       <StrictMode>
         <MsalProvider instance={instance}>
-          <AuthSessionProvider tenantId={tenantId} initialError={initialError}>
+          <AuthSessionProvider tenantId={tenantId} initialError={initialError} returnDestinationStore={returnDestinationStore}>
             <BrowserRouter>
               <App />
             </BrowserRouter>

@@ -1,7 +1,9 @@
 import { useAuthSession } from './useAuthSession.js'
+import { useLocation } from 'react-router'
 
 function SessionControls() {
   const { account, busy, pending, login, logout } = useAuthSession()
+  const location = useLocation()
 
   return (
     <section className="session-controls" aria-label="Sesión de Microsoft" aria-busy={busy}>
@@ -19,7 +21,7 @@ function SessionControls() {
         type="button"
         className="button button--primary session-controls__button"
         disabled={busy}
-        onClick={account ? logout : login}
+        onClick={account ? logout : () => login(location.pathname + location.search + location.hash)}
       >
         {account ? 'Cerrar sesión' : 'Iniciar sesión con Microsoft'}
       </button>

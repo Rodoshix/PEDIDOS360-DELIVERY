@@ -2,7 +2,7 @@
 
 Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout y cliente HTTP. Se está incorporando autenticación con Microsoft Entra ID en el Issue #11.
 
-Estado de este bloque: configuración MSAL, botones de login/logout por redirección y cuenta activa en el encabezado. Todavía no hay rutas privadas ni envío de tokens por Axios. El responsable confirmó la prueba manual de login, persistencia al recargar y logout con la cuenta del equipo. Las 25 pruebas automatizadas usan dobles de MSAL, no credenciales reales.
+Estado de este bloque: configuración MSAL, login/logout, cuenta activa y ruta privada `/mi-cuenta` con retorno al destino solicitado. Todavía no hay envío de tokens por Axios. El responsable confirmó la prueba manual de login, persistencia al recargar y logout del bloque anterior; falta confirmar el retorno real a una ruta privada. Las 40 pruebas automatizadas cubren configuración, sesión, destinos y renderizado de rutas, sin credenciales reales.
 
 ## Instalación y ejecución
 
@@ -67,6 +67,22 @@ El retorno se procesa con `handleRedirectPromise` antes de montar las rutas. Est
 
 Login solicita `openid` y `profile`. El permiso `access_as_user` está configurado para el siguiente bloque de adquisición de tokens; aún no hay peticiones autenticadas al backend. Mostrar una cuenta no acredita autorización ni rol ADMIN. Las verificaciones del directorio en la UI tampoco sustituyen la validación criptográfica de tokens en el backend.
 
+### Rutas privadas y regreso después del login
+
+- Inicio y 404 siguen siendo públicos. `/mi-cuenta` es una vista mínima de sesión, no el módulo funcional de Perfil.
+- `RequireSession` no monta el contenido privado mientras MSAL está ocupado ni cuando falta una cuenta. Muestra una espera o una invitación a entrar; nunca inicia redirecciones automáticamente.
+- Tanto el botón del encabezado como **Entrar para continuar** conservan ruta, consulta y fragmento. El destino se guarda en `sessionStorage`; solo una clave aleatoria se envía en `state`, siguiendo la [recomendación de Microsoft para estado personalizado](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/mip-pass-custom-state).
+- Tras una respuesta válida del directorio se consume la clave una sola vez y se reemplaza la URL antes de montar las rutas. No se hace una segunda petición de página. La URI SPA de Entra sigue siendo `http://localhost:5173`; no hay que registrar cada ruta privada.
+- Se rechazan URLs externas, direcciones ambiguas, caracteres de control, respuestas OAuth y destinos malformados. Sin destino válido, con clave distinta o transcurridos 15 minutos se vuelve a `/`. Cancelación, fallo, logout y arranque sin respuesta descartan el destino pendiente; no quedan reintentos automáticos.
+- Esta protección es de navegación del frontend. El backend debe validar tokens y permisos por separado.
+
+Prueba manual pendiente de este bloque:
+
+1. Sin sesión, abrir `http://localhost:5173/mi-cuenta?tab=datos#contacto`: debe pedir iniciar sesión sin mostrar el contenido privado.
+2. Pulsar **Entrar para continuar** y completar Microsoft. Debe regresar a esa misma dirección, conservando `?tab=datos#contacto`, y mostrar **Mi cuenta**. Esos parámetros sirven para verificar el retorno; no activan un formulario.
+3. Recargar la página: debe seguir mostrando la vista privada con la sesión activa.
+4. Cerrar sesión y volver a abrir `/mi-cuenta`: debe pedir entrar otra vez. Inicio y una ruta inexistente deben seguir funcionando sin sesión.
+
 ## Comandos disponibles
 
 Ejecutar desde `frontend/`:
@@ -76,7 +92,7 @@ Ejecutar desde `frontend/`:
 | `npm ci` | Instalar las versiones de `package-lock.json`. |
 | `npm run dev` | Iniciar el servidor de desarrollo. |
 | `npm run lint` | Revisar el código con Oxlint. |
-| `npm test` | Probar configuración y gestión de sesión con Node.js, sin Azure ni credenciales. |
+| `npm test` | Probar configuración, sesión, destinos seguros y rutas con Node.js y renderizado React, sin Azure ni credenciales. |
 | `npm run build` | Generar la aplicación en `dist/`. |
 | `npm run preview` | Revisar localmente el resultado de build. |
 
@@ -94,7 +110,7 @@ Para agregar una dependencia, usar `npm install nombre-paquete` y guardar juntos
 | `config/` | Lectura de variables de entorno. |
 | `styles/` | Estilos y colores base. |
 | `components/`, `hooks/`, `context/`, `utils/` | Elementos reutilizables entre módulos. |
-| `auth/` | Configuración de Entra, inicialización de MSAL, cuenta activa y controles de sesión. |
+| `auth/` | Configuración de Entra, sesión MSAL, protección de rutas y retorno seguro. |
 | `assets/` | Recursos gráficos. |
 
 Los `.gitkeep` conservan carpetas vacías en Git; pueden retirarse cuando contengan código.
@@ -106,6 +122,8 @@ Los `.gitkeep` conservan carpetas vacías en Git; pueden retirarse cuando conten
 3. Agregar la URL en `src/routes/routePaths.js` y registrar la pantalla en `AppRouter.jsx`, dentro de la ruta que usa `MainLayout`.
 4. Usar `Link` o `NavLink` de `react-router` para navegar. Coordinar el menú en `MainLayout.jsx` con el equipo.
 5. Reutilizar el cliente HTTP y ejecutar lint y build antes de entregar.
+
+Si la pantalla requiere sesión, registrar su `<Route>` dentro del grupo `<Route element={<RequireSession />}>`, como `/mi-cuenta`. Mantener las pantallas públicas fuera de ese grupo. No copiar el login ni agregar otra instancia de MSAL en cada módulo.
 
 Ejemplo orientativo en `src/features/restaurantes/restaurantesService.js`; acordar primero el endpoint con el backend:
 

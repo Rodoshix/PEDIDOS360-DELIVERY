@@ -42,7 +42,7 @@ test('filtra cuentas de otros directorios', () => {
 
 test('al volver de Microsoft establece la cuenta devuelta como activa', async () => {
   const instance = fakeMsal({ accounts: [ana, otro], active: otro, response: { account: ana } })
-  assert.deepEqual(await restoreSession(instance, tenantId), { error: null })
+  assert.deepEqual(await restoreSession(instance, tenantId), { error: null, returnTo: '/' })
   assert.equal(instance.getActiveAccount(), ana)
 })
 
@@ -76,7 +76,7 @@ test('login solicita selección de cuenta y permisos de identidad, sin Graph ni 
     onPending: value => states.push(value), onError: value => errors.push(value),
   })
   await actions.login()
-  assert.deepEqual(request, { scopes: ['openid', 'profile'], prompt: 'select_account' })
+  assert.deepEqual(request, { scopes: ['openid', 'profile'], prompt: 'select_account', state: undefined })
   assert.deepEqual(states, ['login', null])
   assert.deepEqual(errors, [null])
 })
