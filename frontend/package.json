@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "oxlint",
     "test": "node --test",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "preview:profile": "node tools/profile-preview.mjs"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.21.0",

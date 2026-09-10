@@ -1,0 +1,86 @@
+.profile-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.profile-card {
+  min-width: 0;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.profile-card h2 {
+  margin-bottom: 16px;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  letter-spacing: -0.025em;
+}
+
+.profile-card p { line-height: 1.65; }
+
+.profile-badge {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  color: var(--color-primary-dark);
+  background: var(--color-primary-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.profile-notice {
+  padding: 16px;
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 8px 8px 0;
+  background: var(--color-background);
+  line-height: 1.6;
+}
+
+.profile-empty { padding-block: 28px 8px; }
+.profile-empty p { color: var(--color-text-muted); }
+
+.profile-data {
+  display: grid;
+  gap: 24px;
+  margin: 28px 0;
+}
+
+.profile-data--columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.profile-data dt {
+  margin-bottom: 8px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.profile-data dd {
+  margin: 0;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.profile-demo,
+.profile-diagnostics {
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+}
+
+.profile-diagnostics summary {
+  cursor: pointer;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.profile-diagnostics[open] summary { margin-bottom: 16px; }
+.profile-diagnostics [role] { margin: 16px 0 0; }
+.profile-diagnostics .button { height: auto; padding-block: 10px; }
+
+@media (max-width: 760px) {
+  .profile-layout,
+  .profile-data--columns { grid-template-columns: 1fr; }
+}

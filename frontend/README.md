@@ -1,8 +1,8 @@
 # Pedidos360 Delivery — Frontend
 
-Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout y cliente HTTP. Se está incorporando autenticación con Microsoft Entra ID en el Issue #11.
+Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout, cliente HTTP y autenticación con Microsoft Entra ID (Issue #11, PR #18 integrado). El Issue #21 incorpora Perfil / Mi cuenta por bloques, sin integración real de servicios todavía.
 
-Estado de este bloque: sesión MSAL, rutas privadas, retorno seguro y adquisición de access token conectada a Axios. El responsable confirmó login, persistencia al recargar y logout durante las pruebas iniciales, y reportó el funcionamiento después de migrar a su propio directorio el 10 de septiembre de 2026. Falta confirmar específicamente el retorno real a una ruta privada conservando consulta y fragmento. Las pruebas automatizadas usan dobles de MSAL y un servidor HTTP local con credenciales ficticias, nunca tokens reales. La aceptación del token por BFF/servicios todavía no está implementada.
+Autenticación implementada: sesión MSAL, rutas privadas, retorno seguro y adquisición de access token conectada a Axios. El responsable confirmó el recorrido antes del cierre del Issue #11, después de migrar a su propio directorio el 10 de septiembre de 2026. Las pruebas automatizadas usan dobles de MSAL y un servidor HTTP local con credenciales ficticias, nunca tokens reales. La aceptación del token por BFF/servicios todavía no está implementada.
 
 ## Instalación y ejecución
 
@@ -71,14 +71,14 @@ Login solicita `openid` y `profile`. Para la API se solicita exclusivamente el �
 
 ### Rutas privadas y regreso después del login
 
-- Inicio y 404 siguen siendo públicos. `/mi-cuenta` es una vista mínima de sesión, no el módulo funcional de Perfil.
+- Inicio y 404 siguen siendo públicos. `/mi-cuenta` presenta la sesión y la base de consulta de Perfil; la edición y conexión real siguen pendientes.
 - `RequireSession` no monta el contenido privado mientras MSAL está ocupado ni cuando falta una cuenta. Muestra una espera o una invitación a entrar; nunca inicia redirecciones automáticamente.
 - Tanto el botón del encabezado como **Entrar para continuar** conservan ruta, consulta y fragmento. El destino se guarda en `sessionStorage`; solo una clave aleatoria se envía en `state`, siguiendo la [recomendación de Microsoft para estado personalizado](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/mip-pass-custom-state).
 - Tras una respuesta válida del directorio se consume la clave una sola vez y se reemplaza la URL antes de montar las rutas. No se hace una segunda petición de página. La URI SPA de Entra sigue siendo `http://localhost:5173`; no hay que registrar cada ruta privada.
 - Se rechazan URLs externas, direcciones ambiguas, caracteres de control, respuestas OAuth y destinos malformados. Sin destino válido, con clave distinta o transcurridos 15 minutos se vuelve a `/`. Cancelación, fallo, logout y arranque sin respuesta descartan el destino pendiente; no quedan reintentos automáticos.
 - Esta protección es de navegación del frontend. El backend debe validar tokens y permisos por separado.
 
-Prueba manual pendiente de este bloque:
+Recorrido de regresión de autenticación (repetir al cambiar configuración o navegación):
 
 1. Sin sesión, abrir `http://localhost:5173/mi-cuenta?tab=datos#contacto`: debe pedir iniciar sesión sin mostrar el contenido privado.
 2. Pulsar **Entrar para continuar** y completar Microsoft. Debe regresar a esa misma dirección, conservando `?tab=datos#contacto`, y mostrar **Mi cuenta**. Esos parámetros sirven para verificar el retorno; no activan un formulario.
@@ -105,7 +105,7 @@ Reglas del cliente:
 Prueba manual del permiso de API, sin enviar credenciales al backend (el responsable reportó funcionamiento después de la migración; repetir al cambiar directorio o permisos):
 
 1. Iniciar sesión y abrir **Mi cuenta**.
-2. Pulsar **Comprobar permiso de API**. Solo obtiene y descarta el token en memoria: no lo muestra, no lo copia y no llama al backend.
+2. Abrir **Diagnóstico de acceso a la API** dentro de **Tu acceso** y pulsar **Comprobar permiso de API**. Solo obtiene y descarta el token en memoria: no lo muestra, no lo copia y no llama al backend.
 3. Si Microsoft requiere interacción, pulsar **Continuar con Microsoft**, completar el acceso y volver a pulsar **Comprobar permiso de API** al regresar.
 4. Debe aparecer que Microsoft entregó un token para nuestra API. Esto **no prueba** que el BFF o los servicios lo acepten. La prueba extremo a extremo queda pendiente de implementar su validación de firma, issuer, audience, scopes y roles.
 
@@ -121,6 +121,7 @@ Ejecutar desde `frontend/`:
 | `npm test` | Probar configuración, sesión, rutas, tokens simulados y cliente HTTP local, sin Azure ni credenciales reales. |
 | `npm run build` | Generar la aplicación en `dist/`. |
 | `npm run preview` | Revisar localmente el resultado de build. |
+| `npm run preview:profile` | Banco visual aislado de Perfil, con sesión ficticia y puerto aleatorio de loopback; no usa Microsoft ni backend. |
 
 Para agregar una dependencia, usar `npm install nombre-paquete` y guardar juntos `package.json` y `package-lock.json`. No versionar `node_modules/` ni `dist/`.
 
@@ -179,8 +180,66 @@ En el navegador, revisar `/`, una dirección inexistente para ver la página 404
 
 La suite automatizada cubre configuración, selección de cuenta, login/logout, retorno seguro, rutas privadas y adquisición de tokens. También conecta la configuración y el proveedor de tokens reales del proyecto a Axios contra un servidor HTTP local: comprueba el Bearer ficticio, el bloqueo antes de la red cuando falta consentimiento y los errores 401/403 sin reintentos. Microsoft está simulado en esas pruebas; no acreditan consentimiento real, firma del token ni autorización en el BFF.
 
-Antes de cerrar el Issue #11, confirmar la prueba manual de `/mi-cuenta?tab=datos#contacto` descrita arriba. La futura integración de backend deberá verificar firma, issuer, audience, scopes y roles con un token real, sin registrarlo ni copiarlo al issue.
+Conservar como regresión la prueba manual de `/mi-cuenta?tab=datos#contacto` descrita arriba. La futura integración de backend deberá verificar firma, issuer, audience, scopes y roles con un token real, sin registrarlo ni copiarlo al issue.
 
 El alojamiento final debe devolver `index.html` para rutas del frontend que no correspondan a archivos, permitiendo recargas y enlaces directos con BrowserRouter. Las rutas de API deben seguir llegando al backend.
 
-La base se integró mediante el PR #4 (Issue #2). La autenticación se trabaja en `feature/i1-11-auth-msal`, con PR final hacia `develop`, asociado al Issue #11.
+La base se integró mediante el PR #4 (Issue #2) y la autenticación mediante el PR #18 (Issue #11).
+
+## Perfil / Mi cuenta — Issue #21, bloque 1
+
+Rama `codex/i1-21-perfil-frontend`, iniciada desde `develop` con Carrito backend integrado.
+Este bloque prepara la consulta visual; **todavía no crea, edita ni consulta usuarios reales**.
+
+- **Tu acceso** muestra nombre e identificador de inicio de sesión entregados por MSAL.
+  No se deducen apellido, email de contacto, ID de usuario ni roles a partir de esos datos.
+- **Perfil de Pedidos360** empieza como *Perfil aún no consultado*, no como *no tienes
+  perfil*: sin consultar el backend no se puede afirmar que exista o falte un registro.
+- Solo con `npm run dev` aparece **Ver perfil de ejemplo**. La acción muestra Alex Ejemplo,
+  `alex@example.test` y teléfono sin registrar, señalados explícitamente como ficticios.
+  **Quitar ejemplo** vuelve al estado inicial. El build de producción no ofrece ese control.
+- El ejemplo vive únicamente en el estado del componente; desaparece al recargar, salir
+  de la ruta, cerrar sesión o cambiar de identidad. No usa localStorage/sessionStorage,
+  no obtiene tokens, no llama a Usuarios ni constituye un fallback por error de API.
+- El diagnóstico de permiso API se conserva, separado y bajo un desplegable. Solo esa
+  acción explícita puede solicitar un token real en la aplicación; no registra un perfil.
+
+### Contrato de referencia y próximos bloques
+
+Referencia local: `backend/services/usuarios-service` (Issue #6).
+
+| Campo de PerfilRequest | Restricción actual del backend |
+| --- | --- |
+| `nombre` | Obligatorio, recortado, hasta 100 caracteres. |
+| `apellido` | Obligatorio, recortado, hasta 100 caracteres. |
+| `email` | Obligatorio, formato email, recortado y en minúsculas, hasta 254 caracteres. |
+| `telefono` | Opcional, recortado, hasta 30 caracteres; vacío se convierte en null. |
+
+UsuarioResponse añade `id`, `activo`, `creadoEn` y `actualizadoEn`. Identidad, rol, estado,
+auditoría e ID no son campos editables. Cambiar el email de contacto no cambia la cuenta
+Microsoft. No hay dirección de entrega ni cambio de contraseña en este contrato.
+
+Pendiente en esta rama: formulario de creación/edición y cancelación; validación;
+adaptador de prueba para carga, ausencia, errores y confirmación; pruebas ampliadas.
+La conexión mediante el cliente HTTP compartido/BFF y JWT real se hará en la integración,
+sin conectar esta pantalla directamente al modo de identidad simulada de Usuarios.
+
+### Comprobar este bloque sin usar una cuenta real
+
+1. Ejecutar `npm run preview:profile` y abrir la URL de loopback que imprime la terminal.
+   Es un banco visual de pruebas, **no el arranque normal ni un modo de login de la app**.
+2. Verificar la advertencia de sesión ficticia y el estado *Perfil aún no consultado*.
+3. Pulsar **Ver perfil de ejemplo**, comprobar los campos, y **Quitar ejemplo**.
+   Ambos controles deben funcionar también con Enter/teclado.
+4. Mostrar el ejemplo y pulsar **Cambiar cuenta de prueba**: debe volver al estado inicial.
+   Repetir con **Cerrar sesión** y **Entrar para continuar**; son dobles locales en este banco.
+5. Abrir el diagnóstico y comprobar su error simulado. No contacta Microsoft.
+6. Revisar escritorio y ancho móvil (390 px), sin desbordamiento horizontal. Detener con Ctrl+C.
+
+El banco de `tools/` no entra en el build de `index.html` ni modifica `RequireSession`.
+No valida autenticación real. En la aplicación normal (`localhost:5173`), la ruta privada
+sigue requiriendo la sesión MSAL existente.
+
+Verificado el 10-09-2026: 68 pruebas automatizadas aprobadas, lint y build correctos;
+revisión del banco visual en escritorio/móvil, ejemplo/quitar, teclado, cambio de cuenta,
+logout/login simulados y diagnóstico. La ruta real sin sesión siguió bloqueada.
