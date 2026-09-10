@@ -2,7 +2,7 @@
 
 Integrante 1, issue #19. Java 21, Spring Boot 4.1.1 y Maven Wrapper 3.9.15, como Usuarios.
 
-## Estado del cuarto bloque
+## Estado actual
 
 Base ejecutable, salud pública y seguridad cerrada por defecto. Incluye el modelo
 Carrito/LineaCarrito, repositorio JPA, migración Flyway, PostgreSQL local y endpoints de
@@ -70,7 +70,8 @@ de una base existente. No se modifica ni detiene el Compose de otros servicios.
 - Límites locales del modelo: 50 productos diferentes, 1–99 unidades por producto,
   nombre de hasta 200 caracteres y precio entre 0 y 1.000.000.000 CLP. Añadir otra vez
   un producto suma cantidades y actualiza nombre/precio de referencia para toda su línea;
-  cambiar solo cantidad conserva ese precio. El adaptador de catálogo se añadirá después.
+  cambiar solo cantidad conserva ese precio. El adaptador del catálogo real se añadirá
+  al integrar; por ahora solo existe el adaptador ficticio del modo local.
 - Total y subtotales calculados, no persistidos como copias susceptibles de divergir.
   Se usan enteros `long` y aritmética exacta. No hay descuentos, envío ni reserva de stock.
 - Solo el agregado Carrito modifica las líneas. `revision_contenido` hace que una
@@ -198,28 +199,104 @@ Productos disponibles exclusivamente en este modo, con precios ficticios CLP:
 | 103, producto no disponible | 20 | 3000 | No |
 | 201, pizza de prueba | 21 | 8990 | Sí |
 
-En otra terminal PowerShell:
+En otra terminal PowerShell, usando una identidad ficticia exclusiva de pruebas.
+El recorrido modifica y vacía su carrito: no usar una identidad con datos que se
+quieran conservar. Para reproducir los totales siguientes, partir de un carrito vacío.
 
 ```powershell
 $carritoUrl = 'http://127.0.0.1:8084/carrito'
 Invoke-RestMethod $carritoUrl
 Invoke-RestMethod -Method Post -Uri "$carritoUrl/items" -ContentType 'application/json' -Body '{"productoId":101,"cantidad":2}'
+Invoke-RestMethod -Method Post -Uri "$carritoUrl/items" -ContentType 'application/json' -Body '{"productoId":102,"cantidad":1}'
 Invoke-RestMethod -Method Put -Uri "$carritoUrl/items/101" -ContentType 'application/json' -Body '{"cantidad":1}'
 Invoke-RestMethod -Method Delete -Uri "$carritoUrl/items/101"
+Invoke-RestMethod $carritoUrl
 Invoke-RestMethod -Method Delete -Uri $carritoUrl
+Invoke-RestMethod -Method Delete -Uri $carritoUrl
+Invoke-RestMethod $carritoUrl
 ```
 
+Resultados esperados, en CLP:
+
+| Paso | HTTP | Resultado |
+| --- | --- | --- |
+| Consultar antes de crear | 200 | `id: null`, `items: []`, total 0. |
+| Agregar 2 unidades de 101 | 200 | Total 13980. |
+| Agregar 1 unidad de 102 | 200 | Total 15480, dos líneas. |
+| Cambiar 101 a 1 unidad | 200 | Total 8490. |
+| Quitar 101 y consultar | 204 / 200 | Una línea (102), total 1500. |
+| Vaciar dos veces y consultar | 204 / 204 / 200 | Total 0, sin líneas ni restaurante; conserva el ID del carrito. |
+
+Antes de quitar/vaciar, comprobar también los rechazos usando los mismos comandos
+POST/PUT con estos cuerpos. PowerShell muestra una excepción HTTP para los códigos
+de error; es lo esperado. Consultar después: total, líneas y versión deben conservarse.
+
+| Solicitud | Cuerpo | HTTP esperado |
+| --- | --- | --- |
+| POST `/carrito/items` | `{"productoId":201,"cantidad":1}` | 409: otro restaurante. |
+| POST `/carrito/items` | `{"productoId":103,"cantidad":1}` | 409: no disponible. |
+| POST `/carrito/items` | `{"productoId":999,"cantidad":1}` | 404: producto inexistente. |
+| POST `/carrito/items` | `{"productoId":101,"cantidad":1,"precio":1}` | 400: campo no permitido. |
+| PUT `/carrito/items/101` | `{"cantidad":0}` | 400: cantidad inválida. |
+
 Repetir POST suma cantidades. No hace falta iniciar sesión en React ni enviar un token
-para este recorrido local aislado. Si falta el perfil/flag, un 401 es el comportamiento
-esperado. Al terminar las pruebas, volver a `LOCAL_IDENTITY_ENABLED=false` y reiniciar.
+para este recorrido local aislado. Con el flag desactivado, un 401 es el comportamiento
+esperado. Con el flag activado pero sin el perfil requerido, se rechaza el arranque.
+Al terminar las pruebas, volver a `LOCAL_IDENTITY_ENABLED=false` y reiniciar.
+
+### Comprobar el ejecutable y el modo cerrado
+
+Después de `mvnw.cmd verify`, se puede ejecutar el JAR en lugar de Maven, desde la
+carpeta del servicio y con la misma base y `.env.local`. No ejecutar ambas instancias
+a la vez en 8084:
+
+```powershell
+java -jar target/carrito-service-0.0.1-SNAPSHOT.jar --spring.profiles.active=local
+```
+
+El perfil por sí solo no habilita las operaciones: requiere además el flag y la
+identidad indicados arriba. Para comprobar el modo cerrado, detener esa instancia
+con Ctrl+C y ejecutar:
+
+```powershell
+java -jar target/carrito-service-0.0.1-SNAPSHOT.jar --carrito.identidad-local.enabled=false
+```
+
+En otra terminal: salud debe seguir en 200/UP y `GET /carrito` debe devolver 401,
+tanto sin cabeceras como con `Authorization: Bearer token-ficticio`. No cambiar la
+seguridad para eliminar ese 401: aún no existe validación JWT real en este servicio.
+
+### Problemas comunes
+
+- Docker no disponible: abrir Docker Desktop y comprobar motor Linux con `docker info`.
+  Las pruebas necesitan PostgreSQL real temporal; no omitirlas para publicar.
+- Puerto ocupado: identificar la instancia propia antes de detenerla, o configurar
+  otro `SERVER_PORT`. No detener procesos de otros servicios. Para la base, coordinar
+  `DB_PORT` con el puerto incluido en `DB_URL`.
+- Conexión/contraseña de PostgreSQL: comprobar salud de Compose y variables de entorno.
+  Una contraseña cambiada en `.env.local` no actualiza un volumen ya inicializado;
+  no borrar el volumen como primer intento de solución.
+- Arranque rechazado con identidad local: usar únicamente el perfil `local`, loopback,
+  UUID completos y roles válidos. La restricción es intencional.
+
+### Verificación del bloque final — 10-09-2026
+
+- `mvnw.cmd verify`: 52 pruebas, 0 fallos, 0 errores y 0 omitidas.
+- Recorrido HTTP del JAR contra PostgreSQL 17 temporal: consulta, suma, cantidades,
+  eliminación, vaciado idempotente y los cinco rechazos de la tabla anterior.
+- Comprobados totales e invariantes después de los errores, y conservación del ID
+  tras vaciar. Comprobado el modo cerrado por separado.
+- Sin usar `.env.local`, cuentas Azure, datos permanentes de Compose ni servicios de
+  otros integrantes. La prueba del JAR utilizó puertos aleatorios de loopback y una
+  base efímera; los comandos anteriores usan los puertos de desarrollo documentados.
 
 ## Entregas de esta rama
 
 1. Base del servicio y contrato local (publicado en `82d6063`).
 2. Modelo, migraciones y pruebas PostgreSQL (publicado en `d3edbcd`).
-3. Identidad/catálogo locales explícitos, operaciones y validaciones (preparado localmente).
-4. Pruebas ampliadas de aislamiento, concurrencia y errores (este bloque).
-5. Documentación final y recorrido local reproducible.
+3. Identidad/catálogo locales explícitos, operaciones y validaciones (publicado en `addd866`).
+4. Pruebas ampliadas de aislamiento, concurrencia y errores (publicado en `c1b50c3`).
+5. Documentación final y recorrido local reproducible (incluido en esta entrega).
 
 Las pantallas React, el Dockerfile de despliegue y la integración real se trabajan
 aparte. No hay checkout ni creación de pedidos dentro de este servicio.
