@@ -1,0 +1,47 @@
+spring:
+  config:
+    import: optional:file:.env.local[.properties]
+  application:
+    name: carrito-service
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+      accept-float-as-int: false
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5440/pedidos360_carrito}
+    username: ${DB_USERNAME:pedidos360_carrito}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: carrito
+        jdbc:
+          time_zone: UTC
+  flyway:
+    default-schema: carrito
+    schemas: carrito
+    clean-disabled: true
+
+server:
+  port: ${SERVER_PORT:8084}
+  address: ${SERVER_ADDRESS:127.0.0.1}
+
+carrito:
+  identidad-local:
+    enabled: ${LOCAL_IDENTITY_ENABLED:false}
+    tenant-id: ${LOCAL_TENANT_ID:}
+    object-id: ${LOCAL_OBJECT_ID:}
+    roles: ${LOCAL_ROLES:CLIENTE}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
