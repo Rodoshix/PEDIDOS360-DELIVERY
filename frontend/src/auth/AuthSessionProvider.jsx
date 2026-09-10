@@ -5,7 +5,7 @@ import { createSessionActions, selectSessionAccount } from './session.js'
 
 import { AuthSessionContext } from './useAuthSession.js'
 
-export function AuthSessionProvider({ tenantId, initialError, returnDestinationStore, children }) {
+export function AuthSessionProvider({ tenantId, initialError, returnDestinationStore, apiTokenProvider, apiTokenRequest, children }) {
   const { instance, accounts, inProgress } = useMsal()
   const [error, setError] = useState(initialError)
   const [pending, setPending] = useState(null)
@@ -13,7 +13,8 @@ export function AuthSessionProvider({ tenantId, initialError, returnDestinationS
     onPending: setPending,
     onError: setError,
     returnDestinationStore,
-  }), [instance, returnDestinationStore])
+    apiTokenRequest,
+  }), [instance, returnDestinationStore, apiTokenRequest])
   const account = selectSessionAccount(accounts, instance.getActiveAccount(), tenantId)
   const busy = pending !== null || inProgress !== InteractionStatus.None
 
@@ -28,6 +29,8 @@ export function AuthSessionProvider({ tenantId, initialError, returnDestinationS
     pending,
     login: destination => { if (!busy) return actions.login(destination) },
     logout: () => { if (!busy) return actions.logout(account) },
+    authorizeApi: destination => { if (!busy) return actions.authorizeApi(account, destination) },
+    checkApiAccess: async () => { await apiTokenProvider.getAccessToken() },
   }
 
   return <AuthSessionContext.Provider value={session}>{children}</AuthSessionContext.Provider>

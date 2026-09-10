@@ -8,17 +8,21 @@ import AuthStartupStatus from './auth/AuthStartupStatus.jsx'
 import { AuthSessionProvider } from './auth/AuthSessionProvider.jsx'
 import './styles/global.css'
 import App from './App.jsx'
+import { ApiAccessError } from './auth/ApiAccessError.js'
 
 const root = createRoot(document.getElementById('root'))
 root.render(<AuthStartupStatus />)
 
 async function bootstrap() {
   try {
-    const { instance, tenantId, initialError, returnDestinationStore } = await initializeMsal()
+    const { configureApiAuthentication } = await import('./services/httpClient.js')
+    const { instance, tenantId, initialError, returnDestinationStore, apiTokenProvider, apiTokenRequest } = await initializeMsal()
+    configureApiAuthentication(apiTokenProvider)
     root.render(
       <StrictMode>
         <MsalProvider instance={instance}>
-          <AuthSessionProvider tenantId={tenantId} initialError={initialError} returnDestinationStore={returnDestinationStore}>
+          <AuthSessionProvider tenantId={tenantId} initialError={initialError} returnDestinationStore={returnDestinationStore}
+            apiTokenProvider={apiTokenProvider} apiTokenRequest={apiTokenRequest}>
             <BrowserRouter>
               <App />
             </BrowserRouter>
@@ -27,7 +31,7 @@ async function bootstrap() {
       </StrictMode>,
     )
   } catch (error) {
-    const message = error instanceof AuthConfigurationError
+    const message = error instanceof AuthConfigurationError || error instanceof ApiAccessError
       ? error.message
       : 'No se pudo inicializar Microsoft Entra ID. Comprueba el navegador y vuelve a cargar la página.'
     root.render(<AuthStartupStatus error={message} />)

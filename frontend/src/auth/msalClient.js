@@ -2,6 +2,7 @@ import { PublicClientApplication } from '@azure/msal-browser'
 import { createAuthConfiguration } from './authConfiguration.js'
 import { restoreSession } from './session.js'
 import { createReturnDestinationStore, restoreReturnDestination } from './returnDestination.js'
+import { createApiTokenProvider } from './apiTokenProvider.js'
 
 // Una única inicialización compartida, fuera del ciclo de renderizado de React.
 let initialization
@@ -17,7 +18,8 @@ export function initializeMsal() {
     const returnDestinationStore = createReturnDestinationStore(window.sessionStorage)
     const { error, returnTo } = await restoreSession(instance, tenantId, returnDestinationStore)
     restoreReturnDestination(window.history, returnTo)
-    return { instance, tenantId, returnDestinationStore, initialError: error, apiTokenRequest: configuration.apiTokenRequest }
+    const apiTokenProvider = createApiTokenProvider(instance, { tenantId, scopes: configuration.apiTokenRequest.scopes })
+    return { instance, tenantId, returnDestinationStore, apiTokenProvider, initialError: error, apiTokenRequest: configuration.apiTokenRequest }
   })()
   return initialization
 }

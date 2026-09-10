@@ -31,7 +31,7 @@ export async function restoreSession(instance, tenantId, returnDestinationStore)
   }
 }
 
-export function createSessionActions(instance, { onPending, onError, returnDestinationStore }) {
+export function createSessionActions(instance, { onPending, onError, returnDestinationStore, apiTokenRequest }) {
   let pending = false
 
   async function run(operation, action) {
@@ -51,6 +51,11 @@ export function createSessionActions(instance, { onPending, onError, returnDesti
   }
 
   return {
+    authorizeApi: (account, destination) => account && apiTokenRequest
+      ? run('api', () => instance.acquireTokenRedirect({
+        account, scopes: [...apiTokenRequest.scopes], state: returnDestinationStore?.save(destination),
+      }))
+      : Promise.resolve(),
     login: destination => run('login', () => instance.loginRedirect({
       scopes: ['openid', 'profile'],
       prompt: 'select_account',

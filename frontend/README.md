@@ -2,7 +2,7 @@
 
 Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout y cliente HTTP. Se está incorporando autenticación con Microsoft Entra ID en el Issue #11.
 
-Estado de este bloque: configuración MSAL, login/logout, cuenta activa y ruta privada `/mi-cuenta` con retorno al destino solicitado. Todavía no hay envío de tokens por Axios. El responsable confirmó la prueba manual de login, persistencia al recargar y logout del bloque anterior; falta confirmar el retorno real a una ruta privada. Las 40 pruebas automatizadas cubren configuración, sesión, destinos y renderizado de rutas, sin credenciales reales.
+Estado de este bloque: sesión MSAL, rutas privadas, retorno seguro y adquisición de access token conectada a Axios. El responsable confirmó login, persistencia al recargar y logout; falta confirmar el retorno real a una ruta privada y la adquisición real del token de API. Las pruebas automatizadas usan dobles de MSAL y un servidor HTTP local con credenciales ficticias, nunca tokens reales. La aceptación del token por BFF/servicios todavía no está implementada.
 
 ## Instalación y ejecución
 
@@ -63,9 +63,9 @@ Referencia: [inicialización de MSAL React](https://learn.microsoft.com/en-us/en
 4. Pulsa **Cerrar sesión** y completa la salida de Microsoft. Debe regresar al inicio con el botón de login. No basta con cerrar la pestaña para garantizar la salida de Microsoft.
 5. Si cancelas o falla el acceso, se muestra un mensaje controlado y puedes intentarlo otra vez. No se reintenta automáticamente y los botones se bloquean durante una operación.
 
-El retorno se procesa con `handleRedirectPromise` antes de montar las rutas. Este bloque usa únicamente `loginRedirect`/`logoutRedirect`, con la URI raíz ya registrada. No usa popup ni `ssoSilent`; esas modalidades de MSAL Browser 5 requieren una página de redirect bridge dedicada y su registro en Entra. La renovación silenciosa de tokens y sus alternativas se revisarán en el bloque de acceso a la API.
+El retorno se procesa con `handleRedirectPromise` antes de montar las rutas. Se usan `loginRedirect`, `logoutRedirect` y, solo tras pulsar un botón, `acquireTokenRedirect`, con la URI raíz ya registrada. No se usan popup, `ssoSilent` ni renovación mediante iframe; no hay que agregar otra URI en Entra para este bloque.
 
-Login solicita `openid` y `profile`. El permiso `access_as_user` está configurado para el siguiente bloque de adquisición de tokens; aún no hay peticiones autenticadas al backend. Mostrar una cuenta no acredita autorización ni rol ADMIN. Las verificaciones del directorio en la UI tampoco sustituyen la validación criptográfica de tokens en el backend.
+Login solicita `openid` y `profile`. Para la API se solicita exclusivamente el ámbito completo `access_as_user` configurado. Mostrar una cuenta no acredita autorización ni rol ADMIN. Las verificaciones del directorio en la UI tampoco sustituyen la validación criptográfica de tokens en el backend.
 
 ### Rutas privadas y regreso después del login
 
@@ -83,7 +83,31 @@ Prueba manual pendiente de este bloque:
 3. Recargar la página: debe seguir mostrando la vista privada con la sesión activa.
 4. Cerrar sesión y volver a abrir `/mi-cuenta`: debe pedir entrar otra vez. Inicio y una ruta inexistente deben seguir funcionando sin sesión.
 
-## Comandos disponibles
+## Acceso a la API y comandos
+
+### Acceso a la API
+
+El cliente compartido `src/services/httpClient.js` requiere sesión por defecto y adjunta `Authorization: Bearer <access token>`. No usa el ID token, ni un token de Graph. MSAL se configura antes de montar la aplicación; cada petición obtiene un token mediante `acquireTokenSilent` y las adquisiciones concurrentes comparten la misma operación. No se crea otra caché de tokens.
+
+Se usa `CacheLookupPolicy.AccessTokenAndRefreshToken`: puede reutilizar un access token o renovarlo con el refresh token, pero no recurre a un iframe si hace falta otra interacción. En ese caso devuelve `INTERACTION_REQUIRED`; **no redirige ni reenvía peticiones automáticamente**. El usuario puede pulsar **Continuar con Microsoft** y, al regresar, volver a intentar la operación. Referencia: [políticas de caché de MSAL](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/token-lifetimes).
+
+Reglas del cliente:
+
+- Destino limitado al origen y prefijo de `VITE_API_BASE_URL`. Ejemplo: una base `https://api.example.test/prod` permite `/prod/usuarios`, pero no `/production`, otro puerto u otro origen. Se rechazan rutas ambiguas y credenciales en URL. Los servicios deben usar el cliente compartido; no modificar sus interceptores, adaptador ni transformaciones para saltarse estas reglas.
+- Transporte Fetch con redirecciones bloqueadas y sin cookies. Un 301/302 se trata como fallo de conexión; configurar directamente la URL final del backend. CORS debe permitir el origen del frontend y la cabecera `Authorization`.
+- La opción `{ authRequired: false }` sirve solo para endpoints públicos acordados con el backend. No adquiere token y elimina Authorization. Sigue limitada al mismo destino; no convierte un endpoint privado en público.
+- Los errores son `ApiAccessError` con `message`, `code` y, cuando corresponde, `status`. `API_UNAUTHORIZED` (401), `API_FORBIDDEN` (403), `API_TIMEOUT` y `API_NETWORK` no provocan reintentos ni logout automático. Una cancelación conserva `axios.isCancel(error)`.
+- Las respuestas conservan `data`, `status`, `statusText` y `headers`, pero no `config` ni `request`. Los errores no exponen el cuerpo original, la petición, tokens ni causas crudas. No registrar cabeceras ni respuestas de MSAL.
+- Cada pantalla debe mostrar `error.message`; si recibe `INTERACTION_REQUIRED`, puede usar `authorizeApi(destinoInterno)` de `useAuthSession()` desde una acción explícita. Tras un 401/403 debe mostrar el error y revisar la configuración o permisos, no iniciar un bucle de login.
+
+Prueba manual pendiente, sin enviar credenciales al backend:
+
+1. Iniciar sesión y abrir **Mi cuenta**.
+2. Pulsar **Comprobar permiso de API**. Solo obtiene y descarta el token en memoria: no lo muestra, no lo copia y no llama al backend.
+3. Si Microsoft requiere interacción, pulsar **Continuar con Microsoft**, completar el acceso y volver a pulsar **Comprobar permiso de API** al regresar.
+4. Debe aparecer que Microsoft entregó un token para nuestra API. Esto **no prueba** que el BFF o los servicios lo acepten. La prueba extremo a extremo queda pendiente de implementar su validación de firma, issuer, audience, scopes y roles.
+
+### Comandos locales
 
 Ejecutar desde `frontend/`:
 
@@ -92,7 +116,7 @@ Ejecutar desde `frontend/`:
 | `npm ci` | Instalar las versiones de `package-lock.json`. |
 | `npm run dev` | Iniciar el servidor de desarrollo. |
 | `npm run lint` | Revisar el código con Oxlint. |
-| `npm test` | Probar configuración, sesión, destinos seguros y rutas con Node.js y renderizado React, sin Azure ni credenciales. |
+| `npm test` | Probar configuración, sesión, rutas, tokens simulados y cliente HTTP local, sin Azure ni credenciales reales. |
 | `npm run build` | Generar la aplicación en `dist/`. |
 | `npm run preview` | Revisar localmente el resultado de build. |
 
@@ -136,7 +160,7 @@ export async function listarRestaurantes() {
 }
 ```
 
-El cliente espera como máximo 15 segundos y solicita respuestas JSON. La pantalla debe gestionar carga, resultados vacíos y errores. Aún no adjunta tokens ni incluye interceptores de autenticación.
+El transporte HTTP espera como máximo 15 segundos y solicita respuestas JSON; la adquisición previa del token tiene los tiempos propios de MSAL. La pantalla debe gestionar carga, resultados vacíos y errores. El cliente adjunta el token de API por defecto. Para un catálogo realmente público, se puede usar `httpClient.get('/restaurantes', { authRequired: false })` después de acordarlo con el backend.
 
 Coordinar cambios en rutas, layout, estilos globales y dependencias porque son archivos compartidos. Reutilizar `httpClient` en los servicios de dominio, sin escribir otra URL base.
 
