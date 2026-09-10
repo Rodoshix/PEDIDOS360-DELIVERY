@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = "server.address=127.0.0.1")
+@Import(PostgresTestConfiguration.class)
 class CarritoApplicationTests {
 
     @Value("${local.server.port}")
@@ -33,7 +35,7 @@ class CarritoApplicationTests {
     }
 
     @Test
-    void saludPublicaArrancaSinBaseNiServiciosExternos() throws Exception {
+    void saludPublicaArrancaConPostgresSinAzureNiOtrosServicios() throws Exception {
         try (var client = HttpClient.newHttpClient()) {
             var response = client.send(request("/actuator/health").GET().build(), HttpResponse.BodyHandlers.ofString());
             assertThat(response.statusCode()).isEqualTo(200);
