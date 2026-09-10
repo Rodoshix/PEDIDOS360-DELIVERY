@@ -2,7 +2,7 @@
 
 Integrante 1, issue #19. Java 21, Spring Boot 4.1.1 y Maven Wrapper 3.9.15, como Usuarios.
 
-## Estado del tercer bloque
+## Estado del cuarto bloque
 
 Base ejecutable, salud pública y seguridad cerrada por defecto. Incluye el modelo
 Carrito/LineaCarrito, repositorio JPA, migración Flyway, PostgreSQL local y endpoints de
@@ -99,6 +99,18 @@ restaurantes y aislamiento. También comprueban salud, rechazo de credenciales
 ficticias fuera del modo local y bloqueo de diagnóstico. Las pruebas de configuración
 rechazan perfiles, interfaces o identidades inválidos. No necesitan cuentas Azure ni
 datos reales y no borran la base permanente de Compose.
+
+La suite ampliada incluye dos transacciones simultáneas contra PostgreSQL: crear el
+mismo carrito y modificar la misma versión. Comprueba un guardado y un conflicto, sin
+líneas parciales de la operación rechazada. Usa barreras y tiempos máximos, no esperas
+arbitrarias. Los fallos provocados de unicidad/configuración pueden producir avisos
+esperados en los logs; revisar el resumen final de pruebas para distinguirlos de fallos.
+
+Las pruebas del catálogo sustituyen únicamente su adaptador por respuestas controladas:
+datos inválidos, indisponibilidad, cambio de restaurante, precio actualizado y excepción
+interna. Comprueban que no se altere el carrito ni se filtren mensajes del adaptador,
+y que quitar/vaciar siga funcionando sin consultar el catálogo. Esto no prueba una
+conexión real con Productos.
 
 ## Contrato HTTP local
 
@@ -205,8 +217,8 @@ esperado. Al terminar las pruebas, volver a `LOCAL_IDENTITY_ENABLED=false` y rei
 
 1. Base del servicio y contrato local (publicado en `82d6063`).
 2. Modelo, migraciones y pruebas PostgreSQL (publicado en `d3edbcd`).
-3. Identidad/catálogo locales explícitos, operaciones y validaciones (este bloque).
-4. Pruebas ampliadas de aislamiento, concurrencia y errores (siguiente bloque).
+3. Identidad/catálogo locales explícitos, operaciones y validaciones (preparado localmente).
+4. Pruebas ampliadas de aislamiento, concurrencia y errores (este bloque).
 5. Documentación final y recorrido local reproducible.
 
 Las pantallas React, el Dockerfile de despliegue y la integración real se trabajan
