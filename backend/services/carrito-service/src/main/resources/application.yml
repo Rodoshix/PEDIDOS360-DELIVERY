@@ -1,0 +1,22 @@
+spring:
+  config:
+    import: optional:file:.env.local[.properties]
+  application:
+    name: carrito-service
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+
+server:
+  port: ${SERVER_PORT:8084}
+  address: ${SERVER_ADDRESS:127.0.0.1}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
