@@ -2,13 +2,13 @@
 
 Integrante 1, issue #19. Java 21, Spring Boot 4.1.1 y Maven Wrapper 3.9.15, como Usuarios.
 
-## Estado del segundo bloque
+## Estado del tercer bloque
 
 Base ejecutable, salud pública y seguridad cerrada por defecto. Incluye el modelo
-Carrito/LineaCarrito, repositorio JPA, migración Flyway y PostgreSQL local. **Todavía no
-implementa endpoints de negocio, identidad local ni catálogo.** Las operaciones del
-modelo se prueban directamente, no por HTTP. No conecta Azure, BFF, Usuarios, Catálogo,
-Pedidos ni AWS.
+Carrito/LineaCarrito, repositorio JPA, migración Flyway, PostgreSQL local y endpoints de
+consulta, agregado, cantidad, eliminación y vaciado. **Solo se habilitan mediante el
+modo local explícito**, con identidad y catálogo ficticios. No conecta Azure, BFF,
+Usuarios, Catálogo real, Pedidos ni AWS.
 
 ## Ejecución local
 
@@ -40,8 +40,8 @@ Invoke-RestMethod http://127.0.0.1:8084/actuator/health
 ```
 
 Debe devolver `status: UP`; ahora comprueba también PostgreSQL, **no la integración
-con otros servicios**. `/carrito` y cualquier ruta distinta de salud responden 401 sin
-sesión. Enviar Bearer, usuario o roles en cabeceras no habilita acceso. No hay login
+con otros servicios**. Sin modo local, `/carrito` responde 401. Enviar Bearer, usuario
+o roles en cabeceras no habilita acceso. No hay login
 por contraseña, cookies, CORS habilitado ni redirección a Microsoft en este servicio.
 
 Para detener la base conservando los datos: `docker compose --env-file .env.local down`.
@@ -75,15 +75,18 @@ de una base existente. No se modifica ni detiene el Compose de otros servicios.
   Se usan enteros `long` y aritmética exacta. No hay descuentos, envío ni reserva de stock.
 - Solo el agregado Carrito modifica las líneas. `revision_contenido` hace que una
   modificación exclusivamente en una línea también actualice la raíz y su `@Version`.
-  Una copia obsoleta no debe sobrescribir otra; las futuras operaciones HTTP deben
-  usar transacciones y convertir el conflicto en respuesta 409 sin reintento automático.
+  Una copia obsoleta no debe sobrescribir otra; las operaciones HTTP usan transacciones
+  y convierten el conflicto en respuesta 409 sin reintento automático. `version` informa
+  la versión guardada; no es un requisito enviado por el cliente ni una precondición
+  If-Match. Las peticiones que llegan secuencialmente se aplican en ese orden.
 - Quitar/vaciar elimina líneas huérfanas y libera el restaurante, sin borrar el carrito
   ni su identidad. Hibernate usa `ddl-auto: validate`; Flyway crea el esquema `carrito`
   y aplica `V1__crear_carritos.sql`. Tras compartir una migración, crear una nueva versión
   para cambios posteriores. Flyway tiene limpieza deshabilitada.
 - PostgreSQL refuerza unicidad, referencias, cantidades y precios. El límite de líneas
   y la coherencia del restaurante son invariantes del agregado, no validaciones de
-  integración con un catálogo real. Los accesos HTTP de negocio siguen bloqueados.
+  integración con un catálogo real. Auditoría a precisión de microsegundos para que
+  las respuestas de escritura y consulta coincidan con lo almacenado en PostgreSQL.
 
 ### Pruebas
 
@@ -91,30 +94,33 @@ de una base existente. No se modifica ni detiene el Compose de otros servicios.
 temporal mediante Testcontainers, más pruebas HTTP con puerto aleatorio de loopback.
 Cubren migración, cascadas, identidad única, búsqueda por directorio/propietario,
 límites, totales, versiones obsoletas y rollback de raíz y líneas. Las HTTP verifican
-salud, rechazo de credenciales ficticias, ausencia de cookies/redirecciones y bloqueo
-de diagnóstico. No necesitan cuentas Azure ni datos reales.
+el recorrido local completo, JSON inválido, campos prohibidos, límites, mezcla de
+restaurantes y aislamiento. También comprueban salud, rechazo de credenciales
+ficticias fuera del modo local y bloqueo de diagnóstico. Las pruebas de configuración
+rechazan perfiles, interfaces o identidades inválidos. No necesitan cuentas Azure ni
+datos reales y no borran la base permanente de Compose.
 
-## Contrato local propuesto para los siguientes bloques
+## Contrato HTTP local
 
-Este contrato es una propuesta del módulo, **no endpoints ya implementados ni un acuerdo
-de integración del equipo**. Se revisará antes de conectar otros servicios.
+Estos endpoints están implementados para pruebas locales. **No representan todavía
+un acuerdo de integración del equipo**. Se revisarán antes de conectar otros servicios.
 
-| Método | Ruta | Operación prevista |
+| Método | Ruta | Comportamiento |
 | --- | --- | --- |
-| GET | `/carrito` | Obtener el carrito de la identidad actual; vacío si no tiene líneas. |
-| POST | `/carrito/items` | Agregar `productoId` y `cantidad`; sumar si ya está en el carrito. |
-| PUT | `/carrito/items/{productoId}` | Reemplazar la cantidad de una línea existente. |
-| DELETE | `/carrito/items/{productoId}` | Quitar una línea existente. |
-| DELETE | `/carrito` | Vaciar el carrito propio. |
+| GET | `/carrito` | 200; carrito de la identidad actual. Si no existe, devuelve vacío sin crear un registro. |
+| POST | `/carrito/items` | 200; agregar `productoId` y `cantidad`, o sumar a la línea existente. Devuelve el carrito. |
+| PUT | `/carrito/items/{productoId}` | 200; reemplazar `cantidad` de una línea existente. Devuelve el carrito. |
+| DELETE | `/carrito/items/{productoId}` | 204; quitar una línea existente. No consulta catálogo para permitir retirar productos dados de baja. |
+| DELETE | `/carrito` | 204; vaciar el carrito propio. Repetir o no tener carrito no es un error. |
 
-Reglas previstas:
+Reglas:
 
 - Un carrito por propietario y directorio. La identidad se resuelve en servidor, nunca
   desde el cuerpo ni cabeceras libres. No se crean claves foráneas a bases ajenas.
 - El cliente solo indica producto y cantidad; no puede fijar propietario, roles,
   restaurante, precio, subtotal ni total. Se rechazan campos desconocidos.
-- Cantidad positiva; quitar se hace con DELETE, no enviando cero. Los futuros DTO
-  deben respetar los límites locales del modelo descritos arriba.
+- Cantidad positiva; quitar se hace con DELETE, no enviando cero. Los DTO respetan
+  los límites locales del modelo descritos arriba; no se truncan cantidades decimales.
 - Catálogo mediante un componente sustituible del servidor. Datos ficticios solo en
   pruebas o modo local explícito y loopback; nunca un precio fijo como fallback en
   producción. Productos inexistentes o no disponibles no modifican el carrito.
@@ -127,16 +133,80 @@ Reglas previstas:
   importes del carrito de prueba, no una cotización definitiva ni una reserva de stock.
 - Persistencia PostgreSQL, esquema `carrito`, migraciones Flyway, auditoría UTC y
   control de concurrencia. Las operaciones deben ser atómicas.
-- Errores previstos: 400 por entrada inválida, 401 sin identidad, 404 por producto o
-  línea inexistentes y 409 por conflictos de negocio o concurrencia. Precisar los DTO
-  de respuesta junto a la implementación, usando errores controlados.
+- Errores: 400 por entrada inválida, 401 sin identidad, 403 por acceso prohibido,
+  404 por producto o línea inexistentes, 409 por producto no disponible, mezcla de
+  restaurantes o concurrencia; 415 por cuerpo que no sea JSON. Si no existe adaptador
+  de catálogo, falla su consulta o devuelve datos inválidos, la capa de servicio falla
+  con 503; nunca sustituye datos reales por un precio ficticio automáticamente. Un
+  producto no encontrado conserva el 404, pero no se propaga el mensaje interno del
+  adaptador. No hay reintentos ni se adjunta la excepción original a la respuesta.
+
+POST admite solo `productoId` y `cantidad`; PUT, solo `cantidad`. No hay ruta para
+consultar un carrito ajeno por ID, ni siquiera para ADMIN. La respuesta contiene
+`id`, `restauranteId`, `moneda`, `total`, `version`, `actualizadoEn` e `items`.
+Cada ítem contiene `productoId`, `nombre`, `precioUnitario`, `cantidad` y `subtotal`;
+se ordenan por producto. Un carrito aún no creado tiene ID, restaurante, versión y
+fecha nulos, total cero e ítems vacíos. Un carrito vaciado conserva su ID y versión.
+No se exponen UUID de identidad, tokens, SQL ni entidades JPA. Los errores controlados
+usan `application/problem+json`. La creación simultánea de dos carritos del mismo
+propietario devuelve 409 a la operación en conflicto, sin reintentar el POST.
+
+## Probar operaciones sin integración
+
+Con PostgreSQL local iniciado, completar estas variables de `.env.example` en
+`.env.local` y cambiar `LOCAL_IDENTITY_ENABLED=true`:
+
+| Variable | Uso |
+| --- | --- |
+| `LOCAL_IDENTITY_ENABLED` | `false` por defecto; habilita identidad y catálogo ficticios juntos. |
+| `LOCAL_TENANT_ID` | UUID ficticio del directorio, configurado en servidor. |
+| `LOCAL_OBJECT_ID` | UUID ficticio del usuario, configurado en servidor. |
+| `LOCAL_ROLES` | `CLIENTE` por defecto; admite CLIENTE/ADMIN. Ambos solo acceden a su propio carrito. |
+
+Arrancar desde la carpeta del servicio (detener antes cualquier instancia en 8084):
+
+```powershell
+.\mvnw.cmd spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+La aplicación rechaza el arranque con modo local habilitado si falta la identidad,
+hay roles desconocidos, otro perfil además de `local` o una escucha distinta de
+`127.0.0.1`/`::1`. No habilitar este modo para despliegue ni exponerlo mediante un
+proxy o túnel. Cualquier proceso local puede operar como la identidad configurada:
+**esto no es autenticación real**. No se aceptan identidades/roles del cuerpo o de
+cabeceras HTTP; cambiar de identidad exige reiniciar el servicio. Sin habilitación,
+ni la identidad ni el catálogo ficticio se cargan.
+
+Productos disponibles exclusivamente en este modo, con precios ficticios CLP:
+
+| Producto | Restaurante | Precio | Disponible |
+| --- | --- | --- | --- |
+| 101, hamburguesa de prueba | 20 | 6990 | Sí |
+| 102, bebida de prueba | 20 | 1500 | Sí |
+| 103, producto no disponible | 20 | 3000 | No |
+| 201, pizza de prueba | 21 | 8990 | Sí |
+
+En otra terminal PowerShell:
+
+```powershell
+$carritoUrl = 'http://127.0.0.1:8084/carrito'
+Invoke-RestMethod $carritoUrl
+Invoke-RestMethod -Method Post -Uri "$carritoUrl/items" -ContentType 'application/json' -Body '{"productoId":101,"cantidad":2}'
+Invoke-RestMethod -Method Put -Uri "$carritoUrl/items/101" -ContentType 'application/json' -Body '{"cantidad":1}'
+Invoke-RestMethod -Method Delete -Uri "$carritoUrl/items/101"
+Invoke-RestMethod -Method Delete -Uri $carritoUrl
+```
+
+Repetir POST suma cantidades. No hace falta iniciar sesión en React ni enviar un token
+para este recorrido local aislado. Si falta el perfil/flag, un 401 es el comportamiento
+esperado. Al terminar las pruebas, volver a `LOCAL_IDENTITY_ENABLED=false` y reiniciar.
 
 ## Entregas de esta rama
 
 1. Base del servicio y contrato local (publicado en `82d6063`).
-2. Modelo, migraciones y pruebas PostgreSQL (este bloque).
-3. Identidad/catálogo locales explícitos, operaciones y validaciones.
-4. Pruebas ampliadas de aislamiento, concurrencia y errores.
+2. Modelo, migraciones y pruebas PostgreSQL (publicado en `d3edbcd`).
+3. Identidad/catálogo locales explícitos, operaciones y validaciones (este bloque).
+4. Pruebas ampliadas de aislamiento, concurrencia y errores (siguiente bloque).
 5. Documentación final y recorrido local reproducible.
 
 Las pantallas React, el Dockerfile de despliegue y la integración real se trabajan

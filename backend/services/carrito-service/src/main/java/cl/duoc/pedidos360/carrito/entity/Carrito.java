@@ -143,13 +143,13 @@ public class Carrito {
 
     @PrePersist
     private void alCrear() {
-        creadoEn = Instant.now();
+        creadoEn = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.MICROS);
         actualizadoEn = creadoEn;
     }
 
     @PreUpdate
     private void alActualizar() {
-        actualizadoEn = Instant.now();
+        actualizadoEn = Instant.now().truncatedTo(java.time.temporal.ChronoUnit.MICROS);
     }
 
     public Long getId() { return id; }
