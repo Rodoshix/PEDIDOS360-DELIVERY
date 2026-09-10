@@ -2,7 +2,7 @@
 
 Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout y cliente HTTP. Se está incorporando autenticación con Microsoft Entra ID en el Issue #11.
 
-Estado de este bloque: sesión MSAL, rutas privadas, retorno seguro y adquisición de access token conectada a Axios. El responsable confirmó login, persistencia al recargar y logout; falta confirmar el retorno real a una ruta privada y la adquisición real del token de API. Las pruebas automatizadas usan dobles de MSAL y un servidor HTTP local con credenciales ficticias, nunca tokens reales. La aceptación del token por BFF/servicios todavía no está implementada.
+Estado de este bloque: sesión MSAL, rutas privadas, retorno seguro y adquisición de access token conectada a Axios. El responsable confirmó login, persistencia al recargar y logout durante las pruebas iniciales, y reportó el funcionamiento después de migrar a su propio directorio el 10 de septiembre de 2026. Falta confirmar específicamente el retorno real a una ruta privada conservando consulta y fragmento. Las pruebas automatizadas usan dobles de MSAL y un servidor HTTP local con credenciales ficticias, nunca tokens reales. La aceptación del token por BFF/servicios todavía no está implementada.
 
 ## Instalación y ejecución
 
@@ -29,7 +29,7 @@ Editar `frontend/.env.local`:
 ```dotenv
 VITE_API_BASE_URL=http://localhost:8080
 VITE_ENTRA_CLIENT_ID=<id-de-aplicacion-de-pedidos360-frontend>
-VITE_ENTRA_TENANT_ID=<id-del-directorio-Tenant-CloudNative>
+VITE_ENTRA_TENANT_ID=<id-del-directorio-del-equipo>
 VITE_ENTRA_REDIRECT_URI=http://localhost:5173
 VITE_ENTRA_API_SCOPE=api://<id-de-aplicacion-de-pedidos360-api>/access_as_user
 ```
@@ -51,7 +51,9 @@ Las variables `VITE_*` se incorporan al código visible del navegador: no coloca
 - El retorno después del logout usará la misma URI. La caché de MSAL se configura en `sessionStorage`; no registrar tokens ni datos personales en consola.
 - Si una variable falta o es inválida, se muestra una pantalla explicativa y no se monta la aplicación con una identidad simulada. La validación de formato no comprueba por sí sola que los registros existan ni que el consentimiento sea correcto.
 
-En el portal se configuraron frontend SPA, API con `access_as_user`, consentimiento concedido y rol CLIENTE asignado a la cuenta de prueba. Los roles CLIENTE/ADMIN pertenecen a la API; no se debe asumir que aparecen en el ID token del frontend. Login y logout reales fueron confirmados por el responsable; la validación de tokens en BFF/servicios sigue pendiente.
+El directorio de desarrollo actual es **Rodrigo Saez**. El 10 de septiembre de 2026 se reemplazaron localmente los IDs del directorio prestado por los de este directorio; no se modificaron sus registros anteriores. Al configurar otra máquina, obtener los IDs de los registros actuales y completar `.env.local`, sin reutilizar los del compañero.
+
+En el portal se configuraron frontend SPA, API con `access_as_user`, consentimiento concedido y rol CLIENTE asignado a la cuenta de Rodrigo. Los roles CLIENTE/ADMIN están habilitados para usuarios o grupos y pertenecen a la API; no se debe asumir que aparecen en el ID token del frontend. ADMIN no está asignado a la cuenta de prueba. La validación de tokens en BFF/servicios sigue pendiente.
 
 Referencia: [inicialización de MSAL React](https://learn.microsoft.com/en-us/entra/msal/javascript/react/getting-started).
 
@@ -100,7 +102,7 @@ Reglas del cliente:
 - Las respuestas conservan `data`, `status`, `statusText` y `headers`, pero no `config` ni `request`. Los errores no exponen el cuerpo original, la petición, tokens ni causas crudas. No registrar cabeceras ni respuestas de MSAL.
 - Cada pantalla debe mostrar `error.message`; si recibe `INTERACTION_REQUIRED`, puede usar `authorizeApi(destinoInterno)` de `useAuthSession()` desde una acción explícita. Tras un 401/403 debe mostrar el error y revisar la configuración o permisos, no iniciar un bucle de login.
 
-Prueba manual pendiente, sin enviar credenciales al backend:
+Prueba manual del permiso de API, sin enviar credenciales al backend (el responsable reportó funcionamiento después de la migración; repetir al cambiar directorio o permisos):
 
 1. Iniciar sesión y abrir **Mi cuenta**.
 2. Pulsar **Comprobar permiso de API**. Solo obtiene y descarta el token en memoria: no lo muestra, no lo copia y no llama al backend.
@@ -174,6 +176,10 @@ npm run preview
 ```
 
 En el navegador, revisar `/`, una dirección inexistente para ver la página 404 y el enlace de vuelta al inicio. Comprobar la presentación en celular y la navegación por teclado. Lint y build no comprueban el comportamiento visual ni la conexión con un backend real.
+
+La suite automatizada cubre configuración, selección de cuenta, login/logout, retorno seguro, rutas privadas y adquisición de tokens. También conecta la configuración y el proveedor de tokens reales del proyecto a Axios contra un servidor HTTP local: comprueba el Bearer ficticio, el bloqueo antes de la red cuando falta consentimiento y los errores 401/403 sin reintentos. Microsoft está simulado en esas pruebas; no acreditan consentimiento real, firma del token ni autorización en el BFF.
+
+Antes de cerrar el Issue #11, confirmar la prueba manual de `/mi-cuenta?tab=datos#contacto` descrita arriba. La futura integración de backend deberá verificar firma, issuer, audience, scopes y roles con un token real, sin registrarlo ni copiarlo al issue.
 
 El alojamiento final debe devolver `index.html` para rutas del frontend que no correspondan a archivos, permitiendo recargas y enlaces directos con BrowserRouter. Las rutas de API deben seguir llegando al backend.
 

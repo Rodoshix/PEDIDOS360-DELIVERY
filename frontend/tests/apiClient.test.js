@@ -4,6 +4,8 @@ import { createServer } from 'node:http'
 import axios from 'axios'
 import { createApiClient } from '../src/services/createApiClient.js'
 import { ApiAccessError } from '../src/auth/ApiAccessError.js'
+import { createAuthConfiguration } from '../src/auth/authConfiguration.js'
+import { createApiTokenProvider } from '../src/auth/apiTokenProvider.js'
 
 let server
 let baseURL
@@ -28,6 +30,75 @@ after(async () => { await new Promise(resolve => server.close(resolve)) })
 function client(options = {}) {
   return createApiClient({ baseURL, origin: 'http://localhost:5173', getAccessToken: async () => 'FAKE_TEST_ACCESS', ...options })
 }
+
+// Configuración y proveedor reales; solo Microsoft y las credenciales son ficticios.
+function integratedClient(t, acquire) {
+  const tenantId = '22222222-2222-2222-2222-222222222222'
+  const scope = 'api://33333333-3333-3333-3333-333333333333/access_as_user'
+  const { apiTokenRequest } = createAuthConfiguration({
+    VITE_ENTRA_CLIENT_ID: '11111111-1111-1111-1111-111111111111',
+    VITE_ENTRA_TENANT_ID: tenantId,
+    VITE_ENTRA_REDIRECT_URI: 'http://localhost:5173',
+    VITE_ENTRA_API_SCOPE: scope,
+  }, { origin: 'http://localhost:5173' })
+  const account = { tenantId, homeAccountId: 'home', localAccountId: 'local' }
+  const requests = []
+  const instance = {
+    getActiveAccount: () => account,
+    addEventCallback: () => 'integration-test',
+    removeEventCallback: () => {},
+    acquireTokenSilent: async request => {
+      requests.push(request)
+      return acquire ? acquire() : {
+        account, accessToken: 'FAKE_INTEGRATED_ACCESS', idToken: 'FAKE_INTEGRATED_ID',
+        tokenType: 'Bearer', scopes: ['access_as_user'], expiresOn: new Date(Date.now() + 60_000),
+      }
+    },
+    acquireTokenRedirect: () => assert.fail('Una petición HTTP no debe abrir Microsoft'),
+    loginRedirect: () => assert.fail('Una petición HTTP no debe iniciar login'),
+    logoutRedirect: () => assert.fail('Un error HTTP no debe cerrar sesión'),
+  }
+  const provider = createApiTokenProvider(instance, { tenantId, scopes: apiTokenRequest.scopes })
+  t.after(() => provider.dispose())
+  return { api: client({ getAccessToken: () => provider.getAccessToken() }), requests, scope }
+}
+
+test('configuración, proveedor MSAL y Axios entregan únicamente el access token a la API local', async t => {
+  const { api, requests, scope } = integratedClient(t)
+  const previous = received.length
+  const response = await api.get('/integrated')
+  assert.equal(requests.length, 1)
+  assert.deepEqual(requests[0].scopes, [scope])
+  assert.equal(received.length, previous + 1)
+  assert.deepEqual(received.at(-1), { url: '/api/integrated', authorization: 'Bearer FAKE_INTEGRATED_ACCESS' })
+  assert.equal(response.status, 200)
+  assert.doesNotMatch(JSON.stringify(response), /FAKE_INTEGRATED_ACCESS|FAKE_INTEGRATED_ID/)
+})
+
+test('consentimiento pendiente en MSAL llega como error controlado de Axios sin tráfico HTTP', async t => {
+  const { api, requests } = integratedClient(t, async () => {
+    throw { errorCode: 'consent_required', message: 'FAKE_PRIVATE_CONTENT' }
+  })
+  const previous = received.length
+  await assert.rejects(api.get('/integrated'), error => {
+    assert.equal(error.code, 'INTERACTION_REQUIRED')
+    assert.doesNotMatch(JSON.stringify(error) + error.message, /FAKE_PRIVATE_CONTENT/)
+    return true
+  })
+  assert.equal(requests.length, 1)
+  assert.equal(received.length, previous)
+})
+
+test('401 y 403 con el proveedor conectado no repiten adquisición ni petición', async t => {
+  for (const [path, code] of [['/unauthorized', 'API_UNAUTHORIZED'], ['/forbidden', 'API_FORBIDDEN']]) {
+    const { api, requests } = integratedClient(t)
+    const previous = received.length
+    await assert.rejects(api.get(path), { code })
+    assert.equal(requests.length, 1)
+    assert.equal(received.length, previous + 1)
+    assert.equal(received.at(-1).authorization, 'Bearer FAKE_INTEGRATED_ACCESS')
+  }
+})
 
 test('envía Bearer a la API y no expone credenciales en la respuesta Axios', async () => {
   const response = await client().get('/users?limit=1')
