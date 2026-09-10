@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router'
 import { ROUTE_PATHS } from '../routes/routePaths.js'
+import SessionControls, { SessionError } from '../auth/SessionControls.jsx'
 
 function MainLayout() {
   return (
@@ -27,13 +28,20 @@ function MainLayout() {
             >
               Inicio
             </NavLink>
+            <NavLink
+              className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}
+              to={ROUTE_PATHS.account}
+            >
+              Mi cuenta
+            </NavLink>
           </nav>
 
-          <span className="environment-badge">Base frontend</span>
+          <SessionControls />
         </div>
       </header>
 
       <main id="contenido-principal" className="site-main">
+        <SessionError />
         <Outlet />
       </main>
 
