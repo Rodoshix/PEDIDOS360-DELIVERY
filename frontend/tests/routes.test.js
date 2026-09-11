@@ -11,6 +11,7 @@ let AuthSessionContext
 let ProfilePanel
 let ProfileDetails
 let ProfileForm
+let ProfilePending
 
 before(async () => {
   // Transformar JSX con la configuración real, sin abrir un puerto ni conectar a Azure.
@@ -25,6 +26,7 @@ before(async () => {
   ProfilePanel = (await server.ssrLoadModule('/src/features/usuarios/ProfilePanel.jsx')).default
   ProfileDetails = (await server.ssrLoadModule('/src/features/usuarios/ProfileDetails.jsx')).default
   ProfileForm = (await server.ssrLoadModule('/src/features/usuarios/ProfileForm.jsx')).default
+  ProfilePending = (await server.ssrLoadModule('/src/features/usuarios/ProfilePending.jsx')).default
 })
 
 after(async () => { await server?.close() })
@@ -85,6 +87,13 @@ test('sin modo demo no ofrece ejemplos ni afirma que falta un perfil en Usuarios
   assert.doesNotMatch(html, /<button|alex@example.test|No tienes perfil/)
 })
 
+test('el panel de producción solo informa integración pendiente, sin acciones simuladas', () => {
+  const html = renderToStaticMarkup(createElement(ProfilePending))
+  assert.match(html, /Perfil aún no consultado/)
+  assert.match(html, /No sabemos si ya tienes un perfil registrado/)
+  assert.doesNotMatch(html, /<button|<input|alex@example.test|Crear perfil|No tienes perfil/)
+})
+
 test('el modo demo empieza vacío y exige una acción explícita', () => {
   const html = renderToStaticMarkup(createElement(ProfilePanel, { demoEnabled: true }))
   assert.match(html, /Ver perfil de ejemplo/)
@@ -139,4 +148,13 @@ test('la edición precarga solo los campos del perfil, sin aplicar durante el re
   assert.match(html, /value="alex@example.test"/)
   assert.match(html, /disabled="">Aplicar al ejemplo/)
   assert.doesNotMatch(html, /ID-NO-EDITABLE|ROL-NO-EDITABLE/)
+})
+
+test('durante el guardado marca el formulario ocupado y bloquea campos, aplicar y cancelar', () => {
+  const html = renderToStaticMarkup(createElement(ProfileForm, { saving: true }))
+  assert.match(html, /aria-busy="true"/)
+  assert.match(html, /<fieldset disabled=""/)
+  assert.match(html, /disabled="">Guardando ejemplo…/)
+  assert.match(html, /disabled="">Cancelar/)
+  assert.doesNotMatch(html, /Guardado simulado completado/)
 })

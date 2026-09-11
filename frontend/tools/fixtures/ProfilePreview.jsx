@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { MemoryRouter } from 'react-router'
 import { AuthSessionContext } from '../../src/auth/useAuthSession.js'
@@ -32,4 +32,4 @@ export default function ProfilePreview() {
   )
 }
 
-createRoot(document.getElementById('root')).render(<ProfilePreview />)
+createRoot(document.getElementById('root')).render(<StrictMode><ProfilePreview /></StrictMode>)

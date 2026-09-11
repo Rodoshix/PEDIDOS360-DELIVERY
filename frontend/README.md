@@ -189,8 +189,9 @@ La base se integró mediante el PR #4 (Issue #2) y la autenticación mediante el
 ## Perfil / Mi cuenta — Issue #21
 
 Rama `codex/i1-21-perfil-frontend`, iniciada desde `develop` con Carrito backend integrado.
-Bloque 1 publicado en `f3f5826`: base de consulta visual. El bloque 2 añade formulario
-de prueba en memoria; **todavía no crea, edita ni consulta usuarios reales**.
+Bloques 1 y 2 publicados en `f3f5826` y `11ec2aa`. Bloques 3 y 4 completados y verificados:
+flujo asíncrono de prueba y revisión final. El seguimiento de publicación/PR está en el issue #21.
+**Todavía no crea, edita ni consulta usuarios reales**.
 
 - **Tu acceso** muestra nombre e identificador de inicio de sesión entregados por MSAL.
   No se deducen apellido, email de contacto, ID de usuario ni roles a partir de esos datos.
@@ -205,7 +206,7 @@ de prueba en memoria; **todavía no crea, edita ni consulta usuarios reales**.
 - El diagnóstico de permiso API se conserva, separado y bajo un desplegable. Solo esa
   acción explícita puede solicitar un token real en la aplicación; no registra un perfil.
 
-### Contrato de referencia y próximos bloques
+### Contrato de referencia y límites
 
 Referencia local: `backend/services/usuarios-service` (Issue #6).
 
@@ -220,9 +221,9 @@ UsuarioResponse añade `id`, `activo`, `creadoEn` y `actualizadoEn`. Identidad, 
 auditoría e ID no son campos editables. Cambiar el email de contacto no cambia la cuenta
 Microsoft. No hay dirección de entrega ni cambio de contraseña en este contrato.
 
-Implementado localmente: formulario de creación/edición y cancelación con validación.
-Pendiente en esta rama: adaptador de prueba para carga, ausencia, errores y confirmación
-asíncrona; pruebas ampliadas y revisión final.
+Implementado localmente: formulario de creación/edición y cancelación con validación,
+adaptador de prueba para carga, ausencia, errores y confirmación asíncrona y pruebas
+ampliadas. Revisión final completada; revisión e integración del PR se siguen en el issue #21.
 La conexión mediante el cliente HTTP compartido/BFF y JWT real se hará en la integración,
 sin conectar esta pantalla directamente al modo de identidad simulada de Usuarios.
 
@@ -289,7 +290,90 @@ los pasos anteriores en navegador, foco de errores/cancelación, teclado y formu
 390 px sin desbordamiento horizontal. El formulario y su payload tienen pruebas nuevas;
 no se probó guardado remoto ni se solicitó un token para estas acciones.
 
-El formulario se carga bajo demanda con `React.lazy` y un estado de espera. El build
-genera un archivo separado de unos 5 kB; el principal queda en unos 500,53 kB minificados
-y Vite aún avisa que supera 500 kB. No es un fallo de compilación ni se elevó el umbral
+El formulario se carga bajo demanda con `React.lazy` y un estado de espera. En el bloque 2,
+el archivo separado era de unos 5 kB y el principal de unos 500,53 kB minificados.
+Vite avisa cuando supera 500 kB. No es un fallo de compilación ni se elevó el umbral
 para ocultarlo; queda como observación para la optimización final del frontend.
+
+### Bloque 3 — Adaptador de prueba y estados asíncronos
+
+Bloque 2 publicado en `11ec2aa`. Este bloque sustituye la aplicación inmediata al ejemplo
+por operaciones asíncronas simuladas, con unos 600 ms de espera. No usa HTTP, MSAL ni
+almacenamiento persistente para consultar/guardar el perfil. En la app normal la sesión
+Microsoft sigue siendo real; solo los datos de perfil son ficticios. El banco visual
+además simula la sesión, como se indicó antes.
+
+**Ver perfil de ejemplo** consulta el escenario con perfil; **Probar creación de perfil**
+parte de una consulta simulada sin perfil. El selector **Escenario de prueba** y el botón
+**Cargar escenario** permiten probar:
+
+| Escenario | Resultado y recorrido |
+| --- | --- |
+| Perfil existente | Consulta con espera, perfil activo y edición. |
+| Sin perfil | Consulta exitosa que devuelve null; permite crear un perfil de prueba. |
+| Consulta falla una vez | Muestra error, sin inventar un perfil; Reintentar consulta funciona. |
+| Guardado falla una vez | Carga el perfil; primer guardado falla sin alterar el ejemplo. Conserva el borrador; repetir Aplicar al ejemplo funciona. |
+| Conflicto al guardar una vez | Primer guardado muestra conflicto y conserva perfil/borrador. Permite revisar y reintentar, o cancelar/descartar. |
+| Acceso denegado | Error explícito; no ofrece crear un perfil como si faltara el registro. |
+| Perfil inactivo | Consulta de solo lectura; no permite editar ni guardar. |
+
+Los fallos de una sola vez se reinician al pulsar **Cargar escenario**, que crea una nueva
+instancia aislada. **Reintentar consulta** reutiliza la instancia actual. Cambiar de
+escenario no conserva sus datos previos; es un control de prueba, no una operación real.
+Los escenarios no se pueden cambiar durante la edición ni mientras hay una operación.
+
+- Cada pantalla/cuenta tiene controlador y adaptador propios. No hay repositorio global
+  de perfiles ni almacenamiento en localStorage/sessionStorage.
+- La consulta distingue `idle`, `loading`, `ready`, `empty` y `error`; guardar utiliza
+  `saving`. Una excepción nunca se interpreta como ausencia ni carga un perfil de respaldo.
+- Mientras se guarda, campos/aplicar/cancelar están bloqueados y el formulario informa
+  `aria-busy`. Un bloqueo inmediato en el controlador evita duplicados antes del render.
+- Solo se muestra éxito después de recibir y validar la respuesta. Al fallar, se enfoca
+  el error, se conserva el borrador y se habilita el reintento **manual**, sin reenvíos automáticos.
+- Las respuestas se proyectan a campos conocidos de UsuarioResponse. Datos inválidos
+  no reemplazan el perfil visible; errores desconocidos o manipulados no exponen mensajes,
+  causas, tokens ni cuerpos originales del adaptador.
+- Al salir/cambiar cuenta se cancela mediante AbortSignal y se invalida la operación.
+  Incluso si un adaptador ignora la cancelación, su resultado tardío no actualiza la pantalla.
+  El adaptador local respeta la señal antes de escribir. Esto **no garantiza rollback de
+  peticiones HTTP reales**: ese comportamiento deberá acordarse al integrar.
+
+Interfaz preparada para un adaptador futuro: `read({ signal })` devuelve UsuarioResponse
+o null; `save(payload, { signal })` recibe solo PerfilRequest y devuelve UsuarioResponse.
+No se han definido aquí las rutas del BFF, el mapeo de errores HTTP ni garantías de
+idempotencia/concurrencia del backend. Los errores/conflictos actuales son simulaciones.
+
+Verificado este bloque: **100 pruebas** aprobadas, lint correcto y build completado.
+Incluye respuestas tardías, cancelación, aislamiento entre instancias, doble envío,
+proyección del payload/respuesta, reintento manual y errores seguros. En navegador se
+comprobaron los escenarios, bloqueo de guardado, conservación de borrador, cambio de
+cuenta durante un guardado y conflicto/descarte en móvil, sin errores de consola.
+En este bloque el build tenía aviso de tamaño: principal de unos 507,77 kB minificados
+y formulario separado de unos 4,35 kB. Resuelto en la revisión siguiente.
+
+### Bloque 4 — Revisión final antes de publicar
+
+- `AccountPage` carga el panel simulado bajo demanda **solo en desarrollo**. En producción
+  utiliza `ProfilePending`: no importa controlador, adaptador, datos ficticios ni formulario.
+  El banco visual también queda fuera del build; no existe un login ficticio en producción.
+- Una prueba construye en memoria el bundle de producción y comprueba los módulos incluidos,
+  el estado pendiente y la ausencia de controles/datos simulados. El build normal terminó
+  sin aviso de tamaño: principal **498,08 kB** minificados (142,57 kB gzip), frente a 507,77 kB.
+  No se modificó el umbral de advertencia. El margen sigue siendo pequeño; volver a medir
+  al incorporar módulos o la integración real.
+- `clearError` solo limpia fallos de guardado: nunca convierte una consulta fallida en
+  ausencia ni habilita crear tras acceso denegado. Los códigos de error desconocidos,
+  incluso propiedades heredadas como `toString`, se sustituyen por un mensaje conocido.
+- El banco visual usa `StrictMode`, igual que la aplicación. Se repitieron creación por
+  teclado, validación y enlace al campo, normalización, foco al finalizar, cancelación con
+  seguir/descartar y cambio de identidad con borrador. Logout/login simulado reinicia el
+  perfil y mantiene la ruta protegida mientras no hay sesión.
+- En móvil de 390 px se comprobó fallo de guardado con borrador conservado, aviso enfocado
+  y visible y reintento manual. Sin desbordamiento horizontal ni errores/avisos de consola.
+
+Resultado: **104 pruebas** aprobadas, lint y build correctos, `git diff --check` correcto.
+Esto acredita el flujo frontend **simulado**, no integración con Usuarios, BFF o JWT real.
+Las verificaciones de Microsoft reales anteriores no se repitieron en este bloque.
+
+El cierre del issue requiere revisar e integrar el PR hacia `develop`. La publicación de
+commits y apertura del PR no equivalen a integración completada.
