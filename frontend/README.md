@@ -1,5 +1,81 @@
 # Pedidos360 Delivery — Frontend
 
+## Docker local — Issue #25, bloque 1
+
+El contenedor compila React con Node 22 y sirve únicamente `dist` mediante Nginx sin
+root (UID/GID 101, puerto interno 8080). Ambas bases están fijadas por digest en
+`Dockerfile`: actualizar los digests explícitamente al mantener las imágenes y repetir
+las pruebas; fijarlos no garantiza ausencia de vulnerabilidades futuras.
+
+Usar **frontend/** como contexto. `.dockerignore` permite solo los archivos necesarios,
+excluye `.env*`, claves, dependencias y artefactos locales. La etapa de build ejecuta
+`npm ci`, validación pública de Entra, lint con las reglas del proyecto, pruebas y build.
+Node, código fuente y herramientas de prueba no se copian a la imagen final.
+
+### Construir y comprobar sin Microsoft
+
+Desde la raíz del repositorio, en PowerShell; los identificadores siguientes son
+**ficticios** y solo sirven para probar el arranque y las rutas. No pulsar login con ellos.
+
+```powershell
+docker build --tag pedidos360-frontend:i1-25-smoke `
+  --build-arg VITE_API_BASE_URL=http://localhost:8080 `
+  --build-arg VITE_ENTRA_CLIENT_ID=11111111-1111-1111-1111-111111111111 `
+  --build-arg VITE_ENTRA_TENANT_ID=22222222-2222-2222-2222-222222222222 `
+  --build-arg VITE_ENTRA_REDIRECT_URI=http://localhost:5180 `
+  --build-arg VITE_ENTRA_API_SCOPE=api://33333333-3333-3333-3333-333333333333/access_as_user frontend
+if ($LASTEXITCODE -ne 0) { throw 'Falló el build' }
+docker run --detach --rm --name pedidos360-i1-25-frontend-smoke `
+  --read-only --tmpfs /tmp:rw,noexec,nosuid,size=16m --cap-drop ALL `
+  --security-opt no-new-privileges:true --publish 127.0.0.1:5180:8080 `
+  pedidos360-frontend:i1-25-smoke
+```
+
+No usar un nombre/puerto ocupado ni detener otro proceso para liberarlo. El contenedor
+es independiente y no monta volúmenes. Esperar a que el estado sea `healthy`:
+
+```powershell
+docker inspect pedidos360-i1-25-frontend-smoke --format '{{.State.Health.Status}}'
+node frontend/tools/docker-smoke.mjs http://127.0.0.1:5180
+# Equivalente desde frontend: npm run test:docker -- http://127.0.0.1:5180
+```
+
+Abrir `http://localhost:5180` en el navegador (no 127.0.0.1, por la validación de origen
+de Entra). `/mi-cuenta` y `/carrito` recargan correctamente y piden sesión; no aparecen
+ejemplos de desarrollo. Nginx devuelve el HTML de React para rutas de la SPA, no concede
+acceso a servicios. `/api`, `/api/*`, archivos ocultos y assets inexistentes responden 404.
+`/healthz` verifica Nginx, **no** Entra ni BFF. `index.html` no se almacena en caché;
+los assets con hash se almacenan por un año.
+
+Para terminar, detener únicamente el contenedor de prueba creado arriba:
+
+```powershell
+docker stop pedidos360-i1-25-frontend-smoke
+```
+
+`--rm` elimina ese contenedor efímero al detenerlo; la imagen queda disponible para repetir
+la prueba. No se borran bases de datos ni volúmenes.
+
+### Usar la configuración real después
+
+Sustituir los cuatro argumentos Entra por la configuración pública propia y configurar
+el origen del BFF cuando exista. La URI SPA debe coincidir con el origen usado en el
+navegador y estar registrada en Entra. Para seguir usando la URI actual de puerto 5173,
+compilar con esa URI y publicar `127.0.0.1:5173:8080` **solo cuando ese puerto esté libre**.
+Esta tarea no modifica registros de Azure ni detiene Vite.
+
+Los argumentos VITE son **de compilación** y visibles en JavaScript: nunca usar client
+secrets, contraseñas o tokens. No se copia ni se carga `.env.local`. Cambiar `docker run -e`
+no cambia un bundle ya compilado; reconstruir la imagen. Un build sin configuración Entra
+válida falla antes de compilar. El formato válido no acredita que los registros existan.
+Referencias: [variables de build de Docker](https://docs.docker.com/build/building/variables/)
+y [Nginx sin privilegios](https://github.com/nginx/docker-nginx-unprivileged).
+
+Resultado del bloque: build y **158 pruebas** dentro de Docker; ejecución read-only con
+UID 101 y health saludable; smoke HTTP y recarga de rutas privadas sin sesión comprobados.
+No prueba login real ni integración de servicios. Bloque 1 completado para publicación;
+siguiente bloque: Dockerfiles de Usuarios y Carrito. Compose conjunto vendrá después.
+
 Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout, cliente HTTP y autenticación con Microsoft Entra ID (Issue #11, PR #18 integrado). El Issue #21 incorpora Perfil / Mi cuenta por bloques, sin integración real de servicios todavía.
 
 Autenticación implementada: sesión MSAL, rutas privadas, retorno seguro y adquisición de access token conectada a Axios. El responsable confirmó el recorrido antes del cierre del Issue #11, después de migrar a su propio directorio el 10 de septiembre de 2026. Las pruebas automatizadas usan dobles de MSAL y un servidor HTTP local con credenciales ficticias, nunca tokens reales. La aceptación del token por BFF/servicios todavía no está implementada.
