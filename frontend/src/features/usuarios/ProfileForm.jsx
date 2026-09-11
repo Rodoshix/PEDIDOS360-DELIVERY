@@ -1,11 +1,12 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { PROFILE_FIELDS, createProfileDraft, hasProfileChanges, normalizeProfileDraft, validateProfileDraft } from './profileForm.js'
 
-export default function ProfileForm({ initialProfile = null, onApply, onCancel }) {
+export default function ProfileForm({ initialProfile = null, onApply, onCancel, saving = false, submitError = null }) {
   const [draft, setDraft] = useState(() => createProfileDraft(initialProfile))
   const [errors, setErrors] = useState({})
   const [confirmDiscard, setConfirmDiscard] = useState(false)
   const errorSummary = useRef(null)
+  const saveError = useRef(null)
   const discardPrompt = useRef(null)
   const cancelButton = useRef(null)
   const firstField = useRef(null)
@@ -15,6 +16,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel }
   const hasErrors = Object.keys(errors).length > 0
 
   useEffect(() => { firstField.current?.focus() }, [])
+  useEffect(() => { if (submitError) saveError.current?.focus() }, [submitError])
 
   useEffect(() => {
     if (Object.keys(errors).length) errorSummary.current?.focus()
@@ -39,7 +41,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel }
 
   function submit(event) {
     event.preventDefault()
-    if (confirmDiscard) return
+    if (confirmDiscard || saving) return
     const nextErrors = validateProfileDraft(draft)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length) return
@@ -47,12 +49,13 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel }
   }
 
   function cancel() {
+    if (saving) return
     if (dirty) setConfirmDiscard(true)
     else onCancel()
   }
 
   return (
-    <form className="profile-form" onSubmit={submit} noValidate aria-labelledby={`${id}-heading`}>
+    <form className="profile-form" onSubmit={submit} noValidate aria-labelledby={`${id}-heading`} aria-busy={saving}>
       <h3 id={`${id}-heading`}>{initialProfile ? 'Editar perfil de prueba' : 'Crear perfil de prueba'}</h3>
       <p id={`${id}-help`} className="account-note">Usa datos ficticios. Aplicar actualiza solo esta vista; no guarda en Usuarios ni cambia tu cuenta Microsoft.</p>
       {hasErrors && (
@@ -63,7 +66,9 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel }
           ))}</ul>
         </div>
       )}
-      <fieldset disabled={confirmDiscard} aria-describedby={`${id}-help`}>
+      {submitError && <div ref={saveError} tabIndex={-1} className="profile-form__error-summary" role="alert">{submitError.message}</div>}
+      {saving && <p role="status">Guardando ejemplo… No cierres esta vista mientras termina la simulación.</p>}
+      <fieldset disabled={confirmDiscard || saving} aria-describedby={`${id}-help`}>
         <legend className="profile-form__legend">Datos de contacto</legend>
         <div className="profile-form__fields">
           {PROFILE_FIELDS.map(field => (
@@ -96,8 +101,8 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel }
         </div>
       )}
       <div className="account-actions">
-        <button type="submit" className="button button--primary session-controls__button" disabled={confirmDiscard || (Boolean(initialProfile) && !dirty)}>Aplicar al ejemplo</button>
-        <button ref={cancelButton} type="button" className="button button--secondary session-controls__button" onClick={cancel} disabled={confirmDiscard}>Cancelar</button>
+        <button type="submit" className="button button--primary session-controls__button" disabled={saving || confirmDiscard || (Boolean(initialProfile) && !dirty)}>{saving ? 'Guardando ejemplo…' : 'Aplicar al ejemplo'}</button>
+        <button ref={cancelButton} type="button" className="button button--secondary session-controls__button" onClick={cancel} disabled={saving || confirmDiscard}>Cancelar</button>
       </div>
     </form>
   )
