@@ -2,6 +2,13 @@
 
 Servicio de perfiles internos de Pedidos360. Java 21, Spring Boot 4.1.1 y Maven Wrapper 3.9.15.
 
+## Imagen Docker — Issue #25
+
+Dockerfile multietapa con JRE 21, UID 10001, puerto interno 8081 y healthcheck.
+No carga `.env.local` del host ni habilita identidad simulada por defecto.
+Consultar [build, configuración y prueba aislada](../../../infrastructure/docker/README-i1.md).
+Ejecutar `mvnw verify` antes de construir: el empaquetado Docker no ejecuta Testcontainers.
+
 ## Estado
 
 Implementados: entidad Usuario, repositorio JPA, migración Flyway y endpoints de perfiles con validaciones.

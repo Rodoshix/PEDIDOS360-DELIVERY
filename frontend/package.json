@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "test": "node --test",
+    "test:docker": "node tools/docker-smoke.mjs",
     "preview": "vite preview",
     "preview:profile": "node tools/profile-preview.mjs",
     "preview:cart": "node tools/profile-preview.mjs --cart"
