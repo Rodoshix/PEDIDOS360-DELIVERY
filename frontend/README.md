@@ -1,8 +1,8 @@
 # Pedidos360 Delivery — Frontend
 
-Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout y cliente HTTP. Se está incorporando autenticación con Microsoft Entra ID en el Issue #11.
+Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout, cliente HTTP y autenticación con Microsoft Entra ID (Issue #11, PR #18 integrado). El Issue #21 incorpora Perfil / Mi cuenta por bloques, sin integración real de servicios todavía.
 
-Estado de este bloque: sesión MSAL, rutas privadas, retorno seguro y adquisición de access token conectada a Axios. El responsable confirmó login, persistencia al recargar y logout durante las pruebas iniciales, y reportó el funcionamiento después de migrar a su propio directorio el 10 de septiembre de 2026. Falta confirmar específicamente el retorno real a una ruta privada conservando consulta y fragmento. Las pruebas automatizadas usan dobles de MSAL y un servidor HTTP local con credenciales ficticias, nunca tokens reales. La aceptación del token por BFF/servicios todavía no está implementada.
+Autenticación implementada: sesión MSAL, rutas privadas, retorno seguro y adquisición de access token conectada a Axios. El responsable confirmó el recorrido antes del cierre del Issue #11, después de migrar a su propio directorio el 10 de septiembre de 2026. Las pruebas automatizadas usan dobles de MSAL y un servidor HTTP local con credenciales ficticias, nunca tokens reales. La aceptación del token por BFF/servicios todavía no está implementada.
 
 ## Instalación y ejecución
 
@@ -71,14 +71,14 @@ Login solicita `openid` y `profile`. Para la API se solicita exclusivamente el �
 
 ### Rutas privadas y regreso después del login
 
-- Inicio y 404 siguen siendo públicos. `/mi-cuenta` es una vista mínima de sesión, no el módulo funcional de Perfil.
+- Inicio y 404 siguen siendo públicos. `/mi-cuenta` presenta la sesión y la consulta/edición de un perfil de prueba; la conexión real sigue pendiente.
 - `RequireSession` no monta el contenido privado mientras MSAL está ocupado ni cuando falta una cuenta. Muestra una espera o una invitación a entrar; nunca inicia redirecciones automáticamente.
 - Tanto el botón del encabezado como **Entrar para continuar** conservan ruta, consulta y fragmento. El destino se guarda en `sessionStorage`; solo una clave aleatoria se envía en `state`, siguiendo la [recomendación de Microsoft para estado personalizado](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/mip-pass-custom-state).
 - Tras una respuesta válida del directorio se consume la clave una sola vez y se reemplaza la URL antes de montar las rutas. No se hace una segunda petición de página. La URI SPA de Entra sigue siendo `http://localhost:5173`; no hay que registrar cada ruta privada.
 - Se rechazan URLs externas, direcciones ambiguas, caracteres de control, respuestas OAuth y destinos malformados. Sin destino válido, con clave distinta o transcurridos 15 minutos se vuelve a `/`. Cancelación, fallo, logout y arranque sin respuesta descartan el destino pendiente; no quedan reintentos automáticos.
 - Esta protección es de navegación del frontend. El backend debe validar tokens y permisos por separado.
 
-Prueba manual pendiente de este bloque:
+Recorrido de regresión de autenticación (repetir al cambiar configuración o navegación):
 
 1. Sin sesión, abrir `http://localhost:5173/mi-cuenta?tab=datos#contacto`: debe pedir iniciar sesión sin mostrar el contenido privado.
 2. Pulsar **Entrar para continuar** y completar Microsoft. Debe regresar a esa misma dirección, conservando `?tab=datos#contacto`, y mostrar **Mi cuenta**. Esos parámetros sirven para verificar el retorno; no activan un formulario.
@@ -105,7 +105,7 @@ Reglas del cliente:
 Prueba manual del permiso de API, sin enviar credenciales al backend (el responsable reportó funcionamiento después de la migración; repetir al cambiar directorio o permisos):
 
 1. Iniciar sesión y abrir **Mi cuenta**.
-2. Pulsar **Comprobar permiso de API**. Solo obtiene y descarta el token en memoria: no lo muestra, no lo copia y no llama al backend.
+2. Abrir **Diagnóstico de acceso a la API** dentro de **Tu acceso** y pulsar **Comprobar permiso de API**. Solo obtiene y descarta el token en memoria: no lo muestra, no lo copia y no llama al backend.
 3. Si Microsoft requiere interacción, pulsar **Continuar con Microsoft**, completar el acceso y volver a pulsar **Comprobar permiso de API** al regresar.
 4. Debe aparecer que Microsoft entregó un token para nuestra API. Esto **no prueba** que el BFF o los servicios lo acepten. La prueba extremo a extremo queda pendiente de implementar su validación de firma, issuer, audience, scopes y roles.
 
@@ -121,6 +121,7 @@ Ejecutar desde `frontend/`:
 | `npm test` | Probar configuración, sesión, rutas, tokens simulados y cliente HTTP local, sin Azure ni credenciales reales. |
 | `npm run build` | Generar la aplicación en `dist/`. |
 | `npm run preview` | Revisar localmente el resultado de build. |
+| `npm run preview:profile` | Banco visual aislado de Perfil, con sesión ficticia y puerto aleatorio de loopback; no usa Microsoft ni backend. |
 
 Para agregar una dependencia, usar `npm install nombre-paquete` y guardar juntos `package.json` y `package-lock.json`. No versionar `node_modules/` ni `dist/`.
 
@@ -179,8 +180,200 @@ En el navegador, revisar `/`, una dirección inexistente para ver la página 404
 
 La suite automatizada cubre configuración, selección de cuenta, login/logout, retorno seguro, rutas privadas y adquisición de tokens. También conecta la configuración y el proveedor de tokens reales del proyecto a Axios contra un servidor HTTP local: comprueba el Bearer ficticio, el bloqueo antes de la red cuando falta consentimiento y los errores 401/403 sin reintentos. Microsoft está simulado en esas pruebas; no acreditan consentimiento real, firma del token ni autorización en el BFF.
 
-Antes de cerrar el Issue #11, confirmar la prueba manual de `/mi-cuenta?tab=datos#contacto` descrita arriba. La futura integración de backend deberá verificar firma, issuer, audience, scopes y roles con un token real, sin registrarlo ni copiarlo al issue.
+Conservar como regresión la prueba manual de `/mi-cuenta?tab=datos#contacto` descrita arriba. La futura integración de backend deberá verificar firma, issuer, audience, scopes y roles con un token real, sin registrarlo ni copiarlo al issue.
 
 El alojamiento final debe devolver `index.html` para rutas del frontend que no correspondan a archivos, permitiendo recargas y enlaces directos con BrowserRouter. Las rutas de API deben seguir llegando al backend.
 
-La base se integró mediante el PR #4 (Issue #2). La autenticación se trabaja en `feature/i1-11-auth-msal`, con PR final hacia `develop`, asociado al Issue #11.
+La base se integró mediante el PR #4 (Issue #2) y la autenticación mediante el PR #18 (Issue #11).
+
+## Perfil / Mi cuenta — Issue #21
+
+Rama `codex/i1-21-perfil-frontend`, iniciada desde `develop` con Carrito backend integrado.
+Bloques 1 y 2 publicados en `f3f5826` y `11ec2aa`. Bloques 3 y 4 completados y verificados:
+flujo asíncrono de prueba y revisión final. El seguimiento de publicación/PR está en el issue #21.
+**Todavía no crea, edita ni consulta usuarios reales**.
+
+- **Tu acceso** muestra nombre e identificador de inicio de sesión entregados por MSAL.
+  No se deducen apellido, email de contacto, ID de usuario ni roles a partir de esos datos.
+- **Perfil de Pedidos360** empieza como *Perfil aún no consultado*, no como *no tienes
+  perfil*: sin consultar el backend no se puede afirmar que exista o falte un registro.
+- Solo con `npm run dev` aparece **Ver perfil de ejemplo**. La acción muestra Alex Ejemplo,
+  `alex@example.test` y teléfono sin registrar, señalados explícitamente como ficticios.
+  **Quitar ejemplo** vuelve al estado inicial. El build de producción no ofrece ese control.
+- El ejemplo vive únicamente en el estado del componente; desaparece al recargar, salir
+  de la ruta, cerrar sesión o cambiar de identidad. No usa localStorage/sessionStorage,
+  no obtiene tokens, no llama a Usuarios ni constituye un fallback por error de API.
+- El diagnóstico de permiso API se conserva, separado y bajo un desplegable. Solo esa
+  acción explícita puede solicitar un token real en la aplicación; no registra un perfil.
+
+### Contrato de referencia y límites
+
+Referencia local: `backend/services/usuarios-service` (Issue #6).
+
+| Campo de PerfilRequest | Restricción actual del backend |
+| --- | --- |
+| `nombre` | Obligatorio, recortado, hasta 100 caracteres. |
+| `apellido` | Obligatorio, recortado, hasta 100 caracteres. |
+| `email` | Obligatorio, formato email, recortado y en minúsculas, hasta 254 caracteres. |
+| `telefono` | Opcional, recortado, hasta 30 caracteres; vacío se convierte en null. |
+
+UsuarioResponse añade `id`, `activo`, `creadoEn` y `actualizadoEn`. Identidad, rol, estado,
+auditoría e ID no son campos editables. Cambiar el email de contacto no cambia la cuenta
+Microsoft. No hay dirección de entrega ni cambio de contraseña en este contrato.
+
+Implementado localmente: formulario de creación/edición y cancelación con validación,
+adaptador de prueba para carga, ausencia, errores y confirmación asíncrona y pruebas
+ampliadas. Revisión final completada; revisión e integración del PR se siguen en el issue #21.
+La conexión mediante el cliente HTTP compartido/BFF y JWT real se hará en la integración,
+sin conectar esta pantalla directamente al modo de identidad simulada de Usuarios.
+
+### Comprobar este bloque sin usar una cuenta real
+
+1. Ejecutar `npm run preview:profile` y abrir la URL de loopback que imprime la terminal.
+   Es un banco visual de pruebas, **no el arranque normal ni un modo de login de la app**.
+2. Verificar la advertencia de sesión ficticia y el estado *Perfil aún no consultado*.
+3. Pulsar **Ver perfil de ejemplo**, comprobar los campos, y **Quitar ejemplo**.
+   Ambos controles deben funcionar también con Enter/teclado.
+4. Mostrar el ejemplo y pulsar **Cambiar cuenta de prueba**: debe volver al estado inicial.
+   Repetir con **Cerrar sesión** y **Entrar para continuar**; son dobles locales en este banco.
+5. Abrir el diagnóstico y comprobar su error simulado. No contacta Microsoft.
+6. Revisar escritorio y ancho móvil (390 px), sin desbordamiento horizontal. Detener con Ctrl+C.
+
+El banco de `tools/` no entra en el build de `index.html` ni modifica `RequireSession`.
+No valida autenticación real. En la aplicación normal (`localhost:5173`), la ruta privada
+sigue requiriendo la sesión MSAL existente.
+
+Verificado el 10-09-2026: 68 pruebas automatizadas aprobadas, lint y build correctos;
+revisión del banco visual en escritorio/móvil, ejemplo/quitar, teclado, cambio de cuenta,
+logout/login simulados y diagnóstico. La ruta real sin sesión siguió bloqueada.
+
+### Bloque 2 — Formulario de prueba, sin persistencia
+
+En desarrollo, **Probar creación de perfil** abre un formulario vacío, sin deducir datos
+de Microsoft. **Editar ejemplo** precarga el perfil ficticio que ya se ve en pantalla.
+Mientras se edita, no se ofrecen los controles para cambiar/quitar el ejemplo.
+
+- Campos permitidos: nombre, apellido, email de contacto y teléfono opcional. El payload
+  es una lista explícita de esos cuatro campos: no copia ID, rol, estado o identidad.
+- Se recortan extremos, el email pasa a minúsculas y el teléfono vacío pasa a null.
+  Los límites de longitud coinciden con PerfilRequest. El email tiene una comprobación
+  básica de formato en la UI, no una réplica completa de `@Email`: el servidor deberá
+  volver a validar cuando se integre. No se restringe al dominio de Microsoft.
+- Etiquetas, obligatoriedad, instrucciones, errores por campo y resumen de errores
+  navegable con teclado. Al fallar el envío se enfoca el resumen; no se aplica el borrador.
+- **Aplicar al ejemplo** solo cambia la vista en memoria, con confirmación explícita de
+  que no se guardó en Usuarios. En edición se deshabilita si no hubo cambios.
+- **Cancelar** sin cambios vuelve directamente. Con cambios exige elegir **Seguir editando**
+  o **Descartar cambios**; descartar no modifica el perfil anterior. Se devuelve el foco
+  al terminar la edición y después de cerrar la confirmación.
+- Hay aviso de cambios pendientes y `beforeunload` mientras el borrador está modificado.
+  El navegador decide si muestra su advertencia al recargar/cerrar. **No hay bloqueo de
+  navegación interna**: salir de Mi cuenta, cambiar identidad o cerrar sesión descarta
+  el estado; no se intercepta ni impide el logout de MSAL. No hay guardado automático.
+
+Recorrido en `npm run preview:profile`, siempre con datos ficticios:
+
+1. Pulsar **Probar creación de perfil** y **Aplicar al ejemplo** sin completar: aparecen
+   errores para nombre, apellido y email, pero no para el teléfono opcional.
+2. Completar nombre `  Andrea  `, apellido `  Prueba  ` y un email sin arroba: sigue
+   rechazando. Cambiarlo por `ANDREA@EXAMPLE.TEST` y aplicar: muestra `Andrea`, `Prueba`,
+   `andrea@example.test`, teléfono sin registrar y confirmación de cambio solo al ejemplo.
+3. Abrir **Editar ejemplo**, cambiar el nombre y cancelar. Probar **Seguir editando** y
+   luego **Descartar cambios**; el perfil mostrado debe conservar `Andrea`.
+4. Editar el teléfono con `+56 9 0000 0000` y aplicar usando Enter. El cambio aparece
+   únicamente en el perfil de ejemplo; el identificador de sesión permanece igual.
+5. Con otro borrador pendiente, **Cambiar cuenta de prueba** debe limpiar perfil,
+   formulario y mensajes. Abrir la creación de nuevo: todos los campos empiezan vacíos.
+
+Bloque 2 verificado localmente: 82 pruebas aprobadas, lint y build correctos. Comprobados
+los pasos anteriores en navegador, foco de errores/cancelación, teclado y formulario a
+390 px sin desbordamiento horizontal. El formulario y su payload tienen pruebas nuevas;
+no se probó guardado remoto ni se solicitó un token para estas acciones.
+
+El formulario se carga bajo demanda con `React.lazy` y un estado de espera. En el bloque 2,
+el archivo separado era de unos 5 kB y el principal de unos 500,53 kB minificados.
+Vite avisa cuando supera 500 kB. No es un fallo de compilación ni se elevó el umbral
+para ocultarlo; queda como observación para la optimización final del frontend.
+
+### Bloque 3 — Adaptador de prueba y estados asíncronos
+
+Bloque 2 publicado en `11ec2aa`. Este bloque sustituye la aplicación inmediata al ejemplo
+por operaciones asíncronas simuladas, con unos 600 ms de espera. No usa HTTP, MSAL ni
+almacenamiento persistente para consultar/guardar el perfil. En la app normal la sesión
+Microsoft sigue siendo real; solo los datos de perfil son ficticios. El banco visual
+además simula la sesión, como se indicó antes.
+
+**Ver perfil de ejemplo** consulta el escenario con perfil; **Probar creación de perfil**
+parte de una consulta simulada sin perfil. El selector **Escenario de prueba** y el botón
+**Cargar escenario** permiten probar:
+
+| Escenario | Resultado y recorrido |
+| --- | --- |
+| Perfil existente | Consulta con espera, perfil activo y edición. |
+| Sin perfil | Consulta exitosa que devuelve null; permite crear un perfil de prueba. |
+| Consulta falla una vez | Muestra error, sin inventar un perfil; Reintentar consulta funciona. |
+| Guardado falla una vez | Carga el perfil; primer guardado falla sin alterar el ejemplo. Conserva el borrador; repetir Aplicar al ejemplo funciona. |
+| Conflicto al guardar una vez | Primer guardado muestra conflicto y conserva perfil/borrador. Permite revisar y reintentar, o cancelar/descartar. |
+| Acceso denegado | Error explícito; no ofrece crear un perfil como si faltara el registro. |
+| Perfil inactivo | Consulta de solo lectura; no permite editar ni guardar. |
+
+Los fallos de una sola vez se reinician al pulsar **Cargar escenario**, que crea una nueva
+instancia aislada. **Reintentar consulta** reutiliza la instancia actual. Cambiar de
+escenario no conserva sus datos previos; es un control de prueba, no una operación real.
+Los escenarios no se pueden cambiar durante la edición ni mientras hay una operación.
+
+- Cada pantalla/cuenta tiene controlador y adaptador propios. No hay repositorio global
+  de perfiles ni almacenamiento en localStorage/sessionStorage.
+- La consulta distingue `idle`, `loading`, `ready`, `empty` y `error`; guardar utiliza
+  `saving`. Una excepción nunca se interpreta como ausencia ni carga un perfil de respaldo.
+- Mientras se guarda, campos/aplicar/cancelar están bloqueados y el formulario informa
+  `aria-busy`. Un bloqueo inmediato en el controlador evita duplicados antes del render.
+- Solo se muestra éxito después de recibir y validar la respuesta. Al fallar, se enfoca
+  el error, se conserva el borrador y se habilita el reintento **manual**, sin reenvíos automáticos.
+- Las respuestas se proyectan a campos conocidos de UsuarioResponse. Datos inválidos
+  no reemplazan el perfil visible; errores desconocidos o manipulados no exponen mensajes,
+  causas, tokens ni cuerpos originales del adaptador.
+- Al salir/cambiar cuenta se cancela mediante AbortSignal y se invalida la operación.
+  Incluso si un adaptador ignora la cancelación, su resultado tardío no actualiza la pantalla.
+  El adaptador local respeta la señal antes de escribir. Esto **no garantiza rollback de
+  peticiones HTTP reales**: ese comportamiento deberá acordarse al integrar.
+
+Interfaz preparada para un adaptador futuro: `read({ signal })` devuelve UsuarioResponse
+o null; `save(payload, { signal })` recibe solo PerfilRequest y devuelve UsuarioResponse.
+No se han definido aquí las rutas del BFF, el mapeo de errores HTTP ni garantías de
+idempotencia/concurrencia del backend. Los errores/conflictos actuales son simulaciones.
+
+Verificado este bloque: **100 pruebas** aprobadas, lint correcto y build completado.
+Incluye respuestas tardías, cancelación, aislamiento entre instancias, doble envío,
+proyección del payload/respuesta, reintento manual y errores seguros. En navegador se
+comprobaron los escenarios, bloqueo de guardado, conservación de borrador, cambio de
+cuenta durante un guardado y conflicto/descarte en móvil, sin errores de consola.
+En este bloque el build tenía aviso de tamaño: principal de unos 507,77 kB minificados
+y formulario separado de unos 4,35 kB. Resuelto en la revisión siguiente.
+
+### Bloque 4 — Revisión final antes de publicar
+
+- `AccountPage` carga el panel simulado bajo demanda **solo en desarrollo**. En producción
+  utiliza `ProfilePending`: no importa controlador, adaptador, datos ficticios ni formulario.
+  El banco visual también queda fuera del build; no existe un login ficticio en producción.
+- Una prueba construye en memoria el bundle de producción y comprueba los módulos incluidos,
+  el estado pendiente y la ausencia de controles/datos simulados. El build normal terminó
+  sin aviso de tamaño: principal **498,08 kB** minificados (142,57 kB gzip), frente a 507,77 kB.
+  No se modificó el umbral de advertencia. El margen sigue siendo pequeño; volver a medir
+  al incorporar módulos o la integración real.
+- `clearError` solo limpia fallos de guardado: nunca convierte una consulta fallida en
+  ausencia ni habilita crear tras acceso denegado. Los códigos de error desconocidos,
+  incluso propiedades heredadas como `toString`, se sustituyen por un mensaje conocido.
+- El banco visual usa `StrictMode`, igual que la aplicación. Se repitieron creación por
+  teclado, validación y enlace al campo, normalización, foco al finalizar, cancelación con
+  seguir/descartar y cambio de identidad con borrador. Logout/login simulado reinicia el
+  perfil y mantiene la ruta protegida mientras no hay sesión.
+- En móvil de 390 px se comprobó fallo de guardado con borrador conservado, aviso enfocado
+  y visible y reintento manual. Sin desbordamiento horizontal ni errores/avisos de consola.
+
+Resultado: **104 pruebas** aprobadas, lint y build correctos, `git diff --check` correcto.
+Esto acredita el flujo frontend **simulado**, no integración con Usuarios, BFF o JWT real.
+Las verificaciones de Microsoft reales anteriores no se repitieron en este bloque.
+
+El cierre del issue requiere revisar e integrar el PR hacia `develop`. La publicación de
+commits y apertura del PR no equivalen a integración completada.
