@@ -122,6 +122,7 @@ Ejecutar desde `frontend/`:
 | `npm run build` | Generar la aplicación en `dist/`. |
 | `npm run preview` | Revisar localmente el resultado de build. |
 | `npm run preview:profile` | Banco visual aislado de Perfil, con sesión ficticia y puerto aleatorio de loopback; no usa Microsoft ni backend. |
+| `npm run preview:cart` | El mismo banco visual, iniciando en Carrito con sesión ficticia; sin Microsoft ni backend. |
 
 Para agregar una dependencia, usar `npm install nombre-paquete` y guardar juntos `package.json` y `package-lock.json`. No versionar `node_modules/` ni `dist/`.
 
@@ -377,3 +378,186 @@ Las verificaciones de Microsoft reales anteriores no se repitieron en este bloqu
 
 El cierre del issue requiere revisar e integrar el PR hacia `develop`. La publicación de
 commits y apertura del PR no equivalen a integración completada.
+
+## Carrito frontend — Issue #23, bloque 1
+
+Rama `feature/i1-23-carrito-frontend`, desde `develop` con Perfil integrado mediante PR #22
+(merge `99dd02e`). Perfil quedó completado en el issue #21. Este primer bloque de Carrito
+prepara **solo la lectura**, sin integrar el backend ni modificar datos reales.
+
+- Nueva ruta `/carrito`, enlace en la navegación y protección mediante `RequireSession`.
+  Sin sesión se muestra el acceso, no productos ni controles de ejemplo.
+- Estado inicial **Carrito aún no consultado**: no afirma que el carrito del usuario esté
+  vacío. En producción solo se muestra esta información de integración pendiente.
+- En desarrollo hay tres acciones explícitas: **Ver carrito de ejemplo**, **Ver ejemplo
+  vacío** y **Quitar ejemplo**. No hacen HTTP, no obtienen tokens ni usan almacenamiento
+  persistente. Quitar ejemplo solo regresa al estado no consultado; no vacía un carrito real.
+- La vista usa el contrato `CarritoResponse` de `carrito-service`: nombre, precio unitario,
+  cantidad y subtotal por línea, más total CLP entero. El ejemplo contiene 2 × $5.500 y
+  1 × $1.500, total $12.500. No muestra IDs de identidad/carrito ni inventa nombres de
+  restaurantes. Tampoco agrega envío, descuentos, stock reservado o checkout.
+- Cada acción crea objetos independientes. Salir de la ruta, cerrar sesión o cambiar
+  tenant/homeAccountId/localAccountId desmonta el ejemplo. MSAL sigue siendo la sesión real
+  en el arranque normal; no hay un login ficticio allí.
+- El panel de desarrollo se carga con importación condicional. Una prueba inspecciona el
+  bundle de producción y confirma que excluye el simulador, sus datos y la vista de ejemplo.
+
+### Recorrido reproducible sin credenciales
+
+1. Desde `frontend`, ejecutar `npm run preview:cart` y abrir la URL de loopback impresa.
+   Reutiliza el banco de Perfil, bajo StrictMode, iniciando en `/carrito?tab=productos#resumen`.
+2. Comprobar el estado no consultado y pulsar **Ver carrito de ejemplo** con Enter.
+   Deben verse dos líneas y total $12.500, con aviso de datos ficticios.
+3. Pulsar **Ver ejemplo vacío**: muestra ausencia solo para ese escenario y total $0.
+   **Quitar ejemplo** vuelve al estado no consultado; no significa eliminar datos remotos.
+4. Mostrar productos y **Cambiar cuenta de prueba**: desaparecen. Repetir con **Cerrar
+   sesión** y **Entrar para continuar**: vuelve protegido/limpio según corresponda.
+5. Navegar entre **Mi cuenta** y **Carrito** y comprobar que no se conserva el ejemplo
+   al abandonar la página. Revisar escritorio y móvil de 390 px. Detener con Ctrl+C.
+
+Verificado este bloque: **113 pruebas** aprobadas, lint y build correctos; banco visual
+en escritorio y móvil, Enter, foco tras quitar el ejemplo, vacío, cambio de cuenta y
+logout/login simulados. Consola sin errores/avisos. El principal de producción mide
+499,19 kB minificados: sin aviso, pero con poco margen; medir en los próximos bloques.
+
+Pendiente en esta rama: agregar productos ficticios, cantidades (1–99), eliminar/vaciar,
+un restaurante por carrito y hasta 50 productos diferentes según el contrato local;
+después adaptador asíncrono, errores/reintentos y revisión final. La integración HTTP,
+catálogo real, Pedidos y JWT se harán posteriormente. Docker va en otra rama.
+
+### Bloque 2 — Operaciones del carrito de prueba
+
+Bloque 1 publicado en `aebc066`. Este bloque añade operaciones **síncronas en memoria**:
+no llama al backend, no acredita validación de JWT ni consulta el catálogo real.
+
+- Tras elegir un ejemplo, el catálogo ficticio permite agregar productos de dos restaurantes
+  de prueba y probar un producto no disponible. Sus IDs y precios son independientes del
+  catálogo local del backend; no son datos de integración ni un catálogo de restaurantes real.
+- Agregar un producto repetido suma unidades y actualiza nombre/precio de referencia de la
+  línea, como el modelo local. Cambiar solo cantidad conserva el precio unitario.
+- Cada línea tiene una cantidad editable, **Aplicar cantidad** y **Restablecer cantidad**.
+  El borrador no cambia el total hasta aplicar. Acepta enteros entre 1 y 99; rechaza vacío,
+  cero, negativos, decimales y notación exponencial. Restablecer limpia el error y devuelve
+  el foco al campo. Las cantidades sin aplicar se pierden al salir o cambiar de ejemplo.
+- Un máximo de 50 productos diferentes; sumar uno existente sigue permitido dentro de 99.
+  Precios enteros entre 0 y 1.000.000.000 CLP según el contrato local. Subtotales y total
+  se recalculan sin decimales; las funciones crean objetos nuevos y no mutan el original.
+- Mezclar restaurantes o agregar un producto no disponible muestra error sin vaciar ni
+  modificar el ejemplo. Quitar la última línea o vaciar libera el restaurante.
+- **Eliminar** y **Vaciar ejemplo** requieren confirmación. Cancelar conserva productos y
+  devuelve el foco al botón original; confirmar anuncia éxito solo del ejemplo local.
+  Durante la confirmación se bloquean operaciones y cambio de ejemplo, pero no logout.
+  La identidad del carrito ficticio se conserva al vaciar; no se borran datos reales.
+- Reiniciar el ejemplo, cambiar cuenta o salir elimina borradores, errores y confirmaciones.
+  No existe persistencia ni guardado automático. El simulador y estas operaciones siguen
+  excluidos de producción; el frontend real muestra integración pendiente.
+
+Recorrido adicional en `npm run preview:cart`:
+
+1. Elegir vacío, agregar dos hamburguesas ($11.000) y agregar una más ($16.500).
+2. Intentar cantidad 100: error y total conservado. Aplicar 4: total $22.000.
+3. Intentar pizza de otro restaurante y postre no disponible: error sin cambios.
+4. Eliminar hamburguesa: cancelar conserva $22.000; confirmar deja $0. Ahora sí admite pizza.
+5. Vaciar: cancelar conserva el ejemplo, confirmar deja $0 y deshabilita vaciar.
+6. Restablecer una cantidad inválida devuelve el valor aplicado. Cambiar de cuenta con un
+   borrador o cerrar sesión durante una confirmación limpia la pantalla sin aplicar esa acción.
+
+Verificado: **128 pruebas** aprobadas, lint y build correctos. Pruebas puras de cantidades,
+límites de líneas/precio, total máximo exacto, inmutabilidad, restaurante, disponibilidad,
+eliminación/vaciado y controles accesibles. Recorrido de navegador en escritorio/móvil
+390 px, teclado y foco, sin desbordamiento ni errores de consola.
+
+Cambios del bloque 2 sin commit/push. Siguiente: adaptador asíncrono de prueba, carga,
+errores y reintentos manuales, bloqueo de envíos simultáneos y resultados tardíos.
+La simulación actual de `version`/fecha no representa garantías de concurrencia del servidor.
+
+### Bloque 3 — Adaptador asíncrono, errores y reintentos
+
+Bloque 2 publicado en `0fcad51`. Este bloque sustituye las operaciones síncronas de la
+pantalla por un controlador y un adaptador aislados por cuenta, con 600 ms de demora
+simulada. Sigue sin HTTP, tokens ni almacenamiento persistente de datos del carrito.
+
+El selector **Escenario de Carrito** permite consultar productos, vacío, consulta que falla
+una vez, operación que falla una vez, conflicto una vez y acceso denegado. Pulsar **Cargar
+escenario de Carrito** reinicia sus datos y fallos. Reintentar desde los controles normales
+mantiene la instancia. En los escenarios de escritura, falla la primera operación válida
+enviada al adaptador (agregar, cantidad, eliminar o vaciar), no cada operación por separado.
+
+- Estados `idle`, `loading`, `ready`, `empty`, `saving` y `error`. Un carrito vacío requiere
+  un `CarritoResponse` válido con `items: []`; null, datos inválidos o errores no significan
+  ausencia. Acceso denegado no habilita operaciones, aunque el banco permita cambiar de escenario.
+- Controlador con bloqueo inmediato para impedir escrituras/consultas simultáneas. Campos,
+  botones de operación y selector de escenario se deshabilitan mientras espera. Los formularios
+  indican `aria-busy` y esperan el resultado antes de restablecer sus cantidades.
+- Al fallar se conserva el carrito anterior y el borrador. Repetir **Agregar al ejemplo** o
+  **Aplicar cantidad** reintenta manualmente; no hay reenvío automático. El error recibe foco.
+- Eliminar/vaciar conservan la confirmación si fallan. **Confirmar eliminación** permite
+  reintentar; **Cancelar eliminación** descarta la intención, limpia el error de escritura y
+  devuelve el foco. Durante la espera, ambos botones están deshabilitados, pero no el logout.
+- Respuestas validadas: metadatos, CLP, IDs seguros, líneas únicas, límites, subtotales y total
+  exacto. Se copian únicamente campos conocidos y se congelan la respuesta y sus líneas.
+  Errores se reconstruyen desde códigos conocidos; no se muestran cuerpos, causas ni mensajes
+  crudos del adaptador. El payload no incluye nombres, precios, totales ni identidad de sesión.
+- Al desmontar/cambiar cuenta se cancela la señal y se invalida la generación. Incluso un
+  adaptador que ignore AbortSignal no puede publicar éxito tardío en otra cuenta. El simulador
+  comprueba la señal antes de modificar datos. Esto **no garantiza rollback de una API real**.
+
+Interfaz preparada (no es todavía un contrato HTTP/BFF):
+
+- `read({ signal })` devuelve un `CarritoResponse` completo, también cuando está vacío.
+- `write(command, { signal })` devuelve el nuevo `CarritoResponse`. Comandos internos:
+  `{ type: 'add' | 'quantity', productoId, cantidad }`, `{ type: 'remove', productoId }`
+  o `{ type: 'clear' }`. El controlador valida y proyecta los campos antes de enviarlos.
+- No hay todavía mapeo de rutas/status HTTP, garantía de idempotencia ni resolución de
+  conflictos reales. El error simulado de escritura/conflicto ocurre antes de modificar datos;
+  no representa un timeout después de un guardado remoto, que requerirá otro tratamiento.
+
+Recorrido verificado en `npm run preview:cart`:
+
+1. Consulta falla una vez: espera, error, **Reintentar consulta**, productos por $12.500.
+2. Operación falla una vez: agregar cantidad 3 conserva el campo y total al fallar; reintentar
+   lleva el total a $29.000 y recién entonces restablece el campo a 1.
+3. Recargar ese escenario, aplicar cantidad 4: falla conservando borrador y total; reintentar
+   funciona. No se anuncia éxito mientras el formulario está ocupado.
+4. Conflicto una vez: eliminar bebida conserva confirmación/total al fallar; repetir confirma
+   y deja $11.000. Recargar, vaciar y cancelar tras conflicto conserva $12.500; confirmar
+   nuevamente el vaciado deja $0.
+5. Cambiar cuenta durante un agregado y cerrar sesión durante un vaciado no muestran éxito
+   tardío ni conservan borradores/confirmaciones en la nueva sesión.
+
+Resultado: **153 pruebas** aprobadas, lint/build y `git diff --check` correctos. Incluye
+duplicados, payload seguro, respuestas inválidas, errores sanitizados, cancelación,
+aislamiento y los cuatro tipos de operación con fallo/reintento. Revisión de teclado y móvil
+390 px, sin desbordamiento ni errores/avisos de consola. Producción excluye todo el adaptador
+y sus controles; principal 499,19 kB sin aviso de tamaño, todavía con margen reducido.
+
+Bloque 3 publicado en `a2d1cb9`. La integración real y Docker siguen fuera de esta rama.
+
+### Bloque 4 — Revisión final de Carrito
+
+Revisión técnica local completada. El responsable autorizó publicar el bloque final,
+abrir el PR hacia `develop` y cerrar el issue #23 por implementación terminada.
+El cierre del issue no implica que el PR ya haya sido revisado o integrado.
+
+- **155 pruebas** aprobadas, `npm run lint`, `npm run build` y `git diff --check` correctos.
+  Las dos regresiones nuevas verifican IDs únicos/etiquetas/ayudas de varias líneas junto
+  al catálogo, y ausencia de acciones de líneas en el carrito vacío editable.
+- Banco `npm run preview:cart`: carga con Enter, cantidad inválida con foco en el error,
+  restablecer y eliminar/cancelar con retorno de foco al botón original y total intacto.
+  Navegar a Mi cuenta y volver descarta el ejemplo y los borradores; vacío, logout y
+  entrada nuevamente mantienen la ruta protegida y reinician el estado no consultado.
+- Inspección visual en escritorio 1280 px y móvil estrecho 320 px, sin desbordamiento
+  horizontal una vez estabilizado el viewport; controles y textos se ajustan. Consola
+  del recorrido sin errores ni avisos. Esto no sustituye pruebas con lectores de pantalla
+  ni una auditoría de accesibilidad completa.
+- Se mantienen las verificaciones del bloque 3 sobre fallos/reintentos, bloqueo de
+  duplicados, operaciones tardías y aislamiento por cuenta. No fue necesario cambiar
+  el comportamiento de la aplicación durante la revisión final.
+- Build principal: 499,19 kB (142,73 kB gzip), sin aviso; vigilar el margen reducido.
+  Las pruebas de producción confirman que simulador, catálogo y adaptador no se publican.
+
+El PR incluye estas pruebas y documentación, usa como base `develop` y referencia #23.
+La verificación de esta rama usa una sesión ficticia aislada;
+no acredita una nueva prueba de Microsoft, backend, pagos ni creación de pedidos reales.
+Después de integrar, el siguiente trabajo del Integrante 1 es Docker de sus componentes.
+HTTP/BFF, integración global y tareas del integrante 5 permanecen fuera de alcance.

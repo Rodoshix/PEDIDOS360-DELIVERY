@@ -6,7 +6,7 @@ import { ApiAccessError } from '../../src/auth/ApiAccessError.js'
 import AppRouter from '../../src/routes/AppRouter.jsx'
 import '../../src/styles/global.css'
 
-export default function ProfilePreview() {
+export default function ProfilePreview({ initialRoute = '/mi-cuenta?tab=datos#contacto' }) {
   const [identity, setIdentity] = useState('A')
   const [signedIn, setSignedIn] = useState(true)
   const session = {
@@ -26,10 +26,11 @@ export default function ProfilePreview() {
         <button type="button" onClick={() => setIdentity(identity === 'A' ? 'B' : 'A')}>Cambiar cuenta de prueba</button>
       </div>
       <AuthSessionContext.Provider value={session}>
-        <MemoryRouter initialEntries={['/mi-cuenta?tab=datos#contacto']}><AppRouter /></MemoryRouter>
+        <MemoryRouter initialEntries={[initialRoute]}><AppRouter /></MemoryRouter>
       </AuthSessionContext.Provider>
     </>
   )
 }
 
-createRoot(document.getElementById('root')).render(<StrictMode><ProfilePreview /></StrictMode>)
+const root = document.getElementById('root')
+createRoot(root).render(<StrictMode><ProfilePreview initialRoute={root.dataset.previewRoute} /></StrictMode>)

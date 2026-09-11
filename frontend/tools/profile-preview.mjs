@@ -15,8 +15,8 @@ const server = await createServer({
           const html = await vite.transformIndexHtml('/', `<!doctype html>
             <html lang="es"><head><meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Perfil — banco de pruebas</title></head><body>
-            <div id="root"></div><script type="module" src="/tools/fixtures/ProfilePreview.jsx"></script>
+            <title>Mi cuenta y Carrito — banco de pruebas</title></head><body>
+            <div id="root" data-preview-route="${process.argv.includes('--cart') ? '/carrito?tab=productos#resumen' : '/mi-cuenta?tab=datos#contacto'}"></div><script type="module" src="/tools/fixtures/ProfilePreview.jsx"></script>
             </body></html>`)
           res.setHeader('Content-Type', 'text/html; charset=utf-8')
           res.end(html)

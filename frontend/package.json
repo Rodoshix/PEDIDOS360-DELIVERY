@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "test": "node --test",
     "preview": "vite preview",
-    "preview:profile": "node tools/profile-preview.mjs"
+    "preview:profile": "node tools/profile-preview.mjs",
+    "preview:cart": "node tools/profile-preview.mjs --cart"
   },
   "dependencies": {
     "@azure/msal-browser": "^5.21.0",
