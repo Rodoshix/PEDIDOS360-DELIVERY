@@ -531,5 +531,33 @@ aislamiento y los cuatro tipos de operación con fallo/reintento. Revisión de t
 390 px, sin desbordamiento ni errores/avisos de consola. Producción excluye todo el adaptador
 y sus controles; principal 499,19 kB sin aviso de tamaño, todavía con margen reducido.
 
-Bloque 3 preparado sin commit/push. Siguiente: revisión final, documentación y preparación
-del PR; la integración real y Docker siguen fuera de esta rama.
+Bloque 3 publicado en `a2d1cb9`. La integración real y Docker siguen fuera de esta rama.
+
+### Bloque 4 — Revisión final de Carrito
+
+Revisión técnica local completada. El responsable autorizó publicar el bloque final,
+abrir el PR hacia `develop` y cerrar el issue #23 por implementación terminada.
+El cierre del issue no implica que el PR ya haya sido revisado o integrado.
+
+- **155 pruebas** aprobadas, `npm run lint`, `npm run build` y `git diff --check` correctos.
+  Las dos regresiones nuevas verifican IDs únicos/etiquetas/ayudas de varias líneas junto
+  al catálogo, y ausencia de acciones de líneas en el carrito vacío editable.
+- Banco `npm run preview:cart`: carga con Enter, cantidad inválida con foco en el error,
+  restablecer y eliminar/cancelar con retorno de foco al botón original y total intacto.
+  Navegar a Mi cuenta y volver descarta el ejemplo y los borradores; vacío, logout y
+  entrada nuevamente mantienen la ruta protegida y reinician el estado no consultado.
+- Inspección visual en escritorio 1280 px y móvil estrecho 320 px, sin desbordamiento
+  horizontal una vez estabilizado el viewport; controles y textos se ajustan. Consola
+  del recorrido sin errores ni avisos. Esto no sustituye pruebas con lectores de pantalla
+  ni una auditoría de accesibilidad completa.
+- Se mantienen las verificaciones del bloque 3 sobre fallos/reintentos, bloqueo de
+  duplicados, operaciones tardías y aislamiento por cuenta. No fue necesario cambiar
+  el comportamiento de la aplicación durante la revisión final.
+- Build principal: 499,19 kB (142,73 kB gzip), sin aviso; vigilar el margen reducido.
+  Las pruebas de producción confirman que simulador, catálogo y adaptador no se publican.
+
+El PR incluye estas pruebas y documentación, usa como base `develop` y referencia #23.
+La verificación de esta rama usa una sesión ficticia aislada;
+no acredita una nueva prueba de Microsoft, backend, pagos ni creación de pedidos reales.
+Después de integrar, el siguiente trabajo del Integrante 1 es Docker de sus componentes.
+HTTP/BFF, integración global y tareas del integrante 5 permanecen fuera de alcance.

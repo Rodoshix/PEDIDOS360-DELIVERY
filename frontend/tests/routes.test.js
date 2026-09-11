@@ -235,3 +235,30 @@ test('formularios del carrito informan operación en curso sin anunciar éxito',
     assert.doesNotMatch(html, /Producto agregado|Cantidad actualizada/)
   }
 })
+
+test('los campos de varias líneas y catálogo tienen IDs únicos, etiquetas y ayudas enlazadas', () => {
+  const html = renderToStaticMarkup(createElement('div', null,
+    createElement(CartSummary, { cart: { total: 7000, items: [
+      { productoId: 1, nombre: 'Primero', precioUnitario: 5500, cantidad: 1, subtotal: 5500 },
+      { productoId: 2, nombre: 'Segundo', precioUnitario: 1500, cantidad: 1, subtotal: 1500 },
+    ] }, onQuantity: () => {} }), createElement(CartCatalogForm)))
+  const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1])
+  assert.equal(ids.length, new Set(ids).size)
+  const labels = [...html.matchAll(/\bfor="([^"]+)"/g)].map(match => match[1])
+  const controls = [...html.matchAll(/<(?:input|select)\b[^>]*\bid="([^"]+)"/g)].map(match => match[1])
+  assert.equal(controls.length, 4)
+  for (const id of controls) assert.ok(labels.includes(id), `Etiqueta para ${id}`)
+  for (const [, references] of html.matchAll(/aria-(?:describedby|labelledby)="([^"]+)"/g)) {
+    for (const id of references.split(' ')) assert.ok(ids.includes(id), `Referencia existente ${id}`)
+  }
+})
+
+test('carrito vacío editable no presenta acciones de líneas ni dispara callbacks al renderizar', () => {
+  const unexpected = () => { throw new Error('No ejecutar operaciones durante el render') }
+  const html = renderToStaticMarkup(createElement(CartSummary, {
+    cart: { moneda: 'CLP', items: [], total: 0 }, onQuantity: unexpected, onRemove: unexpected,
+  }))
+  assert.match(html, /Carrito vacío en este ejemplo/)
+  assert.match(html, /\$0/)
+  assert.doesNotMatch(html, /<form|<input|<button|Eliminar|Aplicar cantidad/)
+})
