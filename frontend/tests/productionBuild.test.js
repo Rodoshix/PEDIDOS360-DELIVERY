@@ -12,4 +12,8 @@ test('producción conserva el perfil pendiente y excluye todo el flujo simulado'
   const code = chunks.map(chunk => chunk.code).join('\n')
   assert.match(code, /Perfil aún no consultado/)
   assert.doesNotMatch(code, /alex@example\.test|Cargar escenario|Guardado simulado completado/)
+  assert.match(modules, /\/CartPending\.jsx/)
+  assert.doesNotMatch(modules, /\/(CartDemoPanel|CartSummary)\.jsx|\/cartDemo\.js/)
+  assert.match(code, /Carrito aún no consultado/)
+  assert.doesNotMatch(code, /Hamburguesa de ejemplo|Ver carrito de ejemplo|Ver ejemplo vacío/)
 })

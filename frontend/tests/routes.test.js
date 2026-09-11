@@ -12,6 +12,8 @@ let ProfilePanel
 let ProfileDetails
 let ProfileForm
 let ProfilePending
+let CartDemoPanel
+let CartSummary
 
 before(async () => {
   // Transformar JSX con la configuración real, sin abrir un puerto ni conectar a Azure.
@@ -27,6 +29,8 @@ before(async () => {
   ProfileDetails = (await server.ssrLoadModule('/src/features/usuarios/ProfileDetails.jsx')).default
   ProfileForm = (await server.ssrLoadModule('/src/features/usuarios/ProfileForm.jsx')).default
   ProfilePending = (await server.ssrLoadModule('/src/features/usuarios/ProfilePending.jsx')).default
+  CartDemoPanel = (await server.ssrLoadModule('/src/features/carrito/CartDemoPanel.jsx')).default
+  CartSummary = (await server.ssrLoadModule('/src/features/carrito/CartSummary.jsx')).default
 })
 
 after(async () => { await server?.close() })
@@ -157,4 +161,43 @@ test('durante el guardado marca el formulario ocupado y bloquea campos, aplicar 
   assert.match(html, /disabled="">Guardando ejemplo…/)
   assert.match(html, /disabled="">Cancelar/)
   assert.doesNotMatch(html, /Guardado simulado completado/)
+})
+
+test('Carrito aparece en navegación sin revelar contenido privado al abrir un enlace directo', () => {
+  const html = renderRoute('/carrito?tab=productos#resumen')
+  assert.match(html, /href="\/carrito"/)
+  assert.match(html, /Inicia sesión para continuar/)
+  assert.doesNotMatch(html, /Mi carrito|Carrito aún no consultado|Ver carrito de ejemplo|Hamburguesa de ejemplo/)
+})
+
+test('Carrito espera la sesión y con cuenta no deduce que esté vacío ni inventa productos', () => {
+  const account = { name: 'Prueba', username: 'sesion@example.test', localAccountId: 'ID-PRIVADO' }
+  assert.doesNotMatch(renderRoute('/carrito', { account, busy: true }), /Mi carrito|Carrito aún no consultado/)
+  const html = renderRoute('/carrito', { account })
+  assert.match(html, /Mi carrito/)
+  assert.match(html, /Carrito aún no consultado/)
+  assert.doesNotMatch(html, /Carrito vacío en este ejemplo|Hamburguesa de ejemplo|ID-PRIVADO/)
+})
+
+test('el simulador de Carrito no carga ejemplos por sí solo', () => {
+  const html = renderToStaticMarkup(createElement(CartDemoPanel))
+  assert.match(html, /Ver carrito de ejemplo/)
+  assert.match(html, /Ver ejemplo vacío/)
+  assert.doesNotMatch(html, /Hamburguesa de ejemplo|Quitar ejemplo|<input/)
+})
+
+test('el resumen presenta cantidades y montos CLP sin exponer IDs ni ofrecer checkout', () => {
+  const html = renderToStaticMarkup(createElement(CartSummary, { cart: {
+    id: 'ID-PRIVADO', restauranteId: 'RESTAURANTE-PRIVADO', moneda: 'CLP', total: 11000,
+    items: [{ productoId: 1, nombre: '<b>Ejemplo</b>', precioUnitario: 5500, cantidad: 2, subtotal: 11000 }],
+  } }))
+  for (const text of ['Precio unitario', 'Cantidad', 'Subtotal', 'Total de productos (CLP)', '$5.500', '$11.000', '&lt;b&gt;']) assert.ok(html.includes(text), text)
+  assert.doesNotMatch(html, /ID-PRIVADO|RESTAURANTE-PRIVADO|<b>|<button|<input/)
+})
+
+test('un ejemplo vacío se identifica como simulado y muestra cero sin deducir datos reales', () => {
+  const html = renderToStaticMarkup(createElement(CartSummary, { cart: { moneda: 'CLP', items: [], total: 0 } }))
+  assert.match(html, /Carrito vacío en este ejemplo/)
+  assert.match(html, /No describe tu carrito real/)
+  assert.match(html, /\$0/)
 })

@@ -122,6 +122,7 @@ Ejecutar desde `frontend/`:
 | `npm run build` | Generar la aplicación en `dist/`. |
 | `npm run preview` | Revisar localmente el resultado de build. |
 | `npm run preview:profile` | Banco visual aislado de Perfil, con sesión ficticia y puerto aleatorio de loopback; no usa Microsoft ni backend. |
+| `npm run preview:cart` | El mismo banco visual, iniciando en Carrito con sesión ficticia; sin Microsoft ni backend. |
 
 Para agregar una dependencia, usar `npm install nombre-paquete` y guardar juntos `package.json` y `package-lock.json`. No versionar `node_modules/` ni `dist/`.
 
@@ -377,3 +378,49 @@ Las verificaciones de Microsoft reales anteriores no se repitieron en este bloqu
 
 El cierre del issue requiere revisar e integrar el PR hacia `develop`. La publicación de
 commits y apertura del PR no equivalen a integración completada.
+
+## Carrito frontend — Issue #23, bloque 1
+
+Rama `feature/i1-23-carrito-frontend`, desde `develop` con Perfil integrado mediante PR #22
+(merge `99dd02e`). Perfil quedó completado en el issue #21. Este primer bloque de Carrito
+prepara **solo la lectura**, sin integrar el backend ni modificar datos reales.
+
+- Nueva ruta `/carrito`, enlace en la navegación y protección mediante `RequireSession`.
+  Sin sesión se muestra el acceso, no productos ni controles de ejemplo.
+- Estado inicial **Carrito aún no consultado**: no afirma que el carrito del usuario esté
+  vacío. En producción solo se muestra esta información de integración pendiente.
+- En desarrollo hay tres acciones explícitas: **Ver carrito de ejemplo**, **Ver ejemplo
+  vacío** y **Quitar ejemplo**. No hacen HTTP, no obtienen tokens ni usan almacenamiento
+  persistente. Quitar ejemplo solo regresa al estado no consultado; no vacía un carrito real.
+- La vista usa el contrato `CarritoResponse` de `carrito-service`: nombre, precio unitario,
+  cantidad y subtotal por línea, más total CLP entero. El ejemplo contiene 2 × $5.500 y
+  1 × $1.500, total $12.500. No muestra IDs de identidad/carrito ni inventa nombres de
+  restaurantes. Tampoco agrega envío, descuentos, stock reservado o checkout.
+- Cada acción crea objetos independientes. Salir de la ruta, cerrar sesión o cambiar
+  tenant/homeAccountId/localAccountId desmonta el ejemplo. MSAL sigue siendo la sesión real
+  en el arranque normal; no hay un login ficticio allí.
+- El panel de desarrollo se carga con importación condicional. Una prueba inspecciona el
+  bundle de producción y confirma que excluye el simulador, sus datos y la vista de ejemplo.
+
+### Recorrido reproducible sin credenciales
+
+1. Desde `frontend`, ejecutar `npm run preview:cart` y abrir la URL de loopback impresa.
+   Reutiliza el banco de Perfil, bajo StrictMode, iniciando en `/carrito?tab=productos#resumen`.
+2. Comprobar el estado no consultado y pulsar **Ver carrito de ejemplo** con Enter.
+   Deben verse dos líneas y total $12.500, con aviso de datos ficticios.
+3. Pulsar **Ver ejemplo vacío**: muestra ausencia solo para ese escenario y total $0.
+   **Quitar ejemplo** vuelve al estado no consultado; no significa eliminar datos remotos.
+4. Mostrar productos y **Cambiar cuenta de prueba**: desaparecen. Repetir con **Cerrar
+   sesión** y **Entrar para continuar**: vuelve protegido/limpio según corresponda.
+5. Navegar entre **Mi cuenta** y **Carrito** y comprobar que no se conserva el ejemplo
+   al abandonar la página. Revisar escritorio y móvil de 390 px. Detener con Ctrl+C.
+
+Verificado este bloque: **113 pruebas** aprobadas, lint y build correctos; banco visual
+en escritorio y móvil, Enter, foco tras quitar el ejemplo, vacío, cambio de cuenta y
+logout/login simulados. Consola sin errores/avisos. El principal de producción mide
+499,19 kB minificados: sin aviso, pero con poco margen; medir en los próximos bloques.
+
+Pendiente en esta rama: agregar productos ficticios, cantidades (1–99), eliminar/vaciar,
+un restaurante por carrito y hasta 50 productos diferentes según el contrato local;
+después adaptador asíncrono, errores/reintentos y revisión final. La integración HTTP,
+catálogo real, Pedidos y JWT se harán posteriormente. Docker va en otra rama.
