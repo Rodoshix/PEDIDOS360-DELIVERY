@@ -71,7 +71,7 @@ Login solicita `openid` y `profile`. Para la API se solicita exclusivamente el �
 
 ### Rutas privadas y regreso después del login
 
-- Inicio y 404 siguen siendo públicos. `/mi-cuenta` presenta la sesión y la base de consulta de Perfil; la edición y conexión real siguen pendientes.
+- Inicio y 404 siguen siendo públicos. `/mi-cuenta` presenta la sesión y la consulta/edición de un perfil de prueba; la conexión real sigue pendiente.
 - `RequireSession` no monta el contenido privado mientras MSAL está ocupado ni cuando falta una cuenta. Muestra una espera o una invitación a entrar; nunca inicia redirecciones automáticamente.
 - Tanto el botón del encabezado como **Entrar para continuar** conservan ruta, consulta y fragmento. El destino se guarda en `sessionStorage`; solo una clave aleatoria se envía en `state`, siguiendo la [recomendación de Microsoft para estado personalizado](https://learn.microsoft.com/en-us/entra/msal/javascript/browser/mip-pass-custom-state).
 - Tras una respuesta válida del directorio se consume la clave una sola vez y se reemplaza la URL antes de montar las rutas. No se hace una segunda petición de página. La URI SPA de Entra sigue siendo `http://localhost:5173`; no hay que registrar cada ruta privada.
@@ -186,10 +186,11 @@ El alojamiento final debe devolver `index.html` para rutas del frontend que no c
 
 La base se integró mediante el PR #4 (Issue #2) y la autenticación mediante el PR #18 (Issue #11).
 
-## Perfil / Mi cuenta — Issue #21, bloque 1
+## Perfil / Mi cuenta — Issue #21
 
 Rama `codex/i1-21-perfil-frontend`, iniciada desde `develop` con Carrito backend integrado.
-Este bloque prepara la consulta visual; **todavía no crea, edita ni consulta usuarios reales**.
+Bloque 1 publicado en `f3f5826`: base de consulta visual. El bloque 2 añade formulario
+de prueba en memoria; **todavía no crea, edita ni consulta usuarios reales**.
 
 - **Tu acceso** muestra nombre e identificador de inicio de sesión entregados por MSAL.
   No se deducen apellido, email de contacto, ID de usuario ni roles a partir de esos datos.
@@ -219,8 +220,9 @@ UsuarioResponse añade `id`, `activo`, `creadoEn` y `actualizadoEn`. Identidad, 
 auditoría e ID no son campos editables. Cambiar el email de contacto no cambia la cuenta
 Microsoft. No hay dirección de entrega ni cambio de contraseña en este contrato.
 
-Pendiente en esta rama: formulario de creación/edición y cancelación; validación;
-adaptador de prueba para carga, ausencia, errores y confirmación; pruebas ampliadas.
+Implementado localmente: formulario de creación/edición y cancelación con validación.
+Pendiente en esta rama: adaptador de prueba para carga, ausencia, errores y confirmación
+asíncrona; pruebas ampliadas y revisión final.
 La conexión mediante el cliente HTTP compartido/BFF y JWT real se hará en la integración,
 sin conectar esta pantalla directamente al modo de identidad simulada de Usuarios.
 
@@ -243,3 +245,51 @@ sigue requiriendo la sesión MSAL existente.
 Verificado el 10-09-2026: 68 pruebas automatizadas aprobadas, lint y build correctos;
 revisión del banco visual en escritorio/móvil, ejemplo/quitar, teclado, cambio de cuenta,
 logout/login simulados y diagnóstico. La ruta real sin sesión siguió bloqueada.
+
+### Bloque 2 — Formulario de prueba, sin persistencia
+
+En desarrollo, **Probar creación de perfil** abre un formulario vacío, sin deducir datos
+de Microsoft. **Editar ejemplo** precarga el perfil ficticio que ya se ve en pantalla.
+Mientras se edita, no se ofrecen los controles para cambiar/quitar el ejemplo.
+
+- Campos permitidos: nombre, apellido, email de contacto y teléfono opcional. El payload
+  es una lista explícita de esos cuatro campos: no copia ID, rol, estado o identidad.
+- Se recortan extremos, el email pasa a minúsculas y el teléfono vacío pasa a null.
+  Los límites de longitud coinciden con PerfilRequest. El email tiene una comprobación
+  básica de formato en la UI, no una réplica completa de `@Email`: el servidor deberá
+  volver a validar cuando se integre. No se restringe al dominio de Microsoft.
+- Etiquetas, obligatoriedad, instrucciones, errores por campo y resumen de errores
+  navegable con teclado. Al fallar el envío se enfoca el resumen; no se aplica el borrador.
+- **Aplicar al ejemplo** solo cambia la vista en memoria, con confirmación explícita de
+  que no se guardó en Usuarios. En edición se deshabilita si no hubo cambios.
+- **Cancelar** sin cambios vuelve directamente. Con cambios exige elegir **Seguir editando**
+  o **Descartar cambios**; descartar no modifica el perfil anterior. Se devuelve el foco
+  al terminar la edición y después de cerrar la confirmación.
+- Hay aviso de cambios pendientes y `beforeunload` mientras el borrador está modificado.
+  El navegador decide si muestra su advertencia al recargar/cerrar. **No hay bloqueo de
+  navegación interna**: salir de Mi cuenta, cambiar identidad o cerrar sesión descarta
+  el estado; no se intercepta ni impide el logout de MSAL. No hay guardado automático.
+
+Recorrido en `npm run preview:profile`, siempre con datos ficticios:
+
+1. Pulsar **Probar creación de perfil** y **Aplicar al ejemplo** sin completar: aparecen
+   errores para nombre, apellido y email, pero no para el teléfono opcional.
+2. Completar nombre `  Andrea  `, apellido `  Prueba  ` y un email sin arroba: sigue
+   rechazando. Cambiarlo por `ANDREA@EXAMPLE.TEST` y aplicar: muestra `Andrea`, `Prueba`,
+   `andrea@example.test`, teléfono sin registrar y confirmación de cambio solo al ejemplo.
+3. Abrir **Editar ejemplo**, cambiar el nombre y cancelar. Probar **Seguir editando** y
+   luego **Descartar cambios**; el perfil mostrado debe conservar `Andrea`.
+4. Editar el teléfono con `+56 9 0000 0000` y aplicar usando Enter. El cambio aparece
+   únicamente en el perfil de ejemplo; el identificador de sesión permanece igual.
+5. Con otro borrador pendiente, **Cambiar cuenta de prueba** debe limpiar perfil,
+   formulario y mensajes. Abrir la creación de nuevo: todos los campos empiezan vacíos.
+
+Bloque 2 verificado localmente: 82 pruebas aprobadas, lint y build correctos. Comprobados
+los pasos anteriores en navegador, foco de errores/cancelación, teclado y formulario a
+390 px sin desbordamiento horizontal. El formulario y su payload tienen pruebas nuevas;
+no se probó guardado remoto ni se solicitó un token para estas acciones.
+
+El formulario se carga bajo demanda con `React.lazy` y un estado de espera. El build
+genera un archivo separado de unos 5 kB; el principal queda en unos 500,53 kB minificados
+y Vite aún avisa que supera 500 kB. No es un fallo de compilación ni se elevó el umbral
+para ocultarlo; queda como observación para la optimización final del frontend.

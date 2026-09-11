@@ -10,6 +10,7 @@ let AppRouter
 let AuthSessionContext
 let ProfilePanel
 let ProfileDetails
+let ProfileForm
 
 before(async () => {
   // Transformar JSX con la configuración real, sin abrir un puerto ni conectar a Azure.
@@ -23,6 +24,7 @@ before(async () => {
   AuthSessionContext = (await server.ssrLoadModule('/src/auth/useAuthSession.js')).AuthSessionContext
   ProfilePanel = (await server.ssrLoadModule('/src/features/usuarios/ProfilePanel.jsx')).default
   ProfileDetails = (await server.ssrLoadModule('/src/features/usuarios/ProfileDetails.jsx')).default
+  ProfileForm = (await server.ssrLoadModule('/src/features/usuarios/ProfileForm.jsx')).default
 })
 
 after(async () => { await server?.close() })
@@ -109,4 +111,32 @@ test('el texto del perfil se escapa sin interpretarlo como HTML', () => {
   assert.match(html, /&lt;script&gt;/)
   assert.match(html, /Activo/)
   assert.doesNotMatch(html, /Sin registrar/)
+})
+
+test('el formulario nuevo etiqueta cuatro campos, límites, obligatoriedad y simulación', () => {
+  const html = renderToStaticMarkup(createElement(ProfileForm))
+  assert.match(html, /Crear perfil de prueba/)
+  assert.match(html, /Usa datos ficticios/)
+  assert.match(html, /no guarda en Usuarios/)
+  assert.equal((html.match(/<input /g) || []).length, 4)
+  assert.equal((html.match(/<label /g) || []).length, 4)
+  assert.equal((html.match(/required=""/g) || []).length, 3)
+  assert.equal((html.match(/maxLength="100"/g) || []).length, 2)
+  assert.match(html, /maxLength="254"/)
+  assert.match(html, /maxLength="30"/)
+  assert.match(html, /Aplicar al ejemplo/)
+  assert.match(html, /Cancelar/)
+  assert.match(html, /Sin cambios pendientes/)
+})
+
+test('la edición precarga solo los campos del perfil, sin aplicar durante el render', () => {
+  const initial = Object.freeze({ nombre: 'Alex', apellido: 'Ejemplo', email: 'alex@example.test', telefono: null,
+    id: 'ID-NO-EDITABLE', roles: ['ROL-NO-EDITABLE'], activo: true })
+  const html = renderToStaticMarkup(createElement(ProfileForm, { initialProfile: initial,
+    onApply: () => { throw new Error('No aplicar durante el render') } }))
+  assert.match(html, /Editar perfil de prueba/)
+  assert.match(html, /value="Alex"/)
+  assert.match(html, /value="alex@example.test"/)
+  assert.match(html, /disabled="">Aplicar al ejemplo/)
+  assert.doesNotMatch(html, /ID-NO-EDITABLE|ROL-NO-EDITABLE/)
 })
