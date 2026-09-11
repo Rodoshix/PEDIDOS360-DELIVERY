@@ -424,3 +424,49 @@ Pendiente en esta rama: agregar productos ficticios, cantidades (1–99), elimin
 un restaurante por carrito y hasta 50 productos diferentes según el contrato local;
 después adaptador asíncrono, errores/reintentos y revisión final. La integración HTTP,
 catálogo real, Pedidos y JWT se harán posteriormente. Docker va en otra rama.
+
+### Bloque 2 — Operaciones del carrito de prueba
+
+Bloque 1 publicado en `aebc066`. Este bloque añade operaciones **síncronas en memoria**:
+no llama al backend, no acredita validación de JWT ni consulta el catálogo real.
+
+- Tras elegir un ejemplo, el catálogo ficticio permite agregar productos de dos restaurantes
+  de prueba y probar un producto no disponible. Sus IDs y precios son independientes del
+  catálogo local del backend; no son datos de integración ni un catálogo de restaurantes real.
+- Agregar un producto repetido suma unidades y actualiza nombre/precio de referencia de la
+  línea, como el modelo local. Cambiar solo cantidad conserva el precio unitario.
+- Cada línea tiene una cantidad editable, **Aplicar cantidad** y **Restablecer cantidad**.
+  El borrador no cambia el total hasta aplicar. Acepta enteros entre 1 y 99; rechaza vacío,
+  cero, negativos, decimales y notación exponencial. Restablecer limpia el error y devuelve
+  el foco al campo. Las cantidades sin aplicar se pierden al salir o cambiar de ejemplo.
+- Un máximo de 50 productos diferentes; sumar uno existente sigue permitido dentro de 99.
+  Precios enteros entre 0 y 1.000.000.000 CLP según el contrato local. Subtotales y total
+  se recalculan sin decimales; las funciones crean objetos nuevos y no mutan el original.
+- Mezclar restaurantes o agregar un producto no disponible muestra error sin vaciar ni
+  modificar el ejemplo. Quitar la última línea o vaciar libera el restaurante.
+- **Eliminar** y **Vaciar ejemplo** requieren confirmación. Cancelar conserva productos y
+  devuelve el foco al botón original; confirmar anuncia éxito solo del ejemplo local.
+  Durante la confirmación se bloquean operaciones y cambio de ejemplo, pero no logout.
+  La identidad del carrito ficticio se conserva al vaciar; no se borran datos reales.
+- Reiniciar el ejemplo, cambiar cuenta o salir elimina borradores, errores y confirmaciones.
+  No existe persistencia ni guardado automático. El simulador y estas operaciones siguen
+  excluidos de producción; el frontend real muestra integración pendiente.
+
+Recorrido adicional en `npm run preview:cart`:
+
+1. Elegir vacío, agregar dos hamburguesas ($11.000) y agregar una más ($16.500).
+2. Intentar cantidad 100: error y total conservado. Aplicar 4: total $22.000.
+3. Intentar pizza de otro restaurante y postre no disponible: error sin cambios.
+4. Eliminar hamburguesa: cancelar conserva $22.000; confirmar deja $0. Ahora sí admite pizza.
+5. Vaciar: cancelar conserva el ejemplo, confirmar deja $0 y deshabilita vaciar.
+6. Restablecer una cantidad inválida devuelve el valor aplicado. Cambiar de cuenta con un
+   borrador o cerrar sesión durante una confirmación limpia la pantalla sin aplicar esa acción.
+
+Verificado: **128 pruebas** aprobadas, lint y build correctos. Pruebas puras de cantidades,
+límites de líneas/precio, total máximo exacto, inmutabilidad, restaurante, disponibilidad,
+eliminación/vaciado y controles accesibles. Recorrido de navegador en escritorio/móvil
+390 px, teclado y foco, sin desbordamiento ni errores de consola.
+
+Cambios del bloque 2 sin commit/push. Siguiente: adaptador asíncrono de prueba, carga,
+errores y reintentos manuales, bloqueo de envíos simultáneos y resultados tardíos.
+La simulación actual de `version`/fecha no representa garantías de concurrencia del servidor.

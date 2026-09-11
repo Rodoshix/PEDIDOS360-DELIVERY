@@ -14,6 +14,7 @@ let ProfileForm
 let ProfilePending
 let CartDemoPanel
 let CartSummary
+let CartCatalogForm
 
 before(async () => {
   // Transformar JSX con la configuración real, sin abrir un puerto ni conectar a Azure.
@@ -31,6 +32,7 @@ before(async () => {
   ProfilePending = (await server.ssrLoadModule('/src/features/usuarios/ProfilePending.jsx')).default
   CartDemoPanel = (await server.ssrLoadModule('/src/features/carrito/CartDemoPanel.jsx')).default
   CartSummary = (await server.ssrLoadModule('/src/features/carrito/CartSummary.jsx')).default
+  CartCatalogForm = (await server.ssrLoadModule('/src/features/carrito/CartCatalogForm.jsx')).default
 })
 
 after(async () => { await server?.close() })
@@ -200,4 +202,24 @@ test('un ejemplo vacío se identifica como simulado y muestra cero sin deducir d
   assert.match(html, /Carrito vacío en este ejemplo/)
   assert.match(html, /No describe tu carrito real/)
   assert.match(html, /\$0/)
+})
+
+test('edición de cantidad está etiquetada y bloqueada durante confirmación', () => {
+  const html = renderToStaticMarkup(createElement(CartSummary, { cart: { total: 5500, items: [
+    { productoId: 1, nombre: 'Prueba', precioUnitario: 5500, cantidad: 1, subtotal: 5500 },
+  ] }, disabled: true, onQuantity: () => {}, onRemove: () => {} }))
+  assert.match(html, /Nueva cantidad de Prueba/)
+  assert.match(html, /inputMode="numeric"/)
+  assert.match(html, /<fieldset disabled=""/)
+  assert.match(html, /disabled="">Aplicar cantidad/)
+  assert.match(html, /disabled="">Eliminar Prueba/)
+})
+
+test('catálogo muestra productos ficticios de dos restaurantes e indisponible sin enviar al render', () => {
+  const html = renderToStaticMarkup(createElement(CartCatalogForm, { disabled: true, onAdd: () => { throw new Error('No enviar durante render') } }))
+  assert.match(html, /Restaurante A de prueba/)
+  assert.match(html, /Restaurante B de prueba/)
+  assert.match(html, /No disponible/)
+  assert.match(html, /<fieldset class="cart-edit-fields" disabled=""/)
+  assert.match(html, /Cantidad para agregar/)
 })
