@@ -32,13 +32,13 @@ docker compose --env-file .env.local up -d --wait
 .\mvnw.cmd spring-boot:run
 ```
 
-Spring carga `.env.local` desde el directorio de ejecución. El puerto local de PostgreSQL es 5435; si se cambia `DB_PORT`, actualizar también `DB_URL`.
+Spring carga `.env.local` desde el directorio de ejecución. El puerto local de PostgreSQL es 5436; si se cambia `DB_PORT`, actualizar también `DB_URL`.
 
 ## Configuración
 
 | Variable | Uso |
 | --- | --- |
-| `DB_URL` | URL JDBC de PostgreSQL; local: `jdbc:postgresql://localhost:5435/pedidos360_pedidos`. |
+| `DB_URL` | URL JDBC de PostgreSQL; local: `jdbc:postgresql://localhost:5436/pedidos360_pedidos`. |
 | `DB_USERNAME` | Usuario PostgreSQL. |
 | `DB_PASSWORD` | Contraseña, sin valor incorporado al código. |
 | `DB_NAME`, `DB_PORT` | Nombre de base y puerto publicado por el Compose local. |
