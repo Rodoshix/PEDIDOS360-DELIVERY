@@ -129,4 +129,26 @@ y publicación de aplicaciones solo en loopback. Las dos bases no publican puert
 `Test-I1Compose.ps1` prueba un proyecto separado con configuración ficticia, cinco
 servicios saludables, protección de las APIs y persistencia al recrear contenedores
 sin borrar los volúmenes. Solo después retira los datos sintéticos de la prueba.
-Bloque 3 completado para publicación; la revisión final corresponde al bloque 4.
+Bloque 3 publicado en `ea79844`.
+
+## Revisión final — bloque 4
+
+Verificación repetida antes del PR hacia `develop`:
+
+- Frontend: **158 pruebas**, lint y build correctos; el build productivo excluye los
+  simuladores. Principal 499,19 kB (142,73 kB gzip en build local); vigilar el margen.
+- Usuarios: **27 pruebas**. Carrito: **52 pruebas**. Cero fallos, errores u omisiones
+  en ambos `mvnw verify`; PostgreSQL temporal de Testcontainers, no bases del usuario.
+- Compose: nueva construcción y dos arranques completos con cinco servicios healthy.
+  Smoke HTTP, APIs protegidas y marcadores persistentes tras `down`/`up` aprobados.
+- La prueba ahora verifica también usuario/read-only efectivo en runtime, un único
+  puerto loopback por app, capabilities retiradas, `no-new-privileges`, redes exclusivas,
+  ausencia de montajes de host, volúmenes propios y argumentos públicos de build
+  limitados a los cinco esperados. URI SPA consistente con el puerto publicado.
+- `git diff --check` correcto. Solo ejemplos de entorno versionados; no `.env.local`,
+  claves ni artefactos del host. Los Compose anteriores y contratos de negocio no cambian.
+- Recursos sintéticos retirados al terminar; imágenes conservadas. No se realizó
+  login real, auditoría de vulnerabilidades de imágenes ni prueba de integración BFF/AWS.
+
+Implementación preparada para revisión. El issue #25 permanece abierto hasta la
+revisión/merge del PR; según CONTRIBUTING.md se necesita aprobación de otra persona.

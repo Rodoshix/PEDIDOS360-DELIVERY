@@ -73,8 +73,9 @@ y [Nginx sin privilegios](https://github.com/nginx/docker-nginx-unprivileged).
 
 Resultado del bloque: build y **158 pruebas** dentro de Docker; ejecución read-only con
 UID 101 y health saludable; smoke HTTP y recarga de rutas privadas sin sesión comprobados.
-No prueba login real ni integración de servicios. Bloque 1 completado para publicación;
-siguiente bloque: Dockerfiles de Usuarios y Carrito. Compose conjunto vendrá después.
+No prueba login real ni integración de servicios. El bloque 1 está publicado y el
+[Compose conjunto de componentes 1](../infrastructure/docker/i1/README.md) ya está disponible
+para levantar frontend, Usuarios, Carrito y sus bases independientes.
 
 Base compartida con React, Vite, JavaScript, React Router y Axios. Incluye Inicio, página 404, layout, cliente HTTP y autenticación con Microsoft Entra ID (Issue #11, PR #18 integrado). El Issue #21 incorpora Perfil / Mi cuenta por bloques, sin integración real de servicios todavía.
 

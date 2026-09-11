@@ -114,13 +114,13 @@ sintéticos creados por el script. Las imágenes quedan en Docker. Si se interru
 forzosamente, revisar los recursos de ese proyecto concreto, sin limpiar Docker globalmente.
 
 Esto acredita funcionamiento del Compose local y persistencia, no integración BFF,
-validación JWT, login real, pagos ni tareas del integrante 5. Después de este bloque
-queda la revisión final/regresiones/documentación antes del PR.
+validación JWT, login real, pagos ni tareas del integrante 5. La revisión final se
+documenta en la [guía de componentes 1](../README-i1.md#revisión-final--bloque-4).
 
 Resultado verificado del bloque 3: configuración y build correctos; los cinco servicios
 healthy en ambos arranques; smoke HTTP aprobado, APIs con 401 esperado y ambos marcadores
 conservados tras `down`/`up`. Se retiraron los contenedores, redes y volúmenes del proyecto
-sintético, sin afectar recursos existentes. Bloque 3 completado para publicación.
+sintético, sin afectar recursos existentes. Bloque 3 publicado en `ea79844`.
 
 Referencias: [orden de arranque](https://docs.docker.com/compose/how-tos/startup-order/)
 y [variables de Compose](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/).

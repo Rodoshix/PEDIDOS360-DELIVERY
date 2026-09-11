@@ -34,6 +34,11 @@ function Check-Services {
         Assert-True ($id -match '^[0-9a-f]{64}$') "Contenedor no encontrado: $service"
         $health = Invoke-Docker inspect $id --format '{{.State.Health.Status}}'
         Assert-True ($health -eq 'healthy') "Servicio no saludable: $service"
+        if ($service -in @('frontend', 'usuarios', 'carrito')) {
+            $runtime = Invoke-Docker inspect $id --format '{{.Config.User}} {{.HostConfig.ReadonlyRootfs}}'
+            $expected = if ($service -eq 'frontend') { '101:101 true' } else { '10001:10001 true' }
+            Assert-True ($runtime -eq $expected) "Runtime sin aislamiento esperado: $service"
+        }
     }
     & node (Join-Path $repoRoot 'frontend/tools/docker-smoke.mjs') "http://127.0.0.1:$env:I1_FRONTEND_PORT"
     if ($LASTEXITCODE -ne 0) { throw 'Smoke HTTP del frontend falló' }
@@ -84,10 +89,27 @@ try {
         Assert-True ($api.environment.LOCAL_IDENTITY_ENABLED -eq 'false') 'No habilitar identidad ficticia'
     }
     foreach ($name in @('frontend', 'usuarios', 'carrito')) {
+        Assert-True (@($model.services.$name.ports).Count -eq 1) 'Solo se permite un puerto de aplicación'
         Assert-True ($model.services.$name.ports[0].host_ip -eq '127.0.0.1') 'Puerto fuera de loopback'
         Assert-True ($model.services.$name.read_only -eq $true) 'Runtime debe ser read-only'
+        Assert-True ($model.services.$name.cap_drop -contains 'ALL') 'Falta retirar capabilities'
+        Assert-True ($model.services.$name.security_opt -contains 'no-new-privileges:true') 'Falta no-new-privileges'
+        $networks = @($model.services.$name.networks.PSObject.Properties.Name)
+        Assert-True ($networks.Count -eq 1 -and $networks[0] -eq $name) 'Red de aplicación compartida inesperadamente'
+        Assert-True (-not $model.services.$name.volumes) 'No montar archivos/volúmenes del host en las aplicaciones'
     }
+    Assert-True (-not $model.services.frontend.depends_on) 'Frontend no debe fingir dependencia de APIs sin integrar'
+    $buildArgs = @($model.services.frontend.build.args.PSObject.Properties.Name)
+    $allowedArgs = @('VITE_API_BASE_URL', 'VITE_ENTRA_CLIENT_ID', 'VITE_ENTRA_TENANT_ID', 'VITE_ENTRA_REDIRECT_URI', 'VITE_ENTRA_API_SCOPE')
+    Assert-True ($buildArgs.Count -eq 5 -and @($buildArgs | Where-Object { $_ -notin $allowedArgs }).Count -eq 0) 'Argumentos de build no permitidos'
+    Assert-True ($model.services.frontend.build.args.VITE_ENTRA_REDIRECT_URI -eq "http://localhost:$env:I1_FRONTEND_PORT") 'URI SPA no coincide con el puerto publicado'
     Assert-True (@($model.volumes.PSObject.Properties).Count -eq 2) 'Se esperaban dos volúmenes'
+    foreach ($name in @('usuarios', 'carrito')) {
+        $volume = $model.volumes."${name}_pg_data"
+        Assert-True (-not $volume.external -and $volume.name -eq "${project}_${name}_pg_data") 'Volumen fuera del proyecto'
+        $dbNetworks = @($model.services."$name-db".networks.PSObject.Properties.Name)
+        Assert-True ($dbNetworks.Count -eq 1 -and $dbNetworks[0] -eq $name) 'Base conectada a una red ajena'
+    }
     foreach ($passwordKey in @('I1_USUARIOS_DB_PASSWORD', 'I1_CARRITO_DB_PASSWORD')) {
         [Environment]::SetEnvironmentVariable($passwordKey, '', 'Process')
         $failure = & docker compose --project-name $project --env-file $exampleFile --file $composeFile config --quiet 2>&1
