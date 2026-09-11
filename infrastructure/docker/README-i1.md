@@ -117,3 +117,16 @@ dependencias y arranque conjunto corresponden al siguiente bloque de Compose.
 Bloque 2 completado para publicación. El frontend permanece publicado en `e9a4fa5`.
 Siguiente: Compose propio del Integrante 1, con volúmenes persistentes separados,
 variables y dependencias de arranque. La integración HTTP/BFF sigue fuera del issue.
+
+## Bloque 3 — Compose propio
+
+El bloque 2 está publicado en `a145376`. El Compose nuevo se encuentra en
+[`i1/compose.yml`](i1/compose.yml), con [configuración y operación](i1/README.md).
+No reemplaza `docker-compose.yml` de esta carpeta ni los Compose de cada servicio.
+Usa PostgreSQL 17 fijado por digest, redes/volúmenes separados, dependencias saludables
+y publicación de aplicaciones solo en loopback. Las dos bases no publican puertos.
+
+`Test-I1Compose.ps1` prueba un proyecto separado con configuración ficticia, cinco
+servicios saludables, protección de las APIs y persistencia al recrear contenedores
+sin borrar los volúmenes. Solo después retira los datos sintéticos de la prueba.
+Bloque 3 completado para publicación; la revisión final corresponde al bloque 4.
