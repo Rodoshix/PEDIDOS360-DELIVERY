@@ -1,16 +1,17 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { parseQuantity } from './cartOperations.js'
 
-export default function CartQuantityForm({ item, onChange, disabled = false }) {
+export default function CartQuantityForm({ item, onChange, disabled = false, saving = false }) {
   const id = useId()
   const [draft, setDraft] = useState(String(item.cantidad))
   const [error, setError] = useState('')
   const errorRef = useRef(null)
   const inputRef = useRef(null)
+  const submitting = useRef(false)
   useEffect(() => { if (error) errorRef.current?.focus() }, [error])
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault()
-    if (disabled) return
+    if (disabled || submitting.current) return
     let quantity
     try { quantity = parseQuantity(draft) } catch {
       setError('La cantidad debe ser un entero entre 1 y 99.')
@@ -18,10 +19,12 @@ export default function CartQuantityForm({ item, onChange, disabled = false }) {
       return
     }
     setError('')
-    if (onChange(item.productoId, quantity) !== false) setDraft(String(quantity))
+    submitting.current = true
+    try { if (await onChange(item.productoId, quantity) !== false) setDraft(String(quantity)) }
+    finally { submitting.current = false }
   }
   return (
-    <form onSubmit={submit} noValidate aria-label={`Cambiar cantidad de ${item.nombre}`}>
+    <form onSubmit={submit} noValidate aria-label={`Cambiar cantidad de ${item.nombre}`} aria-busy={saving}>
       <fieldset disabled={disabled} className="cart-edit-fields">
         <legend className="cart-field-legend">Editar cantidad</legend>
         <label htmlFor={id}>Nueva cantidad de {item.nombre}</label>

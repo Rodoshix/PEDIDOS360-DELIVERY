@@ -470,3 +470,66 @@ eliminación/vaciado y controles accesibles. Recorrido de navegador en escritori
 Cambios del bloque 2 sin commit/push. Siguiente: adaptador asíncrono de prueba, carga,
 errores y reintentos manuales, bloqueo de envíos simultáneos y resultados tardíos.
 La simulación actual de `version`/fecha no representa garantías de concurrencia del servidor.
+
+### Bloque 3 — Adaptador asíncrono, errores y reintentos
+
+Bloque 2 publicado en `0fcad51`. Este bloque sustituye las operaciones síncronas de la
+pantalla por un controlador y un adaptador aislados por cuenta, con 600 ms de demora
+simulada. Sigue sin HTTP, tokens ni almacenamiento persistente de datos del carrito.
+
+El selector **Escenario de Carrito** permite consultar productos, vacío, consulta que falla
+una vez, operación que falla una vez, conflicto una vez y acceso denegado. Pulsar **Cargar
+escenario de Carrito** reinicia sus datos y fallos. Reintentar desde los controles normales
+mantiene la instancia. En los escenarios de escritura, falla la primera operación válida
+enviada al adaptador (agregar, cantidad, eliminar o vaciar), no cada operación por separado.
+
+- Estados `idle`, `loading`, `ready`, `empty`, `saving` y `error`. Un carrito vacío requiere
+  un `CarritoResponse` válido con `items: []`; null, datos inválidos o errores no significan
+  ausencia. Acceso denegado no habilita operaciones, aunque el banco permita cambiar de escenario.
+- Controlador con bloqueo inmediato para impedir escrituras/consultas simultáneas. Campos,
+  botones de operación y selector de escenario se deshabilitan mientras espera. Los formularios
+  indican `aria-busy` y esperan el resultado antes de restablecer sus cantidades.
+- Al fallar se conserva el carrito anterior y el borrador. Repetir **Agregar al ejemplo** o
+  **Aplicar cantidad** reintenta manualmente; no hay reenvío automático. El error recibe foco.
+- Eliminar/vaciar conservan la confirmación si fallan. **Confirmar eliminación** permite
+  reintentar; **Cancelar eliminación** descarta la intención, limpia el error de escritura y
+  devuelve el foco. Durante la espera, ambos botones están deshabilitados, pero no el logout.
+- Respuestas validadas: metadatos, CLP, IDs seguros, líneas únicas, límites, subtotales y total
+  exacto. Se copian únicamente campos conocidos y se congelan la respuesta y sus líneas.
+  Errores se reconstruyen desde códigos conocidos; no se muestran cuerpos, causas ni mensajes
+  crudos del adaptador. El payload no incluye nombres, precios, totales ni identidad de sesión.
+- Al desmontar/cambiar cuenta se cancela la señal y se invalida la generación. Incluso un
+  adaptador que ignore AbortSignal no puede publicar éxito tardío en otra cuenta. El simulador
+  comprueba la señal antes de modificar datos. Esto **no garantiza rollback de una API real**.
+
+Interfaz preparada (no es todavía un contrato HTTP/BFF):
+
+- `read({ signal })` devuelve un `CarritoResponse` completo, también cuando está vacío.
+- `write(command, { signal })` devuelve el nuevo `CarritoResponse`. Comandos internos:
+  `{ type: 'add' | 'quantity', productoId, cantidad }`, `{ type: 'remove', productoId }`
+  o `{ type: 'clear' }`. El controlador valida y proyecta los campos antes de enviarlos.
+- No hay todavía mapeo de rutas/status HTTP, garantía de idempotencia ni resolución de
+  conflictos reales. El error simulado de escritura/conflicto ocurre antes de modificar datos;
+  no representa un timeout después de un guardado remoto, que requerirá otro tratamiento.
+
+Recorrido verificado en `npm run preview:cart`:
+
+1. Consulta falla una vez: espera, error, **Reintentar consulta**, productos por $12.500.
+2. Operación falla una vez: agregar cantidad 3 conserva el campo y total al fallar; reintentar
+   lleva el total a $29.000 y recién entonces restablece el campo a 1.
+3. Recargar ese escenario, aplicar cantidad 4: falla conservando borrador y total; reintentar
+   funciona. No se anuncia éxito mientras el formulario está ocupado.
+4. Conflicto una vez: eliminar bebida conserva confirmación/total al fallar; repetir confirma
+   y deja $11.000. Recargar, vaciar y cancelar tras conflicto conserva $12.500; confirmar
+   nuevamente el vaciado deja $0.
+5. Cambiar cuenta durante un agregado y cerrar sesión durante un vaciado no muestran éxito
+   tardío ni conservan borradores/confirmaciones en la nueva sesión.
+
+Resultado: **153 pruebas** aprobadas, lint/build y `git diff --check` correctos. Incluye
+duplicados, payload seguro, respuestas inválidas, errores sanitizados, cancelación,
+aislamiento y los cuatro tipos de operación con fallo/reintento. Revisión de teclado y móvil
+390 px, sin desbordamiento ni errores/avisos de consola. Producción excluye todo el adaptador
+y sus controles; principal 499,19 kB sin aviso de tamaño, todavía con margen reducido.
+
+Bloque 3 preparado sin commit/push. Siguiente: revisión final, documentación y preparación
+del PR; la integración real y Docker siguen fuera de esta rama.

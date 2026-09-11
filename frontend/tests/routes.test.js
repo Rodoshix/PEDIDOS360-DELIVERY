@@ -223,3 +223,15 @@ test('catálogo muestra productos ficticios de dos restaurantes e indisponible s
   assert.match(html, /<fieldset class="cart-edit-fields" disabled=""/)
   assert.match(html, /Cantidad para agregar/)
 })
+
+test('formularios del carrito informan operación en curso sin anunciar éxito', () => {
+  const catalog = renderToStaticMarkup(createElement(CartCatalogForm, { disabled: true, saving: true }))
+  const summary = renderToStaticMarkup(createElement(CartSummary, { cart: { total: 5500, items: [
+    { productoId: 1, nombre: 'Prueba', precioUnitario: 5500, cantidad: 1, subtotal: 5500 },
+  ] }, disabled: true, saving: true, onQuantity: () => {}, onRemove: () => {} }))
+  for (const html of [catalog, summary]) {
+    assert.match(html, /aria-busy="true"/)
+    assert.match(html, /disabled=""/)
+    assert.doesNotMatch(html, /Producto agregado|Cantidad actualizada/)
+  }
+})

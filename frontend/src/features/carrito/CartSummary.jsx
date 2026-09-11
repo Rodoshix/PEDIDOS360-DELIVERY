@@ -2,7 +2,7 @@ import { formatClp } from './cartMoney.js'
 import CartQuantityForm from './CartQuantityForm.jsx'
 
 // Respeta los importes de CarritoResponse. Edición opcional; sin envío ni descuentos inventados.
-export default function CartSummary({ cart, onQuantity, onRemove, disabled = false }) {
+export default function CartSummary({ cart, onQuantity, onRemove, disabled = false, saving = false }) {
   return (
     <div className="cart-layout">
       <section className="cart-card" aria-labelledby="cart-items-heading">
@@ -21,7 +21,7 @@ export default function CartSummary({ cart, onQuantity, onRemove, disabled = fal
                 <div><dt>Cantidad</dt><dd>{item.cantidad}</dd></div>
                 <div><dt>Subtotal</dt><dd>{formatClp(item.subtotal)}</dd></div>
               </dl>
-              {onQuantity && <CartQuantityForm key={`${item.productoId}:${item.cantidad}`} item={item} onChange={onQuantity} disabled={disabled} />}
+              {onQuantity && <CartQuantityForm key={`${item.productoId}:${item.cantidad}`} item={item} onChange={onQuantity} disabled={disabled} saving={saving} />}
               {onRemove && <button type="button" className="button button--secondary" disabled={disabled}
                 onClick={event => onRemove(item, event.currentTarget)}>Eliminar {item.nombre}</button>}
             </li>

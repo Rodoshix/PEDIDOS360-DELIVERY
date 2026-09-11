@@ -15,6 +15,7 @@ test('producción conserva el perfil pendiente y excluye todo el flujo simulado'
   assert.match(modules, /\/CartPending\.jsx/)
   assert.doesNotMatch(modules, /\/(CartDemoPanel|CartSummary)\.jsx|\/cartDemo\.js/)
   assert.doesNotMatch(modules, /\/(CartQuantityForm|CartCatalogForm)\.jsx|\/(cartOperations|cartCatalogDemo)\.js/)
+  assert.doesNotMatch(modules, /\/(cartService|cartDemoAdapter|cartErrors)\.js/)
   assert.match(code, /Carrito aún no consultado/)
   assert.doesNotMatch(code, /Hamburguesa de ejemplo|Ver carrito de ejemplo|Ver ejemplo vacío/)
 })
