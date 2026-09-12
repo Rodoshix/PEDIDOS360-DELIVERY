@@ -153,6 +153,17 @@ test('el formulario real del bloque 1 no afirma guardar y tiene el submit deshab
   assert.equal((html.match(/<input /g) || []).length, 4)
 })
 
+test('formulario real permite crear y editar sin presentarlo como simulación', () => {
+  const html = renderToStaticMarkup(createElement(ProfileForm, { mode: 'real' }))
+  assert.match(html, /Guardar envía estos datos a Usuarios/)
+  assert.match(html, />Crear perfil<\/button>/)
+  assert.doesNotMatch(html, /Aplicar al ejemplo|Usa datos ficticios|deshabilitado/)
+  const saving = renderToStaticMarkup(createElement(ProfileForm, { mode: 'real', saving: true }))
+  assert.match(saving, /disabled="">Guardando perfil…/)
+  assert.match(saving, /<fieldset disabled/)
+  assert.doesNotMatch(saving, /Guardando ejemplo/)
+})
+
 test('la edición precarga solo los campos del perfil, sin aplicar durante el render', () => {
   const initial = Object.freeze({ nombre: 'Alex', apellido: 'Ejemplo', email: 'alex@example.test', telefono: null,
     id: 'ID-NO-EDITABLE', roles: ['ROL-NO-EDITABLE'], activo: true })

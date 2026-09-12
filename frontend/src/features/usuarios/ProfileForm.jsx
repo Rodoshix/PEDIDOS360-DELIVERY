@@ -57,7 +57,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel, 
   return (
     <form className="profile-form" onSubmit={submit} noValidate aria-labelledby={`${id}-heading`} aria-busy={saving}>
       <h3 id={`${id}-heading`}>{initialProfile ? 'Editar perfil' : 'Crear perfil'}{mode === 'demo' ? ' de prueba' : ''}</h3>
-      <p id={`${id}-help`} className="account-note">{mode === 'demo' ? 'Usa datos ficticios. Aplicar actualiza solo esta vista; no guarda en Usuarios ni cambia tu cuenta Microsoft.' : 'Datos de contacto del perfil. El guardado todavía está deshabilitado; el borrador no se envía a Usuarios.'}</p>
+      <p id={`${id}-help`} className="account-note">{mode === 'demo' ? 'Usa datos ficticios. Aplicar actualiza solo esta vista; no guarda en Usuarios ni cambia tu cuenta Microsoft.' : saveEnabled ? 'Guardar envía estos datos a Usuarios mediante el BFF. No modifica tu cuenta Microsoft.' : 'Datos de contacto del perfil. El guardado todavía está deshabilitado; el borrador no se envía a Usuarios.'}</p>
       {hasErrors && (
         <div ref={errorSummary} tabIndex={-1} className="profile-form__error-summary" role="alert">
           <p>Revisa los campos indicados antes de continuar.</p>
@@ -67,7 +67,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel, 
         </div>
       )}
       {submitError && <div ref={saveError} tabIndex={-1} className="profile-form__error-summary" role="alert">{submitError.message}</div>}
-      {saving && <p role="status">Guardando ejemplo… No cierres esta vista mientras termina la simulación.</p>}
+      {saving && <p role="status">{mode === 'demo' ? 'Guardando ejemplo… No cierres esta vista mientras termina la simulación.' : 'Guardando perfil en Usuarios… No cierres esta vista hasta recibir el resultado.'}</p>}
       <fieldset disabled={confirmDiscard || saving} aria-describedby={`${id}-help`}>
         <legend className="profile-form__legend">Datos de contacto</legend>
         <div className="profile-form__fields">
@@ -101,7 +101,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel, 
         </div>
       )}
       <div className="account-actions">
-        <button type="submit" className="button button--primary session-controls__button" disabled={!saveEnabled || saving || confirmDiscard || (Boolean(initialProfile) && !dirty)}>{!saveEnabled ? 'Guardado pendiente de integración' : saving ? 'Guardando ejemplo…' : 'Aplicar al ejemplo'}</button>
+        <button type="submit" className="button button--primary session-controls__button" disabled={!saveEnabled || saving || confirmDiscard || (Boolean(initialProfile) && !dirty)}>{!saveEnabled ? 'Guardado pendiente de integración' : mode === 'demo' ? saving ? 'Guardando ejemplo…' : 'Aplicar al ejemplo' : saving ? 'Guardando perfil…' : initialProfile ? 'Guardar cambios' : 'Crear perfil'}</button>
         <button ref={cancelButton} type="button" className="button button--secondary session-controls__button" onClick={cancel} disabled={saving || confirmDiscard}>Cancelar</button>
       </div>
     </form>
