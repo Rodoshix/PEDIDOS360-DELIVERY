@@ -35,6 +35,12 @@ usuarios:
     object-id: ${LOCAL_OBJECT_ID:}
     roles: ${LOCAL_ROLES:CLIENTE}
 
+entra:
+  enabled: ${ENTRA_ENABLED:false}
+  tenant-id: ${ENTRA_TENANT_ID:}
+  api-client-id: ${ENTRA_API_CLIENT_ID:}
+  frontend-client-id: ${ENTRA_FRONTEND_CLIENT_ID:}
+
 management:
   endpoints:
     web:

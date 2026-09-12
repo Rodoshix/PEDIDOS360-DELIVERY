@@ -1,9 +1,16 @@
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
   application:
     name: pedidos360-bff
 server:
   address: ${SERVER_ADDRESS:127.0.0.1}
   port: ${SERVER_PORT:8080}
+entra:
+  enabled: ${ENTRA_ENABLED:false}
+  tenant-id: ${ENTRA_TENANT_ID:}
+  api-client-id: ${ENTRA_API_CLIENT_ID:}
+  frontend-client-id: ${ENTRA_FRONTEND_CLIENT_ID:}
 management:
   endpoints:
     web:

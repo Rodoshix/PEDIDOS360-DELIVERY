@@ -1,5 +1,17 @@
 # Usuarios Service
 
+## Seguridad Entra — bloque 2 del issue #34
+
+Se agregó validación JWT opt-in mediante ENTRA_ENABLED=true, ENTRA_TENANT_ID,
+ENTRA_API_CLIENT_ID y ENTRA_FRONTEND_CLIENT_ID. Los tres IDs son UUID públicos.
+Acepta solo tokens v2 para la API, del frontend permitido, con access_as_user y
+CLIENTE/ADMIN. Identidad por tid/oid, nunca por email ni cabeceras del cliente.
+JWT y la identidad local no pueden activarse juntos.
+
+Consultar [la guía del BFF](../../bff/README.md) para versión de token y variables.
+El relay y la prueba manual con Entra todavía están pendientes; las referencias
+históricas a seguridad pendiente más abajo corresponden al modo local original.
+
 Servicio de perfiles internos de Pedidos360. Java 21, Spring Boot 4.1.1 y Maven Wrapper 3.9.15.
 
 ## Imagen Docker — Issue #25
