@@ -1,6 +1,7 @@
 package cl.duoc.pedidos360.pagos;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import cl.duoc.pedidos360.pagos.client.PedidoResumen;
@@ -12,11 +13,15 @@ import org.springframework.http.HttpStatus;
  * Stub de {@link PedidosClient} para pruebas.
  * Permite registrar pedidos con dueño/estado y simular la pérdida de respuesta en la confirmación
  * (el pedido sí queda confirmado en Pedidos, pero el cliente recibe un error).
+ * Replica el rechazo de transiciones inválidas (p. ej. CANCELADO → CONFIRMADO).
  */
 public class PedidosClientStub implements PedidosClient {
 
     public static final long PEDIDO_EXISTENTE = 500L;
     public static final long PEDIDO_INEXISTENTE = 999L;
+
+    private static final Set<String> ESTADOS_CONFIRMADOS =
+            Set.of("CONFIRMADO", "PREPARANDO", "LISTO", "EN_REPARTO", "ENTREGADO");
 
     private final Map<Long, PedidoResumen> pedidos = new ConcurrentHashMap<>();
     private int confirmaciones = 0;
@@ -44,8 +49,16 @@ public class PedidosClientStub implements PedidosClient {
     public void confirmar(Long pedidoId) {
         confirmaciones++;
         PedidoResumen actual = pedidos.get(pedidoId);
-        boolean yaConfirmado = actual != null && "CONFIRMADO".equals(actual.estado());
-        if (actual != null && !yaConfirmado) {
+        if (actual == null) {
+            throw new PagoException(HttpStatus.NOT_FOUND, "Pedido no encontrado.");
+        }
+        boolean yaConfirmado = ESTADOS_CONFIRMADOS.contains(actual.estado());
+        if (!yaConfirmado && !"CREADO".equals(actual.estado())) {
+            // Transición inválida (p. ej. CANCELADO → CONFIRMADO): Pedidos responde conflicto.
+            throw new PagoException(HttpStatus.CONFLICT,
+                    "Transición inválida desde " + actual.estado() + ".");
+        }
+        if (!yaConfirmado) {
             pedidos.put(pedidoId, new PedidoResumen(actual.pedidoId(), actual.usuarioId(),
                     "CONFIRMADO", actual.total(), actual.moneda()));
         }

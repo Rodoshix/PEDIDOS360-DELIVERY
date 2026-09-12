@@ -19,6 +19,9 @@ Reglas principales:
 - **Coordinación recuperable**: el pago se persiste primero (commit local) y luego se confirma el pedido.
   Si la confirmación falla o se pierde la respuesta, el pago queda con `pedido_confirmado=false` y la
   reconciliación lo reintenta de forma idempotente.
+- **Confirmación verificada (no optimista)**: un rechazo de Pedidos (400/409) **no** se trata automáticamente
+  como éxito: se consulta el estado real del pedido y solo se acepta si ya está confirmado o en un estado
+  posterior. Un pedido `CANCELADO` u otro estado no confirmado deja la coordinación **pendiente**, no confirmada.
 - El **monto** se toma del pedido; no se confía en un monto enviado por el cliente.
 - El **usuarioId** se resuelve desde la identidad autenticada, no desde el cuerpo.
 

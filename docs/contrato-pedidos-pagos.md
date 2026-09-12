@@ -45,7 +45,8 @@ Estados terminales: `ENTREGADO`, `CANCELADO`.
 - **Idempotencia con alcance por identidad:** la `Idempotency-Key` se interpreta por usuario. Un reintento idéntico devuelve el mismo pago; la misma clave con otro pedido o método responde **409**.
 - **Un pago activo por pedido:** garantizado en PostgreSQL con índice único parcial sobre `pedido_id` para `PENDIENTE`/`APROBADO`; el conflicto se traduce a **409**.
 - **Autorización:** registrar/consultar exige pertenencia del pedido a la identidad (o rol `ADMIN`); aprobar un cobro exige permiso explícito (`REPARTIDOR` o `ADMIN`).
-- **Coordinación recuperable:** el pago se persiste antes de confirmar el pedido. Si la confirmación falla o se pierde la respuesta, el pago queda con `pedido_confirmado=false` y un proceso de reconciliación lo reintenta de forma idempotente (confirmar un pedido ya confirmado no falla).
+- **Coordinación recuperable:** el pago se persiste antes de confirmar el pedido. Si la confirmación falla o se pierde la respuesta, el pago queda con `pedido_confirmado=false` y un proceso de reconciliación lo reintenta de forma idempotente.
+- **Confirmación verificada:** un 400/409 de Pedidos no se interpreta automáticamente como éxito; se consulta el estado real del pedido y solo se acepta si ya está `CONFIRMADO` o en un estado posterior. Un pedido `CANCELADO` deja la coordinación pendiente, no confirmada.
 
 ## 5. DTOs (implementados en pedidos)
 

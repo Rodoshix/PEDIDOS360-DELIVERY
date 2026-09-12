@@ -76,4 +76,22 @@ class PagoRecuperacionTests {
         assertThat(reintento.pagoId()).isEqualTo(pago.pagoId());
         assertThat(repositorio.count()).isEqualTo(1);
     }
+
+    @Test
+    void pedidoCanceladoNoQuedaMarcadoComoConfirmado() {
+        // El pedido existe pero está CANCELADO: la confirmación es una transición inválida.
+        pedidosStub.registrarPedido(PedidosClientStub.PEDIDO_EXISTENTE, 10L, "CANCELADO", 13980L, "CLP");
+
+        var pago = pagos.registrar(USUARIO, "clave-cancelado",
+                new CrearPagoRequest(PedidosClientStub.PEDIDO_EXISTENTE, MetodoPago.TARJETA));
+
+        // El pago se persiste, pero la coordinación queda pendiente (no confirmada).
+        var persistido = repositorio.findById(pago.pagoId()).orElseThrow();
+        assertThat(persistido.isPedidoConfirmado()).isFalse();
+
+        // La reconciliación no debe marcar como confirmado un pedido cancelado.
+        assertThat(pagos.reconciliarConfirmacionesPendientes()).isZero();
+        assertThat(repositorio.findById(pago.pagoId()).orElseThrow().isPedidoConfirmado()).isFalse();
+        assertThat(pedidosStub.estaConfirmado(PedidosClientStub.PEDIDO_EXISTENTE)).isFalse();
+    }
 }
