@@ -2,7 +2,7 @@
 
 Bloques 1 y 2: `AccountPage` monta `RealProfilePanel` con una clave por identidad
 Microsoft. Se reutilizan `createProfileController` y el cliente HTTP autenticado.
-El adaptador solicita exclusivamente `GET /usuarios/me` al BFF, con AbortSignal.
+Para consultar, el adaptador solicita `GET /usuarios/me` al BFF, con AbortSignal.
 Solo un 404 controlado representa ausencia. Un 200 malformado, un 401/403 o un
 error de red nunca habilitan el formulario de creación como si faltara el perfil.
 
@@ -31,5 +31,24 @@ Verificación: `npm test`, `npm run lint`, `npm run build`. Prueba manual local
 en la base temporal mostró el formulario tras 404. Bloque 2: 184 tests frontend
 aprobados y lint/build correctos; creación/edición cubiertas con cliente inyectado,
 incluyendo estados HTTP, datos inválidos, doble envío y cancelación.
-La prueba manual de crear/editar/recargar con Entra y PostgreSQL queda pendiente
-para el bloque 3. El build advierte del chunk principal >500 kB.
+El build advierte del chunk principal >500 kB; no impide compilar.
+
+## Evidencia manual del bloque 3
+
+Prueba realizada el 2026-09-12 en el navegador integrado, con sesión Entra real,
+frontend local, BFF y Usuarios activos, y PostgreSQL temporal. Recorrido:
+
+1. La consulta inicial sin perfil mostró el formulario de creación.
+2. Se creó un perfil ficticio: nombre `Prueba`, apellido `Integracion`, email
+   `perfil.integracion@example.test` y teléfono vacío. La UI confirmó el guardado.
+3. Se editó el nombre a `Prueba Editada`; la UI mostró el perfil actualizado.
+4. Una consulta directa de PostgreSQL confirmó un único registro con esos datos.
+5. Se recargó Mi cuenta y el nombre editado permaneció, obtenido de Usuarios.
+
+No se modificaron datos de la cuenta Microsoft ni se copiaron tokens o secretos.
+La base de prueba es desechable: esta evidencia demuestra persistencia entre
+consultas y recargas mientras existe esa base, no un despliegue en AWS ni
+durabilidad tras eliminar el contenedor temporal. Para repetir, usar otra base
+de prueba vacía y una cuenta autorizada; no borrar perfiles de una base compartida.
+Los escenarios de error, cancelación y doble envío se cubren en los tests
+automatizados; el recorrido manual anterior corresponde al caso exitoso.
