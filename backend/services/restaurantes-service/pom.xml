@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
+        <version>4.1.1</version>
         <relativePath/>
     </parent>
 
@@ -25,10 +25,10 @@
 
     <dependencies>
 
-        <!-- API REST -->
+        <!-- API REST con Spring MVC -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
         <!-- Persistencia con JPA -->
@@ -50,15 +50,22 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Migraciones de base de datos -->
+        <!-- Migraciones Flyway -->
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
 
+        <!-- Soporte Flyway para PostgreSQL -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+
+        <!-- Health / Management -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <!-- Pruebas -->
