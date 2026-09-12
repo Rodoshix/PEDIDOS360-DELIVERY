@@ -2,10 +2,13 @@ package cl.duoc.pedidos360.productos.controller;
 
 import cl.duoc.pedidos360.productos.dto.ProductoRequest;
 import cl.duoc.pedidos360.productos.dto.ProductoResponse;
+import cl.duoc.pedidos360.productos.exception.ErrorResponse;
 import cl.duoc.pedidos360.productos.service.ProductoService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,7 +41,7 @@ public class ProductoController {
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Listado de productos obtenido correctamente"
+            description = "Productos obtenidos correctamente"
     )
     public List<ProductoResponse> listarTodos() {
         return productoService.listarTodos();
@@ -47,7 +50,7 @@ public class ProductoController {
     @GetMapping("/{id}")
     @Operation(
             summary = "Obtener producto por ID",
-            description = "Obtiene los datos de un producto utilizando su identificador."
+            description = "Obtiene el detalle de un producto mediante su identificador."
     )
     @ApiResponses({
             @ApiResponse(
@@ -56,7 +59,11 @@ public class ProductoController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Producto no encontrado"
+                    description = "Producto no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
     public ProductoResponse buscarPorId(
@@ -72,18 +79,14 @@ public class ProductoController {
     @GetMapping("/restaurante/{restauranteId}")
     @Operation(
             summary = "Listar productos por restaurante",
-            description = "Obtiene todos los productos asociados a un restaurante."
+            description = "Obtiene todos los productos asociados a un restaurante. "
+                    + "Si no existen productos asociados, se devuelve una lista vacía."
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Productos del restaurante obtenidos correctamente"
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Restaurante o productos asociados no encontrados"
-            )
-    })
+    @ApiResponse(
+            responseCode = "200",
+            description = "Productos del restaurante obtenidos correctamente. "
+                    + "La lista puede estar vacía."
+    )
     public List<ProductoResponse> listarPorRestaurante(
             @Parameter(
                     description = "Identificador del restaurante",
@@ -97,18 +100,14 @@ public class ProductoController {
     @GetMapping("/restaurante/{restauranteId}/disponibles")
     @Operation(
             summary = "Listar productos disponibles por restaurante",
-            description = "Obtiene únicamente los productos disponibles de un restaurante."
+            description = "Obtiene los productos disponibles asociados a un restaurante. "
+                    + "Si no existen productos disponibles, se devuelve una lista vacía."
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Productos disponibles obtenidos correctamente"
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Restaurante o productos asociados no encontrados"
-            )
-    })
+    @ApiResponse(
+            responseCode = "200",
+            description = "Productos disponibles obtenidos correctamente. "
+                    + "La lista puede estar vacía."
+    )
     public List<ProductoResponse> listarDisponiblesPorRestaurante(
             @Parameter(
                     description = "Identificador del restaurante",
@@ -123,7 +122,7 @@ public class ProductoController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(
             summary = "Crear producto",
-            description = "Registra un nuevo producto en el catálogo de Pedidos360."
+            description = "Registra un nuevo producto en el catálogo."
     )
     @ApiResponses({
             @ApiResponse(
@@ -132,7 +131,11 @@ public class ProductoController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Datos del producto inválidos"
+                    description = "Datos del producto inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
     public ProductoResponse crear(
@@ -153,11 +156,19 @@ public class ProductoController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Datos del producto inválidos"
+                    description = "Datos del producto inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Producto no encontrado"
+                    description = "Producto no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
     public ProductoResponse actualizar(
@@ -174,7 +185,7 @@ public class ProductoController {
     @PatchMapping("/{id}/disponibilidad")
     @Operation(
             summary = "Cambiar disponibilidad del producto",
-            description = "Activa o desactiva la disponibilidad de un producto."
+            description = "Modifica únicamente el estado de disponibilidad de un producto."
     )
     @ApiResponses({
             @ApiResponse(
@@ -183,7 +194,11 @@ public class ProductoController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Producto no encontrado"
+                    description = "Producto no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
             )
     })
     public ProductoResponse cambiarDisponibilidad(
@@ -194,7 +209,7 @@ public class ProductoController {
             @PathVariable Long id,
 
             @Parameter(
-                    description = "Nuevo estado de disponibilidad del producto",
+                    description = "Nuevo estado de disponibilidad",
                     example = "true"
             )
             @RequestParam boolean disponible) {
