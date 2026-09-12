@@ -2,9 +2,11 @@ import { normalizeProfileDraft, validateProfileDraft } from './profileForm.js'
 
 const messages = Object.freeze({
   NOT_CONFIGURED: 'El servicio de perfil no está conectado.',
-  LOAD_FAILED: 'No se pudo consultar el perfil de prueba. Puedes reintentar la consulta.',
+  LOAD_FAILED: 'No se pudo consultar el perfil. Puedes reintentar la consulta.',
   SAVE_FAILED: 'No se pudo guardar el ejemplo. Tu borrador se conserva; puedes volver a intentarlo.',
-  FORBIDDEN: 'El escenario de prueba no permite acceder o modificar este perfil.',
+  FORBIDDEN: 'No tienes permiso para acceder a este perfil o el perfil está inactivo.',
+  UNAUTHORIZED: 'La API rechazó la sesión. Vuelve a iniciar sesión con Microsoft.',
+  INTERACTION_REQUIRED: 'Microsoft necesita confirmar el acceso a la API.',
   CONFLICT: 'Conflicto simulado: no se aplicaron cambios. Revisa tu borrador antes de reintentar.',
   INVALID_INPUT: 'Revisa los campos del perfil antes de continuar.',
   INVALID_RESPONSE: 'El servicio devolvió un perfil inválido. No se aplicó esa respuesta.',

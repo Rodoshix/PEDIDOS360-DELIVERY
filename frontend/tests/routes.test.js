@@ -80,8 +80,9 @@ test('separa la identidad Microsoft del perfil, sin deducir datos ni cargar el e
     idToken: 'TOKEN-NO-VISIBLE', localAccountId: 'OBJECT-NO-VISIBLE', tenantId: 'TENANT-NO-VISIBLE' } })
   assert.match(html, /Cuenta Microsoft/)
   assert.match(html, /sesion@example.test/)
-  assert.match(html, /Perfil aún no consultado/)
-  assert.match(html, /No sabemos si ya tienes un perfil registrado/)
+  assert.match(html, /Consultando tu perfil/)
+  assert.match(html, /Usuarios · API real/)
+  assert.doesNotMatch(html, /Ver perfil de ejemplo|Crear perfil|Todavía no tienes un perfil registrado/)
   assert.doesNotMatch(html, /alex@example.test|TOKEN-NO-VISIBLE|OBJECT-NO-VISIBLE|TENANT-NO-VISIBLE/)
   assert.match(html, /Diagnóstico de acceso a la API/)
   assert.match(html, /Comprobar permiso de API/)
@@ -142,6 +143,14 @@ test('el formulario nuevo etiqueta cuatro campos, límites, obligatoriedad y sim
   assert.match(html, /Aplicar al ejemplo/)
   assert.match(html, /Cancelar/)
   assert.match(html, /Sin cambios pendientes/)
+})
+
+test('el formulario real del bloque 1 no afirma guardar y tiene el submit deshabilitado', () => {
+  const html = renderToStaticMarkup(createElement(ProfileForm, { mode: 'real', saveEnabled: false }))
+  assert.match(html, /Crear perfil/)
+  assert.match(html, /disabled="">Guardado pendiente de integración/)
+  assert.doesNotMatch(html, /Crear perfil de prueba|Aplicar al ejemplo|cuenta Microsoft/)
+  assert.equal((html.match(/<input /g) || []).length, 4)
 })
 
 test('la edición precarga solo los campos del perfil, sin aplicar durante el render', () => {
