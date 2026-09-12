@@ -21,6 +21,7 @@ public class SecurityConfiguration {
                             token, EntraConfiguration.authorities(token)))));
         }
         return http
+                .cors(org.springframework.security.config.Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -29,6 +30,7 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/actuator/health").permitAll();
+                    auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll();
                     if (enabled) auth.requestMatchers("/usuarios", "/usuarios/**").access((authentication, context) -> {
                         var authorities = authentication.get().getAuthorities().stream()
                                 .map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
