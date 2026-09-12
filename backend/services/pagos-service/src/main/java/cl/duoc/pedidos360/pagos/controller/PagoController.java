@@ -37,22 +37,22 @@ public class PagoController {
         String clave = (idempotencyKey == null || idempotencyKey.isBlank())
                 ? UUID.randomUUID().toString()
                 : idempotencyKey.strip();
-        return pagos.registrar(identidad.obtener().usuarioId(), clave, request);
+        return pagos.registrar(identidad.obtener(), clave, request);
     }
 
     @GetMapping("/pagos/{id}")
     public PagoResponse obtener(@PathVariable Long id) {
-        return pagos.obtener(id);
+        return pagos.obtener(identidad.obtener(), id);
     }
 
     @GetMapping("/pagos/pedido/{pedidoId}")
     public List<PagoResponse> listarPorPedido(@PathVariable Long pedidoId) {
-        return pagos.listarPorPedido(pedidoId);
+        return pagos.listarPorPedido(identidad.obtener(), pedidoId);
     }
 
-    /** Cobra un pago pendiente (p. ej. efectivo recibido en la entrega). */
+    /** Cobra un pago pendiente (p. ej. efectivo recibido en la entrega). Requiere permiso. */
     @PutMapping("/pagos/{id}/aprobar")
     public PagoResponse aprobar(@PathVariable Long id) {
-        return pagos.aprobar(id);
+        return pagos.aprobar(identidad.obtener(), id);
     }
 }

@@ -4,13 +4,21 @@ Servicio de pagos simulados de Pedidos360. Java 21, Spring Boot 4.1.1 y Maven Wr
 
 ## Estado
 
-Implementados: entidad Pago + EstadoPago/MetodoPago, repositorio JPA, migración Flyway para PostgreSQL,
-registro de pago simulado con **idempotencia**, consultas y coordinación con Pedidos.
+Implementados: entidad Pago + EstadoPago/MetodoPago, repositorio JPA, migraciones Flyway para PostgreSQL,
+registro de pago simulado con **idempotencia**, autorización por propietario/rol, garantía de **un pago
+activo por pedido** (índice único parcial), coordinación **recuperable** con Pedidos y consultas.
 
 Reglas principales:
 - **Pago simulado**: no se almacenan datos bancarios reales.
-- **Idempotencia**: una misma `claveIdempotencia` no genera un segundo pago.
-- **Un pago activo por pedido**: si el pedido ya tiene un pago pendiente o aprobado, se responde 409.
+- **Idempotencia con alcance por identidad**: la `Idempotency-Key` se interpreta por usuario; un reintento
+  idéntico devuelve el mismo pago y la misma clave con otra operación (pedido o método) responde 409.
+- **Un pago activo por pedido**: garantizado en PostgreSQL con un índice único parcial sobre
+  `pedido_id` para estados `PENDIENTE`/`APROBADO`; el conflicto se traduce a 409.
+- **Autorización**: registrar/consultar exige pertenencia del pedido a la identidad (o rol `ADMIN`);
+  aprobar un cobro exige el permiso explícito `REPARTIDOR` o `ADMIN`.
+- **Coordinación recuperable**: el pago se persiste primero (commit local) y luego se confirma el pedido.
+  Si la confirmación falla o se pierde la respuesta, el pago queda con `pedido_confirmado=false` y la
+  reconciliación lo reintenta de forma idempotente.
 - El **monto** se toma del pedido; no se confía en un monto enviado por el cliente.
 - El **usuarioId** se resuelve desde la identidad autenticada, no desde el cuerpo.
 
@@ -18,7 +26,14 @@ Reglas principales:
 
 - **TARJETA**: se resuelve al registrar (APROBADO/RECHAZADO). Si se aprueba, se confirma el pedido.
 - **EFECTIVO**: queda **PENDIENTE** ("por cobrar") y el pedido se confirma igual para preparación/despacho;
-  pasa a **APROBADO** al entregar.
+  pasa a **APROBADO** al entregar (cobro aprobado por `REPARTIDOR` o `ADMIN`).
+
+## Reconciliación
+
+Si la confirmación del pedido falla o se pierde su respuesta, el pago queda persistido con
+`pedido_confirmado=false`. Un planificador reintenta periódicamente (`pagos.reconciliacion.enabled`,
+`pagos.reconciliacion.intervalo-ms`, por defecto cada 30 s) confirmando los pendientes de forma idempotente,
+sin duplicar pagos.
 
 ## Base local
 

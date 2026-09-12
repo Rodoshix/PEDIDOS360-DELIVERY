@@ -35,6 +35,9 @@ pagos:
     roles: ${LOCAL_ROLES:CLIENTE}
   pedidos:
     base-url: ${PEDIDOS_SERVICE_URL:http://localhost:8085}
+  reconciliacion:
+    enabled: ${RECONCILIACION_ENABLED:true}
+    intervalo-ms: ${RECONCILIACION_INTERVALO_MS:30000}
 
 management:
   endpoints:

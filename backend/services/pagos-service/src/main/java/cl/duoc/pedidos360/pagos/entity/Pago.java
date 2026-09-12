@@ -17,7 +17,7 @@ import jakarta.persistence.Version;
 
 @Entity
 @Table(name = "pagos", schema = "pagos", uniqueConstraints =
-        @UniqueConstraint(name = "uk_pagos_idempotencia", columnNames = "clave_idempotencia"))
+        @UniqueConstraint(name = "uk_pagos_idempotencia_usuario", columnNames = {"usuario_id", "clave_idempotencia"}))
 public class Pago {
 
     @Id
@@ -46,6 +46,10 @@ public class Pago {
 
     @Column(name = "clave_idempotencia", nullable = false, length = 80, updatable = false)
     private String claveIdempotencia;
+
+    /** Estado de coordinación con Pedidos: true cuando el pedido quedó confirmado. */
+    @Column(name = "pedido_confirmado", nullable = false)
+    private boolean pedidoConfirmado = false;
 
     @Column(name = "creado_en", nullable = false, updatable = false)
     private Instant creadoEn;
@@ -79,6 +83,10 @@ public class Pago {
         this.estado = EstadoPago.RECHAZADO;
     }
 
+    public void marcarPedidoConfirmado() {
+        this.pedidoConfirmado = true;
+    }
+
     public boolean estaActivo() {
         return estado == EstadoPago.PENDIENTE || estado == EstadoPago.APROBADO;
     }
@@ -103,6 +111,7 @@ public class Pago {
     public MetodoPago getMetodo() { return metodo; }
     public EstadoPago getEstado() { return estado; }
     public String getClaveIdempotencia() { return claveIdempotencia; }
+    public boolean isPedidoConfirmado() { return pedidoConfirmado; }
     public Instant getCreadoEn() { return creadoEn; }
     public Instant getActualizadoEn() { return actualizadoEn; }
     public Long getVersion() { return version; }

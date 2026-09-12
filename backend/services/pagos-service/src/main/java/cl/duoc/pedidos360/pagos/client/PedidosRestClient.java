@@ -5,6 +5,7 @@ import java.util.Map;
 import cl.duoc.pedidos360.pagos.exception.PagoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
@@ -42,6 +43,13 @@ public class PedidosRestClient implements PedidosClient {
                     .body(Map.of("estado", "CONFIRMADO"))
                     .retrieve()
                     .toBodilessEntity();
+        } catch (HttpClientErrorException error) {
+            // Pedidos ya tenía el pedido confirmado (transición inválida): confirmación idempotente.
+            if (error.getStatusCode().value() == 409 || error.getStatusCode().value() == 400) {
+                return;
+            }
+            throw new PagoException(HttpStatus.BAD_GATEWAY,
+                    "No se pudo confirmar el pedido " + pedidoId + " en Pedidos.");
         } catch (RestClientException error) {
             throw new PagoException(HttpStatus.BAD_GATEWAY,
                     "No se pudo confirmar el pedido " + pedidoId + " en Pedidos.");
