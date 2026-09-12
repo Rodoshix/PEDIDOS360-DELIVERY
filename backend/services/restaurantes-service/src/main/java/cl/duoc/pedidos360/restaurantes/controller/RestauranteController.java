@@ -2,6 +2,13 @@ package cl.duoc.pedidos360.restaurantes.controller;
 
 import cl.duoc.pedidos360.restaurantes.dto.RestauranteDto;
 import cl.duoc.pedidos360.restaurantes.service.RestauranteService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -12,6 +19,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/restaurantes")
+@Tag(
+        name = "Restaurantes",
+        description = "Operaciones para administrar los restaurantes de Pedidos360"
+)
 public class RestauranteController {
 
     private final RestauranteService restauranteService;
@@ -21,16 +32,60 @@ public class RestauranteController {
     }
 
     @GetMapping
+    @Operation(
+            summary = "Listar restaurantes",
+            description = "Obtiene todos los restaurantes registrados en el sistema."
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Listado de restaurantes obtenido correctamente"
+    )
     public ResponseEntity<List<RestauranteDto>> listar() {
         return ResponseEntity.ok(restauranteService.listar());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestauranteDto> obtenerPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(restauranteService.obtenerPorId(id));
+    @Operation(
+            summary = "Obtener restaurante por ID",
+            description = "Obtiene los datos de un restaurante utilizando su identificador."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Restaurante encontrado"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Restaurante no encontrado"
+            )
+    })
+    public ResponseEntity<RestauranteDto> obtenerPorId(
+            @Parameter(
+                    description = "Identificador del restaurante",
+                    example = "1"
+            )
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                restauranteService.obtenerPorId(id)
+        );
     }
 
     @PostMapping
+    @Operation(
+            summary = "Crear restaurante",
+            description = "Registra un nuevo restaurante en Pedidos360."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Restaurante creado correctamente"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Datos del restaurante inválidos"
+            )
+    })
     public ResponseEntity<RestauranteDto> crear(
             @Valid @RequestBody RestauranteDto dto) {
 
@@ -42,7 +97,29 @@ public class RestauranteController {
     }
 
     @PutMapping("/{id}")
+    @Operation(
+            summary = "Actualizar restaurante",
+            description = "Actualiza los datos de un restaurante existente."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Restaurante actualizado correctamente"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Datos del restaurante inválidos"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Restaurante no encontrado"
+            )
+    })
     public ResponseEntity<RestauranteDto> actualizar(
+            @Parameter(
+                    description = "Identificador del restaurante",
+                    example = "1"
+            )
             @PathVariable Long id,
             @Valid @RequestBody RestauranteDto dto) {
 
@@ -52,7 +129,27 @@ public class RestauranteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> desactivar(@PathVariable Long id) {
+    @Operation(
+            summary = "Desactivar restaurante",
+            description = "Desactiva un restaurante utilizando su identificador."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "204",
+                    description = "Restaurante desactivado correctamente"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Restaurante no encontrado"
+            )
+    })
+    public ResponseEntity<Void> desactivar(
+            @Parameter(
+                    description = "Identificador del restaurante",
+                    example = "1"
+            )
+            @PathVariable Long id) {
+
         restauranteService.desactivar(id);
 
         return ResponseEntity.noContent().build();
