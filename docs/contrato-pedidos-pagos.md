@@ -38,12 +38,15 @@ Estados terminales: `ENTREGADO`, `CANCELADO`.
 - Una transición inválida devuelve **409** (`TransicionInvalidaException`).
 - *Pendiente de acuerdo:* cuándo el pago aprobado confirma el pedido; flujo `EFECTIVO`; correspondencia `EN_REPARTO` (Pedidos) ↔ `EN_CAMINO` (Repartidores, I4).
 
-## 4. Estado del pago (propuesta)
+## 4. Estado del pago (implementado)
 
 `enum EstadoPago`: `PENDIENTE, APROBADO, RECHAZADO`. Método: `TARJETA`, `EFECTIVO`. Pago **simulado**, sin datos bancarios reales.
 
-- **Idempotencia:** registrar/confirmar un pago debe ser idempotente para evitar doble confirmación.
-- Una transacción JPA local **no** hace atómica una llamada HTTP a otro servicio → definir recuperación.
+- **Idempotencia con alcance por identidad:** la `Idempotency-Key` se interpreta por usuario. Un reintento idéntico devuelve el mismo pago; la misma clave con otro pedido o método responde **409**.
+- **Un pago activo por pedido:** garantizado en PostgreSQL con índice único parcial sobre `pedido_id` para `PENDIENTE`/`APROBADO`; el conflicto se traduce a **409**.
+- **Autorización:** registrar/consultar exige pertenencia del pedido a la identidad (o rol `ADMIN`); aprobar un cobro exige permiso explícito (`REPARTIDOR` o `ADMIN`).
+- **Coordinación recuperable:** el pago se persiste antes de confirmar el pedido. Si la confirmación falla o se pierde la respuesta, el pago queda con `pedido_confirmado=false` y un proceso de reconciliación lo reintenta de forma idempotente.
+- **Confirmación verificada:** un 400/409 de Pedidos no se interpreta automáticamente como éxito; se consulta el estado real del pedido y solo se acepta si ya está `CONFIRMADO` o en un estado posterior. Un pedido `CANCELADO` deja la coordinación pendiente, no confirmada.
 
 ## 5. DTOs (implementados en pedidos)
 
@@ -84,16 +87,18 @@ Estados terminales: `ENTREGADO`, `CANCELADO`.
 { "estado": "PREPARANDO" }
 ```
 
-### PagoRequest / PagoResponse (propuesta para pagos-service)
+### PagoRequest / PagoResponse (implementados en pagos-service)
+
+`POST /pagos` con cabecera opcional `Idempotency-Key` (si falta, se genera una). El `usuarioId` no se envía: se deriva de la identidad.
 
 ```json
-{ "pedidoId": 500, "monto": 13980, "metodo": "TARJETA" }
+{ "pedidoId": 500, "metodo": "TARJETA" }
 ```
 
 ```json
 {
   "pagoId": 100, "pedidoId": 500, "usuarioId": 10,
-  "monto": 13980, "metodo": "TARJETA", "estado": "APROBADO",
+  "monto": 13980, "moneda": "CLP", "metodo": "TARJETA", "estado": "APROBADO",
   "fecha": "2026-09-04T12:05:00Z"
 }
 ```
@@ -110,13 +115,17 @@ Estados terminales: `ENTREGADO`, `CANCELADO`.
 | `GET /usuarios/{id}/pedidos` | 200 | 401, 404 |
 | `PUT /pedidos/{id}/estado` | 200 | 400, 401, 404, 409 |
 
-### Pagos (previstos)
+### Pagos (implementados)
 
 | Método y ruta | Éxito | Errores |
 |---|---|---|
-| `POST /pagos` | 201 | 400, 401, 404, 409 (duplicado) |
-| `GET /pagos/{id}` | 200 | 401, 404 |
-| `GET /pagos/pedido/{pedidoId}` | 200 | 401, 404 |
+| `POST /pagos` | 201 | 400, 401, 403, 404, 409 |
+| `GET /pagos/{id}` | 200 | 401, 403, 404 |
+| `GET /pagos/pedido/{pedidoId}` | 200 | 401, 403, 404 |
+| `PUT /pagos/{id}/aprobar` | 200 | 401, 403, 404, 409 |
+
+- **403** en pagos: sin pertenencia del pedido a la identidad, o sin permiso para aprobar cobros.
+- **409** en `POST /pagos`: pago activo duplicado o reutilización de `Idempotency-Key` para otra operación.
 
 ## 7. Estructura de error
 

@@ -1,0 +1,49 @@
+spring:
+  config:
+    import: optional:file:.env.local[.properties]
+  application:
+    name: pagos-service
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5437/pedidos360_pagos}
+    username: ${DB_USERNAME:pedidos360_pagos}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: pagos
+        jdbc:
+          time_zone: UTC
+  flyway:
+    default-schema: pagos
+    schemas: pagos
+    clean-disabled: true
+
+server:
+  port: ${SERVER_PORT:8086}
+  address: ${SERVER_ADDRESS:127.0.0.1}
+
+pagos:
+  identidad-local:
+    enabled: ${LOCAL_IDENTITY_ENABLED:false}
+    usuario-id: ${LOCAL_USER_ID:}
+    roles: ${LOCAL_ROLES:CLIENTE}
+  pedidos:
+    base-url: ${PEDIDOS_SERVICE_URL:http://localhost:8085}
+  reconciliacion:
+    enabled: ${RECONCILIACION_ENABLED:true}
+    intervalo-ms: ${RECONCILIACION_INTERVALO_MS:30000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
