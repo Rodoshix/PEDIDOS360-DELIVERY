@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import PedidoDetalle from '../PedidoDetalle.jsx'
-import { ResumenPedido } from '../PedidoResumen.jsx'
-import { createPedidoController } from '../pedidoService.js'
-import { createPedidoDemoAdapter, PEDIDO_SCENARIOS } from '../pedidoDemoAdapter.js'
-import '../pedidos.css'
+import PedidoDetalle from './PedidoDetalle.jsx'
+import { ResumenPedido } from './PedidoResumen.jsx'
+import { createPedidoController } from './pedidoService.js'
+import { createPedidoDemoAdapter, PEDIDO_SCENARIOS } from './pedidoDemoAdapter.js'
+import './pedidos.css'
 
 export default function MisPedidosDemoPanel() {
   const [controller] = useState(createPedidoController)

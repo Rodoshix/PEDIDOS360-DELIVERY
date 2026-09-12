@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { createPedidoController } from '../pedidoService.js'
-import { createPedidoDemoAdapter, PEDIDO_SCENARIOS } from '../pedidoDemoAdapter.js'
-import { PEDIDO_CATALOGO_DEMO, RESTAURANTES_DEMO } from '../pedidoDemo.js'
-import { validatePedidoDraft } from '../pedidoOperaciones.js'
-import { formatClp } from '../pedidoFormat.js'
+import { createPedidoController } from './pedidoService.js'
+import { createPedidoDemoAdapter, PEDIDO_SCENARIOS } from './pedidoDemoAdapter.js'
+import { PEDIDO_CATALOGO_DEMO, RESTAURANTES_DEMO } from './pedidoDemo.js'
+import { validatePedidoDraft } from './pedidoOperaciones.js'
+import { formatClp } from './pedidoFormat.js'
 import { ROUTE_PATHS } from '../../routes/routePaths.js'
-import '../pedidos.css'
+import './pedidos.css'
 
 export default function ConfirmarPedidoDemoPanel() {
   const [controller] = useState(createPedidoController)

@@ -81,14 +81,21 @@ export function createPedidoController() {
         default: throw new PedidoServiceError('INVALID_COMMAND')
       }
       if (abort.signal.aborted || generation !== currentGeneration) return false
-      if (operation === 'detail') {
-        publish({ status: 'ready', pedidos: previous.pedidos, pedido: validatePedidoResponse(result), error: null, operation: null })
-      } else if (operation === 'write' && payload.showDetail) {
-        publish({ status: 'ready', pedidos: previous.pedidos, pedido: validatePedidoResponse(result), error: null, operation: null })
-      } else {
+      if (operation === 'load') {
         if (!Array.isArray(result)) invalidResponse()
         const pedidos = result.map(validatePedidoResponse)
         publish({ status: pedidos.length ? 'ready' : 'empty', pedidos: Object.freeze(pedidos), pedido: previous.pedido, error: null, operation: null })
+      } else if (operation === 'detail') {
+        publish({ status: 'ready', pedidos: previous.pedidos, pedido: validatePedidoResponse(result), error: null, operation: null })
+      } else {
+        // write (create|transition): devuelve siempre el pedido actualizado.
+        // No se presenta como fallo una escritura aplicada: se valida el pedido y se
+        // reemplaza en la lista (o se fija como detalle si showDetail) para conservar coherencia.
+        const pedido = validatePedidoResponse(result)
+        const pedidos = previous.pedidos
+          ? Object.freeze(previous.pedidos.map(item => item.pedidoId === pedido.pedidoId ? pedido : item))
+          : previous.pedidos
+        publish({ status: 'ready', pedidos, pedido: payload.showDetail ? pedido : (previous.pedido?.pedidoId === pedido.pedidoId ? pedido : previous.pedido), error: null, operation: null })
       }
       return true
     } catch (failure) {

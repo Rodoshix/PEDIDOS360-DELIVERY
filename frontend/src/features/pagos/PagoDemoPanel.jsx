@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { Link } from 'react-router'
-import { createPagoController } from '../pagoService.js'
-import { createPagoDemoAdapter, PAGO_SCENARIOS } from '../pagoDemoAdapter.js'
-import { ETIQUETAS_ESTADO_PAGO, ETIQUETAS_METODO, METODOS_PAGO, validatePagoDraft } from '../pagoOperaciones.js'
+import { createPagoController } from './pagoService.js'
+import { createPagoDemoAdapter, PAGO_SCENARIOS } from './pagoDemoAdapter.js'
+import { ETIQUETAS_ESTADO_PAGO, ETIQUETAS_METODO, METODOS_PAGO, validatePagoDraft } from './pagoOperaciones.js'
 import { ROUTE_PATHS } from '../../routes/routePaths.js'
-import '../pagos.css'
+import './pagos.css'
 
 const clp = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 

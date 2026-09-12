@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import PedidoDetalle from '../PedidoDetalle.jsx'
-import { createPedidoController } from '../pedidoService.js'
-import { createPedidoDemoAdapter, PEDIDO_SCENARIOS } from '../pedidoDemoAdapter.js'
-import { ETIQUETAS_ESTADO, ESTADOS_TERMINALES } from '../pedidoOperaciones.js'
-import { formatClp, formatFecha } from '../pedidoFormat.js'
-import { EtiquetaEstado } from '../PedidoResumen.jsx'
-import '../pedidos.css'
+import PedidoDetalle from './PedidoDetalle.jsx'
+import { createPedidoController } from './pedidoService.js'
+import { createPedidoDemoAdapter, PEDIDO_SCENARIOS } from './pedidoDemoAdapter.js'
+import { ETIQUETAS_ESTADO, ESTADOS_TERMINALES } from './pedidoOperaciones.js'
+import { formatClp, formatFecha } from './pedidoFormat.js'
+import { EtiquetaEstado } from './PedidoResumen.jsx'
+import './pedidos.css'
 
 // Estados que gestiona el restaurante (los logísticos son de I4).
 const ACCIONES_RESTAURANTE = Object.freeze(['CONFIRMADO', 'PREPARANDO', 'LISTO'])
