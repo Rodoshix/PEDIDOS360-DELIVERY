@@ -31,7 +31,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/actuator/health").permitAll();
                     auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll();
-                    if (enabled) auth.requestMatchers("/usuarios", "/usuarios/**").access((authentication, context) -> {
+                    if (enabled) auth.requestMatchers("/usuarios", "/usuarios/**", "/restaurantes", "/restaurantes/**",
+                            "/productos", "/productos/**", "/carrito", "/carrito/**").access((authentication, context) -> {
                         var authorities = authentication.get().getAuthorities().stream()
                                 .map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
                         return new org.springframework.security.authorization.AuthorizationDecision(

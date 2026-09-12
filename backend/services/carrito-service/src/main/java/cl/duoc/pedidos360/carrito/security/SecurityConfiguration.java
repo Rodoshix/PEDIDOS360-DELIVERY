@@ -6,9 +6,9 @@ import java.net.URI;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,10 +25,18 @@ import tools.jackson.databind.json.JsonMapper;
 public class SecurityConfiguration {
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, JsonMapper mapper,
-            ObjectProvider<IdentidadUsuario> identidadLocal) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http,
+            ObjectProvider<IdentidadUsuario> identidadLocal, JsonMapper mapper,
+            org.springframework.core.env.Environment env,
+            ObjectProvider<org.springframework.security.oauth2.jwt.JwtDecoder> decoders) throws Exception {
         var identidad = identidadLocal.getIfAvailable();
-        // Sin cookies, login por contraseña ni JWT: el modo local se habilita aparte.
+        boolean enabled = env.getProperty("entra.enabled", Boolean.class, false);
+        if (enabled && identidad != null) throw new IllegalStateException("JWT e identidad local no pueden coexistir.");
+        if (enabled) {
+            http.oauth2ResourceServer(resource -> resource.jwt(jwt -> jwt.decoder(decoders.getObject())
+                    .jwtAuthenticationConverter(token -> new org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken(
+                            token, EntraConfiguration.authorities(token)))));
+        }
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -38,17 +46,29 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> {
                     auth.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                             .requestMatchers("/actuator/health", "/actuator/health/**").permitAll();
-                    if (identidad != null) auth.requestMatchers("/carrito", "/carrito/**").authenticated();
+                    if (enabled) {
+                        auth.requestMatchers("/carrito", "/carrito/**").access((authentication, context) -> {
+                            var authorities = authentication.get().getAuthorities().stream()
+                                    .map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
+                            return new org.springframework.security.authorization.AuthorizationDecision(
+                                    authorities.contains("SCOPE_access_as_user")
+                                    && (authorities.contains("ROLE_CLIENTE") || authorities.contains("ROLE_ADMIN")));
+                        });
+                    } else if (identidad != null) {
+                        auth.requestMatchers("/carrito", "/carrito/**").authenticated();
+                    }
                     auth.anyRequest().denyAll();
                 })
                 .exceptionHandling(errors -> errors
                         .authenticationEntryPoint((request, response, exception) ->
                                 escribirError(mapper, request, response, HttpStatus.UNAUTHORIZED,
-                                        "Se requiere autenticación. Entra ID todavía no está configurado."))
+                                        "Se requiere autenticación."))
                         .accessDeniedHandler((request, response, exception) ->
                                 escribirError(mapper, request, response, HttpStatus.FORBIDDEN,
                                         "No tienes permiso para esta operación.")));
-        if (identidad != null) http.addFilterBefore(new LocalIdentityFilter(identidad), AnonymousAuthenticationFilter.class);
+        if (identidad != null) {
+            http.addFilterBefore(new LocalIdentityFilter(identidad), AnonymousAuthenticationFilter.class);
+        }
         return http.build();
     }
 

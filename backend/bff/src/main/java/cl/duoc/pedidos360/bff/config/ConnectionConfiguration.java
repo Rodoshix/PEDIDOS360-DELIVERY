@@ -46,6 +46,10 @@ public class ConnectionConfiguration {
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/usuarios", cors);
         source.registerCorsConfiguration("/usuarios/**", cors);
+        for (String path : List.of("/restaurantes", "/productos", "/carrito")) {
+            source.registerCorsConfiguration(path, cors);
+            source.registerCorsConfiguration(path + "/**", cors);
+        }
         return source;
     }
 }
