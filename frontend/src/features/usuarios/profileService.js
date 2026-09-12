@@ -2,10 +2,13 @@ import { normalizeProfileDraft, validateProfileDraft } from './profileForm.js'
 
 const messages = Object.freeze({
   NOT_CONFIGURED: 'El servicio de perfil no está conectado.',
-  LOAD_FAILED: 'No se pudo consultar el perfil de prueba. Puedes reintentar la consulta.',
-  SAVE_FAILED: 'No se pudo guardar el ejemplo. Tu borrador se conserva; puedes volver a intentarlo.',
-  FORBIDDEN: 'El escenario de prueba no permite acceder o modificar este perfil.',
-  CONFLICT: 'Conflicto simulado: no se aplicaron cambios. Revisa tu borrador antes de reintentar.',
+  LOAD_FAILED: 'No se pudo consultar el perfil. Puedes reintentar la consulta.',
+  SAVE_FAILED: 'No se pudo confirmar el guardado. Tu borrador se conserva. Consulta el perfil antes de repetir: el servidor pudo haber aplicado los cambios.',
+  FORBIDDEN: 'No tienes permiso para acceder a este perfil o el perfil está inactivo.',
+  UNAUTHORIZED: 'La API rechazó la sesión. Vuelve a iniciar sesión con Microsoft.',
+  INTERACTION_REQUIRED: 'Microsoft necesita confirmar el acceso a la API.',
+  CONFLICT: 'El perfil entró en conflicto. Tu borrador se conserva; consulta el estado actual antes de volver a guardar.',
+  NOT_FOUND: 'El perfil ya no está disponible. Tu borrador se conserva; vuelve a consultar el perfil.',
   INVALID_INPUT: 'Revisa los campos del perfil antes de continuar.',
   INVALID_RESPONSE: 'El servicio devolvió un perfil inválido. No se aplicó esa respuesta.',
 })
@@ -18,7 +21,7 @@ export class ProfileError extends Error {
   }
 }
 
-function safeProfile(value) {
+export function validateProfileResponse(value) {
   if (!value || !Number.isSafeInteger(value.id) || value.id <= 0 || typeof value.activo !== 'boolean'
     || ['nombre', 'apellido', 'email'].some(key => typeof value[key] !== 'string')
     || (value.telefono !== null && typeof value.telefono !== 'string')
@@ -62,7 +65,7 @@ export function createProfileController() {
         result = await currentAdapter.save(normalizeProfileDraft(draft), { signal: abort.signal })
       }
       if (abort.signal.aborted || currentGeneration !== generation) return false
-      const profile = operation === 'load' && result === null ? null : safeProfile(result)
+      const profile = operation === 'load' && result === null ? null : validateProfileResponse(result)
       publish({ status: profile ? 'ready' : 'empty', profile, error: null, operation: null })
       return true
     } catch (error) {

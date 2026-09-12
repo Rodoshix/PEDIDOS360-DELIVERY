@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { PROFILE_FIELDS, createProfileDraft, hasProfileChanges, normalizeProfileDraft, validateProfileDraft } from './profileForm.js'
 
-export default function ProfileForm({ initialProfile = null, onApply, onCancel, saving = false, submitError = null }) {
+export default function ProfileForm({ initialProfile = null, onApply, onCancel, saving = false, submitError = null, mode = 'demo', saveEnabled = true }) {
   const [draft, setDraft] = useState(() => createProfileDraft(initialProfile))
   const [errors, setErrors] = useState({})
   const [confirmDiscard, setConfirmDiscard] = useState(false)
@@ -41,7 +41,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel, 
 
   function submit(event) {
     event.preventDefault()
-    if (confirmDiscard || saving) return
+    if (confirmDiscard || saving || !saveEnabled) return
     const nextErrors = validateProfileDraft(draft)
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length) return
@@ -56,8 +56,8 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel, 
 
   return (
     <form className="profile-form" onSubmit={submit} noValidate aria-labelledby={`${id}-heading`} aria-busy={saving}>
-      <h3 id={`${id}-heading`}>{initialProfile ? 'Editar perfil de prueba' : 'Crear perfil de prueba'}</h3>
-      <p id={`${id}-help`} className="account-note">Usa datos ficticios. Aplicar actualiza solo esta vista; no guarda en Usuarios ni cambia tu cuenta Microsoft.</p>
+      <h3 id={`${id}-heading`}>{initialProfile ? 'Editar perfil' : 'Crear perfil'}{mode === 'demo' ? ' de prueba' : ''}</h3>
+      <p id={`${id}-help`} className="account-note">{mode === 'demo' ? 'Usa datos ficticios. Aplicar actualiza solo esta vista; no guarda en Usuarios ni cambia tu cuenta Microsoft.' : saveEnabled ? 'Guardar envía estos datos a Usuarios mediante el BFF. No modifica tu cuenta Microsoft.' : 'Datos de contacto del perfil. El guardado todavía está deshabilitado; el borrador no se envía a Usuarios.'}</p>
       {hasErrors && (
         <div ref={errorSummary} tabIndex={-1} className="profile-form__error-summary" role="alert">
           <p>Revisa los campos indicados antes de continuar.</p>
@@ -67,7 +67,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel, 
         </div>
       )}
       {submitError && <div ref={saveError} tabIndex={-1} className="profile-form__error-summary" role="alert">{submitError.message}</div>}
-      {saving && <p role="status">Guardando ejemplo… No cierres esta vista mientras termina la simulación.</p>}
+      {saving && <p role="status">{mode === 'demo' ? 'Guardando ejemplo… No cierres esta vista mientras termina la simulación.' : 'Guardando perfil en Usuarios… No cierres esta vista hasta recibir el resultado.'}</p>}
       <fieldset disabled={confirmDiscard || saving} aria-describedby={`${id}-help`}>
         <legend className="profile-form__legend">Datos de contacto</legend>
         <div className="profile-form__fields">
@@ -91,7 +91,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel, 
       {confirmDiscard && (
         <div ref={discardPrompt} tabIndex={-1} className="profile-form__discard" role="group" aria-labelledby={`${id}-discard-heading`}>
           <h3 id={`${id}-discard-heading`}>¿Descartar los cambios?</h3>
-          <p>Se perderá el borrador. El perfil de prueba anterior no se modificará.</p>
+          <p>Se perderá el borrador. El perfil anterior no se modificará.</p>
           <div className="account-actions">
             <button type="button" className="button button--secondary session-controls__button" onClick={() => {
               setConfirmDiscard(false)
@@ -101,7 +101,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel, 
         </div>
       )}
       <div className="account-actions">
-        <button type="submit" className="button button--primary session-controls__button" disabled={saving || confirmDiscard || (Boolean(initialProfile) && !dirty)}>{saving ? 'Guardando ejemplo…' : 'Aplicar al ejemplo'}</button>
+        <button type="submit" className="button button--primary session-controls__button" disabled={!saveEnabled || saving || confirmDiscard || (Boolean(initialProfile) && !dirty)}>{!saveEnabled ? 'Guardado pendiente de integración' : mode === 'demo' ? saving ? 'Guardando ejemplo…' : 'Aplicar al ejemplo' : saving ? 'Guardando perfil…' : initialProfile ? 'Guardar cambios' : 'Crear perfil'}</button>
         <button ref={cancelButton} type="button" className="button button--secondary session-controls__button" onClick={cancel} disabled={saving || confirmDiscard}>Cancelar</button>
       </div>
     </form>

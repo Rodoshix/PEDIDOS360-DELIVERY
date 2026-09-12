@@ -1,12 +1,7 @@
-import { lazy, Suspense } from 'react'
 import { useAuthSession } from '../auth/useAuthSession.js'
 import ApiPermissionCheck from '../features/usuarios/ApiPermissionCheck.jsx'
-import ProfilePending from '../features/usuarios/ProfilePending.jsx'
+import RealProfilePanel from '../features/usuarios/RealProfilePanel.jsx'
 import '../features/usuarios/profile.css'
-
-// Vite elimina esta importación en producción: el simulador no se distribuye.
-const DevelopmentProfile = import.meta.env.DEV
-  ? lazy(() => import('../features/usuarios/ProfilePanel.jsx')) : null
 
 export default function AccountPage() {
   const { account } = useAuthSession()
@@ -18,11 +13,7 @@ export default function AccountPage() {
       <h1>Mi cuenta</h1>
       <p className="account-note">Consulta tus datos de contacto y la cuenta con la que iniciaste sesión.</p>
       <div className="profile-layout">
-        {DevelopmentProfile ? (
-          <Suspense key={profileKey} fallback={<ProfilePending />}>
-            <DevelopmentProfile demoEnabled />
-          </Suspense>
-        ) : <ProfilePending />}
+        <RealProfilePanel key={profileKey} />
         <aside className="profile-card profile-session" aria-labelledby="session-heading">
           <p className="profile-badge">Sesión Microsoft</p>
           <h2 id="session-heading">Tu acceso</h2>
