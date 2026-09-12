@@ -4,9 +4,10 @@ Rama `feature/i5-bff-seguridad`. Java 21 y Spring Boot 4.1.1.
 
 ## Estado real
 
-Bloques 1 a 3: arranque sin base de datos, salud pública, JWT opt-in,
-relay explícito a Usuarios y CORS por lista de orígenes. No acredita login
-extremo a extremo ni se han cambiado registros Entra. No habilitar identidad simulada.
+Bloques 1 a 4: arranque sin base de datos, salud pública, JWT opt-in,
+relay explícito a Usuarios y CORS por lista de orígenes. La consulta autenticada
+con Entra real se verificó localmente; véase la evidencia más abajo. El usuario
+configuró la API para emitir tokens v2. No habilitar identidad simulada.
 
 Desde `backend/services/usuarios-service`, reutilizar el wrapper versionado:
 
@@ -49,7 +50,8 @@ la misma audiencia lógica; si se separan audiencias habrá que revisar el flujo
 Las pruebas usan RSA efímero y un decoder local con los validadores de producción.
 No contactan Entra ni acreditan descarga/rotación real de sus claves. La prueba HTTP
 usa el controlador real del BFF y un servidor HTTP temporal como upstream. No equivale
-a ejecutar BFF y Usuarios juntos con PostgreSQL: ese recorrido sigue pendiente.
+a ejecutar BFF y Usuarios juntos con PostgreSQL: ese recorrido lo cubre el
+[módulo de integración](../integration-tests/README.md), también con claves efímeras.
 
 ## Relay y CORS (bloque 3)
 
@@ -83,8 +85,21 @@ CORS no sustituye la validación JWT ni restringe clientes que no sean navegador
 
 ## Bloques siguientes
 
-1. Completar prueba manual real de JWT tras la configuración de Entra.
-2. Verificación conjunta BFF + Usuarios + PostgreSQL y regresión final.
+### Evidencia manual local — 2026-09-12
+
+Tras configurar `api.requestedAccessTokenVersion=2` en el registro de la API,
+se inició sesión con Microsoft en el frontend local. El diagnóstico de desarrollo
+`Probar BFF y Usuarios` utiliza el cliente HTTP existente y consulta `GET /usuarios/me`
+a través del BFF. Resultado observado: **404**, con PostgreSQL temporal sin perfiles.
+Los dos procesos estaban configurados con `ENTRA_ENABLED=true` y Usuarios sin
+identidad simulada. La petición sin token devuelve **401** en ambos servicios.
+Esto acredita aceptación del access token real y el recorrido autenticado de consulta;
+no acredita todavía creación/edición desde Mi cuenta, despliegue AWS ni otras APIs.
+No se copiaron ni registraron tokens. Frontend: lint/build correctos y 158 tests aprobados.
+
+1. Prueba manual real de consulta con Entra completada según la evidencia anterior.
+2. Preparar revisión y merge. El recorrido automatizado BFF + Usuarios + PostgreSQL
+   ya está cubierto en el módulo de integración; Mi cuenta real y AWS quedan fuera.
 
 BFF y Usuarios representarán la misma API lógica (audiencia existente).
 Usuarios validará también el token y conservará la identidad `(tid, oid)`.
