@@ -7,5 +7,6 @@ export const ROUTE_PATHS = Object.freeze({
   pedidoDetalle: '/pedidos/:id',
   pago: '/pago/:pedidoId',
   restaurantePedidos: '/restaurante/pedidos',
+  adminRestaurantes: '/admin/restaurantes',
   notFound: '*',
 })

@@ -1,0 +1,119 @@
+.restaurantes-section {
+  display: grid;
+  gap: 1.5rem;
+  padding-block: 2rem;
+}
+
+.restaurantes-section > h1 {
+  margin: 0;
+}
+
+.restaurantes-admin {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.restaurantes-notice {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid #d8d8d8;
+  border-radius: 0.75rem;
+  background: #f8f8f8;
+}
+
+.restaurantes-error {
+  padding: 0.9rem 1rem;
+  border: 1px solid #c62828;
+  border-radius: 0.75rem;
+  background: #fff1f1;
+  font-weight: 600;
+}
+
+.restaurantes-card {
+  padding: 1.5rem;
+  border: 1px solid #dddddd;
+  border-radius: 1rem;
+  background: #ffffff;
+}
+
+.restaurantes-card h2 {
+  margin-top: 0;
+}
+
+.restaurantes-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.restaurantes-form label {
+  display: grid;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.restaurantes-form input,
+.restaurantes-form textarea,
+.restaurantes-form select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem;
+  border: 1px solid #bdbdbd;
+  border-radius: 0.6rem;
+  font: inherit;
+  background: #ffffff;
+}
+
+.restaurantes-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.restaurantes-form input:focus,
+.restaurantes-form textarea:focus,
+.restaurantes-form select:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.restaurantes-list {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.restaurantes-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #dddddd;
+  border-radius: 0.75rem;
+}
+
+.restaurantes-item h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.restaurantes-item p {
+  margin: 0.35rem 0;
+}
+
+.restaurantes-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .restaurantes-item {
+    flex-direction: column;
+  }
+
+  .restaurantes-actions {
+    width: 100%;
+  }
+}

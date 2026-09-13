@@ -10,23 +10,64 @@ import PedidoDetallePage from '../features/pedidos/PedidoDetallePage.jsx'
 import RestaurantePedidosPage from '../features/pedidos/RestaurantePedidosPage.jsx'
 import PagoPage from '../features/pagos/PagoPage.jsx'
 import RequireSession from '../auth/RequireSession.jsx'
+import RestaurantesAdminPage from '../features/restaurantes/RestaurantesAdminPage.jsx'
 import { ROUTE_PATHS } from './routePaths.js'
 
 function AppRouter() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route path={ROUTE_PATHS.home} element={<HomePage />} />
+        <Route
+          path={ROUTE_PATHS.home}
+          element={<HomePage />}
+        />
+
         <Route element={<RequireSession />}>
-          <Route path={ROUTE_PATHS.account} element={<AccountPage />} />
-          <Route path={ROUTE_PATHS.cart} element={<CartPage />} />
-          <Route path={ROUTE_PATHS.confirmarPedido} element={<ConfirmarPedidoPage />} />
-          <Route path={ROUTE_PATHS.misPedidos} element={<MisPedidosPage />} />
-          <Route path={ROUTE_PATHS.pedidoDetalle} element={<PedidoDetallePage />} />
-          <Route path={ROUTE_PATHS.pago} element={<PagoPage />} />
-          <Route path={ROUTE_PATHS.restaurantePedidos} element={<RestaurantePedidosPage />} />
+          <Route
+            path={ROUTE_PATHS.account}
+            element={<AccountPage />}
+          />
+
+          <Route
+            path={ROUTE_PATHS.cart}
+            element={<CartPage />}
+          />
+
+          <Route
+            path={ROUTE_PATHS.confirmarPedido}
+            element={<ConfirmarPedidoPage />}
+          />
+
+          <Route
+            path={ROUTE_PATHS.misPedidos}
+            element={<MisPedidosPage />}
+          />
+
+          <Route
+            path={ROUTE_PATHS.pedidoDetalle}
+            element={<PedidoDetallePage />}
+          />
+
+          <Route
+            path={ROUTE_PATHS.pago}
+            element={<PagoPage />}
+          />
+
+          <Route
+            path={ROUTE_PATHS.restaurantePedidos}
+            element={<RestaurantePedidosPage />}
+          />
+
+          <Route
+            path={ROUTE_PATHS.adminRestaurantes}
+            element={<RestaurantesAdminPage />}
+          />
         </Route>
-        <Route path={ROUTE_PATHS.notFound} element={<NotFoundPage />} />
+
+        <Route
+          path={ROUTE_PATHS.notFound}
+          element={<NotFoundPage />}
+        />
       </Route>
     </Routes>
   )
