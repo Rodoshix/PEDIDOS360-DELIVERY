@@ -1,10 +1,13 @@
 package cl.duoc.pedidos360.restaurantes.controller;
 
 import cl.duoc.pedidos360.restaurantes.dto.RestauranteDto;
+import cl.duoc.pedidos360.restaurantes.exception.ApiError;
 import cl.duoc.pedidos360.restaurantes.service.RestauranteService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,7 +59,11 @@ public class RestauranteController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Restaurante no encontrado"
+                    description = "Restaurante no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)
+                    )
             )
     })
     public ResponseEntity<RestauranteDto> obtenerPorId(
@@ -83,7 +90,11 @@ public class RestauranteController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Datos del restaurante inválidos"
+                    description = "Datos del restaurante inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)
+                    )
             )
     })
     public ResponseEntity<RestauranteDto> crear(
@@ -108,11 +119,19 @@ public class RestauranteController {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Datos del restaurante inválidos"
+                    description = "Datos del restaurante inválidos",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)
+                    )
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Restaurante no encontrado"
+                    description = "Restaurante no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)
+                    )
             )
     })
     public ResponseEntity<RestauranteDto> actualizar(
@@ -140,7 +159,11 @@ public class RestauranteController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Restaurante no encontrado"
+                    description = "Restaurante no encontrado",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)
+                    )
             )
     })
     public ResponseEntity<Void> desactivar(
