@@ -6,6 +6,8 @@ COPY mvnw pom.xml ./
 # El checkout de Windows puede usar CRLF; no modifica los archivos del host.
 RUN sed -i 's/\r$//' mvnw
 COPY src/main ./src/main
+COPY docker/Health.java ./Health.java
+RUN javac Health.java
 # Testcontainers se ejecuta fuera del build. Nunca montar el socket Docker aquí.
 RUN --mount=type=cache,id=pedidos360-maven,target=/root/.m2,sharing=locked \
     sh mvnw -B -ntp -Dmaven.test.skip=true package
@@ -13,6 +15,7 @@ RUN --mount=type=cache,id=pedidos360-maven,target=/root/.m2,sharing=locked \
 FROM eclipse-temurin:21-jre-alpine@sha256:974b08960c5d96694c780e65b2d5705268ab1e1ca1a0dd0caf4ba6c3fe34d699 AS runtime
 RUN addgroup -S -g 10001 app && adduser -S -D -H -u 10001 -G app app
 WORKDIR /app
+COPY --from=build /build/Health.class ./Health.class
 COPY --from=build /build/target/pagos-service-0.0.1-SNAPSHOT.jar ./app.jar
 ENV SERVER_ADDRESS=0.0.0.0 \
     SERVER_PORT=8086 \
