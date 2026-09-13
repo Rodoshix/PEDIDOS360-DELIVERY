@@ -38,6 +38,7 @@ pedidos:
   interno:
     enabled: ${INTERNO_ENABLED:false}
     issuer-uri: ${ENTRA_ISSUER_URI:}
+    tenant-id: ${ENTRA_TENANT_ID:}
     audience: ${ENTRA_API_CLIENT_ID:}
     worker-client-id: ${PAGOS_WORKER_CLIENT_ID:}
     rol-requerido: ${INTERNO_ROL:Pedidos.Confirmar}

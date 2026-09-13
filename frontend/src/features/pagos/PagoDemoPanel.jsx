@@ -14,9 +14,10 @@ export default function PagoDemoPanel({ pedidoId, pedido }) {
   const [metodo, setMetodo] = useState('TARJETA')
   const [scenario, setScenario] = useState('tarjeta')
   const [errores, setErrores] = useState({})
-  // Idempotency-Key obligatoria: se genera una por intento y se reutiliza si un envío
-  // queda en resultado incierto (fallo de red), para no duplicar el pago.
-  const claveRef = useRef(null)
+  // Intento en curso: la clave de idempotencia va ATADA al pedidoId y método de ese intento.
+  // Si un envío queda en resultado incierto, se reintenta exactamente esa operación; cambiar
+  // de método exige antes un resultado definitivo (o descartar el intento).
+  const intentoRef = useRef(null)
   const errorRender = useRef(null)
   const busy = state.status === 'loading' || state.status === 'saving'
 
@@ -25,6 +26,16 @@ export default function PagoDemoPanel({ pedidoId, pedido }) {
   useEffect(() => () => controller.cancelPending(), [controller])
   useEffect(() => { if (state.error) errorRender.current?.focus() }, [state.error])
 
+  async function enviar(draft) {
+    const intento = intentoRef.current
+    const idempotencyKey = intento ? intento.key : nuevaClave()
+    intentoRef.current = { key: idempotencyKey, pedidoId: draft.pedidoId, metodo: draft.metodo }
+    const aplicado = await controller.registrar(draft, { idempotencyKey })
+    // Resultado definitivo: el próximo envío será un intento nuevo con otra clave.
+    if (aplicado) intentoRef.current = null
+    return aplicado
+  }
+
   async function registrar(event) {
     event.preventDefault()
     if (busy) return
@@ -32,12 +43,14 @@ export default function PagoDemoPanel({ pedidoId, pedido }) {
     const fallos = validatePagoDraft(draft)
     setErrores(fallos)
     if (Object.keys(fallos).length) return
+    // Si hay un intento pendiente con OTRA operación, no se reutiliza su clave.
+    const intento = intentoRef.current
+    if (intento && (intento.pedidoId !== draft.pedidoId || intento.metodo !== draft.metodo)) {
+      setErrores({ metodo: 'Hay un intento pendiente con otro método. Reintenta ese intento o espera un resultado definitivo.' })
+      return
+    }
     controller.connect(createPagoDemoAdapter({ scenario, pedido }))
-    const idempotencyKey = claveRef.current ?? nuevaClave()
-    claveRef.current = idempotencyKey
-    const aplicado = await controller.registrar(draft, { idempotencyKey })
-    // Resultado final (aprobado/rechazado): el próximo envío será un intento nuevo con otra clave.
-    if (aplicado) claveRef.current = null
+    await enviar(draft)
   }
 
   const pago = state.pago
@@ -49,10 +62,11 @@ export default function PagoDemoPanel({ pedidoId, pedido }) {
         <div ref={errorRender} className="pagos-error" role="alert">
           <p>{state.error.message}</p>
           {state.operation === 'write' && <button type="button" className="button button--secondary" disabled={busy} onClick={() => {
-            // Reintento de resultado incierto: MISMA clave (no duplica el pago).
-            const idempotencyKey = claveRef.current ?? nuevaClave()
-            claveRef.current = idempotencyKey
-            return controller.registrar({ pedidoId, metodo }, { idempotencyKey }).then(aplicado => { if (aplicado) claveRef.current = null })
+            // Reintento de resultado incierto: mismo pedidoId, mismo método y MISMA clave.
+            const intento = intentoRef.current
+            if (!intento) return
+            return controller.registrar({ pedidoId: intento.pedidoId, metodo: intento.metodo }, { idempotencyKey: intento.key })
+              .then(aplicado => { if (aplicado) intentoRef.current = null })
           }}>Reintentar pago</button>}
         </div>
       )}
@@ -71,9 +85,9 @@ export default function PagoDemoPanel({ pedidoId, pedido }) {
             {pago.estado === 'RECHAZADO' && (
               <button type="button" className="button button--primary" disabled={busy}
                 onClick={() => {
-                  // Nuevo intento: escenario neutro (permite cualquier método) y clave nueva.
+                  // Intento con resultado definitivo (RECHAZADO): se descarta y se permite otro método.
                   setScenario('tarjeta')
-                  claveRef.current = null
+                  intentoRef.current = null
                   controller.connect(createPagoDemoAdapter({ scenario: 'tarjeta', pedido }))
                   controller.nuevoIntento()
                 }}>

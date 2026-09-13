@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record SeguridadInternaProperties(
         boolean enabled,
         String issuerUri,
+        String tenantId,
         String audience,
         String workerClientId,
         String rolRequerido) {

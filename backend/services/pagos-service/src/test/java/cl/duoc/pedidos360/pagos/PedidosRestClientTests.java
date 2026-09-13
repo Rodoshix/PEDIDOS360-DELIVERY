@@ -134,6 +134,18 @@ class PedidosRestClientTests {
         assertThatThrownBy(() -> cliente.confirmar(1L)).isInstanceOf(PagoException.class);
     }
 
+    @Test
+    void internoHabilitadoSinProveedorFallaAlConstruirYNoUsaLaRutaDelegada() throws Exception {
+        stub = new PedidosHttpServerStub();
+        // Modo interno habilitado sin proveedor: debe fallar explícitamente, no degradar al flujo delegado.
+        assertThatThrownBy(() -> new PedidosRestClient(RestClient.builder(),
+                new PedidosClientProperties(stub.baseUrl(), true), sinProveedor()))
+                .isInstanceOf(IllegalStateException.class);
+
+        // Y no se envió ninguna solicitud por la ruta alternativa.
+        assertThat(stub.confirmacionesPut()).isZero();
+    }
+
     private ObjectProvider<TokenAplicacionProvider> proveedor(String token) {
         return new ObjectProvider<>() {
             @Override public TokenAplicacionProvider getObject(Object... args) { return () -> token; }

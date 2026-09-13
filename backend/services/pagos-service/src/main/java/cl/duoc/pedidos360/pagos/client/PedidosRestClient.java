@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import cl.duoc.pedidos360.pagos.exception.PagoException;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -37,16 +36,22 @@ public class PedidosRestClient implements PedidosClient {
     private final boolean internoHabilitado;
     private final Supplier<String> tokenAplicacion;
 
+    /**
+     * Si el modo interno está habilitado, exige el proveedor de token de aplicación:
+     * no se degrada silenciosamente al flujo delegado (evita confirmar con la identidad
+     * equivocada). Sin el modo interno, el flujo delegado es el comportamiento previsto.
+     */
     public PedidosRestClient(RestClient.Builder builder, PedidosClientProperties properties,
             ObjectProvider<TokenAplicacionProvider> tokenAplicacionProvider) {
         this.restClient = builder.baseUrl(properties.baseUrl()).build();
         var provider = tokenAplicacionProvider.getIfAvailable();
-        this.internoHabilitado = properties.internoHabilitado() && provider != null;
-        this.tokenAplicacion = provider == null ? () -> null : provider::token;
         if (properties.internoHabilitado() && provider == null) {
-            LoggerFactory.getLogger(PedidosRestClient.class).warn(
-                    "Endpoint interno habilitado pero sin proveedor de token de aplicación: se usa el flujo delegado.");
+            throw new IllegalStateException(
+                    "pagos.pedidos.interno-habilitado=true requiere un TokenAplicacionProvider; "
+                            + "no se admite el flujo delegado como respaldo.");
         }
+        this.internoHabilitado = properties.internoHabilitado();
+        this.tokenAplicacion = provider == null ? null : provider::token;
     }
 
     @Override
