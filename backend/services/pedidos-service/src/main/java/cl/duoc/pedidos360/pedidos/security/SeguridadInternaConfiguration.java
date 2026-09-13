@@ -37,19 +37,40 @@ public class SeguridadInternaConfiguration {
     static final String CLAIM_TID = "tid";
     static final String VERSION_V2 = "2.0";
 
+    /** Base de Entra por tenant; el JWKS vive en {tenant}/discovery/v2.0/keys (sin duplicar /v2.0). */
+    static String entraBase(String tenant) {
+        return "https://login.microsoftonline.com/" + tenant;
+    }
+
+    /** Metadatos OpenID del tenant, de donde procede el JWK Set de firma. */
+    static String jwkSetUri(String tenant) {
+        return entraBase(tenant) + "/discovery/v2.0/keys";
+    }
+
     @Bean
     JwtDecoder jwtDecoderInterno(SeguridadInternaProperties properties) {
-        // Entra publica su JWK Set en el issuer; el decoder valida la firma contra esas claves.
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(properties.issuerUri() + "/discovery/v2.0/keys").build();
-        decoder.setJwtValidator(validar(properties));
+        // Destino construido desde el tenant configurado (nunca desde el issuer ni del token).
+        String tenant = uuid(properties.tenantId());
+        String jwkSetUri = properties.jwkSetUri() == null || properties.jwkSetUri().isBlank()
+                ? jwkSetUri(tenant)
+                : properties.jwkSetUri();
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        decoder.setJwtValidator(validar(properties, tenant));
         return decoder;
     }
 
+    static String uuid(String value) {
+        if (value == null || !value.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")) {
+            throw new IllegalArgumentException("Se requiere un UUID completo para el tenant.");
+        }
+        return java.util.UUID.fromString(value).toString();
+    }
+
     /** Validadores de la política interna; se expone para poder probarlos sin claves reales. */
-    static OAuth2TokenValidator<Jwt> validar(SeguridadInternaProperties properties) {
+    static OAuth2TokenValidator<Jwt> validar(SeguridadInternaProperties properties, String tenant) {
         return new DelegatingOAuth2TokenValidator<>(
-                // Firma (vía JWK), expiración/nbf e issuer configurado.
-                JwtValidators.createDefaultWithIssuer(properties.issuerUri()),
+                // Firma (vía JWK), expiración/nbf e issuer derivado del tenant validado.
+                JwtValidators.createDefaultWithIssuer(entraBase(tenant) + "/v2.0"),
                 // Token v2 (acuerdo #47).
                 new JwtClaimValidator<String>(CLAIM_VER, VERSION_V2::equals),
                 // Directorio esperado.
@@ -65,7 +86,11 @@ public class SeguridadInternaConfiguration {
                 new JwtClaimValidator<String>("azp",
                         azp -> properties.workerClientId() != null && properties.workerClientId().equals(azp)),
                 // Un token de aplicación no representa a un usuario: el claim scp debe estar AUSENTE.
-                new JwtClaimValidator<String>(CLAIM_SCOPE, scope -> scope == null));
+                (OAuth2TokenValidator<Jwt>) jwt -> jwt.getClaims().containsKey(CLAIM_SCOPE)
+                        ? org.springframework.security.oauth2.core.OAuth2TokenValidatorResult.failure(
+                                new org.springframework.security.oauth2.core.OAuth2Error("invalid_token",
+                                        "El token no debe presentar scp.", null))
+                        : org.springframework.security.oauth2.core.OAuth2TokenValidatorResult.success());
     }
 
     @Bean

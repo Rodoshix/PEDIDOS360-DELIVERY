@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Verifica la política JWT del endpoint interno (acuerdo #47) sobre el validador REAL
@@ -17,17 +17,17 @@ import static org.assertj.core.api.Assertions.assertThatCode;
  */
 class SeguridadInternaTests {
 
-    private static final String ISSUER = "https://login.microsoftonline.com/tenant-test/v2.0";
-    private static final String TENANT = "tenant-test";
-    private static final String AUD = "api-test-guid";
+    private static final String TENANT = "a048ca4e-cd7f-4a01-a43e-cb4deccf1ff2";
+    private static final String ISSUER = "https://login.microsoftonline.com/" + TENANT + "/v2.0";
+    private static final String AUD = "13c0f63f-2007-41c4-8d9f-02640b8a1886";
     private static final String WORKER = "worker-client-id";
     private static final String ROL = "Pedidos.Confirmar";
 
     private final SeguridadInternaProperties properties =
-            new SeguridadInternaProperties(true, ISSUER, TENANT, AUD, WORKER, ROL);
+            new SeguridadInternaProperties(true, TENANT, AUD, WORKER, ROL, null);
 
     private OAuth2TokenValidator<Jwt> validador() {
-        return SeguridadInternaConfiguration.validar(properties);
+        return SeguridadInternaConfiguration.validar(properties, TENANT);
     }
 
     private Jwt token(Map<String, Object> overrides) {
@@ -36,6 +36,7 @@ class SeguridadInternaTests {
                 .issuer(ISSUER)
                 .subject("worker")
                 .issuedAt(Instant.now().minusSeconds(30))
+                .notBefore(Instant.now().minusSeconds(30))
                 .expiresAt(Instant.now().plusSeconds(300))
                 .claim("ver", "2.0")
                 .claim("tid", TENANT)
@@ -48,50 +49,46 @@ class SeguridadInternaTests {
 
     @Test
     void tokenDeAplicacionValidoSeAcepta() {
-        assertThatCode(() -> validador().validate(token(Map.of()))).doesNotThrowAnyException();
+        // La prueba positiva debe comprobar que NO hay errores (validate no lanza excepción).
+        assertThat(validador().validate(token(Map.of())).hasErrors()).isFalse();
     }
 
     @Test
     void tokenDelegadoConScpSeRechaza() {
         // Un token de usuario (con scp) no debe acceder al endpoint interno.
-        var resultado = validador().validate(token(Map.of("scp", "access_as_user")));
-        assertThat(resultado.hasErrors()).isTrue();
+        assertThat(validador().validate(token(Map.of("scp", "access_as_user"))).hasErrors()).isTrue();
     }
 
     @Test
     void tokenV1SeRechaza() {
-        var resultado = validador().validate(token(Map.of("ver", "1.0")));
-        assertThat(resultado.hasErrors()).isTrue();
+        assertThat(validador().validate(token(Map.of("ver", "1.0"))).hasErrors()).isTrue();
     }
 
     @Test
     void otroDirectorioSeRechaza() {
-        var resultado = validador().validate(token(Map.of("tid", "otro-tenant")));
-        assertThat(resultado.hasErrors()).isTrue();
+        assertThat(validador().validate(token(Map.of("tid", "00000000-0000-0000-0000-000000000000"))).hasErrors()).isTrue();
     }
 
     @Test
     void audienciaIncorrectaSeRechaza() {
-        var resultado = validador().validate(token(Map.of("aud", List.of("otra-api"))));
-        assertThat(resultado.hasErrors()).isTrue();
+        assertThat(validador().validate(token(Map.of("aud", List.of("otra-api")))).hasErrors()).isTrue();
     }
 
     @Test
     void otroEmisorAzpSeRechaza() {
-        var resultado = validador().validate(token(Map.of("azp", "frontend-client-id")));
-        assertThat(resultado.hasErrors()).isTrue();
+        assertThat(validador().validate(token(Map.of("azp", "frontend-client-id"))).hasErrors()).isTrue();
     }
 
     @Test
     void sinElRolRequeridoSeRechaza() {
-        var resultado = validador().validate(token(Map.of("roles", List.of("Otro.Rol"))));
-        assertThat(resultado.hasErrors()).isTrue();
+        assertThat(validador().validate(token(Map.of("roles", List.of("Otro.Rol")))).hasErrors()).isTrue();
     }
 
     @Test
     void tokenExpiradoSeRechaza() {
         Jwt expirado = Jwt.withTokenValue("token").header("alg", "RS256").issuer(ISSUER).subject("worker")
-                .issuedAt(Instant.now().minusSeconds(600)).expiresAt(Instant.now().minusSeconds(60))
+                .issuedAt(Instant.now().minusSeconds(1200))
+                .notBefore(Instant.now().minusSeconds(1200)).expiresAt(Instant.now().minusSeconds(600))
                 .claim("ver", "2.0").claim("tid", TENANT).claim("aud", List.of(AUD))
                 .claim("roles", List.of(ROL)).claim("azp", WORKER).build();
 
@@ -101,11 +98,33 @@ class SeguridadInternaTests {
     @Test
     void issuerIncorrectoSeRechaza() {
         Jwt otroIssuer = Jwt.withTokenValue("token").header("alg", "RS256")
-                .issuer("https://login.microsoftonline.com/otro/v2.0").subject("worker")
-                .issuedAt(Instant.now().minusSeconds(30)).expiresAt(Instant.now().plusSeconds(300))
+                .issuer("https://login.microsoftonline.com/otro-tenant/v2.0").subject("worker")
+                .issuedAt(Instant.now().minusSeconds(30))
+                .notBefore(Instant.now().minusSeconds(30)).expiresAt(Instant.now().plusSeconds(300))
                 .claim("ver", "2.0").claim("tid", TENANT).claim("aud", List.of(AUD))
                 .claim("roles", List.of(ROL)).claim("azp", WORKER).build();
 
         assertThat(validador().validate(otroIssuer).hasErrors()).isTrue();
+    }
+
+    // --- Configuración del JWKS (evita duplicar /v2.0) ---
+
+    @Test
+    void elJwkSetNoDuplicaLaVersionEnLaRuta() {
+        String jwk = SeguridadInternaConfiguration.jwkSetUri(TENANT);
+
+        assertThat(jwk).isEqualTo("https://login.microsoftonline.com/" + TENANT + "/discovery/v2.0/keys");
+        assertThat(jwk).doesNotContain("/v2.0/discovery/v2.0/keys");
+    }
+
+    @Test
+    void elIssuerDerivadoCoincideConElDeEntra() {
+        assertThat(SeguridadInternaConfiguration.entraBase(TENANT) + "/v2.0").isEqualTo(ISSUER);
+    }
+
+    @Test
+    void unTenantQueNoEsUuidSeRechaza() {
+        assertThatThrownBy(() -> SeguridadInternaConfiguration.uuid("no-es-un-uuid"))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
