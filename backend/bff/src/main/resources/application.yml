@@ -20,6 +20,9 @@ management:
     health:
       show-details: never
 bff:
+  pedidos-pagos-enabled: ${BFF_PEDIDOS_PAGOS_ENABLED:false}
+  pedidos-url: ${PEDIDOS_SERVICE_URL:http://127.0.0.1:8085}
+  pagos-url: ${PAGOS_SERVICE_URL:http://127.0.0.1:8086}
   restaurantes-url: ${RESTAURANTES_SERVICE_URL:http://127.0.0.1:8082}
   productos-url: ${PRODUCTOS_SERVICE_URL:http://127.0.0.1:8083}
   carrito-url: ${CARRITO_SERVICE_URL:http://127.0.0.1:8084}

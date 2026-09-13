@@ -24,7 +24,9 @@ public class ComercioClient {
         this.origins = java.util.Map.of(
             "restaurantes", ConnectionConfiguration.origin(env.getProperty("bff.restaurantes-url", "http://127.0.0.1:8082")),
             "productos", ConnectionConfiguration.origin(env.getProperty("bff.productos-url", "http://127.0.0.1:8083")),
-            "carrito", ConnectionConfiguration.origin(env.getProperty("bff.carrito-url", "http://127.0.0.1:8084")));
+            "carrito", ConnectionConfiguration.origin(env.getProperty("bff.carrito-url", "http://127.0.0.1:8084")),
+            "pedidos", ConnectionConfiguration.origin(env.getProperty("bff.pedidos-url", "http://127.0.0.1:8085")),
+            "pagos", ConnectionConfiguration.origin(env.getProperty("bff.pagos-url", "http://127.0.0.1:8086")));
         this.timeoutMs = env.getProperty("bff.upstream-timeout-ms", Long.class, 5000L);
         if (timeoutMs < 100 || timeoutMs > 30000) throw new IllegalArgumentException("Timeout fuera de rango.");
     }
@@ -37,7 +39,8 @@ public class ComercioClient {
         var builder = HttpRequest.newBuilder(origin.resolve(path)).timeout(Duration.ofMillis(timeoutMs))
                 .header("Accept", "application/json");
         // Catálogo solo se consulta: no necesita recibir el token del usuario.
-        if (path.startsWith("/carrito")) builder.header("Authorization", "Bearer " + token.getToken().getTokenValue());
+        if (path.startsWith("/carrito") || path.startsWith("/pedidos") || path.startsWith("/pagos"))
+            builder.header("Authorization", "Bearer " + token.getToken().getTokenValue());
         if (body != null) builder.header("Content-Type", "application/json");
         var request = builder.method(method, body == null ? HttpRequest.BodyPublishers.noBody()
                 : HttpRequest.BodyPublishers.ofString(body)).build();
@@ -66,6 +69,7 @@ public class ComercioClient {
     }
 
     static boolean allowed(String method, String path) {
+        if ("GET".equals(method) && path.matches("/(?:pedidos(?:/me|/[1-9][0-9]*)?|pagos/(?:pedido/)?[1-9][0-9]*)")) return true;
         if ("GET".equals(method) && path.matches("/(?:restaurantes(?:/[1-9][0-9]*)?|productos(?:/[1-9][0-9]*|/restaurante/[1-9][0-9]*(?:/disponibles)?)?)")) return true;
         if (path.equals("/carrito")) return Set.of("GET", "DELETE").contains(method);
         if (path.equals("/carrito/items")) return method.equals("POST");
