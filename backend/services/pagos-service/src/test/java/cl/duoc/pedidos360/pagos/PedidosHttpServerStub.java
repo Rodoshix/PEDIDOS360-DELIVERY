@@ -67,6 +67,7 @@ final class PedidosHttpServerStub implements AutoCloseable {
         String path = exchange.getRequestURI().getPath();
         String method = exchange.getRequestMethod();
         String authorization = exchange.getRequestHeaders().getFirst("Authorization");
+        ultimoAuthorization.set(authorization);
         try (exchange) {
             if (path.startsWith("/internal/") && "PUT".equals(method) && path.endsWith("/confirmacion-pago")) {
                 confirmacionesInternas.incrementAndGet();

@@ -23,10 +23,12 @@ public class PedidoService {
 
     private final PedidoRepository pedidos;
     private final LineaPedidoRepository lineas;
+    private final CatalogoPedidos catalogo;
 
-    public PedidoService(PedidoRepository pedidos, LineaPedidoRepository lineas) {
+    public PedidoService(PedidoRepository pedidos, LineaPedidoRepository lineas, CatalogoPedidos catalogo) {
         this.pedidos = pedidos;
         this.lineas = lineas;
+        this.catalogo = catalogo;
     }
 
     /** Crea un pedido para la identidad autenticada. Regla del MVP: un solo restaurante por pedido. */
@@ -37,10 +39,15 @@ public class PedidoService {
         Pedido pedido = new Pedido(identidad.usuarioId(), request.restauranteId(),
                 request.direccionEntrega(), "CLP");
         for (LineaPedidoRequest item : request.items()) {
-            Long precio = precioDeCatalogoMock(item.productoId());
+            if (item == null || item.cantidad() < 1)
+                throw new PedidoException(HttpStatus.BAD_REQUEST, "Cantidad inválida.");
+            Long precio = catalogo.precio(item.productoId(), request.restauranteId());
+            try { Math.addExact(pedido.getTotal(), Math.multiplyExact((long) item.cantidad(), precio)); }
+            catch (ArithmeticException error) {
+                throw new PedidoException(HttpStatus.BAD_REQUEST, "Total fuera de rango.");
+            }
             pedido.agregarLinea(new LineaPedido(item.productoId(), item.cantidad(), precio));
         }
-        validarUnRestaurante(pedido, request);
         return toResponse(pedidos.save(pedido));
     }
 
@@ -113,25 +120,9 @@ public class PedidoService {
         }
     }
 
-    /**
-     * Regla del MVP: un pedido pertenece a un único restaurante.
-     * Con el catálogo mock no hay pertenencia real que verificar; al integrar Productos,
-     * aquí se comprobará que cada producto pertenezca a request.restauranteId().
-     */
-    private void validarUnRestaurante(Pedido pedido, CrearPedidoRequest request) {
-        if (request.restauranteId() == null) {
-            throw new PedidoException(HttpStatus.BAD_REQUEST, "El pedido debe indicar un restaurante.");
-        }
-    }
-
     private Pedido buscar(Long id) {
         return pedidos.findById(id)
                 .orElseThrow(() -> new PedidoNoEncontradoException("Pedido no encontrado: " + id));
-    }
-
-    /** TODO(integracion): resolver el precio real desde catálogo (I2). Mock en desarrollo. */
-    private Long precioDeCatalogoMock(Long productoId) {
-        return 6990L;
     }
 
     private PedidoResponse toResponse(Pedido pedido) {

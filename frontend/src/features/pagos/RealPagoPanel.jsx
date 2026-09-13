@@ -22,7 +22,7 @@ export default function RealPagoPanel({ pedidoId }) {
   const location = useLocation()
   const destination = location.pathname + location.search + location.hash
   const id = Number(pedidoId)
-  const busy = state.status === 'loading' || state.status === 'saving'
+  const busy = sessionBusy || state.status === 'loading' || state.status === 'saving'
 
   const nuevaClave = () => `web-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 
@@ -67,6 +67,7 @@ export default function RealPagoPanel({ pedidoId }) {
   return <div className="pagos-section" aria-busy={busy}>
     {state.status === 'loading' && <p role="status">Consultando el pago del pedido…</p>}
     {state.status === 'saving' && <p role="status">Registrando el pago…</p>}
+    {state.status === 'empty' && <p role="status">Este pedido todavía no tiene pagos registrados. Elige un método para registrar el primero.</p>}
     {error && <div ref={errorRender} role="alert" className="pagos-error">
       <p>{error.message}</p>
       {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
@@ -92,7 +93,7 @@ export default function RealPagoPanel({ pedidoId }) {
         <Link className="button button--secondary" to={ROUTE_PATHS.pedidoDetalle.replace(':id', pago.pedidoId)}>Ver pedido</Link>
         <Link className="button button--secondary" to={ROUTE_PATHS.misPedidos}>Ir a mis pedidos</Link>
       </div>
-    </section> : (!error || error.code === 'NOT_FOUND') && (
+    </section> : !error && (
       <form className="pagos-card" onSubmit={registrar} noValidate>
         <h2>Registrar pago</h2>
         <p>Pedido #{id}</p>

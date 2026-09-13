@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { useLocation } from 'react-router'
+import { Link, useLocation } from 'react-router'
+import { ROUTE_PATHS } from '../../routes/routePaths.js'
 import { useAuthSession } from '../../auth/useAuthSession.js'
 import { createCartController } from './cartService.js'
 import { createCartHttpAdapter, commerceFailure } from './cartHttpAdapter.js'
@@ -73,12 +74,14 @@ export default function RealCartPanel() {
       onQuantity={(id, cantidad) => apply({ type: 'quantity', productoId: id, cantidad })}
       onRemove={(item, button) => ask({ type: 'remove', productoId: item.productoId }, button)} />}
     <div className="cart-actions">
+      {!disabled && state.cart?.items.length > 0 && <Link className="button button--primary"
+        to={ROUTE_PATHS.confirmarPedido}>Continuar a confirmar pedido</Link>}
       <button type="button" className="button button--secondary" disabled={busy} onClick={() => {
         setConfirmation(null); setMessage(''); void controller.load()
       }}>Actualizar carrito</button>
       {state.cart?.items.length > 0 && !failedRead && <button type="button" className="button button--secondary" disabled={disabled}
         onClick={event => ask({ type: 'clear' }, event.currentTarget)}>Vaciar carrito</button>}
     </div>
-    <p>Las cantidades sin aplicar se pierden al actualizar, salir o cambiar de cuenta. Este flujo aún no crea pedidos.</p>
+    <p>Aplica los cambios de cantidad antes de continuar. Las cantidades sin aplicar se pierden al actualizar, salir o cambiar de cuenta. En el siguiente paso podrás revisar la dirección y confirmar el pedido.</p>
   </div>
 }

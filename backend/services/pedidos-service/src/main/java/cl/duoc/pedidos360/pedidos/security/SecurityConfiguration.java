@@ -41,7 +41,8 @@ public class SecurityConfiguration {
     @Bean
     @Order(1)
     @ConditionalOnProperty(name = "pedidos.interno.enabled", havingValue = "true")
-    SecurityFilterChain cadenaInterna(HttpSecurity http, JwtDecoder jwtDecoderInterno,
+    SecurityFilterChain cadenaInterna(HttpSecurity http,
+            @org.springframework.beans.factory.annotation.Qualifier("jwtDecoderInterno") JwtDecoder jwtDecoderInterno,
             JwtAuthenticationConverter jwtAuthenticationConverterInterno, JsonMapper mapper) throws Exception {
         return http.securityMatcher("/internal/**")
                 .csrf(AbstractHttpConfigurer::disable)
@@ -68,8 +69,16 @@ public class SecurityConfiguration {
     @Bean
     @Order(2)
     SecurityFilterChain cadenaDelegada(HttpSecurity http,
-            ObjectProvider<IdentidadUsuario> identidadLocal, JsonMapper mapper) throws Exception {
+            ObjectProvider<IdentidadUsuario> identidadLocal, JsonMapper mapper,
+            org.springframework.core.env.Environment env,
+            @org.springframework.beans.factory.annotation.Qualifier("entraDelegadoDecoder")
+            ObjectProvider<org.springframework.security.oauth2.jwt.JwtDecoder> decoder) throws Exception {
         var identidad = identidadLocal.getIfAvailable();
+        boolean enabled = env.getProperty("entra.enabled", Boolean.class, false);
+        if (enabled && identidad != null) throw new IllegalStateException("JWT e identidad local no pueden coexistir.");
+        if (enabled) http.oauth2ResourceServer(resource -> resource.jwt(jwt -> jwt.decoder(decoder.getObject())
+            .jwtAuthenticationConverter(token -> new org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken(
+                token, EntraConfiguration.authorities(token)))));
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -79,7 +88,14 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> {
                     auth.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                             .requestMatchers("/actuator/health", "/actuator/health/**").permitAll();
-                    if (identidad != null) {
+                    if (enabled) {
+                        auth.requestMatchers("/pedidos", "/pedidos/**").access((authentication, context) -> {
+                            var roles = authentication.get().getAuthorities().stream()
+                                .map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
+                            return new org.springframework.security.authorization.AuthorizationDecision(
+                                roles.contains("SCOPE_access_as_user") && (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_CLIENTE")));
+                        });
+                    } else if (identidad != null) {
                         auth.requestMatchers("/pedidos", "/pedidos/**", "/usuarios/**").authenticated();
                     }
                     auth.anyRequest().denyAll();

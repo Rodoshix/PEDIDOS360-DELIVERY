@@ -29,6 +29,12 @@ server:
   address: ${SERVER_ADDRESS:127.0.0.1}
 
 pagos:
+  worker:
+    enabled: ${PAGOS_WORKER_ENABLED:false}
+    tenant-id: ${ENTRA_TENANT_ID:}
+    api-client-id: ${ENTRA_API_CLIENT_ID:}
+    client-id: ${PAGOS_WORKER_CLIENT_ID:}
+    client-secret: ${PAGOS_WORKER_CLIENT_SECRET:}
   identidad-local:
     enabled: ${LOCAL_IDENTITY_ENABLED:false}
     usuario-id: ${LOCAL_USER_ID:}
@@ -49,3 +55,9 @@ management:
   endpoint:
     health:
       show-details: never
+entra:
+  enabled: ${ENTRA_ENABLED:false}
+  tenant-id: ${ENTRA_TENANT_ID:}
+  api-client-id: ${ENTRA_API_CLIENT_ID:}
+  frontend-client-id: ${ENTRA_FRONTEND_CLIENT_ID:}
+  usuarios-url: ${USUARIOS_SERVICE_URL:http://localhost:8081}

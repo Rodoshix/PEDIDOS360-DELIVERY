@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
     "entra.enabled=true",
+    "bff.pedidos-pagos-enabled=true",
     "entra.tenant-id=11111111-1111-1111-1111-111111111111",
     "entra.api-client-id=22222222-2222-2222-2222-222222222222",
     "entra.frontend-client-id=33333333-3333-3333-3333-333333333333",
@@ -26,6 +27,7 @@ class JwtHttpTests {
     static volatile int status = 200;
     static volatile long delay;
     static volatile String lastToken, lastCookie, lastUser, lastRoles, lastMethod, lastPath, lastBody;
+    static volatile String lastKey;
     static final java.util.concurrent.atomic.AtomicInteger hits = new java.util.concurrent.atomic.AtomicInteger();
 
     static com.sun.net.httpserver.HttpServer start() {
@@ -34,6 +36,7 @@ class JwtHttpTests {
             server.createContext("/", exchange -> {
                 hits.incrementAndGet();
                 lastToken = exchange.getRequestHeaders().getFirst("Authorization");
+                lastKey = exchange.getRequestHeaders().getFirst("Idempotency-Key");
                 lastCookie = exchange.getRequestHeaders().getFirst("Cookie");
                 lastUser = exchange.getRequestHeaders().getFirst("X-User-Id");
                 lastRoles = exchange.getRequestHeaders().getFirst("X-Roles");
@@ -56,7 +59,7 @@ class JwtHttpTests {
     @org.springframework.test.context.DynamicPropertySource
     static void properties(org.springframework.test.context.DynamicPropertyRegistry registry) {
         registry.add("bff.usuarios-url", () -> "http://127.0.0.1:" + upstream.getAddress().getPort());
-        for (String service : List.of("restaurantes", "productos", "carrito"))
+        for (String service : List.of("restaurantes", "productos", "carrito", "pedidos", "pagos"))
             registry.add("bff." + service + "-url", () -> "http://127.0.0.1:" + upstream.getAddress().getPort());
         registry.add("bff.upstream-timeout-ms", () -> 500);
     }
@@ -80,6 +83,102 @@ class JwtHttpTests {
             return client.send(request.method(method, body == null ? HttpRequest.BodyPublishers.noBody()
                     : HttpRequest.BodyPublishers.ofString(body)).build(), HttpResponse.BodyHandlers.ofString());
         }
+    }
+    @Test void pedidosPagosConsultasConRelaySinIdentidadExterna() throws Exception {
+        var token = EntraTestTokens.token(Map.of());
+        for (String path : List.of("/pedidos/me", "/pedidos/7", "/pagos/8", "/pagos/pedido/7")) {
+            assertThat(call("GET", path, token, null).statusCode()).isEqualTo(200);
+            assertThat(lastPath).isEqualTo(path);
+            assertThat(lastToken).isEqualTo("Bearer " + token);
+            assertThat(lastCookie).isNull();
+            assertThat(lastUser).isNull();
+            assertThat(lastRoles).isNull();
+        }
+    }
+    @Test void listadoGlobalSoloAdminYComandosRestringidos() throws Exception {
+        var cliente = EntraTestTokens.token(Map.of());
+        assertThat(call("GET", "/pedidos", cliente, null).statusCode()).isEqualTo(403);
+        assertThat(hits.get()).isZero();
+        var admin = EntraTestTokens.token(Map.of("roles", List.of("ADMIN")));
+        assertThat(call("GET", "/pedidos", admin, null).statusCode()).isEqualTo(200);
+        int before = hits.get();
+        assertThat(call("POST", "/pedidos", admin, "{}").statusCode()).isEqualTo(400);
+        assertThat(call("PUT", "/pagos/8/aprobar", cliente, null).statusCode()).isEqualTo(403);
+        assertThat(call("GET", "/pedidos/0", cliente, null).statusCode()).isEqualTo(400);
+        assertThat(hits.get()).isEqualTo(before);
+    }
+    @Test void pedidosPagosRechazanTokenInvalidoScopeYRol() throws Exception {
+        for (String path : List.of("/pedidos/me", "/pagos/8")) {
+            assertThat(call("GET", path, null, null).statusCode()).isEqualTo(401);
+            assertThat(call("GET", path, "falso", null).statusCode()).isEqualTo(401);
+            for (var claims : List.of(Map.<String,Object>of("scp", "otro"), Map.<String,Object>of("roles", List.of("REPARTIDOR"))))
+                assertThat(call("GET", path, EntraTestTokens.token(claims), null).statusCode()).isEqualTo(403);
+        }
+        assertThat(hits.get()).isZero();
+    }
+    @Test void pedidosPagosPropaganDenegacionSinDetallesNiRedirect() throws Exception {
+        for (int code : List.of(403, 404, 302, 500)) {
+            status = code;
+            var response = call("GET", "/pedidos/7", EntraTestTokens.token(Map.of()), null);
+            assertThat(response.statusCode()).isEqualTo(code == 403 || code == 404 ? code : 502);
+            assertThat(response.body()).doesNotContain("INTERNAL_SECRET");
+        }
+        assertThat(hits.get()).isEqualTo(4);
+    }
+    @Test void crearPedidoSinPreciosNiIdentidadAportados() throws Exception {
+        var token = EntraTestTokens.token(Map.of());
+        String body = "{\"restauranteId\":1,\"direccionEntrega\":\"Calle 123\",\"items\":[{\"productoId\":2,\"cantidad\":1}]}";
+        status = 201;
+        assertThat(call("POST", "/pedidos", token, body).statusCode()).isEqualTo(201);
+        assertThat(lastBody).isEqualTo(body);
+        assertThat(lastToken).isEqualTo("Bearer " + token);
+        assertThat(lastKey).isNull();
+        for (String invalid : List.of(body.replace("\"restauranteId\":1", "\"usuarioId\":7"),
+            body.replace("\"cantidad\":1", "\"cantidad\":1.5"),
+            body.replace("\"cantidad\":1", "\"cantidad\":0"),
+            body.replace("\"cantidad\":1", "\"cantidad\":1,\"precio\":1")))
+            assertThat(call("POST", "/pedidos", token, invalid).statusCode()).isEqualTo(400);
+        assertThat(hits.get()).isEqualTo(1);
+    }
+    @Test void pagoExigeClaveYLaConservaEnReintentosSinReintentarAutomaticamente() throws Exception {
+        var token = EntraTestTokens.token(Map.of());
+        String body = "{\"pedidoId\":7,\"metodo\":\"TARJETA\"}";
+        assertThat(call("POST", "/pagos", token, body).statusCode()).isEqualTo(400);
+        for (String key : List.of("a b", "x".repeat(81), "a,b"))
+            assertThat(call("POST", "/pagos", token, body, Map.of("Idempotency-Key", key)).statusCode()).isEqualTo(400);
+        assertThat(hits.get()).isZero();
+        status = 500;
+        for (int attempt = 0; attempt < 2; attempt++) {
+            assertThat(call("POST", "/pagos", token, body, Map.of("Idempotency-Key", "intento-123")).statusCode()).isEqualTo(502);
+            assertThat(lastKey).isEqualTo("intento-123");
+            assertThat(lastToken).isEqualTo("Bearer " + token);
+            assertThat(lastUser).isNull();
+        }
+        assertThat(hits.get()).isEqualTo(2);
+    }
+    @Test void soloAdminPuedeCambiarEstadoOAprobar() throws Exception {
+        var cliente = EntraTestTokens.token(Map.of());
+        assertThat(call("PUT", "/pedidos/7/estado", cliente, "{\"estado\":\"CONFIRMADO\"}").statusCode()).isEqualTo(403);
+        assertThat(call("PUT", "/pagos/8/aprobar", cliente, null).statusCode()).isEqualTo(403);
+        assertThat(hits.get()).isZero();
+        var admin = EntraTestTokens.token(Map.of("roles", List.of("ADMIN")));
+        assertThat(call("PUT", "/pedidos/7/estado", admin, "{\"estado\":\"CONFIRMADO\"}").statusCode()).isEqualTo(200);
+        assertThat(call("PUT", "/pagos/8/aprobar", admin, null).statusCode()).isEqualTo(200);
+        assertThat(lastPath).isEqualTo("/pagos/8/aprobar");
+        assertThat(lastBody).isEmpty();
+        assertThat(call("PUT", "/pedidos/7/estado", admin, "{\"estado\":\"OTRO\"}").statusCode()).isEqualTo(400);
+        assertThat(hits.get()).isEqualTo(2);
+    }
+    @Test void corsPermiteClaveSoloEnCreacionPagoDesdeOrigenConocido() throws Exception {
+        var headers = Map.of("Origin", "http://localhost:5173", "Access-Control-Request-Method", "POST",
+            "Access-Control-Request-Headers", "authorization,content-type,idempotency-key");
+        assertThat(call("OPTIONS", "/pagos", null, null, headers).statusCode()).isEqualTo(200);
+        var pedidosPreflight = call("OPTIONS", "/pedidos", null, null, headers);
+        assertThat(pedidosPreflight.headers().firstValue("access-control-allow-headers").orElse("").toLowerCase())
+            .doesNotContain("idempotency-key");
+        var evil = new HashMap<>(headers);
+        evil.put("Origin", "https://evil.example");
+        assertThat(call("OPTIONS", "/pagos", null, null, evil).statusCode()).isEqualTo(403);
     }
     @Test void sinTokenNiCabecerasFalsificadasAutentican() throws Exception {
         assertThat(call("GET", "/usuarios/me", null, null).statusCode()).isEqualTo(401);

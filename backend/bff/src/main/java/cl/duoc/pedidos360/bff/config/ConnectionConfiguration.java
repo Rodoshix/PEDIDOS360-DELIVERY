@@ -46,10 +46,13 @@ public class ConnectionConfiguration {
         var source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/usuarios", cors);
         source.registerCorsConfiguration("/usuarios/**", cors);
-        for (String path : List.of("/restaurantes", "/productos", "/carrito")) {
+        for (String path : List.of("/restaurantes", "/productos", "/carrito", "/pedidos", "/pagos")) {
             source.registerCorsConfiguration(path, cors);
             source.registerCorsConfiguration(path + "/**", cors);
         }
+        var pagos = new CorsConfiguration(cors);
+        pagos.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Idempotency-Key"));
+        source.registerCorsConfiguration("/pagos", pagos);
         return source;
     }
 }
