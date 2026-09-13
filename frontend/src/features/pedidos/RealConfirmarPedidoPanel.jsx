@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { Link, useLocation } from 'react-router'
 import { useAuthSession } from '../../auth/useAuthSession.js'
 import { createPedidoController } from './pedidoService.js'
 import { createPedidoHttpAdapter, pedidoFailure } from './pedidoHttpAdapter.js'
@@ -10,21 +10,28 @@ import './pedidos.css'
 
 /**
  * Confirmación de pedido real: lee el carrito vía BFF, crea el pedido
- * (POST /pedidos → 201) y solo entonces vacía el carrito. Si el vaciado falla,
- * el pedido creado se conserva y no se repite la creación (contrato #47).
+ * (POST /pedidos → 201) y solo entonces vacía el carrito.
+ *
+ * Si el vaciado falla, NO se navega ni se repite la creación: se muestra el pedido
+ * creado (con su pedidoId) y se permite reintentar únicamente el vaciado.
  */
 export default function RealConfirmarPedidoPanel() {
   const [controller] = useState(createPedidoController)
+  const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot, controller.getSnapshot)
   const { busy: sessionBusy, login, authorizeApi } = useAuthSession()
   const location = useLocation()
-  const navigate = useNavigate()
   const destination = location.pathname + location.search + location.hash
   const [cart, setCart] = useState(null)
   const [cartError, setCartError] = useState(null)
   const [direccionEntrega, setDireccionEntrega] = useState('')
   const [errores, setErrores] = useState({})
-  const [aviso, setAviso] = useState('')
   const [cargando, setCargando] = useState(true)
+  // Resultado tras crear el pedido: permite reintentar solo el vaciado.
+  const [creado, setCreado] = useState(null)
+  const [vaciadoFallo, setVaciadoFallo] = useState(false)
+  const [creando, setCreando] = useState(false)
+  // Guarda síncrona: evita envíos concurrentes sin depender de un render pendiente.
+  const enviandoRef = useRef(false)
   const errorRender = useRef(null)
 
   useEffect(() => {
@@ -32,6 +39,8 @@ export default function RealConfirmarPedidoPanel() {
     if (sessionBusy) return undefined
     import('../../services/httpClient.js').then(async ({ default: client }) => {
       if (disposed) return
+      // El adaptador se conecta FUERA del submit: reconectar cancela la operación en curso.
+      controller.connect(createPedidoHttpAdapter(client))
       try {
         const response = await client.get('/carrito')
         if (!disposed && response.status === 200) setCart(response.data)
@@ -45,8 +54,7 @@ export default function RealConfirmarPedidoPanel() {
     return () => { disposed = true; controller.cancelPending() }
   }, [controller, sessionBusy])
 
-  const state = controller.getSnapshot()
-  const busy = sessionBusy || cargando || state.status === 'saving'
+  const busy = sessionBusy || cargando || creando || state.status === 'saving'
   const error = state.error || (cartError ? pedidoFailure(cartError) : null)
   useEffect(() => { if (error) errorRender.current?.focus() }, [error])
 
@@ -54,9 +62,22 @@ export default function RealConfirmarPedidoPanel() {
   const restauranteId = cart?.restauranteId ?? null
   const total = items.reduce((sum, item) => sum + (item.subtotal ?? 0), 0)
 
+  async function vaciarCarrito() {
+    const client = (await import('../../services/httpClient.js')).default
+    try {
+      await client.delete('/carrito')
+      setVaciadoFallo(false)
+      return true
+    } catch {
+      setVaciadoFallo(true)
+      return false
+    }
+  }
+
   async function confirmar(event) {
     event.preventDefault()
-    if (busy) return
+    // Guarda síncrona: bloquea doble clic y envíos solapados.
+    if (busy || enviandoRef.current) return
     const draft = {
       restauranteId,
       direccionEntrega,
@@ -66,35 +87,54 @@ export default function RealConfirmarPedidoPanel() {
     setErrores(fallos)
     if (Object.keys(fallos).length) return
 
-    setAviso('')
-    const client = (await import('../../services/httpClient.js')).default
-    controller.connect(createPedidoHttpAdapter(client))
-    const creado = await controller.create(draft)
-    if (!creado) return // el error se muestra; no se reintenta la creación automáticamente
-    const pedido = controller.getSnapshot().pedido
+    enviandoRef.current = true
+    setCreando(true)
     try {
-      await client.delete('/carrito')
-    } catch {
-      setAviso('El pedido se creó, pero no se pudo vaciar el carrito. Puedes vaciarlo desde Carrito; no se creará otro pedido.')
+      const ok = await controller.create(draft)
+      if (!ok) return // error visible; NO se reintenta la creación automáticamente
+      const pedido = controller.getSnapshot().pedido
+      setCreado({ pedidoId: pedido.pedidoId, total: pedido.total })
+      const vaciado = await vaciarCarrito()
+      if (vaciado) setCart(current => ({ ...current, items: [], restauranteId: null }))
+    } finally {
+      enviandoRef.current = false
+      setCreando(false)
     }
-    navigate(ROUTE_PATHS.pago.replace(':pedidoId', pedido.pedidoId))
   }
 
   return <div className="pedidos-section" aria-busy={busy}>
     {cargando && <p role="status">Consultando tu carrito…</p>}
-    {error && <div ref={errorRender} role="alert" className="pedidos-error">
+    {error && !creado && <div ref={errorRender} role="alert" className="pedidos-error">
       <p>{error.message}</p>
       {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
         onClick={() => authorizeApi(destination)}>Continuar con Microsoft</button>}
       {error.code === 'UNAUTHORIZED' && <button type="button" className="button button--primary" disabled={busy}
         onClick={() => login(destination)}>Volver a iniciar sesión</button>}
     </div>}
-    {aviso && <p role="alert" className="pedidos-error">{aviso}</p>}
-    {!cargando && items.length === 0 && !error && <div className="pedidos-card">
+
+    {creado && <div className="pedidos-card">
+      <h2>Pedido #{creado.pedidoId} creado</h2>
+      <p>Total {formatClp(creado.total)}. Tu pedido ya está registrado; no se creará otro.</p>
+      {vaciadoFallo
+        ? <div role="alert" className="pedidos-error">
+          <p>El pedido se creó, pero no se pudo vaciar el carrito. Los productos siguen ahí.</p>
+          <button type="button" className="button button--secondary" disabled={busy}
+            onClick={async () => { const ok = await vaciarCarrito(); if (ok) setCart(current => ({ ...current, items: [], restauranteId: null })) }}>
+            Reintentar vaciar carrito
+          </button>
+        </div>
+        : <p role="status">Carrito vaciado.</p>}
+      <div className="pedidos-actions">
+        <Link className="button button--primary" to={ROUTE_PATHS.pago.replace(':pedidoId', creado.pedidoId)}>Ir al pago</Link>
+        <Link className="button button--secondary" to={ROUTE_PATHS.misPedidos}>Ver mis pedidos</Link>
+      </div>
+    </div>}
+
+    {!creado && !cargando && items.length === 0 && !error && <div className="pedidos-card">
       <p>Tu carrito está vacío. Agrega productos desde Restaurantes para confirmar un pedido.</p>
       <Link className="button button--primary" to={ROUTE_PATHS.restaurantes}>Explorar restaurantes</Link>
     </div>}
-    {!cargando && items.length > 0 && <form className="pedidos-card" onSubmit={confirmar} noValidate>
+    {!creado && !cargando && items.length > 0 && <form className="pedidos-card" onSubmit={confirmar} noValidate>
       <h2>Datos de entrega</h2>
       <p>Restaurante #{restauranteId} · {items.length} producto(s) · Total {formatClp(total)}</p>
       <label>Dirección de entrega
@@ -111,7 +151,7 @@ export default function RealConfirmarPedidoPanel() {
       </ul>
       <div className="pedidos-actions">
         <button type="submit" className="button button--primary" disabled={busy}>
-          {state.status === 'saving' ? 'Creando pedido…' : 'Confirmar pedido'}
+          {creando ? 'Creando pedido…' : 'Confirmar pedido'}
         </button>
         <Link className="button button--secondary" to={ROUTE_PATHS.cart}>Volver al carrito</Link>
       </div>
