@@ -1,16 +1,13 @@
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { useLocation } from 'react-router'
 import { useAuthSession } from '../../auth/useAuthSession.js'
 import { createCartController } from './cartService.js'
-import { createCartHttpAdapter, createCatalogHttpAdapter, commerceFailure } from './cartHttpAdapter.js'
+import { createCartHttpAdapter, commerceFailure } from './cartHttpAdapter.js'
 import CartSummary from './CartSummary.jsx'
-import RealCatalog from './RealCatalog.jsx'
 
 export default function RealCartPanel() {
   const [controller] = useState(createCartController)
   const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot, controller.getSnapshot)
-  const [catalog, setCatalog] = useState(null)
-  const [catalogError, setCatalogError] = useState(null)
   const [confirmation, setConfirmation] = useState(null)
   const [message, setMessage] = useState('')
   const { busy: sessionBusy, login, authorizeApi } = useAuthSession()
@@ -19,14 +16,13 @@ export default function RealCartPanel() {
   const notice = useRef(null)
   const confirmNotice = useRef(null)
   const originButton = useRef(null)
-  const catalogFailed = useCallback(error => setCatalogError(error), [])
   useEffect(() => {
     let disposed = false
     controller.connect(null)
     if (!sessionBusy) import('../../services/httpClient.js').then(({ default: client }) => {
       if (disposed) return
       controller.connect(createCartHttpAdapter(client))
-      setCatalog(createCatalogHttpAdapter(client))
+
       void controller.load()
     }).catch(error => {
       if (disposed) return
@@ -37,7 +33,7 @@ export default function RealCartPanel() {
   }, [controller, sessionBusy])
   const busy = sessionBusy || ['idle', 'loading', 'saving'].includes(state.status)
   const failedRead = state.status === 'error' && state.operation === 'read'
-  const error = state.error || catalogError
+  const error = state.error
   const disabled = busy || Boolean(state.error) || Boolean(confirmation) || !state.cart
   useEffect(() => { if (error || message) notice.current?.focus() }, [error, message])
   useEffect(() => { if (confirmation) confirmNotice.current?.focus() }, [confirmation])
@@ -83,8 +79,6 @@ export default function RealCartPanel() {
       {state.cart?.items.length > 0 && !failedRead && <button type="button" className="button button--secondary" disabled={disabled}
         onClick={event => ask({ type: 'clear' }, event.currentTarget)}>Vaciar carrito</button>}
     </div>
-    {catalog && !sessionBusy && <RealCatalog adapter={catalog} disabled={disabled} onError={catalogFailed}
-      onAdd={id => apply({ type: 'add', productoId: id, cantidad: 1 })} />}
     <p>Las cantidades sin aplicar se pierden al actualizar, salir o cambiar de cuenta. Este flujo aún no crea pedidos.</p>
   </div>
 }

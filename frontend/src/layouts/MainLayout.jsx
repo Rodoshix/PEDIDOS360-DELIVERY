@@ -36,6 +36,12 @@ function MainLayout() {
             </NavLink>
             <NavLink
               className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}
+              to={ROUTE_PATHS.restaurantes}
+            >
+              Restaurantes
+            </NavLink>
+            <NavLink
+              className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}
               to={ROUTE_PATHS.cart}
             >
               Carrito
