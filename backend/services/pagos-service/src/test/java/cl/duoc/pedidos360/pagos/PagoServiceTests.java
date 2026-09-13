@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class PagoServiceTests {
 
     private static final IdentidadUsuario CLIENTE = new IdentidadUsuario(10L, Set.of(Rol.CLIENTE));
-    private static final IdentidadUsuario REPARTIDOR = new IdentidadUsuario(30L, Set.of(Rol.REPARTIDOR));
+    private static final IdentidadUsuario ADMIN = new IdentidadUsuario(1L, Set.of(Rol.ADMIN));
 
     @Autowired
     private PagoService pagos;
@@ -90,7 +90,7 @@ class PagoServiceTests {
         var pendiente = pagos.registrar(CLIENTE, "clave-efectivo-2",
                 new CrearPagoRequest(PedidosClientStub.PEDIDO_EXISTENTE, MetodoPago.EFECTIVO));
 
-        var aprobado = pagos.aprobar(REPARTIDOR, pendiente.pagoId());
+        var aprobado = pagos.aprobar(ADMIN, pendiente.pagoId());
 
         assertThat(aprobado.estado()).isEqualTo(EstadoPago.APROBADO.name());
     }

@@ -33,6 +33,14 @@ pedidos:
     enabled: ${LOCAL_IDENTITY_ENABLED:false}
     usuario-id: ${LOCAL_USER_ID:}
     roles: ${LOCAL_ROLES:CLIENTE}
+  # Endpoint interno de confirmación de pago (worker de Pagos). Deshabilitado por defecto:
+  # se habilita cuando exista el worker en Entra. Valores públicos, no credenciales.
+  interno:
+    enabled: ${INTERNO_ENABLED:false}
+    tenant-id: ${ENTRA_TENANT_ID:}
+    audience: ${ENTRA_API_CLIENT_ID:}
+    worker-client-id: ${PAGOS_WORKER_CLIENT_ID:}
+    rol-requerido: ${INTERNO_ROL:Pedidos.Confirmar}
 
 management:
   endpoints:

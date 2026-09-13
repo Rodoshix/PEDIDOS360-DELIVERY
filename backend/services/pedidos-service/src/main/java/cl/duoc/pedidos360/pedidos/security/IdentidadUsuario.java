@@ -11,5 +11,18 @@ public record IdentidadUsuario(Long usuarioId, Set<Rol> roles) {
         return roles.contains(Rol.ADMIN);
     }
 
+    /** El recurso es accesible si lo posee esta identidad o si es ADMIN. */
+    public boolean puedeAccederA(Long propietarioId) {
+        return esAdmin() || usuarioId.equals(propietarioId);
+    }
+
+    /**
+     * La gestión de estados del restaurante es inicialmente solo para ADMIN.
+     * Un rol de restaurante/repartidor requeriría definir además su asignación.
+     */
+    public boolean puedeGestionarPedidos() {
+        return esAdmin();
+    }
+
     public enum Rol { CLIENTE, ADMIN }
 }
