@@ -1,0 +1,17 @@
+# Contexto: solo la carpeta de este servicio.
+**
+!pom.xml
+!mvnw
+!.mvn/
+!.mvn/wrapper/
+!.mvn/wrapper/maven-wrapper.properties
+!src/
+!src/main/
+!src/main/**
+**/.env*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.jks
+**/target/**
+**/.git/**

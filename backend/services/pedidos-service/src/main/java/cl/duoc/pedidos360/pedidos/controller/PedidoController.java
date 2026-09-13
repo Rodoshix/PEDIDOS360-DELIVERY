@@ -31,27 +31,34 @@ public class PedidoController {
     @PostMapping("/pedidos")
     @ResponseStatus(HttpStatus.CREATED)
     public PedidoResponse crear(@Valid @RequestBody CrearPedidoRequest request) {
-        return pedidos.crear(identidad.obtener().usuarioId(), request);
+        return pedidos.crear(identidad.obtener(), request);
     }
 
+    /** Historial de la identidad autenticada; no recibe usuarioId del cliente. */
+    @GetMapping("/pedidos/me")
+    public List<PedidoResponse> listarPropios() {
+        return pedidos.listarPropios(identidad.obtener());
+    }
+
+    /** Listado global; solo ADMIN. */
     @GetMapping("/pedidos")
     public List<PedidoResponse> listar() {
-        return pedidos.listar();
+        return pedidos.listar(identidad.obtener());
     }
 
     @GetMapping("/pedidos/{id}")
     public PedidoResponse obtener(@PathVariable Long id) {
-        return pedidos.obtener(id);
+        return pedidos.obtener(identidad.obtener(), id);
     }
 
     @GetMapping("/usuarios/{id}/pedidos")
     public List<PedidoResponse> historial(@PathVariable Long id) {
-        return pedidos.listarPorUsuario(id);
+        return pedidos.listarPorUsuario(identidad.obtener(), id);
     }
 
     @PutMapping("/pedidos/{id}/estado")
     public PedidoResponse cambiarEstado(@PathVariable Long id,
             @Valid @RequestBody CambiarEstadoRequest request) {
-        return pedidos.cambiarEstado(id, request.estado());
+        return pedidos.cambiarEstado(identidad.obtener(), id, request.estado());
     }
 }

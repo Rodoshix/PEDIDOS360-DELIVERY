@@ -49,6 +49,26 @@ En AWS se configurarán `DB_URL`, `DB_USERNAME` y `DB_PASSWORD` para RDS desde e
 
 Flyway administra el esquema `pedidos` y su historial de migraciones. Hibernate usa `ddl-auto: validate`: valida el modelo, no modifica tablas automáticamente.
 
+## Docker
+
+El `Dockerfile` construye la imagen de despliegue (Java 21, usuario no root, healthcheck en `/actuator/health`). El `compose.yml` de esta carpeta levanta **solo PostgreSQL local** para desarrollo; no es el despliegue completo.
+
+```powershell
+# Imagen del servicio (requiere Docker con motor Linux)
+docker build -t pedidos360-pedidos:local .
+
+# Ejecutar contra una base accesible, con identidad local deshabilitada
+docker run --rm -p 127.0.0.1:8085:8085 `
+  -e DB_URL="jdbc:postgresql://host.docker.internal:5436/pedidos360_pedidos" `
+  -e DB_USERNAME=pedidos360_pedidos -e DB_PASSWORD=... `
+  pedidos360-pedidos:local
+```
+
+Notas:
+- La imagen **no** incluye base de datos; en AWS se apunta a RDS con `DB_URL`, `DB_USERNAME` y `DB_PASSWORD`.
+- `LOCAL_IDENTITY_ENABLED=false` en la imagen: la identidad real llega por la capa de seguridad, no simulada.
+- El build no ejecuta Testcontainers; verificar antes con `./mvnw verify`.
+
 ## Salud
 
 ```powershell

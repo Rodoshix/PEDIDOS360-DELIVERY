@@ -17,6 +17,11 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
+    @ExceptionHandler(PedidoException.class)
+    ProblemDetail pedido(PedidoException error, HttpServletRequest request) {
+        return problema(error.getStatus(), error.getMessage(), request);
+    }
+
     @ExceptionHandler(PedidoNoEncontradoException.class)
     ProblemDetail noEncontrado(PedidoNoEncontradoException error, HttpServletRequest request) {
         return problema(HttpStatus.NOT_FOUND, error.getMessage(), request);
