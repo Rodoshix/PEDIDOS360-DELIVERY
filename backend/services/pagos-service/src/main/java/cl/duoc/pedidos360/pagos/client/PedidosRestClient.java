@@ -1,9 +1,11 @@
 package cl.duoc.pedidos360.pagos.client;
 
-import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import cl.duoc.pedidos360.pagos.exception.PagoException;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -12,7 +14,17 @@ import org.springframework.web.client.RestClientException;
 
 /**
  * Cliente HTTP hacia pedidos-service.
- * La identidad se propaga según lo acordado con I4; en local se usa el perfil de identidad local.
+ *
+ * <p>Hay dos usos con identidades distintas:
+ * <ul>
+ *   <li><b>Consultas y creación de pago</b>: Bearer delegado del usuario (lo aporta la capa de seguridad).</li>
+ *   <li><b>Confirmación por pago</b>: token de <b>aplicación</b> (client_credentials) contra el
+ *       endpoint interno {@code PUT /internal/pedidos/{id}/confirmacion-pago} (acuerdo issue #47).</li>
+ * </ul>
+ *
+ * <p>Mientras el endpoint interno no esté habilitado (falta el worker en Entra), se usa el
+ * comportamiento anterior ({@code PUT /pedidos/{id}/estado} con Bearer delegado + verificación de
+ * estado) para no romper el flujo.
  */
 @Component
 public class PedidosRestClient implements PedidosClient {
@@ -22,9 +34,19 @@ public class PedidosRestClient implements PedidosClient {
             Set.of("CONFIRMADO", "PREPARANDO", "LISTO", "EN_REPARTO", "ENTREGADO");
 
     private final RestClient restClient;
+    private final boolean internoHabilitado;
+    private final Supplier<String> tokenAplicacion;
 
-    public PedidosRestClient(RestClient.Builder builder, PedidosClientProperties properties) {
+    public PedidosRestClient(RestClient.Builder builder, PedidosClientProperties properties,
+            ObjectProvider<TokenAplicacionProvider> tokenAplicacionProvider) {
         this.restClient = builder.baseUrl(properties.baseUrl()).build();
+        var provider = tokenAplicacionProvider.getIfAvailable();
+        this.internoHabilitado = properties.internoHabilitado() && provider != null;
+        this.tokenAplicacion = provider == null ? () -> null : provider::token;
+        if (properties.internoHabilitado() && provider == null) {
+            LoggerFactory.getLogger(PedidosRestClient.class).warn(
+                    "Endpoint interno habilitado pero sin proveedor de token de aplicación: se usa el flujo delegado.");
+        }
     }
 
     @Override
@@ -46,21 +68,57 @@ public class PedidosRestClient implements PedidosClient {
         }
     }
 
-    /**
-     * Confirma el pedido (CREADO → CONFIRMADO).
-     *
-     * <p>Un 400/409 <b>no</b> se interpreta automáticamente como éxito: podría tratarse de una
-     * transición inválida desde un estado como CANCELADO. En ese caso se consulta el estado real
-     * del pedido y solo se considera aplicada la confirmación si el pedido ya está en un estado
-     * confirmado o posterior. Si el pedido está CANCELADO u otro estado no confirmado, o si la
-     * consulta falla, se propaga un error para que la coordinación quede pendiente y se reintente.
-     */
     @Override
     public void confirmar(Long pedidoId) {
+        if (internoHabilitado) {
+            confirmarConEndpointInterno(pedidoId);
+        } else {
+            confirmarConFlujoDelegado(pedidoId);
+        }
+    }
+
+    /**
+     * Confirmación con token de aplicación contra el endpoint interno.
+     * 204 = aplicada o ya confirmada; 409 = pedido CANCELADO; 404 = no existe.
+     */
+    private void confirmarConEndpointInterno(Long pedidoId) {
+        String token = tokenAplicacion.get();
+        if (token == null || token.isBlank()) {
+            throw new PagoException(HttpStatus.BAD_GATEWAY,
+                    "No se pudo obtener el token de aplicación para confirmar el pedido " + pedidoId + ".");
+        }
+        try {
+            restClient.put()
+                    .uri("/internal/pedidos/{id}/confirmacion-pago", pedidoId)
+                    .header("Authorization", "Bearer " + token)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (HttpClientErrorException error) {
+            if (error.getStatusCode() == HttpStatus.CONFLICT) {
+                throw new PagoException(HttpStatus.BAD_GATEWAY,
+                        "El pedido " + pedidoId + " está CANCELADO: no se confirma.");
+            }
+            if (error.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new PagoException(HttpStatus.BAD_GATEWAY,
+                        "El pedido " + pedidoId + " no existe en Pedidos.");
+            }
+            throw new PagoException(HttpStatus.BAD_GATEWAY,
+                    "No se pudo confirmar el pedido " + pedidoId + " en Pedidos.");
+        } catch (RestClientException error) {
+            throw new PagoException(HttpStatus.BAD_GATEWAY,
+                    "No se pudo confirmar el pedido " + pedidoId + " en Pedidos.");
+        }
+    }
+
+    /**
+     * Flujo anterior (Bearer delegado). Un 400/409 no se interpreta automáticamente como éxito:
+     * se consulta el estado real del pedido y solo se acepta si ya está confirmado o posterior.
+     */
+    private void confirmarConFlujoDelegado(Long pedidoId) {
         try {
             restClient.put()
                     .uri("/pedidos/{id}/estado", pedidoId)
-                    .body(Map.of("estado", "CONFIRMADO"))
+                    .body(java.util.Map.of("estado", "CONFIRMADO"))
                     .retrieve()
                     .toBodilessEntity();
         } catch (HttpClientErrorException error) {

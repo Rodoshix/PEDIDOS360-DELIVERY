@@ -35,6 +35,8 @@ pagos:
     roles: ${LOCAL_ROLES:CLIENTE}
   pedidos:
     base-url: ${PEDIDOS_SERVICE_URL:http://localhost:8085}
+    # Confirmación vía endpoint interno con token de aplicación (requiere el worker en Entra).
+    interno-habilitado: ${PEDIDOS_INTERNO_ENABLED:false}
   reconciliacion:
     enabled: ${RECONCILIACION_ENABLED:true}
     intervalo-ms: ${RECONCILIACION_INTERVALO_MS:30000}

@@ -131,6 +131,17 @@ Regla del MVP: **un restaurante por pedido**. El `usuarioId` nunca se recibe del
 - **`PUT /pagos/{id}/aprobar` es solo ADMIN** (acuerdo con I1/I5): un rol de repartidor requeriría definir además su asignación.
 - **409** en `POST /pagos`: pago activo duplicado o reutilización de `Idempotency-Key` para otra operación.
 
+### Endpoint interno (solo worker de Pagos)
+
+| Método y ruta | Respuesta | Autorización |
+|---|---|---|
+| `PUT /internal/pedidos/{id}/confirmacion-pago` | 204 (aplica o ya confirmado), 409 (CANCELADO), 404 (no existe) | Token de **aplicación** (client_credentials): rol `Pedidos.Confirmar`, `azp` del worker, **sin `scp`** |
+
+- **No** se expone por BFF/CORS ni acepta tokens de usuario (ni ADMIN).
+- Solo realiza `CREADO → CONFIRMADO`; es **idempotente** y transaccional.
+- Política de seguridad **separada** de las rutas delegadas (`admin.enabled`/`pedidos.interno.enabled`, deshabilitada por defecto hasta el alta del worker).
+- Pendiente: **client ID del worker** (`PAGOS_WORKER_CLIENT_ID`).
+
 ## 7. Estructura de error
 
 Se usa `application/problem+json` (RFC 7807, `ProblemDetail`).

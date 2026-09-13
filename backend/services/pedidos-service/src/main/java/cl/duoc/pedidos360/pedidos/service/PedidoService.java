@@ -87,6 +87,26 @@ public class PedidoService {
         return toResponse(pedidos.save(pedido));
     }
 
+    /**
+     * Confirmación de pago (solo aplicación worker, ruta interna).
+     * Confirma CREADO → CONFIRMADO. Es idempotente: si el pedido ya está confirmado o en un
+     * estado posterior, no hace nada. Lanza PedidoException(CONFLICT) si está CANCELADO y
+     * PedidoNoEncontradoException si no existe. El llamante (/internal/...) traduce a 204/409/404.
+     */
+    @Transactional
+    public void confirmarPorPago(Long id) {
+        Pedido pedido = buscar(id);
+        if (pedido.getEstado() == EstadoPedido.CANCELADO) {
+            throw new PedidoException(HttpStatus.CONFLICT,
+                    "El pedido " + id + " está CANCELADO y no puede confirmarse.");
+        }
+        if (pedido.getEstado() == EstadoPedido.CREADO) {
+            pedido.transicionarA(EstadoPedido.CONFIRMADO);
+            pedidos.save(pedido);
+        }
+        // CONFIRMADO o posterior: nada que hacer (idempotente).
+    }
+
     private void exigirAcceso(IdentidadUsuario identidad, Pedido pedido) {
         if (!identidad.puedeAccederA(pedido.getUsuarioId())) {
             throw new PedidoException(HttpStatus.FORBIDDEN, "No tienes acceso a este pedido.");
