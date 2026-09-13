@@ -40,15 +40,38 @@ function validDate(cert, days = 7) {
   if (Date.parse(cert.validFrom) > Date.now() || Date.parse(cert.validTo) < Date.now() + days * 86400000) fail('Certificado no vigente o vence en menos de siete dias.')
 }
 
-export function prepare(root, { worker = process.env.PAGOS_WORKER_CLIENT_SECRET, keytool = 'keytool', cacerts = process.env.P360_CACERTS } = {}) {
+function databaseOnlyMaterial(root, worker) {
+  const secrets = path.join(root, 'secrets')
+  for (const dir of [root, secrets]) {
+    const stat = fs.lstatSync(dir)
+    if (!stat.isDirectory() || stat.isSymbolicLink()) fail('Directorio privado no regular.')
+    if (process.platform !== 'win32' && (stat.mode & 0o077)) fail('Directorio privado demasiado abierto.')
+  }
+  const expected = services.slice(1).map(name => `${name}_db_password`).sort()
+  if (fs.readdirSync(root).join() !== 'secrets' ||
+      JSON.stringify(fs.readdirSync(secrets).sort()) !== JSON.stringify(expected)) {
+    fail('complete requiere solamente los seis secretos DB; no sobrescribe material completo ni parcial.')
+  }
+  const values = expected.map(name => secret(path.join(secrets, name)))
+  if (values.some(value => !/^[0-9a-f]{64}$/.test(value))) fail('Se requieren secretos DB hexadecimales de 64 caracteres.')
+  if (new Set([...values, worker]).size !== 7) fail('No reutilizar secretos entre servicios.')
+}
+
+export function prepare(root, { worker = process.env.PAGOS_WORKER_CLIENT_SECRET, keytool = 'keytool', cacerts = process.env.P360_CACERTS, reuseDatabaseSecrets = false } = {}) {
   root = path.resolve(root)
   if (!worker || worker.length < 12 || /[\r\n\0]/.test(worker) || worker.trim() !== worker) fail('Define PAGOS_WORKER_CLIENT_SECRET en el entorno privado, no por argumento.')
   if (!cacerts) fail('Define P360_CACERTS con la ruta lib/security/cacerts de tu JDK 21.')
   regular(cacerts)
-  if (fs.existsSync(root)) fail('El directorio de salida ya existe; no se sobrescribe ni rota automaticamente.')
-  fs.mkdirSync(root, { mode: 0o700 })
+  if (reuseDatabaseSecrets) databaseOnlyMaterial(root, worker)
+  else {
+    if (fs.existsSync(root)) fail('El directorio de salida ya existe; no se sobrescribe ni rota automaticamente.')
+    fs.mkdirSync(root, { mode: 0o700 })
+  }
   protect(root)
-  for (const dir of ['tls', 'secrets']) { fs.mkdirSync(path.join(root, dir), { mode: 0o700 }); protect(path.join(root, dir)) }
+  for (const dir of ['tls', 'secrets']) {
+    if (!(reuseDatabaseSecrets && dir === 'secrets')) fs.mkdirSync(path.join(root, dir), { mode: 0o700 })
+    protect(path.join(root, dir))
+  }
   const tls = path.join(root, 'tls')
   const secrets = path.join(root, 'secrets')
   const password = randomBytes(32).toString('hex')
@@ -56,7 +79,9 @@ export function prepare(root, { worker = process.env.PAGOS_WORKER_CLIENT_SECRET,
   const write = (name, value) => fs.writeFileSync(path.join(secrets, name), value, { flag: 'wx', mode: 0o400 })
   write('tls_password', password)
   write('worker_secret', worker)
-  for (const name of services.slice(1)) write(`${name}_db_password`, randomBytes(32).toString('hex'))
+  if (!reuseDatabaseSecrets) {
+    for (const name of services.slice(1)) write(`${name}_db_password`, randomBytes(32).toString('hex'))
+  }
   const trust = path.join(tls, 'truststore.p12')
   run(keytool, ['-importkeystore', '-noprompt', '-srckeystore', cacerts, '-srcstorepass', 'changeit', '-destkeystore', trust, '-deststoretype', 'PKCS12', '-deststorepass', 'changeit'], env)
   for (const name of services) {
@@ -158,8 +183,9 @@ export function preflight(file, keytool = 'keytool', linux = false) {
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const [action, target] = process.argv.slice(2)
-    if (!target) fail('Uso: node deployment.mjs prepare <directorio-nuevo> | check <.env.deploy> | check-linux <.env.deploy> | up <.env.deploy>')
+    if (!target) fail('Uso: node deployment.mjs prepare <directorio-nuevo> | complete <directorio-con-secretos-DB> | check <.env.deploy> | check-linux <.env.deploy> | up <.env.deploy>')
     if (action === 'prepare') prepare(target)
+    else if (action === 'complete') prepare(target, { reuseDatabaseSecrets: true })
     else if (action === 'check' || action === 'check-linux' || action === 'up') {
       const c = preflight(target, 'keytool', action !== 'check')
       if (action === 'up') {
