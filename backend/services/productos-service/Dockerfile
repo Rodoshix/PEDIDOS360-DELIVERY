@@ -16,12 +16,13 @@ FROM eclipse-temurin:21-jre-alpine@sha256:974b08960c5d96694c780e65b2d5705268ab1e
 RUN addgroup -S -g 10001 app && adduser -S -D -H -u 10001 -G app app
 WORKDIR /app
 COPY --from=build /build/Health.class ./Health.class
-COPY --from=build /build/target/carrito-service-0.0.1-SNAPSHOT.jar ./app.jar
+COPY --from=build /build/target/productos-service-0.0.1-SNAPSHOT.jar ./app.jar
 ENV SERVER_ADDRESS=0.0.0.0 \
-    SERVER_PORT=8084 \
-    LOCAL_IDENTITY_ENABLED=false
+    SERVER_PORT=8083 \
+    LOCAL_IDENTITY_ENABLED=false \
+    MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=never
 USER 10001:10001
-EXPOSE 8084
+EXPOSE 8083
 HEALTHCHECK --interval=10s --timeout=3s --start-period=60s --retries=6 \
     CMD wget -q -O /dev/null "http://127.0.0.1:${SERVER_PORT}/actuator/health" || exit 1
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

@@ -8,6 +8,8 @@
 !src/
 !src/main/
 !src/main/**
+!docker/
+!docker/Health.java
 **/.env*
 **/*.pem
 **/*.key

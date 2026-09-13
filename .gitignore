@@ -47,6 +47,8 @@ temp/
 *.tmp
 
 # Infraestructura local
+infrastructure/docker/stack/tls/
+infrastructure/docker/stack/secrets/
 .terraform/
 *.tfstate
 *.tfstate.*
