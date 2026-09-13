@@ -1,9 +1,7 @@
-import { lazy, Suspense } from 'react'
 import { useParams } from 'react-router'
 import { useAuthSession } from '../../auth/useAuthSession.js'
+import RealPedidoDetallePanel from './RealPedidoDetallePanel.jsx'
 import './pedidos.css'
-
-const DevelopmentPanel = import.meta.env.DEV ? lazy(() => import('./PedidoDetalleDemoPanel.jsx')) : null
 
 export default function PedidoDetallePage() {
   const { id } = useParams()
@@ -13,9 +11,7 @@ export default function PedidoDetallePage() {
     <section className="container pedidos-section">
       <p className="eyebrow">Detalle del pedido</p>
       <h1>Pedido #{id}</h1>
-      {DevelopmentPanel
-        ? <Suspense key={key} fallback={<p role="status">Cargando…</p>}><DevelopmentPanel pedidoId={id} /></Suspense>
-        : <p className="pedidos-card">El detalle del pedido estará disponible al conectar el servicio.</p>}
+      <RealPedidoDetallePanel key={key} pedidoId={id} />
     </section>
   )
 }

@@ -1,7 +1,6 @@
-import { lazy, Suspense } from 'react'
 import { useAuthSession } from '../../auth/useAuthSession.js'
-
-const DevelopmentPanel = import.meta.env.DEV ? lazy(() => import('./MisPedidosDemoPanel.jsx')) : null
+import RealMisPedidosPanel from './RealMisPedidosPanel.jsx'
+import './pedidos.css'
 
 export default function MisPedidosPage() {
   const { account } = useAuthSession()
@@ -11,9 +10,7 @@ export default function MisPedidosPage() {
       <p className="eyebrow">Tus pedidos en Pedidos360</p>
       <h1>Mis pedidos</h1>
       <p>Revisa el historial y el estado de tus pedidos.</p>
-      {DevelopmentPanel
-        ? <Suspense key={key} fallback={<p role="status">Cargando…</p>}><DevelopmentPanel /></Suspense>
-        : <p className="pedidos-card">La consulta de pedidos estará disponible al conectar el servicio.</p>}
+      <RealMisPedidosPanel key={key} />
     </section>
   )
 }
