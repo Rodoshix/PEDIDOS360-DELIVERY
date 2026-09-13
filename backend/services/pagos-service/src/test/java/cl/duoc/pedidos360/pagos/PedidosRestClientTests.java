@@ -26,7 +26,24 @@ class PedidosRestClientTests {
 
     @AfterEach
     void detener() {
+        org.springframework.security.core.context.SecurityContextHolder.clearContext();
         stub.close();
+    }
+
+    @Test
+    void consultaPropagaUsuarioPeroConfirmacionUsaWorker() throws Exception {
+        var cliente = conInterno("worker-prueba");
+        var jwt = cl.duoc.pedidos360.pagos.security.EntraTestTokens.decoder().decode(
+            cl.duoc.pedidos360.pagos.security.EntraTestTokens.token(java.util.Map.of()));
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
+            new org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken(jwt,
+                cl.duoc.pedidos360.pagos.security.EntraConfiguration.authorities(jwt)));
+        stub.responderGetCon(200, "CREADO");
+        cliente.obtener(1L);
+        assertThat(stub.ultimoAuthorization()).isEqualTo("Bearer " + jwt.getTokenValue());
+        stub.responderInternoCon(204);
+        cliente.confirmar(1L);
+        assertThat(stub.ultimoAuthorization()).isEqualTo("Bearer worker-prueba");
     }
 
     private PedidosRestClient delegado() throws Exception {

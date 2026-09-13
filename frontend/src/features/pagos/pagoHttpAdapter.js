@@ -45,7 +45,7 @@ export function createPagoHttpAdapter(client) {
         signal?.throwIfAborted()
         if (response.status !== 200 || !Array.isArray(response.data)) throw new PagoServiceError('INVALID_RESPONSE')
         const pagos = response.data.map(value => validatePagoResponse(value))
-        if (pagos.length === 0) throw new PagoServiceError('NOT_FOUND')
+        if (pagos.length === 0) return null
         // El más reciente del pedido.
         return pagos.reduce((ultimo, actual) => actual.fecha > ultimo.fecha ? actual : ultimo)
       } catch (error) { throw pagoFailure(error) }

@@ -43,6 +43,10 @@ export function createPagoController() {
         throw new PagoServiceError('INVALID_COMMAND')
       }
       if (abort.signal.aborted || generation !== currentGeneration) return false
+      if (operation === 'load' && result === null) {
+        publish({ status: 'empty', pago: null, error: null, operation: null, idempotencyKey: state.idempotencyKey })
+        return true
+      }
       publish({ status: 'ready', pago: validatePagoResponse(result), error: null, operation: null, idempotencyKey: null })
       return true
     } catch (failure) {

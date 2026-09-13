@@ -116,6 +116,43 @@ firma con las claves reales de Entra: dos confirmaciones HTTP 204, estado
 CONFIRMADO y rechazo del mismo token en `/pedidos/me`. Ambas pasaron.
 No registran tokens y se omiten en la ejecución normal sin la bandera.
 
-Pendiente: identidad delegada real en Pedidos/Pagos, consulta del catálogo para
-precios y pertenencia, y recorrido completo frontend -> BFF -> servicios.
-Mantener el interruptor BFF deshabilitado hasta verificar ese recorrido.
+## Bloque de identidad delegada y catálogo
+
+Pedidos y Pagos validan JWT v2 (firma, issuer, tenant, audiencia de API, azp del
+frontend, oid y vigencia), exigen access_as_user y CLIENTE/ADMIN. Consultan
+`/usuarios/me` con el mismo Bearer para resolver el ID interno y exigir perfil
+activo. No aceptan identidad ni roles enviados en cabeceras o en el cuerpo.
+No se persiste el token. Las verificaciones de propietario/ADMIN siguen en dominio.
+
+Configurar `ENTRA_ENABLED=true`, `ENTRA_TENANT_ID`, `ENTRA_API_CLIENT_ID`,
+`ENTRA_FRONTEND_CLIENT_ID` y `USUARIOS_SERVICE_URL` en ambos servicios.
+No combinar Entra e identidad local. Pagos transmite el token delegado al consultar
+Pedidos; la confirmación interna utiliza exclusivamente el proveedor del worker.
+
+Pedidos consulta `PRODUCTOS_SERVICE_URL` (por defecto http://localhost:8083).
+Valida ID de producto, restaurante, disponibilidad y precio CLP entero entre 0
+y 100.000.000, sin precio fijo de respaldo. La creación admite hasta 100 líneas,
+cantidades positivas y rechaza desbordamiento del total. La instantánea del precio
+queda guardada en cada línea. Catálogo no recibe Bearer del usuario.
+Los orígenes upstream no admiten rutas, credenciales, query ni redirecciones:
+HTTPS o HTTP loopback para pruebas locales. La red privada Docker/AWS requiere
+su configuración de transporte en el bloque de despliegue.
+
+Verificado con JWT firmados de prueba, servidores HTTP controlados y PostgreSQL
+efímero: perfil activo/inactivo, aislamiento de pedidos, roles/scope, claims
+inválidos, precio remoto y errores de catálogo. Las pruebas normales no llaman
+a Entra; la prueba real del worker pertenece al bloque anterior.
+
+## Evidencia del recorrido local con Entra real
+
+El 2026-09-13 se habilitó el BFF local y se verificó desde el navegador integrado:
+consulta de historial, creación del pedido #1 por $6.990, vaciado del carrito,
+pago simulado #1 aprobado y pedido CONFIRMADO mediante el worker. No hubo cargo
+bancario ni entrega real. Un segundo pedido #2 por $2.990 verificó el enlace desde
+el carrito y el estado informativo de ausencia de pagos; quedó sin pagar.
+
+Pruebas: Pedidos 63, Pagos 65 y frontend 208, sin fallos; lint y build frontend
+correctos (aviso no bloqueante de tamaño de bundle). Los accesos ajenos y los
+reintentos se cubren con pruebas automatizadas; no se ha certificado todavía
+una segunda cuenta real de Entra ni una interrupción de red en ese recorrido.
+No confundir esta evidencia local con un despliegue AWS validado.

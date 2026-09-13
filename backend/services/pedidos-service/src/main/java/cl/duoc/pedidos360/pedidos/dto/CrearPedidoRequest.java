@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CrearPedidoRequest(
-        @NotNull Long restauranteId,
+        @NotNull @jakarta.validation.constraints.Positive Long restauranteId,
         @NotBlank @Size(max = 255) String direccionEntrega,
-        @NotEmpty List<LineaPedidoRequest> items) {
+        @NotEmpty @Size(max = 100) List<@NotNull @jakarta.validation.Valid LineaPedidoRequest> items) {
 }

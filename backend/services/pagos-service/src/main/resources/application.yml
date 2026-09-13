@@ -55,3 +55,9 @@ management:
   endpoint:
     health:
       show-details: never
+entra:
+  enabled: ${ENTRA_ENABLED:false}
+  tenant-id: ${ENTRA_TENANT_ID:}
+  api-client-id: ${ENTRA_API_CLIENT_ID:}
+  frontend-client-id: ${ENTRA_FRONTEND_CLIENT_ID:}
+  usuarios-url: ${USUARIOS_SERVICE_URL:http://localhost:8081}

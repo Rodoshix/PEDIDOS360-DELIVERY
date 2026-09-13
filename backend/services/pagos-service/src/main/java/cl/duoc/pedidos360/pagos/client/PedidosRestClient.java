@@ -26,7 +26,8 @@ import org.springframework.web.client.RestClientException;
  * estado) para no romper el flujo.
  */
 @Component
-public class PedidosRestClient implements PedidosClient {
+public class PedidosRestClient implements PedidosClient, AutoCloseable {
+    private final java.net.http.HttpClient http;
 
     /** Estados del pedido que implican que la confirmación ya está aplicada. */
     private static final Set<String> ESTADOS_CONFIRMADOS =
@@ -43,7 +44,13 @@ public class PedidosRestClient implements PedidosClient {
      */
     public PedidosRestClient(RestClient.Builder builder, PedidosClientProperties properties,
             ObjectProvider<TokenAplicacionProvider> tokenAplicacionProvider) {
-        this.restClient = builder.baseUrl(properties.baseUrl()).build();
+        var origin = cl.duoc.pedidos360.pagos.security.UpstreamSeguro.origen(properties.baseUrl());
+        this.http = java.net.http.HttpClient.newBuilder()
+            .connectTimeout(java.time.Duration.ofSeconds(3))
+            .followRedirects(java.net.http.HttpClient.Redirect.NEVER).build();
+        var factory = new org.springframework.http.client.JdkClientHttpRequestFactory(http);
+        factory.setReadTimeout(java.time.Duration.ofSeconds(5));
+        this.restClient = builder.baseUrl(origin.toString()).requestFactory(factory).build();
         var provider = tokenAplicacionProvider.getIfAvailable();
         if (properties.internoHabilitado() && provider == null) {
             throw new IllegalStateException(
@@ -59,6 +66,7 @@ public class PedidosRestClient implements PedidosClient {
         try {
             return restClient.get()
                     .uri("/pedidos/{id}", pedidoId)
+                    .headers(PedidosRestClient::identidadDelegada)
                     .retrieve()
                     .body(PedidoResumen.class);
         } catch (HttpClientErrorException error) {
@@ -123,6 +131,7 @@ public class PedidosRestClient implements PedidosClient {
         try {
             restClient.put()
                     .uri("/pedidos/{id}/estado", pedidoId)
+                    .headers(PedidosRestClient::identidadDelegada)
                     .body(java.util.Map.of("estado", "CONFIRMADO"))
                     .retrieve()
                     .toBodilessEntity();
@@ -139,6 +148,15 @@ public class PedidosRestClient implements PedidosClient {
                     "No se pudo confirmar el pedido " + pedidoId + " en Pedidos.");
         }
     }
+
+    private static void identidadDelegada(org.springframework.http.HttpHeaders headers) {
+        var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken jwt
+            && jwt.isAuthenticated()) headers.setBearerAuth(jwt.getToken().getTokenValue());
+        // Sin token nunca se usa el worker como identidad del usuario.
+    }
+
+    @Override public void close() { http.close(); }
 
     /** Confirma el rechazo consultando el estado real: solo se acepta si ya está confirmado. */
     private void verificarEstadoTrasRechazo(Long pedidoId) {
