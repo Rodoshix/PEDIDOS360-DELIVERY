@@ -64,6 +64,22 @@ public class SecurityConfiguration {
                                 authorities.contains("SCOPE_access_as_user")
                                 && (authorities.contains("ROLE_CLIENTE") || authorities.contains("ROLE_ADMIN")));
                     });
+                    if (enabled) {
+                        // El listado completo es administrativo; el resto lo revalida repartidores-service.
+                        auth.requestMatchers(org.springframework.http.HttpMethod.GET, "/repartidores").access((authentication, context) -> {
+                            var roles = authentication.get().getAuthorities().stream()
+                                .map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
+                            return new org.springframework.security.authorization.AuthorizationDecision(
+                                roles.contains("SCOPE_access_as_user") && roles.contains("ROLE_ADMIN"));
+                        });
+                        auth.requestMatchers("/repartidores", "/repartidores/**").access((authentication, context) -> {
+                            var roles = authentication.get().getAuthorities().stream()
+                                .map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
+                            return new org.springframework.security.authorization.AuthorizationDecision(
+                                roles.contains("SCOPE_access_as_user")
+                                && (roles.contains("ROLE_CLIENTE") || roles.contains("ROLE_ADMIN")));
+                        });
+                    }
                     auth.anyRequest().denyAll();
                 })
                 .exceptionHandling(errors -> errors.authenticationEntryPoint((request, response, error) -> {
