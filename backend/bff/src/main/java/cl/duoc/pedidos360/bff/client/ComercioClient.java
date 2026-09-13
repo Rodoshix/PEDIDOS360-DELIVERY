@@ -26,7 +26,8 @@ public class ComercioClient {
             "productos", ConnectionConfiguration.origin(env.getProperty("bff.productos-url", "http://127.0.0.1:8083")),
             "carrito", ConnectionConfiguration.origin(env.getProperty("bff.carrito-url", "http://127.0.0.1:8084")),
             "pedidos", ConnectionConfiguration.origin(env.getProperty("bff.pedidos-url", "http://127.0.0.1:8085")),
-            "pagos", ConnectionConfiguration.origin(env.getProperty("bff.pagos-url", "http://127.0.0.1:8086")));
+            "pagos", ConnectionConfiguration.origin(env.getProperty("bff.pagos-url", "http://127.0.0.1:8086")),
+            "repartidores", ConnectionConfiguration.origin(env.getProperty("bff.repartidores-url", "http://127.0.0.1:8087")));
         this.timeoutMs = env.getProperty("bff.upstream-timeout-ms", Long.class, 5000L);
         if (timeoutMs < 100 || timeoutMs > 30000) throw new IllegalArgumentException("Timeout fuera de rango.");
     }
@@ -43,11 +44,12 @@ public class ComercioClient {
         // Defensa adicional: solo rutas construidas por el controlador, sin URL aportada por el usuario.
         if (!allowed(method, path))
             throw new IllegalArgumentException("Ruta interna no permitida.");
-        var origin = origins.get(path.split("/")[1]);
+        var origin = origins.get(path.split("[/?]")[1]);
         var builder = HttpRequest.newBuilder(origin.resolve(path)).timeout(Duration.ofMillis(timeoutMs))
                 .header("Accept", "application/json");
         // Catálogo solo se consulta: no necesita recibir el token del usuario.
-        if (path.startsWith("/carrito") || path.startsWith("/pedidos") || path.startsWith("/pagos"))
+        if (path.startsWith("/carrito") || path.startsWith("/pedidos") || path.startsWith("/pagos")
+                || path.startsWith("/repartidores"))
             builder.header("Authorization", "Bearer " + token.getToken().getTokenValue());
         if (body != null) builder.header("Content-Type", "application/json");
         if (idempotencyKey != null) builder.header("Idempotency-Key", idempotencyKey);
@@ -84,7 +86,14 @@ public class ComercioClient {
         if ("GET".equals(method) && path.matches("/(?:restaurantes(?:/[1-9][0-9]*)?|productos(?:/[1-9][0-9]*|/restaurante/[1-9][0-9]*(?:/disponibles)?)?)")) return true;
         if (path.equals("/carrito")) return Set.of("GET", "DELETE").contains(method);
         if (path.equals("/carrito/items")) return method.equals("POST");
-        return path.matches("/carrito/items/[1-9][0-9]*") && Set.of("PUT", "DELETE").contains(method);
+        if (path.matches("/carrito/items/[1-9][0-9]*")) return Set.of("PUT", "DELETE").contains(method);
+        if (path.equals("/repartidores")) return Set.of("GET", "POST").contains(method);
+        if (path.matches("/repartidores\\?pagina=[0-9]+&tamanio=[0-9]+")) return method.equals("GET");
+        if (path.equals("/repartidores/me")) return method.equals("GET");
+        if (path.matches("/repartidores/[1-9][0-9]*")) return Set.of("GET", "PUT", "DELETE").contains(method);
+        if (path.matches("/repartidores/[1-9][0-9]*/disponibilidad")) return method.equals("PUT");
+        if (path.matches("/repartidores/[1-9][0-9]*/asignaciones")) return Set.of("GET", "POST").contains(method);
+        return path.matches("/repartidores/[1-9][0-9]*/asignaciones/[1-9][0-9]*/estado") && method.equals("PUT");
     }
 
     private ResponseEntity<ProblemDetail> error(int status) {
