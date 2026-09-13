@@ -52,6 +52,39 @@ class PedidosRestClientTests {
                 new PedidosClientProperties(stub.baseUrl(), false), sinProveedor());
     }
 
+    @Test
+    void consultaDePedidoAjenoConserva403SinExponerRespuestaInterna() throws Exception {
+        try (var cliente = delegado()) {
+            stub.responderGetCon(403, "CREADO");
+            assertThatThrownBy(() -> cliente.obtener(1L))
+                    .isInstanceOf(PagoException.class)
+                    .hasMessage("No tienes permiso para consultar los pagos de este pedido.")
+                    .satisfies(error -> assertThat(((PagoException) error).getStatus())
+                            .isEqualTo(HttpStatus.FORBIDDEN));
+            assertThat(stub.confirmacionesPut()).isZero();
+            assertThat(stub.confirmacionesInternas()).isZero();
+        }
+    }
+
+    @Test
+    void consultaInexistenteConservaNull() throws Exception {
+        try (var cliente = delegado()) {
+            stub.responderGetCon(404, "CREADO");
+            assertThat(cliente.obtener(1L)).isNull();
+        }
+    }
+
+    @Test
+    void consultaConFalloDelServidorConserva502() throws Exception {
+        try (var cliente = delegado()) {
+            stub.responderGetCon(500, "CREADO");
+            assertThatThrownBy(() -> cliente.obtener(1L))
+                    .isInstanceOf(PagoException.class)
+                    .satisfies(error -> assertThat(((PagoException) error).getStatus())
+                            .isEqualTo(HttpStatus.BAD_GATEWAY));
+        }
+    }
+
     private PedidosRestClient conInterno(String token) throws Exception {
         stub = new PedidosHttpServerStub();
         return new PedidosRestClient(RestClient.builder(),

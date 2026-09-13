@@ -45,6 +45,10 @@ Esto no implementa todavía la autorización administrativa pendiente del #50.
 1. Completar `stack/.env.local` siguiendo `stack/.env.example` con IDs reales,
    contraseñas diferentes para cada base y el secreto vigente del worker.
    El archivo está ignorado por Git. Formato simple `VARIABLE=valor`, sin comillas.
+   Si ya existen `frontend/.env.local` y el `.env.worker.local` de Pagos,
+   `./infrastructure/docker/stack/Initialize-LocalEnvironment.ps1` reutiliza esos
+   IDs y el secreto, valida su coherencia y genera contraseñas aleatorias para
+   las nuevas bases/TLS. No imprime valores ni sobrescribe un archivo existente.
 2. Registrar `http://localhost:5180` como URI SPA en Entra (o el puerto elegido).
    Los valores VITE son públicos y se incorporan al construir; reconstruir si cambian.
 3. Ejecutar desde la raíz:
@@ -92,7 +96,7 @@ certificados. No certifica el login Entra ni un pago real del stack.
 Las imágenes de la prueba construidas con IDs ficticios deben reconstruirse
 mediante `Invoke-Stack.ps1 build` antes de probar con los IDs reales.
 
-## Bloques siguientes (pendientes)
+## Evidencias y pendientes
 
 Evidencia local (2026-09-13): ocho imágenes construidas; `Test-LocalTls` pasó
 confianza positiva/negativa y `Test-Stack` terminó con `STACK_OK` y código 0.
@@ -100,9 +104,40 @@ Los 14 contenedores estuvieron saludables. Se verificaron proxy HTTPS al BFF,
 catálogo HTTPS interno y rechazo 401 de pedidos sin token. Los recursos
 temporales se retiraron; las bases previas no se modificaron.
 
-1. Preparar configuración real y registrar la URI SPA local para Docker.
-2. Recorrido de navegador sobre Docker: catálogo, carrito, pedido, pago simulado.
-3. Registrar evidencias, revisión final y PR. El stack manual existente se conserva.
+Recorrido autenticado (2026-09-13, `http://localhost:5180`, navegador integrado):
+
+- Inicio de sesión real con Microsoft Entra completado por el usuario.
+- Consulta y creación de perfil ficticio `Prueba Docker` mediante BFF/Usuarios.
+  Los datos de contacto son ficticios; el perfil queda asociado a la sesión de prueba.
+- Catálogo de restaurantes y productos consultado mediante BFF; Burger 360,
+  Hamburguesa Clásica por $6.990, una unidad agregada al carrito.
+- Pedido #1 creado con dirección ficticia; total $6.990 y carrito vaciado.
+- Pago simulado con tarjeta #1 aprobado; pedido #1 en estado Confirmado.
+  El stack mantiene activado el worker Entra y las conexiones internas HTTPS.
+- Volver a Pago muestra el pago #1 aprobado, sin ofrecer otro registro.
+- Los 14 contenedores siguen saludables. No se usó dinero real ni se cambiaron
+  las bases del entorno manual. Los datos de prueba se conservan en este Compose.
+
+Prueba con segunda cuenta invitada, rol Cliente (2026-09-13):
+
+- Sesión distinta confirmada en el navegador; no aparece el perfil anterior.
+- Perfil ficticio independiente creado. Consulta SQL de solo lectura confirma
+  que se conservan ambos perfiles: #1 Prueba Docker y #2 Prueba Segunda cuenta.
+- Historial propio vacío. Acceso directo al pedido #1 rechazado con HTTP 403.
+- Pago del pedido #1 inicialmente devolvía 502 sin exponer datos. Se corrigió
+  `PedidosRestClient.obtener` para conservar el 403 de Pedidos con mensaje
+  controlado. Tras reconstruir y reemplazar solo Pagos, la segunda cuenta recibe
+  HTTP 403 en `/api/pagos/pedido/1` y la UI muestra falta de permiso.
+- Suite Pagos: 69 pruebas, 0 fallos, 0 errores, 1 omitida (Entra live opcional).
+  Nuevas regresiones: conservar 403, 404 como ausencia y 500 como 502.
+- Carrito de la segunda cuenta vacío. No demuestra por sí solo aislamiento de
+  carritos con contenido, porque el carrito anterior también estaba vacío.
+
+Reinicio con persistencia (2026-09-13): `Invoke-Stack.ps1 down` y `up`, conservando
+los seis volúmenes. Los hashes SHA-256 de los dumps de datos de las seis bases
+coinciden antes y después (se excluyen únicamente las líneas aleatorias de
+restricción de pg_dump). Se conservan perfiles, catálogo, carritos, pedido y pago.
+No se cubrió recuperación de una operación interrumpida en mitad de un pago.
 
 La administración pendiente del issue #50 y los casos reales pendientes del #48
 no se consideran terminados por construir estas imágenes.

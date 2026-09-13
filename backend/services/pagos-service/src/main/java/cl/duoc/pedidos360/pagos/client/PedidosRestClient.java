@@ -70,6 +70,10 @@ public class PedidosRestClient implements PedidosClient, AutoCloseable {
                     .retrieve()
                     .body(PedidoResumen.class);
         } catch (HttpClientErrorException error) {
+            if (error.getStatusCode() == HttpStatus.FORBIDDEN) {
+                throw new PagoException(HttpStatus.FORBIDDEN,
+                        "No tienes permiso para consultar los pagos de este pedido.");
+            }
             if (error.getStatusCode() == HttpStatus.NOT_FOUND) {
                 return null;
             }
