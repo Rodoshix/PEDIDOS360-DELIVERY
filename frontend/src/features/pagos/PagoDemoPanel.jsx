@@ -48,8 +48,23 @@ export default function PagoDemoPanel({ pedidoId, pedido }) {
           <p>Pedido #{pago.pedidoId} · {clp.format(pago.monto)}</p>
           <p>Método: {ETIQUETAS_METODO[pago.metodo]} · Estado: <span className="pagos-estado">{ETIQUETAS_ESTADO_PAGO[pago.estado]}</span></p>
           {pago.estado === 'PENDIENTE' && <p>El cobro en efectivo se registra al entregar el pedido.</p>}
-          {pago.estado === 'RECHAZADO' && <p>El pago fue rechazado. Puedes intentar con otro método.</p>}
+          {pago.estado === 'RECHAZADO' && (
+            <p className="pagos-error" role="alert">
+              El pago fue rechazado. Puedes intentar con otro método: se registra un pago nuevo.
+            </p>
+          )}
           <div className="pagos-actions">
+            {pago.estado === 'RECHAZADO' && (
+              <button type="button" className="button button--primary" disabled={busy}
+                onClick={() => {
+                  // Nuevo intento: escenario neutro (permite cualquier método) y clave nueva.
+                  setScenario('tarjeta')
+                  controller.connect(createPagoDemoAdapter({ scenario: 'tarjeta', pedido }))
+                  controller.nuevoIntento()
+                }}>
+                Elegir otro método
+              </button>
+            )}
             <Link className="button button--secondary" to={ROUTE_PATHS.pedidoDetalle.replace(':id', pago.pedidoId)}>Ver pedido</Link>
             <Link className="button button--secondary" to={ROUTE_PATHS.misPedidos}>Ir a mis pedidos</Link>
           </div>

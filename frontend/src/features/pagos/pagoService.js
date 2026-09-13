@@ -63,6 +63,15 @@ export function createPagoController() {
     },
     load: pedidoId => run('load', pedidoId),
     registrar: draft => run('write', { draft }),
+    /**
+     * Inicia un intento nuevo tras un resultado final (p. ej. RECHAZADO): descarta la clave
+     * de idempotencia para que el próximo envío cree un pago distinto y limpia el resultado.
+     * Un fallo de red incierto NO usa esto: ahí se conserva la clave para reintentar sin duplicar.
+     */
+    nuevoIntento() {
+      cancelPending()
+      publish({ status: 'idle', pago: null, error: null, operation: null, idempotencyKey: null })
+    },
     clearError() {
       if (!request && state.error && state.operation === 'write') {
         publish({ status: state.pago ? 'ready' : 'empty', pago: state.pago, error: null, operation: null, idempotencyKey: state.idempotencyKey })

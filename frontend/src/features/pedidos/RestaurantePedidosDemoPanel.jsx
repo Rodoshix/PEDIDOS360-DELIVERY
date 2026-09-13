@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import PedidoDetalle from './PedidoDetalle.jsx'
 import { createPedidoController } from './pedidoService.js'
 import { createPedidoDemoAdapter, PEDIDO_SCENARIOS } from './pedidoDemoAdapter.js'
-import { ETIQUETAS_ESTADO, ESTADOS_TERMINALES } from './pedidoOperaciones.js'
+import { ETIQUETAS_ESTADO, ESTADOS_TERMINALES, transicionesPermitidas } from './pedidoOperaciones.js'
 import { formatClp, formatFecha } from './pedidoFormat.js'
 import { EtiquetaEstado } from './PedidoResumen.jsx'
 import './pedidos.css'
@@ -69,8 +69,8 @@ export default function RestaurantePedidosDemoPanel() {
                   </p>
                   <p>{pedido.direccionEntrega}</p>
                   <div className="pedidos-actions">
-                    {!ESTADOS_TERMINALES.includes(pedido.estado) && ACCIONES_RESTAURANTE
-                      .filter(estado => estado !== pedido.estado)
+                    {!ESTADOS_TERMINALES.includes(pedido.estado) && transicionesPermitidas(pedido.estado)
+                      .filter(estado => ACCIONES_RESTAURANTE.includes(estado))
                       .map(estado => (
                         <button key={estado} type="button" className="button button--secondary" disabled={busy}
                           onClick={() => transicionar(pedido.pedidoId, estado)}>
