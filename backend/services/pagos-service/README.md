@@ -64,6 +64,26 @@ En AWS se configurarán `DB_URL`, `DB_USERNAME` y `DB_PASSWORD` para RDS desde e
 
 Flyway administra el esquema `pagos`; Hibernate usa `ddl-auto: validate`.
 
+## Docker
+
+El `Dockerfile` construye la imagen de despliegue (Java 21, usuario no root, healthcheck en `/actuator/health`). El `compose.yml` de esta carpeta levanta **solo PostgreSQL local** para desarrollo; no es el despliegue completo.
+
+```powershell
+docker build -t pedidos360-pagos:local .
+
+docker run --rm -p 127.0.0.1:8086:8086 `
+  -e DB_URL="jdbc:postgresql://host.docker.internal:5437/pedidos360_pagos" `
+  -e DB_USERNAME=pedidos360_pagos -e DB_PASSWORD=... `
+  -e PEDIDOS_SERVICE_URL="http://host.docker.internal:8085" `
+  pedidos360-pagos:local
+```
+
+Notas:
+- La imagen **no** incluye base de datos; en AWS se apunta a RDS con `DB_URL`, `DB_USERNAME` y `DB_PASSWORD`.
+- `LOCAL_IDENTITY_ENABLED=false` en la imagen.
+- La reconciliación Pagos → Pedidos requerirá **autenticación de servicio** (acuerdo con I1/I5); hoy la llamada interna no lleva credenciales de servicio.
+- El build no ejecuta Testcontainers; verificar antes con `./mvnw verify`.
+
 ## Salud
 
 ```powershell

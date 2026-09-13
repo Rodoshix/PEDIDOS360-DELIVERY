@@ -88,9 +88,19 @@ class PagoAutorizacionTests {
     }
 
     @Test
-    void aprobarConPermisoDeRepartidorSeAcepta() {
+    void aprobarConRolRepartidorSeRechaza() {
+        // Acuerdo I1/I5: aprobar cobros es inicialmente solo ADMIN; REPARTIDOR no basta.
+        var pendiente = pagos.registrar(DUENIO, "k-cobro-rep", request(MetodoPago.EFECTIVO));
+
+        assertThatThrownBy(() -> pagos.aprobar(REPARTIDOR, pendiente.pagoId()))
+                .isInstanceOf(PagoException.class)
+                .satisfies(error -> assertThat(status(error)).isEqualTo(HttpStatus.FORBIDDEN));
+    }
+
+    @Test
+    void aprobarConPermisoDeAdminSeAcepta() {
         var pendiente = pagos.registrar(DUENIO, "k-cobro-2", request(MetodoPago.EFECTIVO));
-        assertThat(pagos.aprobar(REPARTIDOR, pendiente.pagoId()).estado()).isEqualTo("APROBADO");
+        assertThat(pagos.aprobar(ADMIN, pendiente.pagoId()).estado()).isEqualTo("APROBADO");
     }
 
     private CrearPagoRequest request(MetodoPago metodo) {

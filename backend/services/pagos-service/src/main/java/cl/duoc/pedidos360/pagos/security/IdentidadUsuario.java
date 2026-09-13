@@ -11,9 +11,13 @@ public record IdentidadUsuario(Long usuarioId, Set<Rol> roles) {
         return roles.contains(Rol.ADMIN);
     }
 
-    /** Permiso explícito para aprobar/cobrar un pago (p. ej. efectivo recibido en la entrega). */
+    /**
+     * Permiso para aprobar/cobrar un pago (p. ej. efectivo recibido en la entrega).
+     * Según el acuerdo con I1/I5, inicialmente solo ADMIN: un rol de repartidor
+     * requeriría definir además su asignación, no solo el nombre del rol.
+     */
     public boolean puedeAprobarCobros() {
-        return roles.contains(Rol.ADMIN) || roles.contains(Rol.REPARTIDOR);
+        return roles.contains(Rol.ADMIN);
     }
 
     /** El recurso es accesible si lo posee esta identidad o si es ADMIN. */

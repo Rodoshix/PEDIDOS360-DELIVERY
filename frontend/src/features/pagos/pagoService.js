@@ -32,8 +32,11 @@ export function createPagoController() {
         result = await currentAdapter.get(payload, { signal: abort.signal })
       } else if (operation === 'write') {
         if (Object.keys(validatePagoDraft(payload.draft)).length) throw new PagoServiceError('INVALID_REQUEST')
-        // La clave de idempotencia se mantiene por intento: reintentar no duplica el pago.
-        const key = state.idempotencyKey ?? `web-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+        // Idempotency-Key obligatoria en el flujo de pago (acuerdo I1/I5): el panel la provee.
+        // Si el envío anterior falló de forma incierta, se reutiliza la MISMA clave para no duplicar;
+        // un intento nuevo (nuevoIntento) la descarta y exige otra.
+        const key = payload.idempotencyKey ?? state.idempotencyKey
+        if (typeof key !== 'string' || !key.trim()) throw new PagoServiceError('INVALID_COMMAND')
         publish({ ...state, idempotencyKey: key })
         result = await currentAdapter.create(normalizePagoDraft(payload.draft), key, { signal: abort.signal })
       } else {
@@ -62,7 +65,8 @@ export function createPagoController() {
       publish({ status: 'idle', pago: null, error: null, operation: null, idempotencyKey: null })
     },
     load: pedidoId => run('load', pedidoId),
-    registrar: draft => run('write', { draft }),
+    /** `idempotencyKey` es obligatoria en el flujo: el panel la genera por intento. */
+    registrar: (draft, { idempotencyKey } = {}) => run('write', { draft, idempotencyKey }),
     /**
      * Inicia un intento nuevo tras un resultado final (p. ej. RECHAZADO): descarta la clave
      * de idempotencia para que el próximo envío cree un pago distinto y limpia el resultado.

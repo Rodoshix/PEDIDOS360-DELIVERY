@@ -48,6 +48,10 @@ export default function RestaurantePedidosDemoPanel() {
       <p className="pedidos-notice" role="status">
         {message || 'Datos ficticios: la gestión de estados es un ejemplo local.'}
       </p>
+      <p className="pedidos-notice">
+        La gestión de pedidos del restaurante es inicialmente para <strong>ADMIN</strong>; el backend
+        aplica esa autorización y la interfaz solo la refleja.
+      </p>
       {state.status === 'loading' && <p role="status">Consultando pedidos de prueba…</p>}
       {state.status === 'saving' && <p role="status">Aplicando cambio de estado…</p>}
       {state.error && (

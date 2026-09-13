@@ -107,13 +107,16 @@ Estados terminales: `ENTREGADO`, `CANCELADO`.
 
 ### Pedidos (implementados)
 
-| Método y ruta | Éxito | Errores |
-|---|---|---|
-| `POST /pedidos` | 201 | 400, 401, 403 |
-| `GET /pedidos` | 200 | 401 |
-| `GET /pedidos/{id}` | 200 | 401, 404 |
-| `GET /usuarios/{id}/pedidos` | 200 | 401, 404 |
-| `PUT /pedidos/{id}/estado` | 200 | 400, 401, 404, 409 |
+| Método y ruta | Éxito | Errores | Autorización |
+|---|---|---|---|
+| `POST /pedidos` | 201 | 400, 401, 403 | Identidad autenticada (usuarioId de la identidad) |
+| `GET /pedidos/me` | 200 | 401 | Historial de la identidad autenticada |
+| `GET /pedidos` | 200 | 401, 403 | Solo ADMIN |
+| `GET /pedidos/{id}` | 200 | 401, 403, 404 | Propietario o ADMIN |
+| `GET /usuarios/{id}/pedidos` | 200 | 401, 403, 404 | Propietario o ADMIN |
+| `PUT /pedidos/{id}/estado` | 200 | 400, 401, 403, 404, 409 | Solo ADMIN (gestión inicial) |
+
+Regla del MVP: **un restaurante por pedido**. El `usuarioId` nunca se recibe del cliente: se deriva de la identidad.
 
 ### Pagos (implementados)
 
@@ -125,6 +128,7 @@ Estados terminales: `ENTREGADO`, `CANCELADO`.
 | `PUT /pagos/{id}/aprobar` | 200 | 401, 403, 404, 409 |
 
 - **403** en pagos: sin pertenencia del pedido a la identidad, o sin permiso para aprobar cobros.
+- **`PUT /pagos/{id}/aprobar` es solo ADMIN** (acuerdo con I1/I5): un rol de repartidor requeriría definir además su asignación.
 - **409** en `POST /pagos`: pago activo duplicado o reutilización de `Idempotency-Key` para otra operación.
 
 ## 7. Estructura de error
