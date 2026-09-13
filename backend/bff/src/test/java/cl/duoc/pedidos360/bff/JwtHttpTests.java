@@ -59,7 +59,7 @@ class JwtHttpTests {
     @org.springframework.test.context.DynamicPropertySource
     static void properties(org.springframework.test.context.DynamicPropertyRegistry registry) {
         registry.add("bff.usuarios-url", () -> "http://127.0.0.1:" + upstream.getAddress().getPort());
-        for (String service : List.of("restaurantes", "productos", "carrito", "pedidos", "pagos"))
+        for (String service : List.of("restaurantes", "productos", "carrito", "pedidos", "pagos", "repartidores"))
             registry.add("bff." + service + "-url", () -> "http://127.0.0.1:" + upstream.getAddress().getPort());
         registry.add("bff.upstream-timeout-ms", () -> 500);
     }
@@ -317,6 +317,73 @@ class JwtHttpTests {
             assertThat(response.body()).doesNotContain("INTERNAL_SECRET");
             assertThat(response.headers().firstValue("location")).isEmpty();
         }
+    }
+    @Test void repartidoresExigenJwtScopeYRol() throws Exception {
+        for (String path : List.of("/repartidores/me", "/repartidores/7")) {
+            assertThat(call("GET", path, null, null).statusCode()).isEqualTo(401);
+            assertThat(call("GET", path, "falso", null).statusCode()).isEqualTo(401);
+            for (var claims : List.of(Map.<String,Object>of("scp", "otro"), Map.<String,Object>of("roles", List.of())))
+                assertThat(call("GET", path, EntraTestTokens.token(claims), null).statusCode()).isEqualTo(403);
+        }
+        assertThat(hits.get()).isZero();
+    }
+    @Test void listadoDeRepartidoresEsSoloAdmin() throws Exception {
+        var cliente = EntraTestTokens.token(Map.of());
+        assertThat(call("GET", "/repartidores", cliente, null).statusCode()).isEqualTo(403);
+        assertThat(hits.get()).isZero();
+        var admin = EntraTestTokens.token(Map.of("roles", List.of("ADMIN")));
+        assertThat(call("GET", "/repartidores", admin, null).statusCode()).isEqualTo(200);
+        assertThat(lastPath).isEqualTo("/repartidores?pagina=0&tamanio=20");
+        assertThat(call("GET", "/repartidores?pagina=1&tamanio=5", admin, null).statusCode()).isEqualTo(200);
+        assertThat(lastPath).isEqualTo("/repartidores?pagina=1&tamanio=5");
+        assertThat(hits.get()).isEqualTo(2);
+    }
+    @Test void repartidoresReenvianSoloElBearerValidado() throws Exception {
+        var token = EntraTestTokens.token(Map.of());
+        for (String path : List.of("/repartidores/me", "/repartidores/7", "/repartidores/7/asignaciones")) {
+            assertThat(call("GET", path, token, null).statusCode()).isEqualTo(200);
+            assertThat(lastPath).isEqualTo(path);
+            assertThat(lastToken).isEqualTo("Bearer " + token);
+            assertThat(lastCookie).isNull();
+            assertThat(lastUser).isNull();
+            assertThat(lastRoles).isNull();
+        }
+        status = 201;
+        assertThat(call("POST", "/repartidores", token, "{\"nombre\":\"Ana\",\"vehiculo\":\"MOTO\"}").statusCode()).isEqualTo(201);
+        assertThat(lastMethod).isEqualTo("POST");
+        status = 200;
+        assertThat(call("PUT", "/repartidores/7", token, "{\"nombre\":\"Ana\",\"vehiculo\":\"AUTO\",\"zona\":\"Norte\"}").statusCode()).isEqualTo(200);
+        assertThat(call("PUT", "/repartidores/7/disponibilidad", token, "{\"estado\":\"EN_CAMINO\"}").statusCode()).isEqualTo(200);
+        assertThat(lastPath).isEqualTo("/repartidores/7/disponibilidad");
+        assertThat(call("POST", "/repartidores/7/asignaciones", token, "{\"pedidoId\":100,\"nota\":\"Primero\"}").statusCode()).isEqualTo(200);
+        assertThat(call("PUT", "/repartidores/7/asignaciones/100/estado", token, "{\"estado\":\"ENTREGADA\"}").statusCode()).isEqualTo(200);
+        status = 204;
+        assertThat(call("DELETE", "/repartidores/7", token, null).statusCode()).isEqualTo(204);
+        assertThat(lastMethod).isEqualTo("DELETE");
+    }
+    @Test void repartidoresValidanCuerpoYRutaAntesDeLlamarAlServicio() throws Exception {
+        var token = EntraTestTokens.token(Map.of());
+        int before = hits.get();
+        for (String body : List.of("{}", "{\"nombre\":\"Ana\"}", "{\"vehiculo\":\"MOTO\"}",
+                "{\"nombre\":\"Ana\",\"vehiculo\":\"AVION\"}", "{\"nombre\":\"   \",\"vehiculo\":\"MOTO\"}",
+                "{\"nombre\":\"Ana\",\"vehiculo\":\"MOTO\",\"telefono\":\"" + "9".repeat(31) + "\"}"))
+            assertThat(call("POST", "/repartidores", token, body).statusCode()).isEqualTo(400);
+        for (String body : List.of("{}", "{\"estado\":\"OTRO\"}", "{\"estado\":\"EN_CAMINO\",\"x\":1}"))
+            assertThat(call("PUT", "/repartidores/7/disponibilidad", token, body).statusCode()).isEqualTo(400);
+        for (String body : List.of("{}", "{\"pedidoId\":0}", "{\"pedidoId\":100,\"nota\":\"ok\",\"extra\":1}",
+                "{\"pedidoId\":100,\"nota\":\"" + "n".repeat(501) + "\"}"))
+            assertThat(call("POST", "/repartidores/7/asignaciones", token, body).statusCode()).isEqualTo(400);
+        assertThat(call("PUT", "/repartidores/7/asignaciones/100/estado", token, "{\"estado\":\"OTRO\"}").statusCode()).isEqualTo(400);
+        assertThat(call("GET", "/repartidores/0", token, null).statusCode()).isEqualTo(400);
+        assertThat(call("GET", "/repartidores/7/extra", token, null).statusCode()).isEqualTo(404);
+        assertThat(hits.get()).isEqualTo(before);
+    }
+    @Test void repartidoresRechazanPaginacionFueraDeRango() throws Exception {
+        var admin = EntraTestTokens.token(Map.of("roles", List.of("ADMIN")));
+        int before = hits.get();
+        for (String query : List.of("?pagina=-1", "?tamanio=0", "?tamanio=101", "?pagina=1&tamanio=1000"))
+            assertThat(call("GET", "/repartidores" + query, admin, null).statusCode()).isEqualTo(400);
+        assertThat(hits.get()).isEqualTo(before);
     }
     @Test void esperaAcotada() throws Exception {
         delay = 900;
