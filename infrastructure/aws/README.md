@@ -99,7 +99,7 @@ En EC2, despues de transferir configuracion y archivos privados de forma segura:
 
 ```sh
 sudo docker compose --env-file .env.deploy -f compose.yml pull
-sudo docker compose --env-file .env.deploy -f compose.yml up -d --no-build
+sudo node deployment.mjs up .env.deploy
 sudo docker compose --env-file .env.deploy -f compose.yml ps
 ```
 
@@ -108,7 +108,7 @@ Mantener los archivos relativos al Compose. No transferir .git, caches ni
 
 ## Siguientes bloques obligatorios
 
-1. Preflight de parametros/archivos y generacion segura de TLS de despliegue.
+1. Ejecutar preflight y generacion segura de TLS de despliegue (ver PREPARACION.md).
 2. RDS, cuentas separadas, TLS y prueba de migraciones/persistencia.
 3. Definir entrada publica HTTPS y API Gateway compatible con permisos/coste,
    sin atajos HTTP para tokens ni bypass publico del BFF. Entra SPA/CORS.
