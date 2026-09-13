@@ -66,6 +66,28 @@ aislamiento entre dos usuarios (uno ADMIN), PostgreSQL de Testcontainers y
 catálogo HTTP controlado, sin crear registros ante errores/precios inválidos.
 Las claves de prueba no son credenciales de Microsoft.
 
-Pendiente en bloques 2 y 3: conectar pantallas y adaptadores HTTP, ejecutar el
-recorrido con Entra real y los tres servicios reales y preparar el PR.
+## Bloque 2: interfaz real
+
+/carrito ahora monta RealCartPanel por identidad de sesión. Reutiliza el cliente
+HTTP autenticado existente y consulta GET /carrito; un 404 o respuesta inválida
+no se interpreta como vacío. El catálogo dentro de la misma pantalla permite
+seleccionar un restaurante, consultar sus productos y agregar una unidad.
+Se reutilizan CartSummary y CartQuantityForm con etiquetas de datos reales.
+Quitar/vaciar requiere confirmación; tras DELETE 204 se consulta el estado real.
+
+Después de una escritura fallida o incierta, el adaptador bloquea nuevas
+escrituras hasta una lectura correcta. No repite DELETE si falla la consulta
+posterior. La pantalla ofrece actualización explícita y los controles de
+Microsoft cuando se requiere interacción. Las consultas de catálogo se cancelan
+al cambiar selección/desmontar; cambiar de cuenta reinicia toda la pantalla.
+No se guarda estado propio en localStorage ni se usa catálogo demo como respaldo.
+Los paneles demo siguen en la herramienta preview:cart, fuera del bundle real.
+
+Verificación del bloque 2: 195 tests frontend, lint y build. Se cubren DTO
+inválidos, asociación de productos al restaurante, proyección de campos,
+errores HTTP, cancelación y reconciliación de escrituras. El build conserva
+una advertencia de tamaño del chunk principal (aproximadamente 525 kB).
+
+Pendiente en bloque 3: ejecutar el recorrido con Entra real y los tres servicios
+reales, revisar interacción en navegador y preparar el PR.
 Este bloque no incluye AWS ni publica servicios fuera de la máquina local.

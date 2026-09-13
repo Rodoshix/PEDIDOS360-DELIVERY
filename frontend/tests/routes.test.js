@@ -197,7 +197,7 @@ test('Carrito espera la sesión y con cuenta no deduce que esté vacío ni inven
   assert.doesNotMatch(renderRoute('/carrito', { account, busy: true }), /Mi carrito|Carrito aún no consultado/)
   const html = renderRoute('/carrito', { account })
   assert.match(html, /Mi carrito/)
-  assert.match(html, /Carrito aún no consultado/)
+  assert.match(html, /Consultando tu carrito/)
   assert.doesNotMatch(html, /Carrito vacío en este ejemplo|Hamburguesa de ejemplo|ID-PRIVADO/)
 })
 

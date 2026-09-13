@@ -16,10 +16,10 @@ test('producción incluye consulta de perfil real y excluye adaptadores y panele
   // El formulario real conserva el ejemplo de sintaxis de email del validador;
   // la exclusión de datos demo se comprueba por módulos, no por ese texto de ayuda.
   assert.doesNotMatch(code, /Cargar escenario|Guardado simulado completado/)
-  assert.match(modules, /\/CartPending\.jsx/)
-  assert.doesNotMatch(modules, /\/(CartDemoPanel|CartSummary)\.jsx|\/cartDemo\.js/)
-  assert.doesNotMatch(modules, /\/(CartQuantityForm|CartCatalogForm)\.jsx|\/(cartOperations|cartCatalogDemo)\.js/)
-  assert.doesNotMatch(modules, /\/(cartService|cartDemoAdapter|cartErrors)\.js/)
-  assert.match(code, /Carrito aún no consultado/)
+  assert.match(modules, /\/RealCartPanel\.jsx/)
+  assert.match(modules, /\/RealCatalog\.jsx/)
+  assert.match(modules, /\/cartHttpAdapter\.js/)
+  assert.doesNotMatch(modules, /\/(CartDemoPanel|CartPending|CartCatalogForm)\.jsx|\/(cartDemo|cartDemoAdapter|cartCatalogDemo)\.js/)
+  assert.match(code, /Consultando tu carrito/)
   assert.doesNotMatch(code, /Hamburguesa de ejemplo|Ver carrito de ejemplo|Ver ejemplo vacío/)
 })
