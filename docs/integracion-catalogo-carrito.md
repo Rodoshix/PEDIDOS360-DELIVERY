@@ -88,6 +88,28 @@ inválidos, asociación de productos al restaurante, proyección de campos,
 errores HTTP, cancelación y reconciliación de escrituras. El build conserva
 una advertencia de tamaño del chunk principal (aproximadamente 525 kB).
 
-Pendiente en bloque 3: ejecutar el recorrido con Entra real y los tres servicios
-reales, revisar interacción en navegador y preparar el PR.
+## Evidencia manual del bloque 3 (2026-09-12)
+
+Navegador integrado con sesión Entra real; frontend 5173, BFF 8080,
+Restaurantes 8082, Productos 8083 y Carrito 8084. Los tres servicios de comercio
+usaron sus esquemas en una base PostgreSQL temporal independiente de Mi cuenta,
+con datos iniciales de las migraciones. No se extrajeron tokens del navegador.
+
+1. Consultar carrito vacío y cargar restaurantes mediante el BFF.
+2. Elegir Burger 360 y agregar Hamburguesa Clásica: una unidad, CLP 6990.
+3. Cambiar a dos unidades: CLP 13980; recargar y verificar que permanecen.
+4. Confirmar en PostgreSQL producto 1, cantidad 2 y subtotal 13980.
+5. Abrir eliminación, cancelar y luego confirmar: carrito vacío.
+6. Agregar Papas Fritas, confirmar Vaciar carrito y recargar: total cero.
+7. PostgreSQL confirmó cero líneas restantes tras el vaciado.
+
+Los servicios Productos/Restaurantes necesitaron una compilación limpia:
+target/classes conservaba un application.properties antiguo que tenía prioridad
+sobre application.yml. No se cambió configuración fuente ni se borraron bases.
+El contenedor pedidos360-comercio-prueba usa almacenamiento temporal y no
+representa durabilidad tras eliminarlo. La base de Mi cuenta quedó intacta.
+
+Revisión final: 195 pruebas frontend, lint limpio y build correcto; suites BFF
+y Carrito verificadas por separado. El PR debe revisarse y mergearse antes de
+cerrar el issue #44.
 Este bloque no incluye AWS ni publica servicios fuera de la máquina local.

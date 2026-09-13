@@ -35,7 +35,6 @@ public class ComercioClient {
             throw new IllegalArgumentException("Ruta interna no permitida.");
         var origin = origins.get(path.split("/")[1]);
         var builder = HttpRequest.newBuilder(origin.resolve(path)).timeout(Duration.ofMillis(timeoutMs))
-                
                 .header("Accept", "application/json");
         // Catálogo solo se consulta: no necesita recibir el token del usuario.
         if (path.startsWith("/carrito")) builder.header("Authorization", "Bearer " + token.getToken().getTokenValue());
