@@ -50,6 +50,9 @@ public class ConnectionConfiguration {
             source.registerCorsConfiguration(path, cors);
             source.registerCorsConfiguration(path + "/**", cors);
         }
+        var pagos = new CorsConfiguration(cors);
+        pagos.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Idempotency-Key"));
+        source.registerCorsConfiguration("/pagos", pagos);
         return source;
     }
 }

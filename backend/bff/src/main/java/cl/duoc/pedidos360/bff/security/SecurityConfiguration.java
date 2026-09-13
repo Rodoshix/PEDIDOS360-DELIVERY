@@ -32,6 +32,20 @@ public class SecurityConfiguration {
                     auth.requestMatchers("/actuator/health").permitAll();
                     auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll();
                     if (enabled && env.getProperty("bff.pedidos-pagos-enabled", Boolean.class, false)) {
+                        auth.requestMatchers(org.springframework.http.HttpMethod.POST, "/pedidos", "/pagos")
+                            .access((authentication, context) -> {
+                                var roles = authentication.get().getAuthorities().stream()
+                                    .map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
+                                return new org.springframework.security.authorization.AuthorizationDecision(
+                                    roles.contains("SCOPE_access_as_user") && (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_CLIENTE")));
+                            });
+                        auth.requestMatchers(org.springframework.http.HttpMethod.PUT, "/pedidos/*/estado", "/pagos/*/aprobar")
+                            .access((authentication, context) -> {
+                                var roles = authentication.get().getAuthorities().stream()
+                                    .map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
+                                return new org.springframework.security.authorization.AuthorizationDecision(
+                                    roles.contains("SCOPE_access_as_user") && roles.contains("ROLE_ADMIN"));
+                            });
                         auth.requestMatchers(org.springframework.http.HttpMethod.GET, "/pedidos", "/pedidos/**", "/pagos/**")
                             .access((authentication, context) -> {
                                 var roles = authentication.get().getAuthorities().stream()

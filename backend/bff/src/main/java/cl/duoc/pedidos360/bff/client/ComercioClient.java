@@ -32,6 +32,14 @@ public class ComercioClient {
     }
 
     public ResponseEntity<?> call(String method, String path, String body, JwtAuthenticationToken token) {
+        return call(method, path, body, token, null);
+    }
+
+    public ResponseEntity<?> call(String method, String path, String body, JwtAuthenticationToken token, String idempotencyKey) {
+        if ("POST".equals(method) && "/pagos".equals(path)) {
+            if (idempotencyKey == null || !idempotencyKey.matches("[A-Za-z0-9_-]{1,80}"))
+                throw new IllegalArgumentException("Clave de idempotencia inválida.");
+        } else if (idempotencyKey != null) throw new IllegalArgumentException("Clave fuera de la ruta de pagos.");
         // Defensa adicional: solo rutas construidas por el controlador, sin URL aportada por el usuario.
         if (!allowed(method, path))
             throw new IllegalArgumentException("Ruta interna no permitida.");
@@ -42,6 +50,7 @@ public class ComercioClient {
         if (path.startsWith("/carrito") || path.startsWith("/pedidos") || path.startsWith("/pagos"))
             builder.header("Authorization", "Bearer " + token.getToken().getTokenValue());
         if (body != null) builder.header("Content-Type", "application/json");
+        if (idempotencyKey != null) builder.header("Idempotency-Key", idempotencyKey);
         var request = builder.method(method, body == null ? HttpRequest.BodyPublishers.noBody()
                 : HttpRequest.BodyPublishers.ofString(body)).build();
         var pending = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
@@ -69,6 +78,8 @@ public class ComercioClient {
     }
 
     static boolean allowed(String method, String path) {
+        if ("POST".equals(method) && Set.of("/pedidos", "/pagos").contains(path)) return true;
+        if ("PUT".equals(method) && path.matches("/(?:pedidos/[1-9][0-9]*/estado|pagos/[1-9][0-9]*/aprobar)")) return true;
         if ("GET".equals(method) && path.matches("/(?:pedidos(?:/me|/[1-9][0-9]*)?|pagos/(?:pedido/)?[1-9][0-9]*)")) return true;
         if ("GET".equals(method) && path.matches("/(?:restaurantes(?:/[1-9][0-9]*)?|productos(?:/[1-9][0-9]*|/restaurante/[1-9][0-9]*(?:/disponibles)?)?)")) return true;
         if (path.equals("/carrito")) return Set.of("GET", "DELETE").contains(method);

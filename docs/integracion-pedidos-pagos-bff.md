@@ -24,8 +24,7 @@ emite ni que un rol por sí solo identifica al repartidor asignado a una entrega
 | GET /pagos/{id} | Pagos, misma ruta | CLIENTE propietario o ADMIN |
 | GET /pagos/pedido/{id} | Pagos, misma ruta; devuelve lista | CLIENTE propietario o ADMIN |
 
-La ruta administrativa por usuario y los comandos se implementarán en el siguiente
-bloque. No se exponen escrituras en este bloque. Las respuestas no se almacenan en
+La ruta administrativa por usuario queda pendiente. Las respuestas no se almacenan en
 caché; los errores internos se sustituyen por mensajes neutros, sin seguir redirects
 ni reintentar escrituras. Los filtros/query strings no se propagan automáticamente.
 
@@ -41,6 +40,22 @@ del usuario, pertenencia e historial propio. Las pruebas del BFF usan un servido
 HTTP controlado: no certifican la seguridad de los servicios reales.
 
 ## Siguientes bloques y responsabilidades
+
+### Comandos BFF implementados (también sujetos al interruptor de habilitación)
+
+- POST /pedidos: CLIENTE o ADMIN; restauranteId, direccionEntrega (1-255 caracteres
+  no vacíos) e items de productoId/cantidad enteros positivos. Sin precios ni usuarioId.
+- POST /pagos: CLIENTE o ADMIN; pedidoId y metodo TARJETA/EFECTIVO. Exige una única
+  cabecera Idempotency-Key de 1-80 caracteres alfanuméricos, guion o guion bajo.
+  El BFF la transmite sin reemplazarla ni generar otra. El servicio garantiza la
+  idempotencia; el BFF no almacena resultados ni reintenta automáticamente.
+- PUT /pedidos/{id}/estado: ADMIN; solo el campo estado. I3 valida transición y reglas.
+- PUT /pagos/{id}/aprobar: ADMIN; sin cuerpo.
+
+Se exige además access_as_user. CORS acepta Idempotency-Key únicamente en /pagos,
+desde los orígenes configurados. Los adaptadores y pantallas reales siguen pendientes.
+POST /pedidos no tiene todavía contrato de idempotencia: un timeout no autoriza
+a reenviarlo automáticamente, pues podría duplicar el pedido.
 
 I3 adapta sus servicios, reglas, Docker y pruebas. I1/I5 implementa BFF/CORS,
 adaptadores frontend y prueba integrada sin editar esos servicios en paralelo.
