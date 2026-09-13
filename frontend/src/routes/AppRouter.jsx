@@ -4,6 +4,7 @@ import HomePage from '../pages/HomePage.jsx'
 import NotFoundPage from '../pages/NotFoundPage.jsx'
 import AccountPage from '../pages/AccountPage.jsx'
 import CartPage from '../features/carrito/CartPage.jsx'
+import RestaurantesPage from '../features/restaurantes/RestaurantesPage.jsx'
 import ConfirmarPedidoPage from '../features/pedidos/ConfirmarPedidoPage.jsx'
 import MisPedidosPage from '../features/pedidos/MisPedidosPage.jsx'
 import PedidoDetallePage from '../features/pedidos/PedidoDetallePage.jsx'
@@ -19,6 +20,7 @@ function AppRouter() {
         <Route path={ROUTE_PATHS.home} element={<HomePage />} />
         <Route element={<RequireSession />}>
           <Route path={ROUTE_PATHS.account} element={<AccountPage />} />
+          <Route path={ROUTE_PATHS.restaurantes} element={<RestaurantesPage />} />
           <Route path={ROUTE_PATHS.cart} element={<CartPage />} />
           <Route path={ROUTE_PATHS.confirmarPedido} element={<ConfirmarPedidoPage />} />
           <Route path={ROUTE_PATHS.misPedidos} element={<MisPedidosPage />} />
