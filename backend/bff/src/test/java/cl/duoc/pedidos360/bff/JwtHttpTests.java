@@ -56,6 +56,8 @@ class JwtHttpTests {
     @org.springframework.test.context.DynamicPropertySource
     static void properties(org.springframework.test.context.DynamicPropertyRegistry registry) {
         registry.add("bff.usuarios-url", () -> "http://127.0.0.1:" + upstream.getAddress().getPort());
+        for (String service : List.of("restaurantes", "productos", "carrito"))
+            registry.add("bff." + service + "-url", () -> "http://127.0.0.1:" + upstream.getAddress().getPort());
         registry.add("bff.upstream-timeout-ms", () -> 500);
     }
     @org.junit.jupiter.api.BeforeEach void reset() { status = 200; delay = 0; hits.set(0); }
@@ -161,6 +163,61 @@ class JwtHttpTests {
         assertThat(response.statusCode()).isEqualTo(401);
         assertThat(response.headers().firstValue("access-control-allow-origin")).hasValue("http://localhost:5173");
         assertThat(hits.get()).isZero();
+    }
+    @Test void catalogoSoloLecturaSinCredencialesNiCabecerasDelNavegador() throws Exception {
+        String token = EntraTestTokens.token(Map.of());
+        for (String path : List.of("/restaurantes", "/restaurantes/20", "/productos",
+                "/productos/101", "/productos/restaurante/20", "/productos/restaurante/20/disponibles")) {
+            assertThat(call("GET", path, token, null).statusCode()).isEqualTo(200);
+            assertThat(lastPath).isEqualTo(path);
+            assertThat(lastToken).isNull();
+            assertThat(lastCookie).isNull();
+            assertThat(lastUser).isNull();
+        }
+        assertThat(call("GET", "/restaurantes/20/productos", token, null).statusCode()).isEqualTo(200);
+        assertThat(lastPath).isEqualTo("/productos/restaurante/20");
+        int before = hits.get();
+        assertThat(call("POST", "/productos", token, "{}").statusCode()).isEqualTo(405);
+        assertThat(call("GET", "/productos/0", token, null).statusCode()).isEqualTo(400);
+        assertThat(hits.get()).isEqualTo(before);
+    }
+    @Test void carritoReenviaSoloTokenYCuerpoValidado() throws Exception {
+        String token = EntraTestTokens.token(Map.of());
+        assertThat(call("GET", "/carrito", token, null).statusCode()).isEqualTo(200);
+        assertThat(lastToken).isEqualTo("Bearer " + token);
+        assertThat(lastUser).isNull();
+        assertThat(lastRoles).isNull();
+        assertThat(lastCookie).isNull();
+        assertThat(call("POST", "/carrito/items", token, "{\"productoId\":101,\"cantidad\":2}").statusCode()).isEqualTo(200);
+        assertThat(lastMethod).isEqualTo("POST");
+        assertThat(lastPath).isEqualTo("/carrito/items");
+        assertThat(call("PUT", "/carrito/items/101", token, "{\"cantidad\":3}").statusCode()).isEqualTo(200);
+        int before = hits.get();
+        for (String body : List.of("{\"cantidad\":0}", "{\"cantidad\":100}", "{\"cantidad\":1.5}", "{\"cantidad\":1,\"usuarioId\":7}"))
+            assertThat(call("PUT", "/carrito/items/101", token, body).statusCode()).isEqualTo(400);
+        assertThat(hits.get()).isEqualTo(before);
+        status = 204;
+        assertThat(call("DELETE", "/carrito/items/101", token, null).statusCode()).isEqualTo(204);
+        assertThat(call("DELETE", "/carrito", token, null).statusCode()).isEqualTo(204);
+    }
+    @Test void comercioExigeJwtScopeRolYSanitizaErrores() throws Exception {
+        for (String path : List.of("/carrito", "/productos", "/restaurantes")) {
+            assertThat(call("OPTIONS", path, null, null, Map.of("Origin", "http://localhost:5173",
+                    "Access-Control-Request-Method", "GET", "Access-Control-Request-Headers", "authorization")).statusCode()).isEqualTo(200);
+            assertThat(call("GET", path, EntraTestTokens.token(Map.of()), null,
+                    Map.of("Origin", "https://evil.example")).statusCode()).isEqualTo(403);
+            assertThat(call("GET", path, null, null).statusCode()).isEqualTo(401);
+            assertThat(call("GET", path, EntraTestTokens.token(Map.of("scp", "otro")), null).statusCode()).isEqualTo(403);
+            assertThat(call("GET", path, EntraTestTokens.token(Map.of("roles", List.of())), null).statusCode()).isEqualTo(403);
+        }
+        assertThat(hits.get()).isZero();
+        for (int code : List.of(302, 400, 403, 404, 409, 500)) {
+            status = code;
+            var response = call("GET", "/carrito", EntraTestTokens.token(Map.of()), null);
+            assertThat(response.statusCode()).isEqualTo(code == 302 || code == 500 ? 502 : code);
+            assertThat(response.body()).doesNotContain("INTERNAL_SECRET");
+            assertThat(response.headers().firstValue("location")).isEmpty();
+        }
     }
     @Test void esperaAcotada() throws Exception {
         delay = 900;
