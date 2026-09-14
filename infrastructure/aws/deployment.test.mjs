@@ -5,7 +5,7 @@ import os from 'node:os'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { prepare, validateMaterial, readConfig, services } from './deployment.mjs'
+import { prepare, validateMaterial, readConfig, services, composeArgs } from './deployment.mjs'
 
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'pedidos360-aws-tests-'))
 const config = {
@@ -48,6 +48,16 @@ test('public configuration validates and rejects unsafe/missing/duplicate values
   writeConfig()
   fs.appendFileSync(file, '\nIMAGE_TAG=duplicate')
   assert.throws(() => readConfig(file), /duplicada/)
+})
+
+test('edge opt-in validates private address and includes overlay only when configured', () => {
+  writeConfig({ EC2_PRIVATE_IP: '172.31.91.221' })
+  assert.ok(composeArgs(file, readConfig(file)).some(arg => arg.endsWith('compose.edge.yml')))
+  assert.ok(!composeArgs(file, config).some(arg => arg.endsWith('compose.edge.yml')))
+  for (const ip of ['0.0.0.0', '1.2.3.4', '172.31.256.1', '172.31.1.1:80']) {
+    writeConfig({ EC2_PRIVATE_IP: ip })
+    assert.throws(() => readConfig(file))
+  }
 })
 
 test('prepare requires worker and JDK before creating files', () => {

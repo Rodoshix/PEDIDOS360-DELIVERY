@@ -130,12 +130,13 @@ export function readConfig(file) {
   const values = {}
   for (const line of fs.readFileSync(file, 'utf8').split(/\r?\n/)) {
     if (!line.trim() || line.trimStart().startsWith('#')) continue
-    const match = /^([A-Z_]+)=([^\r\n]*)$/.exec(line)
+    const match = /^([A-Z_][A-Z0-9_]*)=([^\r\n]*)$/.exec(line)
     if (!match || Object.hasOwn(values, match[1])) fail('Formato o clave duplicada en configuracion; usar CLAVE=valor sin comillas.')
     values[match[1]] = match[2]
   }
   const keys = ['IMAGE_REGISTRY', 'IMAGE_TAG', 'FRONTEND_ORIGIN', 'PUBLIC_API_BASE_URL', 'ENTRA_TENANT_ID', 'ENTRA_API_CLIENT_ID', 'ENTRA_FRONTEND_CLIENT_ID', 'PAGOS_WORKER_CLIENT_ID', 'RDS_HOST', 'AWS_TLS_DIR', 'AWS_SECRETS_DIR']
-  if (Object.keys(values).some(k => !keys.includes(k))) fail('Variable inesperada en configuracion publica.')
+  if (Object.keys(values).some(k => !keys.includes(k) && k !== 'EC2_PRIVATE_IP')) fail('Variable inesperada en configuracion publica.')
+  if (values.EC2_PRIVATE_IP && (!/^172\.31\.\d{1,3}\.\d{1,3}$/.test(values.EC2_PRIVATE_IP) || values.EC2_PRIVATE_IP.split('.').some(n => Number(n) > 255))) fail('EC2_PRIVATE_IP debe pertenecer a la VPC privada del laboratorio.')
   for (const key of keys) if (!values[key]) fail(`Falta ${key}.`)
   for (const key of ['ENTRA_TENANT_ID', 'ENTRA_API_CLIENT_ID', 'ENTRA_FRONTEND_CLIENT_ID', 'PAGOS_WORKER_CLIENT_ID']) {
     if (!/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(values[key])) fail(`UUID invalido: ${key}`)
@@ -176,8 +177,12 @@ export function preflight(file, keytool = 'keytool', linux = false) {
       if (stat.uid !== 10001 || !(stat.mode & 0o400) || (stat.mode & 0o077)) fail('Archivos privados requieren propietario 10001 y modo 0400/0600.')
     }
   }
-  run('docker', ['compose', '--env-file', path.resolve(file), '-f', path.join(here, 'compose.yml'), 'config', '--quiet'], { ...process.env, ...c, AWS_TLS_DIR: tls, AWS_SECRETS_DIR: secrets })
+  run('docker', [...composeArgs(file, c), 'config', '--quiet'], { ...process.env, ...c, AWS_TLS_DIR: tls, AWS_SECRETS_DIR: secrets })
   return c
+}
+
+export function composeArgs(file, config) {
+  return ['compose', '--env-file', path.resolve(file), '-f', path.join(here, 'compose.yml'), ...(config.EC2_PRIVATE_IP ? ['-f', path.join(here, 'compose.edge.yml')] : [])]
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
@@ -190,7 +195,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       const c = preflight(target, 'keytool', action !== 'check')
       if (action === 'up') {
         const base = path.dirname(path.resolve(target))
-        run('docker', ['compose', '--env-file', path.resolve(target), '-f', path.join(here, 'compose.yml'), 'up', '-d', '--no-build'], { ...process.env, ...c, AWS_TLS_DIR: path.resolve(base, c.AWS_TLS_DIR), AWS_SECRETS_DIR: path.resolve(base, c.AWS_SECRETS_DIR) })
+        run('docker', [...composeArgs(target, c), 'up', '-d', '--no-build'], { ...process.env, ...c, AWS_TLS_DIR: path.resolve(base, c.AWS_TLS_DIR), AWS_SECRETS_DIR: path.resolve(base, c.AWS_SECRETS_DIR) })
       }
     }
     else fail('Accion desconocida.')

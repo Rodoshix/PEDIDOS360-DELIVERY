@@ -48,6 +48,20 @@ test('runtime has only eight prebuilt amd64 applications, no database containers
   assert.equal(c.services.frontend.volumes, undefined, 'do not reuse the local /api bypass proxy')
 })
 
+test('edge publishes only two private ports on isolated frontend bridge', () => {
+  const result = spawnSync('docker', ['compose', '--env-file', '.env.example', '-f', 'compose.yml', '-f', 'compose.edge.yml', 'config', '--format', 'json'], {cwd, env: {...env, EC2_PRIVATE_IP: '172.31.91.221'}, encoding: 'utf8'})
+  assert.equal(result.status, 0, result.stderr)
+  const c = JSON.parse(result.stdout)
+  for (const name of ['frontend', 'bff']) {
+    assert.equal(c.services[name].ports.length, 1)
+    assert.equal(c.services[name].ports[0].host_ip, '172.31.91.221')
+  }
+  assert.deepEqual(Object.keys(c.services.frontend.networks), ['edge'])
+  assert.ok(!c.networks.edge.internal)
+  assert.equal(c.services.frontend.secrets, undefined)
+  for (const name of names.slice(2)) assert.equal(c.services[name].ports, undefined)
+})
+
 test('six databases require RDS TLS, separate users, file passwords and bounded pools', () => {
   const c = model()
   const users = new Set()
