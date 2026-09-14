@@ -47,6 +47,9 @@ temp/
 *.tmp
 
 # Infraestructura local
+infrastructure/aws/tls/
+infrastructure/aws/secrets/
+infrastructure/aws/private/
 infrastructure/docker/stack/tls/
 infrastructure/docker/stack/secrets/
 .terraform/
