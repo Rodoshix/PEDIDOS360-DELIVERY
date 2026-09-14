@@ -1,0 +1,114 @@
+name: pedidos360-i1-local
+
+services:
+  frontend:
+    image: ${COMPOSE_PROJECT_NAME}-frontend:local
+    build:
+      context: ../../../frontend
+      args:
+        VITE_API_BASE_URL: ${I1_API_BASE_URL:-http://localhost:8080}
+        VITE_ENTRA_CLIENT_ID: ${I1_ENTRA_CLIENT_ID:?Configura I1_ENTRA_CLIENT_ID}
+        VITE_ENTRA_TENANT_ID: ${I1_ENTRA_TENANT_ID:?Configura I1_ENTRA_TENANT_ID}
+        VITE_ENTRA_REDIRECT_URI: http://localhost:${I1_FRONTEND_PORT:-5180}
+        VITE_ENTRA_API_SCOPE: ${I1_ENTRA_API_SCOPE:?Configura I1_ENTRA_API_SCOPE}
+    ports:
+      - "127.0.0.1:${I1_FRONTEND_PORT:-5180}:8080"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    pids_limit: 128
+    networks: [frontend]
+    # No depende de las APIs: la integración HTTP/BFF todavía no existe.
+
+  usuarios:
+    image: ${COMPOSE_PROJECT_NAME}-usuarios:local
+    build:
+      context: ../../../backend/services/usuarios-service
+    environment:
+      DB_URL: jdbc:postgresql://usuarios-db:5432/pedidos360_usuarios
+      DB_USERNAME: pedidos360_usuarios
+      DB_PASSWORD: ${I1_USUARIOS_DB_PASSWORD:?Configura I1_USUARIOS_DB_PASSWORD}
+      LOCAL_IDENTITY_ENABLED: "false"
+    ports:
+      - "127.0.0.1:${I1_USUARIOS_PORT:-8181}:8081"
+    depends_on:
+      usuarios-db:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    pids_limit: 256
+    networks: [usuarios]
+
+  carrito:
+    image: ${COMPOSE_PROJECT_NAME}-carrito:local
+    build:
+      context: ../../../backend/services/carrito-service
+    environment:
+      DB_URL: jdbc:postgresql://carrito-db:5432/pedidos360_carrito
+      DB_USERNAME: pedidos360_carrito
+      DB_PASSWORD: ${I1_CARRITO_DB_PASSWORD:?Configura I1_CARRITO_DB_PASSWORD}
+      LOCAL_IDENTITY_ENABLED: "false"
+    ports:
+      - "127.0.0.1:${I1_CARRITO_PORT:-8184}:8084"
+    depends_on:
+      carrito-db:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    pids_limit: 256
+    networks: [carrito]
+
+  usuarios-db:
+    image: postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+    environment:
+      POSTGRES_DB: pedidos360_usuarios
+      POSTGRES_USER: pedidos360_usuarios
+      POSTGRES_PASSWORD: ${I1_USUARIOS_DB_PASSWORD:?Configura I1_USUARIOS_DB_PASSWORD}
+    volumes:
+      - usuarios_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+    mem_limit: 256m
+    networks: [usuarios]
+
+  carrito-db:
+    image: postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+    environment:
+      POSTGRES_DB: pedidos360_carrito
+      POSTGRES_USER: pedidos360_carrito
+      POSTGRES_PASSWORD: ${I1_CARRITO_DB_PASSWORD:?Configura I1_CARRITO_DB_PASSWORD}
+    volumes:
+      - carrito_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+    mem_limit: 256m
+    networks: [carrito]
+
+# Nombres gestionados por el proyecto Compose, sin reutilizar volúmenes externos.
+volumes:
+  usuarios_pg_data:
+  carrito_pg_data:
+
+networks:
+  frontend:
+  usuarios:
+  carrito:

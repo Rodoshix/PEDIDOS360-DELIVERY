@@ -1,0 +1,26 @@
+# Contexto permitido explícitamente: usar frontend/ como raíz del build.
+**
+!package.json
+!package-lock.json
+!index.html
+!vite.config.js
+!.oxlintrc.json
+!src/
+!src/**
+!public/
+!public/**
+!tests/
+!tests/**
+!tools/
+!tools/validate-docker-build.mjs
+!docker/
+!docker/default.conf
+**/.env*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.jks
+**/node_modules/**
+**/dist/**
+**/target/**
+**/.git/**

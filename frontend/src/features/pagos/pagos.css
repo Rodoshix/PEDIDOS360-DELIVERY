@@ -1,0 +1,50 @@
+.pagos-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pagos-card {
+  border: 1px solid var(--color-border, #d7dbe0);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  background: var(--color-surface, #fff);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pagos-notice {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.pagos-error {
+  border: 1px solid #d9534f;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  background: #fdf2f2;
+}
+
+.pagos-estado {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--color-muted, #eef1f4);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.pagos-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.pagos-scenario {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 22rem;
+}

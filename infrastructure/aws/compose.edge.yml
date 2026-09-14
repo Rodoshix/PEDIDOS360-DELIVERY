@@ -1,0 +1,11 @@
+# Explicit opt-in; requires Compose >= 2.24.4. SG permits only the edge Lambda.
+services:
+  frontend:
+    ports: !override ["${EC2_PRIVATE_IP:?Private EC2 address required}:8080:8080"]
+    # Docker internal networks suppress published ports. This dedicated bridge
+    # has no backend members; inbound remains private-IP + Lambda SG only.
+    networks: !override [edge]
+  bff:
+    ports: !override ["${EC2_PRIVATE_IP:?Private EC2 address required}:8443:8080"]
+networks:
+  edge:

@@ -1,0 +1,241 @@
+name: pedidos360-aws
+
+x-runtime: &runtime
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: "10m", max-file: "3"}
+
+x-java: &java
+  <<: *runtime
+  platform: linux/amd64
+  read_only: true
+  tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  mem_limit: 512m
+  pids_limit: 256
+  healthcheck:
+    test: [CMD, java, -cp, /app, Health]
+    interval: 10s
+    timeout: 8s
+    start_period: 90s
+    retries: 12
+
+x-java-env: &java-env
+  SERVER_ADDRESS: 0.0.0.0
+  SERVER_SSL_ENABLED: "true"
+  SERVER_SSL_KEY_STORE: file:/run/tls/server.p12
+  SERVER_SSL_KEY_STORE_TYPE: PKCS12
+  SPRING_CONFIG_IMPORT: configtree:/run/secrets/
+  JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/run/tls/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit"
+  MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: never
+  LOCAL_IDENTITY_ENABLED: "false"
+  SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: "5"
+  SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: "1"
+
+x-entra: &entra
+  ENTRA_ENABLED: "true"
+  ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:?Configura ENTRA_TENANT_ID}
+  ENTRA_API_CLIENT_ID: ${ENTRA_API_CLIENT_ID:?Configura ENTRA_API_CLIENT_ID}
+  ENTRA_FRONTEND_CLIENT_ID: ${ENTRA_FRONTEND_CLIENT_ID:?Configura ENTRA_FRONTEND_CLIENT_ID}
+
+services:
+  frontend:
+    <<: *runtime
+    platform: linux/amd64
+    image: ${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-frontend:${IMAGE_TAG:?Configura IMAGE_TAG}
+    ports: ["127.0.0.1:8080:8080"]
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    networks: [front]
+
+  bff:
+    <<: *java
+    ports: ["127.0.0.1:8443:8080"]
+    image: ${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-bff:${IMAGE_TAG:?Configura IMAGE_TAG}
+    environment:
+      <<: [*java-env, *entra]
+      SERVER_PORT: "8080"
+      BFF_PEDIDOS_PAGOS_ENABLED: "true"
+      BFF_CORS_ORIGINS: ${FRONTEND_ORIGIN:?Configura FRONTEND_ORIGIN}
+      USUARIOS_SERVICE_URL: https://usuarios:8081
+      RESTAURANTES_SERVICE_URL: https://restaurantes:8082
+      PRODUCTOS_SERVICE_URL: https://productos:8083
+      CARRITO_SERVICE_URL: https://carrito:8084
+      PEDIDOS_SERVICE_URL: https://pedidos:8085
+      PAGOS_SERVICE_URL: https://pagos:8086
+    volumes:
+      - ${AWS_TLS_DIR:-./tls}/bff.p12:/run/tls/server.p12:ro
+      - ${AWS_TLS_DIR:-./tls}/truststore.p12:/run/tls/truststore.p12:ro
+    secrets:
+      - source: tls_password
+        target: server.ssl.key-store-password
+    networks: [services, egress]
+    depends_on:
+      usuarios: {condition: service_healthy}
+      restaurantes: {condition: service_healthy}
+      productos: {condition: service_healthy}
+      carrito: {condition: service_healthy}
+      pedidos: {condition: service_healthy}
+      pagos: {condition: service_healthy}
+
+  usuarios:
+    <<: *java
+    image: ${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-usuarios:${IMAGE_TAG:?Configura IMAGE_TAG}
+    environment:
+      <<: [*java-env, *entra]
+      SERVER_PORT: "8081"
+      DB_URL: "jdbc:postgresql://${RDS_HOST:?Configura RDS_HOST}:5432/pedidos360_usuarios?sslmode=verify-full&sslrootcert=/run/tls/rds-ca.pem"
+      DB_USERNAME: pedidos360_usuarios
+    volumes:
+      - ${AWS_TLS_DIR:-./tls}/rds-ca.pem:/run/tls/rds-ca.pem:ro
+      - ${AWS_TLS_DIR:-./tls}/usuarios.p12:/run/tls/server.p12:ro
+      - ${AWS_TLS_DIR:-./tls}/truststore.p12:/run/tls/truststore.p12:ro
+    secrets:
+      - source: tls_password
+        target: server.ssl.key-store-password
+      - source: usuarios_db_password
+        target: spring.datasource.password
+    networks: [services, egress]
+
+
+  restaurantes:
+    <<: *java
+    image: ${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-restaurantes:${IMAGE_TAG:?Configura IMAGE_TAG}
+    environment:
+      <<: *java-env
+      SERVER_PORT: "8082"
+      DB_URL: "jdbc:postgresql://${RDS_HOST:?Configura RDS_HOST}:5432/pedidos360_restaurantes?sslmode=verify-full&sslrootcert=/run/tls/rds-ca.pem"
+      DB_USERNAME: pedidos360_restaurantes
+    volumes:
+      - ${AWS_TLS_DIR:-./tls}/rds-ca.pem:/run/tls/rds-ca.pem:ro
+      - ${AWS_TLS_DIR:-./tls}/restaurantes.p12:/run/tls/server.p12:ro
+      - ${AWS_TLS_DIR:-./tls}/truststore.p12:/run/tls/truststore.p12:ro
+    secrets:
+      - source: tls_password
+        target: server.ssl.key-store-password
+      - source: restaurantes_db_password
+        target: spring.datasource.password
+    networks: [services, egress]
+
+
+  productos:
+    <<: *java
+    image: ${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-productos:${IMAGE_TAG:?Configura IMAGE_TAG}
+    environment:
+      <<: *java-env
+      SERVER_PORT: "8083"
+      DB_URL: "jdbc:postgresql://${RDS_HOST:?Configura RDS_HOST}:5432/pedidos360_productos?sslmode=verify-full&sslrootcert=/run/tls/rds-ca.pem"
+      DB_USERNAME: pedidos360_productos
+    volumes:
+      - ${AWS_TLS_DIR:-./tls}/rds-ca.pem:/run/tls/rds-ca.pem:ro
+      - ${AWS_TLS_DIR:-./tls}/productos.p12:/run/tls/server.p12:ro
+      - ${AWS_TLS_DIR:-./tls}/truststore.p12:/run/tls/truststore.p12:ro
+    secrets:
+      - source: tls_password
+        target: server.ssl.key-store-password
+      - source: productos_db_password
+        target: spring.datasource.password
+    networks: [services, egress]
+
+
+  carrito:
+    <<: *java
+    image: ${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-carrito:${IMAGE_TAG:?Configura IMAGE_TAG}
+    environment:
+      <<: [*java-env, *entra]
+      SERVER_PORT: "8084"
+      DB_URL: "jdbc:postgresql://${RDS_HOST:?Configura RDS_HOST}:5432/pedidos360_carrito?sslmode=verify-full&sslrootcert=/run/tls/rds-ca.pem"
+      DB_USERNAME: pedidos360_carrito
+      CATALOGO_HTTP_ENABLED: "true"
+      PRODUCTOS_SERVICE_URL: https://productos:8083
+    volumes:
+      - ${AWS_TLS_DIR:-./tls}/rds-ca.pem:/run/tls/rds-ca.pem:ro
+      - ${AWS_TLS_DIR:-./tls}/carrito.p12:/run/tls/server.p12:ro
+      - ${AWS_TLS_DIR:-./tls}/truststore.p12:/run/tls/truststore.p12:ro
+    secrets:
+      - source: tls_password
+        target: server.ssl.key-store-password
+      - source: carrito_db_password
+        target: spring.datasource.password
+    networks: [services, egress]
+    depends_on:
+      productos: {condition: service_healthy}
+
+
+  pedidos:
+    <<: *java
+    image: ${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-pedidos:${IMAGE_TAG:?Configura IMAGE_TAG}
+    environment:
+      <<: [*java-env, *entra]
+      SERVER_PORT: "8085"
+      DB_URL: "jdbc:postgresql://${RDS_HOST:?Configura RDS_HOST}:5432/pedidos360_pedidos?sslmode=verify-full&sslrootcert=/run/tls/rds-ca.pem"
+      DB_USERNAME: pedidos360_pedidos
+      PRODUCTOS_SERVICE_URL: https://productos:8083
+      USUARIOS_SERVICE_URL: https://usuarios:8081
+      INTERNO_ENABLED: "true"
+      PAGOS_WORKER_CLIENT_ID: ${PAGOS_WORKER_CLIENT_ID:?Configura PAGOS_WORKER_CLIENT_ID}
+    volumes:
+      - ${AWS_TLS_DIR:-./tls}/rds-ca.pem:/run/tls/rds-ca.pem:ro
+      - ${AWS_TLS_DIR:-./tls}/pedidos.p12:/run/tls/server.p12:ro
+      - ${AWS_TLS_DIR:-./tls}/truststore.p12:/run/tls/truststore.p12:ro
+    secrets:
+      - source: tls_password
+        target: server.ssl.key-store-password
+      - source: pedidos_db_password
+        target: spring.datasource.password
+    networks: [services, egress]
+    depends_on:
+      productos: {condition: service_healthy}
+      usuarios: {condition: service_healthy}
+
+
+  pagos:
+    <<: *java
+    image: ${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-pagos:${IMAGE_TAG:?Configura IMAGE_TAG}
+    environment:
+      <<: [*java-env, *entra]
+      SERVER_PORT: "8086"
+      DB_URL: "jdbc:postgresql://${RDS_HOST:?Configura RDS_HOST}:5432/pedidos360_pagos?sslmode=verify-full&sslrootcert=/run/tls/rds-ca.pem"
+      DB_USERNAME: pedidos360_pagos
+      PEDIDOS_SERVICE_URL: https://pedidos:8085
+      USUARIOS_SERVICE_URL: https://usuarios:8081
+      PEDIDOS_INTERNO_ENABLED: "true"
+      PAGOS_WORKER_ENABLED: "true"
+      PAGOS_WORKER_CLIENT_ID: ${PAGOS_WORKER_CLIENT_ID:?Configura PAGOS_WORKER_CLIENT_ID}
+    volumes:
+      - ${AWS_TLS_DIR:-./tls}/rds-ca.pem:/run/tls/rds-ca.pem:ro
+      - ${AWS_TLS_DIR:-./tls}/pagos.p12:/run/tls/server.p12:ro
+      - ${AWS_TLS_DIR:-./tls}/truststore.p12:/run/tls/truststore.p12:ro
+    secrets:
+      - source: tls_password
+        target: server.ssl.key-store-password
+      - source: pagos_db_password
+        target: spring.datasource.password
+      - source: worker_secret
+        target: pagos.worker.client-secret
+    networks: [services, egress]
+    depends_on:
+      pedidos: {condition: service_healthy}
+      usuarios: {condition: service_healthy}
+
+
+networks:
+  front: {internal: true}
+  services: {internal: true}
+  egress:
+
+# Secretos en archivos locales ignorados; necesarios para contenedores read-only.
+secrets:
+  tls_password: {file: "${AWS_SECRETS_DIR:-./secrets}/tls_password"}
+  worker_secret: {file: "${AWS_SECRETS_DIR:-./secrets}/worker_secret"}
+  usuarios_db_password: {file: "${AWS_SECRETS_DIR:-./secrets}/usuarios_db_password"}
+  restaurantes_db_password: {file: "${AWS_SECRETS_DIR:-./secrets}/restaurantes_db_password"}
+  productos_db_password: {file: "${AWS_SECRETS_DIR:-./secrets}/productos_db_password"}
+  carrito_db_password: {file: "${AWS_SECRETS_DIR:-./secrets}/carrito_db_password"}
+  pedidos_db_password: {file: "${AWS_SECRETS_DIR:-./secrets}/pedidos_db_password"}
+  pagos_db_password: {file: "${AWS_SECRETS_DIR:-./secrets}/pagos_db_password"}

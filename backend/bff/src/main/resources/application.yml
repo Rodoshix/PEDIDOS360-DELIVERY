@@ -1,0 +1,31 @@
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration
+  application:
+    name: pedidos360-bff
+server:
+  address: ${SERVER_ADDRESS:127.0.0.1}
+  port: ${SERVER_PORT:8080}
+entra:
+  enabled: ${ENTRA_ENABLED:false}
+  tenant-id: ${ENTRA_TENANT_ID:}
+  api-client-id: ${ENTRA_API_CLIENT_ID:}
+  frontend-client-id: ${ENTRA_FRONTEND_CLIENT_ID:}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+bff:
+  pedidos-pagos-enabled: ${BFF_PEDIDOS_PAGOS_ENABLED:false}
+  pedidos-url: ${PEDIDOS_SERVICE_URL:http://127.0.0.1:8085}
+  pagos-url: ${PAGOS_SERVICE_URL:http://127.0.0.1:8086}
+  restaurantes-url: ${RESTAURANTES_SERVICE_URL:http://127.0.0.1:8082}
+  productos-url: ${PRODUCTOS_SERVICE_URL:http://127.0.0.1:8083}
+  carrito-url: ${CARRITO_SERVICE_URL:http://127.0.0.1:8084}
+  usuarios-url: ${USUARIOS_SERVICE_URL:http://127.0.0.1:8081}
+  cors-origins: ${BFF_CORS_ORIGINS:http://localhost:5173,http://localhost:5180}
+  upstream-timeout-ms: ${BFF_UPSTREAM_TIMEOUT_MS:5000}

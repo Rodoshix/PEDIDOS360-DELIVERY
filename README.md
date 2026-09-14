@@ -54,6 +54,12 @@ PEDIDOS360-DELIVERY/
 
 Cada integrante implementa también las pantallas React, pruebas, documentación y Docker de su propio dominio.
 
+### Ejecución local de los componentes 1
+
+Frontend, Usuarios y Carrito cuentan con un [Compose propio y guía de configuración](infrastructure/docker/i1/README.md).
+Levanta esos componentes con PostgreSQL separado por servicio, sin reemplazar los Compose existentes.
+La integración HTTP/BFF, JWT real en los servicios y el despliegue AWS siguen pendientes.
+
 ## Flujo Git
 
 - `main`: solo versiones demostrables.
