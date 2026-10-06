@@ -31,6 +31,17 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/actuator/health").permitAll();
                     auth.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll();
+                    if (enabled) {
+                        var admin = org.springframework.security.authorization.AuthorityAuthorizationManager
+                            .<org.springframework.security.web.access.intercept.RequestAuthorizationContext>hasAuthority("ROLE_ADMIN");
+                        var scope = org.springframework.security.authorization.AuthorityAuthorizationManager
+                            .<org.springframework.security.web.access.intercept.RequestAuthorizationContext>hasAuthority("SCOPE_access_as_user");
+                        var policy = org.springframework.security.authorization.AuthorizationManagers.allOf(admin, scope);
+                        auth.requestMatchers("/restaurantes/admin/acceso").access(policy);
+                        for (var method : java.util.List.of(org.springframework.http.HttpMethod.POST, org.springframework.http.HttpMethod.PUT,
+                                org.springframework.http.HttpMethod.DELETE, org.springframework.http.HttpMethod.PATCH))
+                            auth.requestMatchers(method, "/restaurantes", "/restaurantes/**", "/productos", "/productos/**").access(policy);
+                    }
                     if (enabled && env.getProperty("bff.pedidos-pagos-enabled", Boolean.class, false)) {
                         auth.requestMatchers(org.springframework.http.HttpMethod.POST, "/pedidos", "/pagos")
                             .access((authentication, context) -> {

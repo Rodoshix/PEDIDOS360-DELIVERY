@@ -1,4 +1,6 @@
 export const ROUTE_PATHS = Object.freeze({
+  adminRestaurantes: '/admin/restaurantes',
+  adminProductos: '/admin/productos',
   home: '/',
   account: '/mi-cuenta',
   restaurantes: '/restaurantes',

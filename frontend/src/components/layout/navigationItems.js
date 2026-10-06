@@ -7,4 +7,6 @@ export const navigationItems = [
   { path: ROUTE_PATHS.cart, label: 'Carrito', icon: ShoppingBag },
   { path: ROUTE_PATHS.misPedidos, label: 'Mis pedidos', icon: ReceiptText },
   { path: ROUTE_PATHS.account, label: 'Mi cuenta', icon: CircleUserRound },
+  { path: ROUTE_PATHS.adminRestaurantes, label: 'Administrar restaurantes', icon: Store, admin: true },
+  { path: ROUTE_PATHS.adminProductos, label: 'Administrar productos', icon: ShoppingBag, admin: true },
 ]

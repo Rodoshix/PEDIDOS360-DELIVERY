@@ -2,6 +2,8 @@
 export function createPreviewApi() {
   let scenario = 'normal'
   const users = new Map()
+  let restaurants = [{ id: 1, nombre: 'Burger House de prueba', descripcion: 'Catálogo ficticio para revisión visual.', direccion: 'Calle de prueba 123', estado: 'ABIERTO' }]
+  let products = [{ id: 1, restauranteId: 1, nombre: 'Hamburguesa de prueba', descripcion: 'Producto ficticio.', precio: 6990, categoria: 'Principal', disponible: true }]
   function user(key) {
     if (!users.has(key)) users.set(key, {
       profile: { id: key === 'B' ? 2 : 1, nombre: key === 'B' ? 'Bea' : 'Alex', apellido: 'Ejemplo', email: `${key.toLowerCase()}@example.test`, telefono: null,
@@ -21,8 +23,27 @@ export function createPreviewApi() {
     const key = req.headers.authorization === 'Bearer preview-only-B' ? 'B' : 'A'
     const state = user(key)
     const send = (status, body) => { res.statusCode = status; res.setHeader('Content-Type', 'application/json'); res.end(body === undefined ? undefined : JSON.stringify(body)) }
+    if (req.url === '/api/restaurantes/admin/acceso') return send(key === 'A' ? 204 : 403)
     if (scenario === 'slow') await new Promise(resolve => setTimeout(resolve, 1500))
     if (scenario === 'error') return send(503, {})
+    const catalog = req.url.match(/^\/api\/(restaurantes|productos)(?:\/(\d+))?(?:\/disponibilidad\?disponible=(true|false))?$/)
+    const restaurantProducts = req.url.match(/^\/api\/productos\/restaurante\/(\d+)$/)
+    if (restaurantProducts) return send(200, scenario === 'empty' ? [] : products.filter(row => row.restauranteId === Number(restaurantProducts[1])))
+    if (catalog) {
+      const [, kind, id, availability] = catalog
+      let rows = kind === 'restaurantes' ? restaurants : products
+      if (req.method === 'GET') return id ? send(200, rows.find(row => row.id === Number(id))) : send(200, scenario === 'empty' ? [] : rows)
+      if (key !== 'A') return send(403, {})
+      if (req.method === 'DELETE') { rows.find(row => row.id === Number(id)).estado = 'INACTIVO'; return send(204) }
+      if (req.method === 'PATCH') { const value = rows.find(row => row.id === Number(id)); value.disponible = availability === 'true'; return send(200, value) }
+      let text = ''; for await (const chunk of req) text += chunk
+      try {
+        const body = JSON.parse(text), value = { ...body, id: id ? Number(id) : Math.max(0, ...rows.map(row => row.id)) + 1 }
+        rows = id ? rows.map(row => row.id === Number(id) ? value : row) : [...rows, value]
+        if (kind === 'restaurantes') restaurants = rows; else products = rows
+        return send(id ? 200 : 201, value)
+      } catch { return send(400, {}) }
+    }
     if (req.url === '/api/usuarios/me' && req.method === 'GET') return send(scenario === 'empty' && !state.created ? 404 : 200, state.profile)
     if ((req.url === '/api/usuarios' && req.method === 'POST') || (req.url === `/api/usuarios/${state.profile.id}` && req.method === 'PUT')) {
       let text = ''; for await (const chunk of req) text += chunk
