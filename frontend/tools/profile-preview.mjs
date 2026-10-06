@@ -1,14 +1,17 @@
 import { fileURLToPath } from 'node:url'
 import { createServer } from 'vite'
+import { createPreviewApi } from './fixtures/previewApi.mjs'
 
 // Banco visual separado del arranque de la aplicación: solo loopback y datos ficticios.
 // No entra en el build de index.html, no instancia MSAL ni carga un perfil real.
 const server = await createServer({
   root: fileURLToPath(new URL('../', import.meta.url)),
   server: { host: '127.0.0.1', port: 0, strictPort: false },
+  define: process.argv.includes('--mock-api') ? { 'import.meta.env.VITE_API_BASE_URL': JSON.stringify('/api') } : {},
   plugins: [{
     name: 'profile-preview-only',
     configureServer(vite) {
+      if (process.argv.includes('--mock-api')) vite.middlewares.use(createPreviewApi())
       vite.middlewares.use(async (req, res, next) => {
         if (req.url !== '/') return next()
         try {
@@ -16,7 +19,7 @@ const server = await createServer({
             <html lang="es"><head><meta charset="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <title>Mi cuenta y Carrito — banco de pruebas</title></head><body>
-            <div id="root" data-preview-route="${process.argv.includes('--cart') ? '/carrito?tab=productos#resumen' : '/mi-cuenta?tab=datos#contacto'}"></div><script type="module" src="/tools/fixtures/ProfilePreview.jsx"></script>
+            <div id="root" data-mock-api="${process.argv.includes('--mock-api')}" data-preview-route="${process.argv.includes('--cart') ? '/carrito?tab=productos#resumen' : '/mi-cuenta?tab=datos#contacto'}"></div><script type="module" src="/tools/fixtures/ProfilePreview.jsx"></script>
             </body></html>`)
           res.setHeader('Content-Type', 'text/html; charset=utf-8')
           res.end(html)

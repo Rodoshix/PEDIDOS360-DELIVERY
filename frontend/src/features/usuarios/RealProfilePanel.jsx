@@ -4,6 +4,8 @@ import { useAuthSession } from '../../auth/useAuthSession.js'
 import { createProfileController, ProfileError } from './profileService.js'
 import { createProfileHttpAdapter } from './profileHttpAdapter.js'
 import ProfileDetails from './ProfileDetails.jsx'
+import LoadingState from '../../components/feedback/LoadingState.jsx'
+import Toast from '../../components/feedback/Toast.jsx'
 const ProfileForm = lazy(() => import('./ProfileForm.jsx'))
 
 export default function RealProfilePanel() {
@@ -47,7 +49,7 @@ export default function RealProfilePanel() {
     if (await controller.save(draft)) {
       setEditing(false)
       setFormVisible(false)
-      setMessage('Perfil guardado en Usuarios.')
+      setMessage('Perfil actualizado.')
       heading.current?.focus()
     }
   }
@@ -62,10 +64,10 @@ export default function RealProfilePanel() {
 
   return (
     <section className="profile-card" aria-labelledby="profile-heading" aria-busy={loading || saving}>
-      <p className="profile-badge">Usuarios · API real</p>
+      <p className="profile-badge">Datos de contacto</p>
       <h2 ref={heading} tabIndex={-1} id="profile-heading">Perfil de Pedidos360</h2>
-      <p className="account-note">Consulta autenticada mediante el BFF. No se utilizan perfiles de ejemplo.</p>
-      {loading ? <p role="status">Consultando tu perfil…</p> : queryFailed ? (
+      <p className="account-note">Tus datos para Pedidos360. Puedes consultarlos y mantenerlos actualizados desde aquí.</p>
+      {loading ? <LoadingState label="Consultando tu perfil…" /> : queryFailed ? (
         <div ref={errorHeading} tabIndex={-1} role="alert" className="profile-form__error-summary">
           <p>{state.error.message}</p>
           {state.error.code === 'INTERACTION_REQUIRED'
@@ -77,7 +79,7 @@ export default function RealProfilePanel() {
       ) : showForm ? (
         <>
           {!state.profile && <p role="status" className="profile-notice">{state.operation === 'save' && state.error ? 'No se pudo confirmar el estado del perfil tras el intento de guardado.' : 'La última consulta no encontró un perfil registrado en Usuarios.'}</p>}
-          <Suspense fallback={<p role="status">Preparando formulario…</p>}>
+          <Suspense fallback={<LoadingState label="Preparando formulario…" compact />}>
             <ProfileForm mode="real" initialProfile={state.profile} saving={saving} onApply={save} onCancel={cancel}
               submitError={state.operation === 'save' ? state.error : null} />
           </Suspense>
@@ -95,7 +97,7 @@ export default function RealProfilePanel() {
           <button type="button" className="button button--secondary" onClick={() => { setMessage(''); setFormVisible(true) }}>Mostrar formulario de perfil</button>
         </>
       ) : null}
-      {message && <p role="status" className="profile-notice">{message}</p>}
+      {message && <Toast message={message} returnFocusRef={heading} onDismiss={() => setMessage('')} />}
       {!loading && !saving && !showForm && !queryFailed && <button type="button" className="button button--secondary" onClick={() => { setMessage(''); void controller.load() }}>Actualizar consulta</button>}
       <p className="account-note">Tras un error de guardado, conserva una copia de tu borrador y consulta el estado actual antes de repetir. Autorizar con Microsoft puede requerir salir de esta vista.</p>
     </section>

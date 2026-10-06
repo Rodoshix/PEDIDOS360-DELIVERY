@@ -1,8 +1,10 @@
 import { formatClp } from './cartMoney.js'
 import CartQuantityForm from './CartQuantityForm.jsx'
+import { Link } from 'react-router'
+import { ROUTE_PATHS } from '../../routes/routePaths.js'
 
 // Respeta los importes de CarritoResponse. Edición opcional; sin envío ni descuentos inventados.
-export default function CartSummary({ cart, onQuantity, onRemove, disabled = false, saving = false, mode = 'demo' }) {
+export default function CartSummary({ cart, onQuantity, onRemove, disabled = false, saving = false, mode = 'demo', actions }) {
   return (
     <div className="cart-layout">
       <section className="cart-card" aria-labelledby="cart-items-heading">
@@ -11,6 +13,7 @@ export default function CartSummary({ cart, onQuantity, onRemove, disabled = fal
           <div role="status">
             <h3>{mode === 'real' ? 'Tu carrito está vacío' : 'Carrito vacío en este ejemplo'}</h3>
             <p>{mode === 'real' ? 'Elige un restaurante y agrega productos del catálogo.' : 'Este escenario no contiene productos. No describe tu carrito real.'}</p>
+            {mode === 'real' && <Link className="button button--primary" to={ROUTE_PATHS.restaurantes}>Explorar restaurantes</Link>}
           </div>
         ) : <ul className="cart-items">
           {cart.items.map(item => (
@@ -31,6 +34,7 @@ export default function CartSummary({ cart, onQuantity, onRemove, disabled = fal
       <aside className="cart-card" aria-labelledby="cart-total-heading">
         <h2 id="cart-total-heading">{mode === 'real' ? 'Resumen de tu carrito' : 'Resumen del ejemplo'}</h2>
         <dl className="cart-total"><dt>Total de productos (CLP)</dt><dd>{formatClp(cart.total)}</dd></dl>
+        {actions}
         <p>No incluye envío ni descuentos. No reserva stock ni confirma un pedido.</p>
         <p>Todos los productos de un carrito deben pertenecer al mismo restaurante.</p>
       </aside>

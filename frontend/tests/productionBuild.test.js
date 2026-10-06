@@ -10,6 +10,7 @@ test('producción incluye consulta de perfil real y excluye adaptadores y panele
   assert.match(modules, /\/profileHttpAdapter\.js/)
   assert.match(modules, /\/ProfileForm\.jsx/)
   assert.doesNotMatch(modules, /\/(ProfilePanel|ProfilePending|ProfilePreview)\.jsx/)
+  assert.doesNotMatch(modules, /\/tools\/fixtures\//)
   assert.doesNotMatch(modules, /\/(profileDemo|profileDemoAdapter)\.js/)
   const code = chunks.map(chunk => chunk.code).join('\n')
   assert.match(code, /Consultando tu perfil/)
