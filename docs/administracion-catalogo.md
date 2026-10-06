@@ -52,29 +52,41 @@ El usuario confirmó el recorrido sobre el stack Docker real de esta rama en `ht
 
 Esta evidencia acredita la validación funcional manual local reportada por el usuario. No incluye captura individual de códigos HTTP, inspección de claims ni observación de tráfico que demuestre ausencia de llamadas upstream en cada rechazo. Tampoco sustituye la prueba desplegada en AWS. Listados, filtro por restaurante y detalle tienen pruebas locales automatizadas/visuales; no fueron enumerados individualmente en el informe manual final.
 
+### Validación desplegada con Entra real + AWS real — 2026-10-06
+
+Frontend y BFF actualizados desde `a95cecb8dc16cf61fcaf0428ec090a609e477381`, tag inmutable del mismo SHA. Origen: `https://l7wtit9zmj.execute-api.us-east-1.amazonaws.com`.
+
+- Frontend: `sha256:46c0a569d51937242600e98c59f66e8e5c5b90e9dfd5fea45ac3b9674a6ed832`.
+- BFF: `sha256:2f6ebb2391ebe3c82ea9531d98bca2acfdbb0aa8cf497a4826dbed544fe13c9a`.
+- Auditoría técnica del despliegue: ambos healthy, BFF UP con TLS verificado, frontend público 200, API sin token 401, catálogos internos Restaurantes/Productos 200 y SELECT 1 en ambas RDS con TLS verify-full. Sin errores críticos en logs. Los otros seis servicios conservaron IDs y tiempos de arranque. Overrides nuevo/rollback validados; imágenes previas conservadas. SSM de despliegue: `fa17c342-8821-4c34-8ff3-b72bad3d159c` (Success).
+- El usuario confirmó personalmente ADMIN: acceso, crear/editar/desactivar restaurante, crear/editar producto, cambiar disponibilidad y persistencia tras refrescar, todo OK.
+- El usuario confirmó CLIENTE: catálogo normal, administración restringida y escrituras administrativas rechazadas, todo OK. Sin errores funcionales detectados.
+
+Esta es evidencia manual del recorrido real desplegado, complementada por comprobaciones técnicas y pruebas automatizadas. No se afirma captura de tokens/claims, códigos individuales de rechazos ni trazas upstream del recorrido humano. Listados y filtro por restaurante se acreditan con las pruebas locales existentes; el informe AWS no los enumera como acciones administrativas independientes.
+
 | Criterio #50 | Estado |
 |---|---|
-| Pantalla de Restaurantes | Implementada |
-| Listar Restaurantes | Implementado; probado localmente; comprobación manual individual no registrada |
-| Crear Restaurante | Validación manual local con Entra real: OK; AWS pendiente |
-| Editar Restaurante | Validación manual local con Entra real: OK; AWS pendiente |
-| Desactivar Restaurante | Validación manual local con Entra real: OK; AWS pendiente |
-| Pantalla de Productos | Implementada |
-| Listar Productos | Implementado; probado localmente; comprobación manual individual no registrada |
-| Productos por restaurante | Implementado; probado localmente; comprobación manual individual no registrada |
-| Crear Producto | Validación manual local con Entra real: OK; AWS pendiente |
-| Editar Producto | Validación manual local con Entra real: OK; AWS pendiente |
-| Cambiar disponibilidad | Validación manual local con Entra real: OK; AWS pendiente |
-| Campos obligatorios | Validación automática local |
-| Precio válido | Validación automática local |
-| Carga/vacío/error | Implementados y probados localmente |
-| Compilación frontend | `npm run build` correcto |
+| Pantalla de Restaurantes | Acreditado: acceso ADMIN real local/AWS |
+| Listar Restaurantes | Acreditado: pruebas locales; no enumerado individualmente en informe manual AWS |
+| Crear Restaurante | Acreditado: validación manual local y AWS con Entra real |
+| Editar Restaurante | Acreditado: validación manual local y AWS con Entra real |
+| Desactivar Restaurante | Acreditado: validación manual local y AWS con Entra real |
+| Pantalla de Productos | Acreditado: operaciones ADMIN reales local/AWS |
+| Listar Productos | Acreditado: pruebas locales; no enumerado individualmente en informe manual AWS |
+| Productos por restaurante | Acreditado: pruebas locales; no enumerado individualmente en informe manual AWS |
+| Crear Producto | Acreditado: validación manual local y AWS con Entra real |
+| Editar Producto | Acreditado: validación manual local y AWS con Entra real |
+| Cambiar disponibilidad | Acreditado: validación manual local y AWS con Entra real |
+| Campos obligatorios | Acreditado: validación automática local |
+| Precio válido | Acreditado: validación automática local |
+| Carga/vacío/error | Acreditado: pruebas locales de estados |
+| Compilación frontend | Acreditado: build local y Docker correctos |
 
-**No cerrar #50 todavía.** La validación manual local con Entra real está completada; falta ejecutar el recorrido desplegado en AWS con los microservicios/RDS actuales. Se recomienda pasar el PR #62 a ready para revisión y realizar la prueba AWS después del merge aprobado, manteniendo #50 abierto hasta registrar esa evidencia. No se despliega ni se hace merge automáticamente.
+**Los 15 criterios de #50 quedan acreditados con la evidencia combinada.** Validación local y AWS con Entra real completadas. Se recomienda revisar y hacer merge del PR #62 y luego cerrar #50 como completed. La revisión visual del catálogo cliente y Fase 6 permanecen fuera del alcance. No se realiza merge ni cierre automático; #60 permanece abierto.
 
 Validación 2026-10-06: lint limpio, 223 tests frontend y 58 tests BFF pasan. Build correcto; administración cargada en un chunk diferido (3.99 kB gzip), principal 175.58 kB gzip frente a 172.95 kB de develop (+2.63 kB). Sin nuevas dependencias. Revisión visual local: creación/edición/desactivación, detalle, disponibilidad, filtro vacío, rechazo CLIENTE, dialogs y confirmación de descarte; anchos 1440, 390 y 320, sin desbordamiento horizontal de página. Error upstream controlado y consola sin excepciones en la revisión final. Se conserva la advertencia previa de chunk principal >500 kB. Fixtures excluidos del build por el test de producción.
 
-## Prueba desplegada en AWS antes del cierre
+## Procedimiento para repetir la validación AWS
 
 1. Desplegar imágenes de esta rama para BFF/frontend con el procedimiento del entorno vigente, conservando Entra y TLS. No ampliar Terraform Entrega 1.
 2. Con cuenta que tenga ADMIN en la API, abrir ambas rutas y comprobar el permiso (204). Con CLIENTE comprobar ausencia de navegación y 403 en accesos/escrituras; sin sesión comprobar 401.
@@ -85,4 +97,4 @@ Validación 2026-10-06: lint limpio, 223 tests frontend y 58 tests BFF pasan. Bu
 7. Verificar campos inválidos, expiración/consentimiento de token, fallos de consulta y escritura incierta sin reenvío automático.
 8. Probar escritorio/móvil y el flujo de catálogo/carrito existente. Registrar IDs de datos de prueba y resultados sin guardar tokens ni secretos.
 
-Solo después de esta evidencia y resolución de cualquier fallo puede recomendarse cerrar #50.
+La validación funcional AWS anterior fue completada sin fallos reportados. Este procedimiento se conserva para repetir las comprobaciones; no implica que todas sus variantes negativas se ejecutaron manualmente en AWS.
