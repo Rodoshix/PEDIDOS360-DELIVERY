@@ -42,29 +42,39 @@ Pruebas HTTP del BFF con JWT firmados de prueba: ADMIN, CLIENTE, scope incorrect
 
 Pruebas frontend: adapters, validaciones, carga/vacío/error, concurrencia, filtro antiguo, abortado, navegación por permiso y formulario bloqueado. Banco visual loopback `npm run preview:ui`: cuenta A ADMIN ficticia, B CLIENTE ficticia. Las respuestas del banco solo existen en tools y quedan fuera del build; no reemplazan el backend en producción.
 
+### Validación manual local con Entra real — 2026-10-06
+
+El usuario confirmó el recorrido sobre el stack Docker real de esta rama en `http://localhost:5180`, con dos sesiones separadas: ADMIN en incógnito y CLIENTE en navegador normal. No se utilizaron mocks ni el banco visual en este recorrido.
+
+- ADMIN: acceso a administración, creación/edición/desactivación de restaurante, creación/edición/cambio de disponibilidad de producto y persistencia después de refrescar, todos correctos.
+- CLIENTE: acceso/operaciones administrativas restringidos y escrituras rechazadas según lo esperado.
+- El usuario no detectó errores funcionales durante la prueba. No se registraron tokens ni secretos.
+
+Esta evidencia acredita la validación funcional manual local reportada por el usuario. No incluye captura individual de códigos HTTP, inspección de claims ni observación de tráfico que demuestre ausencia de llamadas upstream en cada rechazo. Tampoco sustituye la prueba desplegada en AWS. Listados, filtro por restaurante y detalle tienen pruebas locales automatizadas/visuales; no fueron enumerados individualmente en el informe manual final.
+
 | Criterio #50 | Estado |
 |---|---|
 | Pantalla de Restaurantes | Implementada |
-| Listar Restaurantes | Implementado; validación real pendiente |
-| Crear Restaurante | Implementado; validación real pendiente |
-| Editar Restaurante | Implementado; validación real pendiente |
-| Desactivar Restaurante | Implementado; validación real pendiente |
+| Listar Restaurantes | Implementado; probado localmente; comprobación manual individual no registrada |
+| Crear Restaurante | Validación manual local con Entra real: OK; AWS pendiente |
+| Editar Restaurante | Validación manual local con Entra real: OK; AWS pendiente |
+| Desactivar Restaurante | Validación manual local con Entra real: OK; AWS pendiente |
 | Pantalla de Productos | Implementada |
-| Listar Productos | Implementado; validación real pendiente |
-| Productos por restaurante | Implementado; validación real pendiente |
-| Crear Producto | Implementado; validación real pendiente |
-| Editar Producto | Implementado; validación real pendiente |
-| Cambiar disponibilidad | Implementado; validación real pendiente |
+| Listar Productos | Implementado; probado localmente; comprobación manual individual no registrada |
+| Productos por restaurante | Implementado; probado localmente; comprobación manual individual no registrada |
+| Crear Producto | Validación manual local con Entra real: OK; AWS pendiente |
+| Editar Producto | Validación manual local con Entra real: OK; AWS pendiente |
+| Cambiar disponibilidad | Validación manual local con Entra real: OK; AWS pendiente |
 | Campos obligatorios | Validación automática local |
 | Precio válido | Validación automática local |
 | Carga/vacío/error | Implementados y probados localmente |
 | Compilación frontend | `npm run build` correcto |
 
-**No cerrar #50 todavía.** Falta ejecutar el recorrido desplegado con tokens reales de Entra y los microservicios/RDS actuales. No se despliega ni se hace merge automáticamente.
+**No cerrar #50 todavía.** La validación manual local con Entra real está completada; falta ejecutar el recorrido desplegado en AWS con los microservicios/RDS actuales. Se recomienda pasar el PR #62 a ready para revisión y realizar la prueba AWS después del merge aprobado, manteniendo #50 abierto hasta registrar esa evidencia. No se despliega ni se hace merge automáticamente.
 
 Validación 2026-10-06: lint limpio, 223 tests frontend y 58 tests BFF pasan. Build correcto; administración cargada en un chunk diferido (3.99 kB gzip), principal 175.58 kB gzip frente a 172.95 kB de develop (+2.63 kB). Sin nuevas dependencias. Revisión visual local: creación/edición/desactivación, detalle, disponibilidad, filtro vacío, rechazo CLIENTE, dialogs y confirmación de descarte; anchos 1440, 390 y 320, sin desbordamiento horizontal de página. Error upstream controlado y consola sin excepciones en la revisión final. Se conserva la advertencia previa de chunk principal >500 kB. Fixtures excluidos del build por el test de producción.
 
-## Prueba real antes del cierre
+## Prueba desplegada en AWS antes del cierre
 
 1. Desplegar imágenes de esta rama para BFF/frontend con el procedimiento del entorno vigente, conservando Entra y TLS. No ampliar Terraform Entrega 1.
 2. Con cuenta que tenga ADMIN en la API, abrir ambas rutas y comprobar el permiso (204). Con CLIENTE comprobar ausencia de navegación y 403 en accesos/escrituras; sin sesión comprobar 401.
