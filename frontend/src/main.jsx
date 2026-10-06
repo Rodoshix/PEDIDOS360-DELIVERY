@@ -7,6 +7,7 @@ import { initializeMsal } from './auth/msalClient.js'
 import AuthStartupStatus from './auth/AuthStartupStatus.jsx'
 import { AuthSessionProvider } from './auth/AuthSessionProvider.jsx'
 import './styles/global.css'
+import './styles/system.css'
 import App from './App.jsx'
 import { ApiAccessError } from './auth/ApiAccessError.js'
 
