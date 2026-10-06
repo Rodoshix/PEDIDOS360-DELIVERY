@@ -7,8 +7,12 @@ import Dialog from '../components/ui/Dialog.jsx'
 import Navigation, { Brand } from '../components/layout/Navigation.jsx'
 import { navigationItems } from '../components/layout/navigationItems.js'
 import { ROUTE_PATHS } from '../routes/routePaths.js'
+import { AdminAccessProvider } from '../features/admin/AdminAccess.jsx'
 
 export default function MainLayout() {
+  return <AdminAccessProvider><WorkspaceLayout /></AdminAccessProvider>
+}
+function WorkspaceLayout() {
   const [compact, setCompact] = useState(false)
   const [menuDestination, setMenuDestination] = useState(null)
   const location = useLocation()

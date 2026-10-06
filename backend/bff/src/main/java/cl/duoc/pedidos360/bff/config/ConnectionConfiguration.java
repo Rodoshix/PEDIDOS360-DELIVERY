@@ -38,7 +38,7 @@ public class ConnectionConfiguration {
                 : Arrays.stream(configured.split(",", -1)).map(String::strip).map(value -> origin(value).toString()).toList();
         var cors = new CorsConfiguration();
         cors.setAllowedOrigins(origins);
-        cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         cors.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         cors.setExposedHeaders(List.of("Location"));
         cors.setAllowCredentials(false);

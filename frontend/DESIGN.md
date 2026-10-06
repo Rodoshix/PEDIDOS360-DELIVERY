@@ -44,8 +44,8 @@ El banco `npm run preview:profile` permite revisar layout y sesión ficticia sin
 - Fase 7: cargas, errores, vacíos, confirmaciones y toasts en las superficies anteriores.
 - Fase 8: responsive, teclado, foco, contrastes y pulido de estas superficies.
 
-**Fase 4 pendiente: Restaurantes/Productos y administración.** No integrar I2 (#50) en esta rama. Retomar después del merge en una rama nueva dedicada.
+**Fase 4 / I2 (#50): administración implementada en `feature/i2-50-admin-restaurantes-productos-v2`.** Listados, detalle, formularios y confirmaciones reutilizan el sistema visual. Rutas `/admin/restaurantes` y `/admin/productos`, visibles solo después de comprobar permiso con BFF; detalle en dialog y filtro por restaurante. Validación real desplegada pendiente antes de cerrar #50. Ver `docs/administracion-catalogo.md`.
 
 **Fase 6 pendiente: Pedidos/Pagos.** No modificar lógica ni reorganizar estas pantallas antes del trabajo de RabbitMQ de Entrega 2. Retomar después del merge en otra rama nueva dedicada.
 
-Las fases 7 y 8 se consideran completas únicamente para el alcance aprobado. Las pantallas de fases 4 y 6 conservan la composición existente y heredan solo la base visual de Fase 1. El issue general #60 debe permanecer abierto después de este PR; no usar palabras de autocierre en su descripción.
+Las fases 7 y 8 se aplican también a las nuevas superficies administrativas de Fase 4. El catálogo de clientes conserva su flujo actual y Fase 6 sigue fuera de esta rama. El issue general #60 permanece abierto; no usar palabras de autocierre en el PR.

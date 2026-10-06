@@ -78,6 +78,10 @@ public class ComercioClient {
     }
 
     static boolean allowed(String method, String path) {
+        if ("POST".equals(method) && Set.of("/restaurantes", "/productos").contains(path)) return true;
+        if ("PUT".equals(method) && path.matches("/(?:restaurantes|productos)/[1-9][0-9]*")) return true;
+        if ("DELETE".equals(method) && path.matches("/restaurantes/[1-9][0-9]*")) return true;
+        if ("PATCH".equals(method) && path.matches("/productos/[1-9][0-9]*/disponibilidad\\?disponible=(?:true|false)")) return true;
         if ("POST".equals(method) && Set.of("/pedidos", "/pagos").contains(path)) return true;
         if ("PUT".equals(method) && path.matches("/(?:pedidos/[1-9][0-9]*/estado|pagos/[1-9][0-9]*/aprobar)")) return true;
         if ("GET".equals(method) && path.matches("/(?:pedidos(?:/me|/[1-9][0-9]*)?|pagos/(?:pedido/)?[1-9][0-9]*)")) return true;
