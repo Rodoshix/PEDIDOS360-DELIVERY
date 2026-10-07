@@ -233,3 +233,11 @@ No cambiar sin coordinación:
 - modo de corte HTTP → RabbitMQ;
 - vhosts;
 - contrato compartido entre Pagos y Pedidos.
+
+## 12. Ampliación posterior aprobada por requisito docente
+
+Las secciones anteriores conservan el diseño y semántica del núcleo Pago → Pedido. El inventario completo, bindings, TTL, request/reply y requisitos de Carrito están en [la adenda](ADENDA-RABBITMQ-6-SERVICIOS.md), fuente de verdad de la ampliación.
+
+Topología objetivo: 21 queues (6 funcionales, 8 retries, 6 DLQ, 1 respuesta BFF) y 7 exchanges personalizados direct. Mantener los tres p360.pedidos.*; añadir p360.commands, p360.queries, p360.retry y p360.dlx. No migración destructiva ni p360.events.
+
+Pedidos conserva retry 5/30/120. Otros cinco dominios: un retry corto configurable (inicial 1 s) y DLQ propia. Cuatro consultas existentes cambian solo transporte interno; Carrito requiere outbox en Pedidos, vinculación verificada y versión. Las políticas nuevas no están implementadas. HTTP predeterminado y corte exclusivo por flujo en #70; el scheduler HTTP puede seguir atendiendo históricos de modo HTTP según NUCLEO-RABBITMQ.md.

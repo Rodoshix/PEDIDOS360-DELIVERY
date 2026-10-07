@@ -131,3 +131,13 @@ Si la misión requiere cambiar un contrato compartido o un componente asignado a
   - riesgos;
   - pendientes;
   - evidencias.
+
+## Ampliación docente posterior aprobada
+
+#70 integrará Pago → Pedido, cuatro consultas request/reply y Pedido → Carrito solo cuando estén listos. Flags por flujo, exclusión de doble ejecución y rollback; HTTP público preservado. Coordinar base común/BFF y responsables nuevos, sin desarrollar features grandes directamente en develop.
+
+Fuente: [adenda](../ADENDA-RABBITMQ-6-SERVICIOS.md) y [plan](../PLAN-ACTIVIDADES.md). Esta actualización no implementa ni crea ramas de trabajo.
+
+### Trazabilidad de trabajos adicionales
+
+Base común #77; Usuarios #78; Restaurantes #79; Productos #80; Pagos query #81; Carrito/Pedidos #82. Responsables de ejecución nuevos por confirmar; coordinación I1/I5. #68 sigue separado; #69 plataforma; #70 integración.

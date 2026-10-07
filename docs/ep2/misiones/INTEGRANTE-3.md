@@ -143,3 +143,13 @@ Si la misión requiere cambiar un contrato compartido o un componente asignado a
   - riesgos;
   - pendientes;
   - evidencias.
+
+## Ampliación docente posterior aprobada
+
+#68 sigue exclusivamente sobre reliability avanzada de Pedidos (5/30/120, ACK/NACK, clasificación, DLQ y replay). No absorbe consumers adicionales. Reliability simple/request-reply tiene issue propio y ownership de ejecución por confirmar.
+
+Fuente: [adenda](../ADENDA-RABBITMQ-6-SERVICIOS.md) y [plan](../PLAN-ACTIVIDADES.md). Esta actualización no implementa ni crea ramas de trabajo.
+
+### Trazabilidad de trabajos adicionales
+
+Base común #77; Usuarios #78; Restaurantes #79; Productos #80; Pagos query #81; Carrito/Pedidos #82. Responsables de ejecución nuevos por confirmar; coordinación I1/I5. #68 sigue separado; #69 plataforma; #70 integración.

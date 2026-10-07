@@ -140,3 +140,13 @@ Si la misión requiere cambiar un contrato compartido o un componente asignado a
   - riesgos;
   - pendientes;
   - evidencias.
+
+## Ampliación docente posterior aprobada
+
+#69 prepara el inventario aprobado de 21 queues/7 exchanges, bindings, TTL, DLQ, policies, permisos, persistencia, health y recursos. Preservar exchanges de Pedidos y revisar compatibilidad de tipos/argumentos antes de declarar. No activar cluster ni AWS desde esta ampliación.
+
+Fuente: [adenda](../ADENDA-RABBITMQ-6-SERVICIOS.md) y [plan](../PLAN-ACTIVIDADES.md). Esta actualización no implementa ni crea ramas de trabajo.
+
+### Trazabilidad de trabajos adicionales
+
+Base común #77; Usuarios #78; Restaurantes #79; Productos #80; Pagos query #81; Carrito/Pedidos #82. Responsables de ejecución nuevos por confirmar; coordinación I1/I5. #68 sigue separado; #69 plataforma; #70 integración.
