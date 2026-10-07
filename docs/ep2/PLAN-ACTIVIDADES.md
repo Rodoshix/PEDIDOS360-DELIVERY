@@ -21,8 +21,8 @@ Done
 | [#65](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/65) | Transactional Outbox y Publisher en Pagos | Integrante 1 | #64 | Done |
 | [#66](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/66) | Consumer principal de confirmación en Pedidos | Integrante 1 | #64 | Done |
 | [#67](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/67) | RabbitAdmin | Integrante 2 | #64 / #69 | Ready |
-| [#68](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/68) | ACK/NACK, Retry, DLX/DLQ y pruebas de fallos | Integrante 3 | #66 / #69 | Ready |
-| [#69](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/69) | Plataforma RabbitMQ | Integrante 4 | #64 / adenda integrada; coordinar #77 | Ready |
+| [#68](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/68) | ACK/NACK, Retry, DLX/DLQ y pruebas de fallos | Integrante 3 | #66; policies de plataforma coordinadas con #69 | Done — PR #84 integrado |
+| [#69](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/69) | Plataforma RabbitMQ | Integrante 4 | #64 / adenda PR #83 / núcleo PR #84; coordinar #77 | Review — plataforma local en esta rama, sin merge |
 | [#70](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/70) | Integración y corte HTTP → RabbitMQ | Integrante 5 | #65 / #66 / #68 / #69 / #77–#82 | Backlog |
 | [#71](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/71) | Integración AWS | Integrante 5 | #70 | Backlog |
 | [#72](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/72) | Pruebas E2E y regresión de Entrega 1 | Integrante 3 + Integrante 5 | #70 / #71 | Backlog |
@@ -108,5 +108,10 @@ Fuente: [adenda aprobada](ADENDA-RABBITMQ-6-SERVICIOS.md). Objetivo 21 queues/7 
 | [#82](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/82) | EP2-17 — Carrito RabbitMQ y coordinación desde Pedidos | Ejecución por confirmar; coordinación I1/I5 | #77 para base de mensajería/handoff simple; #69 plataforma suficiente; contrato/vinculación aprobados. Outbox de Pedidos es entregable de este issue, no dependencia de sí mismo. | Backlog |
 
 #68 conserva reliability avanzada de Pedidos. #69 plataforma ampliada; #70 cortes graduales. #77 entrega base simple separada. No reasignar misiones anteriores sin confirmar responsable.
+
+Estado 7 de octubre de 2026: #68 CLOSED/COMPLETED, PR #84 integrado en ff40c7d;
+#69 continúa OPEN hasta revisión/integración, con plataforma local y evidencia en
+[PLATAFORMA-RABBITMQ.md](PLATAFORMA-RABBITMQ.md). #77–#82 conservan alcance y
+dependencias; #70 no fue iniciado ni se cambiaron flags del stack. AWS final en #71.
 
 Orden: adenda integrada → #77 y #69 coordinados → #78/#79/#80/#81; #68 en paralelo. #82 requiere contrato/vinculación revisados, base #77 y plataforma suficiente #69; su outbox es entregable propio. #70 depende de todas las piezas para cierre completo. Las ramas de los issues son sugerencias futuras; no creadas aquí. Seguimiento mediante Issues, PRs y este plan.

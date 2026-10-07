@@ -145,6 +145,16 @@ Si la misión requiere cambiar un contrato compartido o un componente asignado a
 
 #69 prepara el inventario aprobado de 21 queues/7 exchanges, bindings, TTL, DLQ, policies, permisos, persistencia, health y recursos. Preservar exchanges de Pedidos y revisar compatibilidad de tipos/argumentos antes de declarar. No activar cluster ni AWS desde esta ampliación.
 
+## Entrega local de #69
+
+Implementación, matrices y validación en [PLATAFORMA-RABBITMQ.md](../PLATAFORMA-RABBITMQ.md)
+y infrastructure/rabbitmq/. Broker aislado reproducible, default quorum, policies
+exactas, credenciales por rol sin configure para aplicaciones, init con preflight
+aditivo, health y persistencia. No consumers adicionales ni corte HTTP.
+No activar platform-ready en el stack antes de #70. No borrar/recrear/migrar queues
+si preflight bloquea: reportar incompatibilidad y acordar procedimiento manual.
+No implementar AWS #71 ni cluster #73 sin requisito separado.
+
 Fuente: [adenda](../ADENDA-RABBITMQ-6-SERVICIOS.md) y [plan](../PLAN-ACTIVIDADES.md). Esta actualización no implementa ni crea ramas de trabajo.
 
 ### Trazabilidad de trabajos adicionales
