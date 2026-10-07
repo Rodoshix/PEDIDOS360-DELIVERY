@@ -14,14 +14,14 @@ public class PedidoConfirmacionConsumer {
     public PedidoConfirmacionConsumer(PedidoConfirmacionProcessor processor,PedidoConfirmacionFailureHandler failures) {
         this.processor=processor; this.failures=failures;
     }
-    @RabbitListener(queues="${pedidos360.messaging.queues.confirmacion}",containerFactory="confirmacionListenerFactory")
+    @RabbitListener(id=ConfirmacionConsumerRecovery.LISTENER_ID, autoStartup="${pedidos360.messaging.reliability.platform-ready:false}", queues="${pedidos360.messaging.queues.confirmacion}",containerFactory="confirmacionListenerFactory")
     public void consume(Message message,Channel channel) throws java.io.IOException {
         java.util.UUID id;
-        try { id=processor.process(message); }
+        try { ConfirmacionRetryPublisher.retryCount(message); id=processor.process(message); }
         catch (Exception failure) { failures.handle(message,channel,failure); return; }
         try { channel.basicAck(message.getMessageProperties().getDeliveryTag(),false); }
-        catch (java.io.IOException uncertainAck) {
-            failures.handle(message,channel,uncertainAck);
+        catch (Exception uncertainAck) {
+            failures.handle(message,channel,new java.io.IOException("ACK settlement uncertain",uncertainAck));
             return;
         }
         LoggerFactory.getLogger(getClass()).info("Confirmation messageId={} ACK",id);

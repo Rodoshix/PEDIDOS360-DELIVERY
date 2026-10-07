@@ -153,3 +153,7 @@ Fuente: [adenda](../ADENDA-RABBITMQ-6-SERVICIOS.md) y [plan](../PLAN-ACTIVIDADES
 ### Trazabilidad de trabajos adicionales
 
 Base común #77; Usuarios #78; Restaurantes #79; Productos #80; Pagos query #81; Carrito/Pedidos #82. Responsables de ejecución nuevos por confirmar; coordinación I1/I5. #68 sigue separado; #69 plataforma; #70 integración.
+
+## Entrega #68: política real y dependencias
+
+Ver [RELIABILITY-RABBITMQ.md](../RELIABILITY-RABBITMQ.md). Sustituye el bean provisional; pruebas con RabbitMQ/PostgreSQL y herramienta Java de replay manual. Las policies/tipos compatibles quedan a #69; listener platform-ready=false y modo HTTP por defecto hasta validación/corte en #70. No incluye consumers ni base simple #77–#82.
