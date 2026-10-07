@@ -1,0 +1,30 @@
+name: pedidos360-rabbitmq-local
+services:
+  rabbitmq:
+    image: rabbitmq:4.1.8-management-alpine@sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_NODENAME: rabbit@rabbitmq
+      RABBITMQ_DEFAULT_USER: p360-bootstrap
+      RABBITMQ_DEFAULT_PASS: ${BOOTSTRAP_PASSWORD:?Generate BOOTSTRAP_PASSWORD in .env}
+      RABBITMQ_DEFAULT_VHOST: pedidos360
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: +S 2:2
+    ports:
+      - "127.0.0.1:${RABBITMQ_AMQP_PORT:-5679}:5672"
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT:-15679}:15672"
+    volumes:
+      - data:/var/lib/rabbitmq
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    healthcheck:
+      test: [CMD-SHELL, "rabbitmq-diagnostics -q ping && rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_local_alarms"]
+      interval: 15s
+      timeout: 10s
+      start_period: 30s
+      retries: 8
+    mem_limit: 768m
+    cpus: 2
+    pids_limit: 256
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+volumes:
+  data:
