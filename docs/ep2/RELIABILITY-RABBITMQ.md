@@ -190,3 +190,16 @@ At-least-once no reemplaza la validación de bindings: una DLX sin ruta no ofrec
 ### Fixture del worker interno DLX
 
 El broker de test configura únicamente dead_letter_worker_publisher_confirm_timeout=1000 mediante argumento Erlang para acotar la espera de recuperación del destino DLQ. No reduce TTL 5/30/120 ni cambia el retry de aplicación. El timeout/reintento interno del worker DLX del broker no es el confirm-timeout del publisher ni recovery-backoff del listener; tiempos de plataforma real se verifican en #69. Referencia de implementación: [worker DLX RabbitMQ 4.1](https://github.com/rabbitmq/rabbitmq-server/blob/v4.1.0/deps/rabbit/src/rabbit_fifo_dlx_worker.erl).
+
+## Resultado final local de #68
+
+Verificación 6–7 de octubre de 2026: suites completas mvnw.cmd test. Reportes Surefire locales.
+
+| Suite | Tests | Failures | Errors | Skipped | Duración acumulada suites (s) |
+|---|---:|---:|---:|---:|---:|
+| pedidos-service | 107 | 0 | 0 | 1 | 245.376 |
+| pagos-service | 81 | 0 | 0 | 1 | 32.92 |
+
+Pedidos: tiempo total del comando 251.77 s. Pagos: duración indicada es suma de suites, no cronómetro del comando. Cada omisión corresponde a Entra live sin credenciales externas. Pedidos pasa de 72 a 107 tests: 35 casos adicionales incluyendo parametrizados; 23 tests RabbitConsumerTests y 20 ReliabilityPolicyTests. Los fallos de confirm/nack/timeout se inyectan donde corresponde; TTL, DLQ, canal y persistencia se verifican con broker real. Regresión completa Pagos sin modificar su código.
+
+Durante desarrollo se corrigió el tratamiento de retry-count de Spring AMQP 4.1 y la fixture de capacidad quorum (puede superar temporalmente max-length): el test demuestra NACK real antes de verificar conservación. La ejecución final tiene cero failures/errors. git diff --check y revisión de alcance completadas.
