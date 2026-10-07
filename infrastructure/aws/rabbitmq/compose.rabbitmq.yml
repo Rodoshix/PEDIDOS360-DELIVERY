@@ -1,0 +1,71 @@
+name: pedidos360-ep2-broker
+services:
+  rabbitmq:
+    image: rabbitmq:4.1.8-management-alpine@sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3
+    hostname: p360-rabbitmq
+    entrypoint: [/bin/sh, /ep2/bootstrap.sh]
+    environment:
+      RABBITMQ_NODENAME: rabbit@p360-rabbitmq
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: +S 2:2
+      EP2_EXECUTION_SCOPE: ${EP2_EXECUTION_SCOPE:?required}
+      EP2_EXPECTED_FS_ID: ${EP2_EXPECTED_FS_ID:-REPLACE_AFTER_APPROVED_MOUNT}
+      PEDIDOS360_COORDINATION_MODE: ${PEDIDOS360_COORDINATION_MODE:?required}
+      PEDIDOS360_RELIABILITY_PLATFORM_READY: ${PEDIDOS360_RELIABILITY_PLATFORM_READY:?required}
+      PEDIDOS360_RELAY_MODE: ${PEDIDOS360_RELAY_MODE:?required}
+      PEDIDOS360_DECLARE_TOPOLOGY: ${PEDIDOS360_DECLARE_TOPOLOGY:?required}
+    # No ports: TLS is reachable only on the private Docker backend.
+    networks:
+      backend:
+        aliases: [p360-rabbitmq]
+    volumes:
+      - type: bind
+        source: ${RABBITMQ_DATA_DIR:?dedicated EBS required}
+        target: /var/lib/rabbitmq
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${EP2_PRIVATE_DIR:?private material required}/tls/ca.pem
+        target: /run/ep2/tls/ca.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${EP2_PRIVATE_DIR}/tls/server.pem
+        target: /run/ep2/tls/server.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${EP2_PRIVATE_DIR}/tls/server-key.pem
+        target: /run/ep2/tls/server-key.pem
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${EP2_PRIVATE_DIR}/secrets/BOOTSTRAP_PASSWORD
+        target: /run/ep2/secrets/BOOTSTRAP_PASSWORD
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${EP2_PRIVATE_DIR}/secrets/ERLANG_COOKIE
+        target: /run/ep2/secrets/ERLANG_COOKIE
+        read_only: true
+        bind: {create_host_path: false}
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./bootstrap.sh:/ep2/bootstrap.sh:ro
+    mem_limit: 768m # PROVISIONAL: must be remeasured on EC2.
+    cpu_shares: 512 # Relative scheduling weight, not a CPU quota/reservation.
+    pids_limit: 256
+    restart: unless-stopped
+    stop_grace_period: 90s
+    security_opt: [no-new-privileges:true]
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: '3'}
+    healthcheck:
+      test: [CMD-SHELL, 'rabbitmq-diagnostics -q ping && rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_local_alarms']
+      interval: 30s
+      timeout: 15s
+      start_period: 60s
+      retries: 5
+networks:
+  backend:
+    external: true
+    name: ${EP2_BACKEND_NETWORK:?existing private backend required}
