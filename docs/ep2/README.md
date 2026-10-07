@@ -33,7 +33,7 @@ Semántica que debe preservarse:
 - `EFECTIVO / PENDIENTE` también solicita confirmar el pedido.
 - `CONFIRMADO` significa que el pedido puede continuar su operación.
 - `CONFIRMADO` no implica necesariamente que el dinero ya fue cobrado.
-- Registro de pago, autorización y consultas principales siguen por HTTP.
+- Registro de pago y autorización conservan HTTP público. Cuatro consultas tendrán request/reply interno tras el corte de #70; hoy siguen HTTP.
 
 ## Responsables
 
@@ -86,9 +86,15 @@ Una misión solo se considera terminada cuando cumple:
 
 ## Organización y seguimiento
 
-La planificación fue integrada mediante PR #75. El núcleo de #65/#66 está implementado en la rama `feature/ep2-rabbit-core`, sujeto a revisión; el corte y la política completa de fallos siguen pendientes.
+La planificación fue integrada mediante PR #75. El núcleo de #65/#66 fue integrado mediante PR #76 (22f5c4d) y sus issues están completados; el corte y la política completa de fallos siguen pendientes.
 
 - [Implementación, convivencia HTTP y evidencia del núcleo](NUCLEO-RABBITMQ.md).
 - [Plan de actividades e issues reales](PLAN-ACTIVIDADES.md).
 - Misiones: [Integrante 1](misiones/INTEGRANTE-1.md), [Integrante 2](misiones/INTEGRANTE-2.md), [Integrante 3](misiones/INTEGRANTE-3.md), [Integrante 4](misiones/INTEGRANTE-4.md) e [Integrante 5](misiones/INTEGRANTE-5.md).
 - Las ramas restantes se crean al iniciar la misión correspondiente. El seguimiento usa Issues, PRs y el plan versionado.
+
+## Ampliación docente aprobada: seis microservicios
+
+Leer [ADENDA-RABBITMQ-6-SERVICIOS.md](ADENDA-RABBITMQ-6-SERVICIOS.md) junto con arquitectura y contrato. Es una ampliación posterior, aún no implementada: Usuarios, Restaurantes, Productos, Carrito, Pedidos y Pagos tendrán cola funcional propia y DLQ. BFF, Repartidores, Seguimiento y RabbitAdmin no cuentan para el requisito docente.
+
+Objetivo: 6 funcionales + 8 retries + 6 DLQ + 1 respuesta BFF = **21 queues y 7 exchanges personalizados**. Conservar exchanges de Pedidos; añadir p360.commands, p360.queries, p360.retry y p360.dlx. No crear p360.events. #68 conserva su alcance avanzado; los nuevos consumers tienen issues separados. No activar cortes ni crear código desde esta actualización documental.

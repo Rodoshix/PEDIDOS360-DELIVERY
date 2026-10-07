@@ -158,3 +158,9 @@ no se valida despliegue AWS ni el broker de producción en esta rama.
 Dentro de esas suites, `RabbitCoreTests` contiene 12 pruebas y
 `RabbitConsumerTests` contiene 8; todas aprobadas. Los reportes reproducibles se
 encuentran en `target/surefire-reports/` de cada servicio, fuera de Git.
+
+## Estado integrado y ampliación posterior
+
+#65/#66 fueron integrados mediante PR #76 en develop (22f5c4d) y están completados. Las cifras de pruebas anteriores corresponden a esa entrega, no a una nueva ejecución en esta actualización documental.
+
+La [adenda de seis servicios](ADENDA-RABBITMQ-6-SERVICIOS.md) amplía el objetivo futuro a 21 queues/7 exchanges. Este documento sigue describiendo el núcleo realmente implementado: no hay consumers nuevos, outbox de Carrito ni cortes adicionales. HTTP predeterminado y ConfirmarPedidoPorPago V1 se conservan. #68 completa reliability de Pedidos; base simple/consultas/Carrito tienen issues separados; #69 plataforma ampliada; #70 cortes graduales.

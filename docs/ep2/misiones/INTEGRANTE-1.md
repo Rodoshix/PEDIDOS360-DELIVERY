@@ -71,7 +71,7 @@ docs/ep2/
 
 ## Implementación de #65/#66
 
-Consultar [NUCLEO-RABBITMQ.md](../NUCLEO-RABBITMQ.md) para clases, configuración temporal, recuperación, pruebas y puntos de integración con #68/#70. La review y el corte definitivo siguen pendientes.
+Consultar [NUCLEO-RABBITMQ.md](../NUCLEO-RABBITMQ.md) para clases, configuración temporal, recuperación, pruebas y puntos de integración con #68/#70. Integrado por PR #76; el corte definitivo sigue pendiente.
 
 ## Evidencia mínima
 
@@ -112,3 +112,13 @@ Si la misión requiere cambiar un contrato compartido o un componente asignado a
   - riesgos;
   - pendientes;
   - evidencias.
+
+## Ampliación docente posterior aprobada
+
+El núcleo #65/#66 está integrado por PR #76. Coordinar nuevos contratos, autorización y vinculación Pedido–Carrito según adenda; las implementaciones adicionales van en issues separados con responsable por confirmar. No ampliar retrospectivamente #65/#66.
+
+Fuente: [adenda](../ADENDA-RABBITMQ-6-SERVICIOS.md) y [plan](../PLAN-ACTIVIDADES.md). Esta actualización no implementa ni crea ramas de trabajo.
+
+### Trazabilidad de trabajos adicionales
+
+Base común #77; Usuarios #78; Restaurantes #79; Productos #80; Pagos query #81; Carrito/Pedidos #82. Responsables de ejecución nuevos por confirmar; coordinación I1/I5. #68 sigue separado; #69 plataforma; #70 integración.
