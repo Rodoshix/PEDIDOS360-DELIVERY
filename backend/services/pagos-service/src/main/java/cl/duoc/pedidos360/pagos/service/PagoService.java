@@ -2,6 +2,8 @@ package cl.duoc.pedidos360.pagos.service;
 
 import java.util.List;
 
+import cl.duoc.pedidos360.pagos.messaging.RabbitProperties;
+import cl.duoc.pedidos360.pagos.messaging.OutboxStore;
 import cl.duoc.pedidos360.pagos.client.PedidoResumen;
 import cl.duoc.pedidos360.pagos.client.PedidosClient;
 import cl.duoc.pedidos360.pagos.dto.CrearPagoRequest;
@@ -26,11 +28,16 @@ public class PagoService {
     /** Estados que se consideran "activos": impiden un segundo pago para el mismo pedido. */
     private static final List<EstadoPago> ACTIVOS = List.of(EstadoPago.PENDIENTE, EstadoPago.APROBADO);
 
+    private final RabbitProperties messaging;
+    private final OutboxStore outbox;
     private final PagoRepository pagos;
     private final PedidosClient pedidos;
     private final TransactionTemplate transaccion;
 
-    public PagoService(PagoRepository pagos, PedidosClient pedidos, PlatformTransactionManager txManager) {
+    public PagoService(PagoRepository pagos, PedidosClient pedidos, PlatformTransactionManager txManager,
+                       RabbitProperties messaging, OutboxStore outbox) {
+        this.messaging = messaging;
+        this.outbox = outbox;
         this.pagos = pagos;
         this.pedidos = pedidos;
         this.transaccion = new TransactionTemplate(txManager);
@@ -39,9 +46,9 @@ public class PagoService {
     /**
      * Registra un pago simulado de forma recuperable.
      *
-     * <p>No usa una transacción que abarque la llamada remota: primero persiste el pago (commit local)
-     * y luego intenta confirmar el pedido. Si la confirmación falla o se pierde la respuesta, el pago
-     * queda persistido con {@code pedido_confirmado=false} para que la reconciliación lo reintente.
+     * <p>La consulta remota precede al commit local. En modo RABBITMQ, Pago e intención se guardan
+     * juntos sin esperar al broker. Los pagos HTTP conservan la confirmación y reconciliación
+     * existentes. El modo persistido impide coordinar el mismo pago por ambos transportes.
      *
      * <p>Autorización: el pedido debe pertenecer a la identidad autenticada (o ser ADMIN).
      * Idempotencia: la clave tiene alcance por identidad y debe corresponder a la misma operación.
@@ -61,6 +68,9 @@ public class PagoService {
                     "No puedes registrar un pago para un pedido de otro usuario.");
         }
         if (pagos.existsByPedidoIdAndEstadoIn(request.pedidoId(), ACTIVOS)) {
+            // The same-key transaction can commit between the initial lookup and this check.
+            var concurrente = pagos.findByUsuarioIdAndClaveIdempotencia(identidad.usuarioId(), claveIdempotencia);
+            if (concurrente.isPresent()) return resolverReintento(concurrente.get(), request);
             throw new PagoException(HttpStatus.CONFLICT,
                     "El pedido " + request.pedidoId() + " ya tiene un pago activo.");
         }
@@ -69,8 +79,14 @@ public class PagoService {
         try {
             pago = transaccion.execute(status -> {
                 EstadoPago estadoInicial = resolverEstadoInicial(request.metodo());
-                return pagos.saveAndFlush(new Pago(request.pedidoId(), identidad.usuarioId(),
-                        pedido.total(), pedido.moneda(), request.metodo(), estadoInicial, claveIdempotencia));
+                Pago nuevo = new Pago(request.pedidoId(), identidad.usuarioId(),
+                        pedido.total(), pedido.moneda(), request.metodo(), estadoInicial, claveIdempotencia);
+                nuevo.asignarCoordinacion(messaging.coordinationMode());
+                pagos.saveAndFlush(nuevo);
+                if (nuevo.getCoordinacion() == RabbitProperties.Mode.RABBITMQ) {
+                    outbox.crear(nuevo);
+                }
+                return nuevo;
             });
         } catch (DataIntegrityViolationException error) {
             // Carrera: la misma clave (identidad) o un pago activo ya fue insertado por otra transacción.
@@ -78,6 +94,8 @@ public class PagoService {
             if (porClave.isPresent()) {
                 return resolverReintento(porClave.get(), request);
             }
+            // An outbox constraint/storage failure is not a business conflict.
+            if (!pagos.existsByPedidoIdAndEstadoIn(request.pedidoId(), ACTIVOS)) throw error;
             throw new PagoException(HttpStatus.CONFLICT,
                     "El pedido " + request.pedidoId() + " ya tiene un pago activo.");
         }
@@ -130,7 +148,7 @@ public class PagoService {
      */
     public int reconciliarConfirmacionesPendientes() {
         int recuperados = 0;
-        for (Pago pago : pagos.findByPedidoConfirmadoFalseAndEstadoIn(ACTIVOS)) {
+        for (Pago pago : pagos.findByPedidoConfirmadoFalseAndEstadoInAndCoordinacion(ACTIVOS, RabbitProperties.Mode.HTTP)) {
             if (intentarConfirmacion(pago)) {
                 recuperados++;
             }
@@ -151,6 +169,7 @@ public class PagoService {
 
     /** Confirma el pedido de forma recuperable; deja el estado pendiente si falla. */
     private boolean intentarConfirmacion(Pago pago) {
+        if (pago.getCoordinacion() != RabbitProperties.Mode.HTTP) return false;
         if (pago.isPedidoConfirmado()) {
             return true;
         }

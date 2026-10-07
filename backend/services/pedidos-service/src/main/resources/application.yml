@@ -1,6 +1,17 @@
 spring:
   config:
     import: optional:file:.env.local[.properties]
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    virtual-host: ${RABBITMQ_VHOST:pedidos360}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    connection-timeout: 3s
+    template:
+      mandatory: true
   application:
     name: pedidos-service
   jackson:
@@ -44,6 +55,9 @@ pedidos:
     rol-requerido: ${INTERNO_ROL:Pedidos.Confirmar}
 
 management:
+  health:
+    rabbit:
+      enabled: false
   endpoints:
     web:
       exposure:
@@ -57,3 +71,18 @@ entra:
   api-client-id: ${ENTRA_API_CLIENT_ID:}
   frontend-client-id: ${ENTRA_FRONTEND_CLIENT_ID:}
   usuarios-url: ${USUARIOS_SERVICE_URL:http://localhost:8081}
+
+pedidos360:
+  messaging:
+    coordination-mode: ${PEDIDOS360_COORDINATION_MODE:HTTP}
+    exchanges:
+      commands: p360.pedidos.commands
+    routing-keys:
+      confirmar: pedido.confirmar.v1
+    queues:
+      confirmacion: p360.pedidos.confirmacion.q
+    confirm-timeout: 3s
+    lease: 30s
+    batch-size: 10
+    dispatch-interval-ms: 5000
+    publisher-retry-delay: 30s

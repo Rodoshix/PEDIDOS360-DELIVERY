@@ -69,6 +69,10 @@ docs/ep2/
 - [ ] Tests unitarios/integración correspondientes pasan.
 - [ ] Documentación del núcleo actualizada.
 
+## Implementación de #65/#66
+
+Consultar [NUCLEO-RABBITMQ.md](../NUCLEO-RABBITMQ.md) para clases, configuración temporal, recuperación, pruebas y puntos de integración con #68/#70. La review y el corte definitivo siguen pendientes.
+
 ## Evidencia mínima
 
 - test Pago + Outbox en una transacción;

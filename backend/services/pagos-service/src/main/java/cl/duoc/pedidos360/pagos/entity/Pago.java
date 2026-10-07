@@ -1,6 +1,7 @@
 package cl.duoc.pedidos360.pagos.entity;
 
 import java.time.Instant;
+import cl.duoc.pedidos360.pagos.messaging.RabbitProperties.Mode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,6 +20,16 @@ import jakarta.persistence.Version;
 @Table(name = "pagos", schema = "pagos", uniqueConstraints =
         @UniqueConstraint(name = "uk_pagos_idempotencia_usuario", columnNames = {"usuario_id", "clave_idempotencia"}))
 public class Pago {
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10, updatable = false)
+    private Mode coordinacion = Mode.HTTP;
+
+    public Mode getCoordinacion() { return coordinacion; }
+    public void asignarCoordinacion(Mode modo) {
+        if (id != null) throw new IllegalStateException("Coordination is immutable after persistence");
+        coordinacion = modo;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
