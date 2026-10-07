@@ -14,6 +14,7 @@ import cl.duoc.pedidos360.messaging.envelope.RequestEnvelopeContext;
 import cl.duoc.pedidos360.messaging.relay.HandoffPublisher;
 import cl.duoc.pedidos360.messaging.relay.HandoffRecovery;
 import cl.duoc.pedidos360.messaging.relay.QueryConsumer;
+import cl.duoc.pedidos360.messaging.relay.QueryConsumerRecovery;
 import cl.duoc.pedidos360.messaging.relay.QueryFailureHandler;
 import cl.duoc.pedidos360.messaging.relay.QueryPrecheck;
 import cl.duoc.pedidos360.messaging.relay.QueryProcessor;
@@ -54,10 +55,20 @@ public class QueryConsumerConfiguration {
         return new QueryFailureHandler(handoff, respuestas, properties, queryTopology);
     }
 
-    @Bean
+    /**
+     * Recuperacion activa del consumidor de consultas.
+     *
+     * <p>Es la pieza que cumple el criterio "handoff fallido conserva el original con recuperacion":
+     * cierra el canal para que el broker reentregue el mensaje sin confirmar y reinicia el listener
+     * con backoff, en un executor propio y sin bloquear el hilo del listener. Un servicio puede
+     * sustituirla registrando su propio bean {@link HandoffRecovery} bajo otro nombre: si reutiliza el
+     * nombre de este metodo, Spring rechaza la definicion duplicada.
+     */
+    @Bean(destroyMethod = "close")
     @ConditionalOnMissingBean
-    HandoffRecovery handoffRecovery() {
-        return HandoffRecovery.soloDiagnostico();
+    HandoffRecovery handoffRecovery(org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry registry,
+            MessagingProperties properties) {
+        return new QueryConsumerRecovery(registry, properties.recoveryBackoff());
     }
 
     /**

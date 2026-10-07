@@ -48,6 +48,18 @@ public final class RequestPublisher {
      *     devuelve sin ruta. Un return deja de ser aceptable: sin destino no hay respuesta posible.
      */
     public void publicar(RequestEnvelope envelope, String correlationId) {
+        publicarConMedicion(envelope, correlationId);
+    }
+
+    /**
+     * Publica el envelope, espera la confirmacion y devuelve el tiempo consumido.
+     *
+     * <p>El solicitante necesita esta medida para descontar la publicacion del presupuesto total: el
+     * deadline es absoluto y no se reinicia despues del confirm.
+     *
+     * @return nanosegundos consumidos por la publicacion confirmada.
+     */
+    public long publicarConMedicion(RequestEnvelope envelope, String correlationId) {
         if (correlationId == null || correlationId.isBlank())
             throw new IllegalArgumentException("correlationId requerido");
         if (!properties.queues().responses().equals(replyToPermitido()))
@@ -63,6 +75,7 @@ public final class RequestPublisher {
         // retry-count es reservado por Spring AMQP: se usa su contador, no un header libre.
         metadatos.setRetryCount(0);
         var correlacion = new CorrelationData(correlationId);
+        long inicio = System.nanoTime();
         try {
             rabbit.send(properties.exchanges().queries(), envelope.operacion(),
                     new Message(contexto.escribir(envelope), metadatos), correlacion);
@@ -71,6 +84,7 @@ public final class RequestPublisher {
             if (!confirmacion.ack()) throw new QueryUnavailableException("el broker rechazo la publicacion", null);
             if (correlacion.getReturned() != null)
                 throw new QueryUnavailableException("la publicacion volvio sin ruta disponible", null);
+            return System.nanoTime() - inicio;
         } catch (QueryUnavailableException yaClasificado) {
             throw yaClasificado;
         } catch (InterruptedException interrumpido) {

@@ -54,6 +54,9 @@ pedidos360:
     relay-mode: ${PEDIDOS360_RELAY_MODE:DISABLED}
     # El BFF es solicitante: mantiene correlaciones y consume la cola tecnica de respuestas.
     role: ${PEDIDOS360_RELAY_ROLE:BFF}
+    # Herramienta de desarrollo: con la plataforma de #69 las colas ya existen y su TTL/DLX vive en
+    # policies. La declaracion no incluye argumentos inmutables, por lo que es compatible al redeclarar.
+    declare-topology: ${PEDIDOS360_DECLARE_TOPOLOGY:false}
     exchanges:
       queries: p360.queries
       retry: p360.retry
@@ -85,8 +88,9 @@ pedidos360:
     # Retry corto unico. No son las etapas 5/30/120 de Pedidos.
     retry-delay: ${PEDIDOS360_RETRY_DELAY:1s}
     confirm-timeout: ${PEDIDOS360_CONFIRM_TIMEOUT:3s}
-    handoff-backoff: ${PEDIDOS360_HANDOFF_BACKOFF:500ms}
-    handoff-attempts: ${PEDIDOS360_HANDOFF_ATTEMPTS:2}
+    # Backoff entre la detencion y el reinicio del listener cuando un handoff no se confirma.
+    # Reemplaza a la antigua espera bloqueante entre intentos de handoff (ya no existe en el hilo listener).
+    recovery-backoff: ${PEDIDOS360_RECOVERY_BACKOFF:500ms}
     max-pending-correlations: ${PEDIDOS360_MAX_PENDING:1024}
     max-body-bytes: ${PEDIDOS360_MAX_BODY_BYTES:262144}
     actor:

@@ -1,9 +1,8 @@
 package cl.duoc.pedidos360.messaging.relay;
 
-import java.time.Duration;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.MessageProperties;
 
 import cl.duoc.pedidos360.messaging.MessagingProperties;
 import cl.duoc.pedidos360.messaging.QueryTopology;
@@ -25,8 +24,23 @@ import cl.duoc.pedidos360.messaging.envelope.RequestEnvelope;
  * <p>Un solo retry: no se usan las etapas 5/30/120, que pertenecen al flujo de Pedidos.
  *
  * <p>Regla de confirmacion: el request original se confirma solo cuando la respuesta o la
- * transferencia quedo confirmada por el broker sin return. Si la transferencia no se confirma, el
- * mensaje permanece sin ACK con recuperacion acotada y sin {@code requeue=true}.
+ * transferencia quedo confirmada por el broker sin return.
+ *
+ * <p>Regla de hilo: {@link #gestionar} se ejecuta en el hilo del listener. Un fallo de handoff
+ * <strong>no</strong> se reintenta con espera en ese hilo — eso bloquearia la unica ventana de
+ * {@code prefetch=1}. Se intenta una unica transferencia inmediata y, si no se confirma, se devuelve
+ * {@link Resultado#SIN_CONFIRMAR}: la recuperacion del consumidor (cierre de canal con backoff y
+ * reinicio del listener) la ejecuta {@link QueryConsumerRecovery} en su propio executor, de modo que
+ * la redelivery del broker rehace el intento completo.
+ *
+ * <p>Distincion que no debe perderse:
+ *
+ * <ul>
+ *   <li><strong>retry del mensaje</strong>: cola de retry con TTL de plataforma, un solo intento,
+ *       sin consumidor y sin dormir ningun hilo;</li>
+ *   <li><strong>reintento del handoff</strong>: inmediato y unico; si no se confirma, se delega en la
+ *       recuperacion asincrona del consumidor.</li>
+ * </ul>
  */
 public final class QueryFailureHandler {
 
@@ -38,7 +52,7 @@ public final class QueryFailureHandler {
         REINTENTADO,
         /** Transferido a la DLQ: el request original se confirma. */
         DLQ,
-        /** La transferencia no se confirmo: el mensaje permanece sin ACK. */
+        /** La transferencia no se confirmo: el mensaje permanece sin ACK y se recupera el consumidor. */
         SIN_CONFIRMAR
     }
 
@@ -58,17 +72,30 @@ public final class QueryFailureHandler {
     }
 
     /**
-     * Gestiona el fallo de una consulta.
+     * Gestiona el fallo de una consulta sin las propiedades AMQP originales.
      *
-     * <p>El parametro {@code plazoVencido} distingue el caso en que el envelope ya no tiene
-     * presupuesto: un mensaje vencido no se reintenta, se diagnostica y va a DLQ.
+     * <p>Se conserva para clasificacion y diagnostico; la ruta de production pasa las propiedades del
+     * mensaje recibido para que la transferencia preserve {@code correlationId} y {@code replyTo}.
      */
     public Resultado gestionar(RequestEnvelope envelope, int retryCount, Exception fallo, String correlationId,
             String replyTo, boolean plazoVencido) {
+        return gestionar(envelope, retryCount, fallo, correlationId, replyTo, plazoVencido, null);
+    }
+
+    /**
+     * Gestiona el fallo de una consulta.
+     *
+     * @param plazoVencido distingue el caso en que el envelope ya no tiene presupuesto: un mensaje
+     *     vencido no se reintenta, se diagnostica y va a DLQ.
+     * @param original propiedades del mensaje recibido, clonadas en la transferencia. Sin ellas la
+     *     respuesta del retry no tendria destino.
+     */
+    public Resultado gestionar(RequestEnvelope envelope, int retryCount, Exception fallo, String correlationId,
+            String replyTo, boolean plazoVencido, MessageProperties original) {
         if (plazoVencido) {
             log.error("Consulta messageId={} correlationId={} plazo vencido: no se ejecuta ni se reintenta; {}",
                     messageIdSeguro(envelope), correlationId, fallo.getClass().getSimpleName());
-            return transferir(envelope, retryCount, fallo, Destino.DLQ);
+            return transferir(envelope, retryCount, fallo, Destino.DLQ, original);
         }
         if (respondeAlSolicitante(fallo)) {
             log.warn("Consulta messageId={} correlationId={} respuesta de negocio: {}", messageIdSeguro(envelope),
@@ -79,23 +106,23 @@ public final class QueryFailureHandler {
             } catch (HandoffFailureException handoffFallido) {
                 log.error("Consulta messageId={} correlationId={} respuesta de negocio no confirmada: {}",
                         messageIdSeguro(envelope), correlationId, handoffFallido.getMessage());
-                return transferir(envelope, retryCount, fallo, Destino.RETRY);
+                return transferir(envelope, retryCount, fallo, Destino.RETRY, original);
             }
         }
         if (definitivo(fallo)) {
             log.error("Consulta messageId={} correlationId={} retryCount={} fallo definitivo: {} - {}",
                     messageIdSeguro(envelope), correlationId, retryCount, fallo.getClass().getSimpleName(),
                     fallo.getMessage());
-            return transferir(envelope, retryCount, fallo, Destino.DLQ);
+            return transferir(envelope, retryCount, fallo, Destino.DLQ, original);
         }
         if (retryCount >= 1) {
             log.error("Consulta messageId={} correlationId={} retryCount={} agotado: {}", messageIdSeguro(envelope),
                     correlationId, retryCount, fallo.getClass().getSimpleName());
-            return transferir(envelope, retryCount, fallo, Destino.DLQ);
+            return transferir(envelope, retryCount, fallo, Destino.DLQ, original);
         }
         log.warn("Consulta messageId={} correlationId={} fallo transitorio, retry corto: {}",
                 messageIdSeguro(envelope), correlationId, fallo.getClass().getSimpleName());
-        return transferir(envelope, retryCount, fallo, Destino.RETRY);
+        return transferir(envelope, retryCount, fallo, Destino.RETRY, original);
     }
 
     /** Clase de error diagnosticada, sin datos sensibles. */
@@ -138,45 +165,26 @@ public final class QueryFailureHandler {
     }
 
     /**
-     * Recuperacion acotada del handoff: reintenta la transferencia con espera entre intentos.
+     * Transferencia inmediata y unica, sin espera en el hilo del listener.
      *
-     * <p>No usa {@code requeue=true} ni produce un bucle inmediato. Si se agotan los intentos, el
-     * mensaje queda sin confirmar para que el canal se recupere sin perderlo.
+     * <p>Si no se confirma, devuelve {@link Resultado#SIN_CONFIRMAR}: el mensaje queda sin ACK y
+     * {@link QueryConsumerRecovery} cierra el canal y reinicia el listener con backoff. No se usa
+     * {@code requeue=true} ni un bucle de reintentos caliente.
      */
-    private Resultado transferir(RequestEnvelope envelope, int retryCount, Exception fallo, Destino destino) {
-        HandoffFailureException ultimo = null;
-        for (int intento = 1; intento <= properties.handoffAttempts(); intento++) {
-            try {
-                if (destino == Destino.RETRY) {
-                    handoff.aRetry(envelope, retryCount, claseDeFallo(fallo));
-                    return Resultado.REINTENTADO;
-                }
-                handoff.aDlq(envelope, retryCount, claseDeFallo(fallo));
-                return Resultado.DLQ;
-            } catch (HandoffFailureException handoffFallido) {
-                ultimo = handoffFallido;
-                log.warn("Consulta messageId={} intento {} de transferencia a {} no confirmado: {}",
-                        messageIdSeguro(envelope), intento, destino, handoffFallido.getMessage());
-                esperar(properties.handoffBackoff());
-            }
-        }
-        if (destino == Destino.DLQ) {
-            log.error("Consulta messageId={} transferencia a DLQ no confirmada; el mensaje permanece SIN CONFIRMAR: {}",
-                    messageIdSeguro(envelope), ultimo == null ? "sin causa" : ultimo.getMessage());
-            return Resultado.SIN_CONFIRMAR;
-        }
-        log.error("Consulta messageId={} handoff a retry no confirmado tras {} intentos; mensaje SIN CONFIRMAR: {}",
-                messageIdSeguro(envelope), properties.handoffAttempts(),
-                ultimo == null ? "sin causa" : ultimo.getMessage());
-        return Resultado.SIN_CONFIRMAR;
-    }
-
-    private void esperar(Duration espera) {
-        if (espera == null || espera.isZero() || espera.isNegative()) return;
+    private Resultado transferir(RequestEnvelope envelope, int retryCount, Exception fallo, Destino destino,
+            MessageProperties original) {
         try {
-            Thread.sleep(espera.toMillis());
-        } catch (InterruptedException interrumpido) {
-            Thread.currentThread().interrupt();
+            if (destino == Destino.RETRY) {
+                handoff.aRetry(envelope, retryCount, claseDeFallo(fallo), original);
+                return Resultado.REINTENTADO;
+            }
+            handoff.aDlq(envelope, retryCount, claseDeFallo(fallo), original);
+            return Resultado.DLQ;
+        } catch (HandoffFailureException handoffFallido) {
+            log.error("Consulta messageId={} transferencia a {} no confirmada; queda SIN CONFIRMAR "
+                    + "y la recuperacion del consumidor rehara el intento: {}", messageIdSeguro(envelope), destino,
+                    handoffFallido.getMessage());
+            return Resultado.SIN_CONFIRMAR;
         }
     }
 

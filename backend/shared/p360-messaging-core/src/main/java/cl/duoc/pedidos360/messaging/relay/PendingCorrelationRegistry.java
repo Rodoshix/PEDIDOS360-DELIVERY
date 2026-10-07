@@ -32,16 +32,21 @@ public final class PendingCorrelationRegistry {
      *
      * @throws IllegalStateException si ya hay demasiadas correlaciones en vuelo: es preferible
      *     rechazar la consulta que acumular esperas sin limite.
+     * @throws IllegalStateException si el {@code correlationId} ya tiene una espera viva. Sobrescribir
+     *     la espera anterior perderia la respuesta de la primera consulta y dejaria su hilo esperando
+     *     hasta el timeout.
      */
     public CompletableFuture<byte[]> registrar(String correlationId) {
         if (correlationId == null || correlationId.isBlank())
             throw new IllegalArgumentException("correlationId requerido");
+        var futuro = new CompletableFuture<byte[]>();
+        if (pendientes.putIfAbsent(correlationId, futuro) != null)
+            throw new IllegalStateException("correlationId duplicado: ya existe una espera viva");
         if (enVuelo.incrementAndGet() > maximo) {
             enVuelo.decrementAndGet();
+            pendientes.remove(correlationId, futuro);
             throw new IllegalStateException("demasiadas consultas concurrentes en vuelo");
         }
-        var futuro = new CompletableFuture<byte[]>();
-        pendientes.put(correlationId, futuro);
         return futuro;
     }
 
@@ -70,6 +75,27 @@ public final class PendingCorrelationRegistry {
 
     public int enVuelo() {
         return enVuelo.get();
+    }
+
+    /**
+     * Cancela todas las esperas pendientes: se invoca al apagar el BFF.
+     *
+     * <p>Sin esta limpieza, un cierre deja hilos esperando hasta su timeout y futuros huerfanos. Las
+     * esperas se completan de forma excepcional para que ningun llamador quede colgado.
+     *
+     * @return cantidad de correlaciones canceladas.
+     */
+    public int cancelarTodo() {
+        int canceladas = 0;
+        for (var entrada : pendientes.entrySet()) {
+            if (pendientes.remove(entrada.getKey(), entrada.getValue())) {
+                enVuelo.decrementAndGet();
+                entrada.getValue().completeExceptionally(
+                        new QueryUnavailableException("el BFF se esta cerrando", null));
+                canceladas++;
+            }
+        }
+        return canceladas;
     }
 
     public Optional<CompletableFuture<byte[]>> pendiente(String correlationId) {

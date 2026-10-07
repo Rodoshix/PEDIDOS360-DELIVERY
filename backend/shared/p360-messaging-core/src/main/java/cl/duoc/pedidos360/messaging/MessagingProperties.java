@@ -19,17 +19,21 @@ import jakarta.validation.constraints.Positive;
  *
  * <p>Valores iniciales aprobados: presupuesto de 5 s y retry corto de 1 s. El plazo
  * ({@code expiresAt}) es absoluto y no se renueva con un retry.
+ *
+ * <p>La declaracion de topologia es una herramienta de desarrollo: en la plataforma de #69 las
+ * colas ya existen con argumentos minimos y el TTL/DLX de los retries simples vive en policies del
+ * broker. Declarar aqui esos argumentos provocaria {@code PRECONDITION_FAILED}, por eso las
+ * declaraciones no los incluyen.
  */
 @ConfigurationProperties("pedidos360.messaging")
 public record MessagingProperties(@NotNull RelayMode relayMode, @NotNull RelayMode.Role role,
         @NotNull Exchanges exchanges, @NotNull Queues queues, @NotNull Naming naming, @NotNull DomainRouting routing,
         @NotNull @Positive Duration deadline, @NotNull @Positive Duration actorTtl, @NotNull Duration retryDelay,
-        @NotNull Duration confirmTimeout, @NotNull Duration handoffBackoff, @Min(1) @Max(10) int handoffAttempts,
+        @NotNull Duration confirmTimeout, @NotNull Duration recoveryBackoff, boolean declareTopology,
         @Min(1) @Max(100_000) int maxPendingCorrelations, @Min(1024) @Max(1_048_576) int maxBodyBytes) {
 
     /** Valores por defecto de los limites, para que el enlace parcial no los deje en cero. */
     public MessagingProperties {
-        if (handoffAttempts == 0) handoffAttempts = 2;
         if (maxPendingCorrelations == 0) maxPendingCorrelations = 1024;
         if (maxBodyBytes == 0) maxBodyBytes = 262_144;
     }
@@ -100,16 +104,15 @@ public record MessagingProperties(@NotNull RelayMode relayMode, @NotNull RelayMo
     @AssertTrue(message = "el plazo debe superar el retry corto y la ventana del actor; los tiempos deben ser positivos")
     public boolean isTiemposValidos() {
         if (deadline == null || actorTtl == null || retryDelay == null || confirmTimeout == null
-                || handoffBackoff == null) return false;
+                || recoveryBackoff == null) return false;
         if (!deadline.isPositive() || !actorTtl.isPositive() || !confirmTimeout.isPositive()
-                || !handoffBackoff.isPositive() || !retryDelay.isPositive()) return false;
+                || !retryDelay.isPositive() || recoveryBackoff.isNegative()) return false;
         return deadline.compareTo(retryDelay) > 0 && actorTtl.compareTo(deadline) <= 0;
     }
 
-    @AssertTrue(message = "el limite de correlaciones, los intentos de handoff y el tamano maximo deben ser razonables")
+    @AssertTrue(message = "el limite de correlaciones y el tamano maximo deben ser razonables")
     public boolean isLimitesValidos() {
         return maxPendingCorrelations >= 1 && maxPendingCorrelations <= 100_000
-                && handoffAttempts >= 1 && handoffAttempts <= 10
                 && maxBodyBytes >= 1024 && maxBodyBytes <= 1_048_576;
     }
 

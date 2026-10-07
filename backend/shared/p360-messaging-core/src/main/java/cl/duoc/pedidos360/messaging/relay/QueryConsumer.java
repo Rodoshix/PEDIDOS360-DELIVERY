@@ -42,6 +42,10 @@ import cl.duoc.pedidos360.messaging.envelope.RequestEnvelopeContext;
  * <p>Nunca se confirma el request antes de que exista respuesta confirmada o transferencia
  * confirmada a retry/DLQ. No existe un ciclo de {@code requeue=true} como retry normal.
  *
+ * <p>Si la transferencia no se confirma, el mensaje queda sin ACK y se solicita la recuperacion del
+ * consumidor a {@link HandoffRecovery}. Con {@code prefetch=1} esa recuperacion es imprescindible:
+ * sin ella el canal queda sano y el consumidor detenido indefinidamente.
+ *
  * <p>El procesador debe ser idempotente: si la respuesta se confirma y despues se pierde el ACK, la
  * redelivery puede volver a ejecutar la operacion. El BFF descarta la respuesta duplicada.
  */
@@ -90,7 +94,14 @@ public class QueryConsumer {
         return topology;
     }
 
-    @RabbitListener(queues = "#{@queryTopology.queue()}", containerFactory = "queryListenerFactory")
+    /**
+     * Listener de la cola funcional.
+     *
+     * <p>El identificador es estable ({@link QueryConsumerRecovery#QUERY_LISTENER_ID}) porque la
+     * recuperacion necesita localizar este container en el registro de listeners.
+     */
+    @RabbitListener(id = QueryConsumerRecovery.QUERY_LISTENER_ID, queues = "#{@queryTopology.queue()}",
+            containerFactory = "queryListenerFactory")
     public void consumir(Message message, Channel channel) throws IOException {
         MessageProperties metadatos = message.getMessageProperties();
         String correlationId = metadatos.getCorrelationId();
@@ -120,10 +131,13 @@ public class QueryConsumer {
     private void gestionarFallo(Message message, Channel channel, RequestEnvelope envelope, Exception fallo,
             String correlationId, int intentos, String messageId) {
         RequestEnvelope diagnosticable = envelope != null ? envelope : sobreParaDiagnostico(messageId);
+        MessageProperties original = message.getMessageProperties();
         QueryFailureHandler.Resultado resultado;
         try {
+            // Las propiedades originales viajan a la transferencia: sin ellas el retry perderia
+            // correlationId y replyTo, y la respuesta del segundo intento no tendria destino.
             resultado = fallos.gestionar(diagnosticable, intentos, fallo, correlationId,
-                    message.getMessageProperties().getReplyTo(), fallo instanceof PlazoVencidoException);
+                    original.getReplyTo(), fallo instanceof PlazoVencidoException, original);
         } catch (RuntimeException inesperado) {
             log.error("Consulta messageId={} fallo al gestionar el error; mensaje SIN CONFIRMAR: {}", messageId,
                     inesperado.getMessage());
@@ -135,8 +149,8 @@ public class QueryConsumer {
             recuperacion.sinConfirmar(messageId, correlationId, destino, fallo);
             return;
         }
-        confirmar(channel, message.getMessageProperties().getDeliveryTag(), messageId, correlationId, intentos,
-                resultado.name());
+        // El ACK usa la etiqueta de la entrega recibida, no la de la copia transferida.
+        confirmar(channel, original.getDeliveryTag(), messageId, correlationId, intentos, resultado.name());
     }
 
     private void validarOperacion(RequestEnvelope envelope) {

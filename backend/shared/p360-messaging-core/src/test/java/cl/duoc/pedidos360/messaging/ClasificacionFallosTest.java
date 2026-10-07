@@ -65,7 +65,7 @@ class ClasificacionFallosTest {
                 "corr-x", propiedades.queues().responses(), false);
         assertThat(resultado).isEqualTo(QueryFailureHandler.Resultado.SIN_CONFIRMAR);
         System.out.println("RESULTADO_DEFINITIVO=" + resultado + " retryDelay=" + propiedades.retryDelay()
-                + " handoffAttempts=" + propiedades.handoffAttempts());
+                + " recoveryBackoff=" + propiedades.recoveryBackoff());
         conexion.destroy();
     }
 

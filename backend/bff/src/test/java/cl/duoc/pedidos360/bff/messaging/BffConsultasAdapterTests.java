@@ -91,8 +91,7 @@ import tools.jackson.databind.json.JsonMapper;
         "pedidos360.messaging.actor-ttl=4s",
         "pedidos360.messaging.retry-delay=1s",
         "pedidos360.messaging.confirm-timeout=3s",
-        "pedidos360.messaging.handoff-backoff=50ms",
-        "pedidos360.messaging.handoff-attempts=1",
+        "pedidos360.messaging.recovery-backoff=50ms",
         "pedidos360.messaging.max-pending-correlations=64",
         "pedidos360.bff.actor.emisor=" + EntraTestTokens.TENANT,
         "pedidos360.bff.actor.ttl=4s",
@@ -211,6 +210,22 @@ class BffConsultasAdapterTests {
     @Autowired BffActorContextFactory actores;
 
     private final List<SimpleMessageListenerContainer> servicios = new ArrayList<>();
+
+    /**
+     * Limpia las colas antes de cada prueba.
+     *
+     * <p>Sin esta limpieza, un request que vencio en una prueba anterior puede ser consumido por el
+     * servicio de la prueba siguiente: el servicio responderia a una correlacion ya descartada y la
+     * consulta real quedaria sin respuesta hasta agotar el plazo.
+     */
+    @org.junit.jupiter.api.BeforeEach
+    void limpiarColas() {
+        rabbit.execute(channel -> {
+            channel.queuePurge(COLA_USUARIOS);
+            channel.queuePurge(RESPUESTAS);
+            return null;
+        });
+    }
 
     private BffQueryAdapter adaptador(QueryInvoker... operaciones) {
         var fabrica = new RequestFactory(properties, actores);
@@ -341,6 +356,44 @@ class BffConsultasAdapterTests {
         assertThat(correlaciones.enVuelo()).isZero();
         // La cola queda limpia: no se acumulan respuestas huerfanas.
         assertThat(rabbit.receive(RESPUESTAS, 300)).isNull();
+    }
+
+    /**
+     * El presupuesto es total y absoluto: el confirm de publicacion descuenta su tiempo y la espera
+     * recibe solo lo que queda.
+     *
+     * <p>Antes se sumaban el plazo de confirmacion (3 s) y el de espera (5 s), de modo que una
+     * publicacion lenta podia llevar el total por encima del deadline. Aqui se comprueba que el total
+     * sigue acotado por el presupuesto y que la correlacion se limpia al vencer.
+     */
+    @Test
+    void elDeadlineEsTotalYNoSeReiniciaTrasLaPublicacionConfirmada() {
+        detenerServicios();
+        long presupuestoNanos = properties.deadline().toNanos();
+        long inicio = System.nanoTime();
+        assertThatThrownBy(() -> adaptadorUsuarios().ejecutar(Domain.USUARIOS,
+                JsonMapper.builder().build().createObjectNode(), token())).isInstanceOf(QueryTimeoutException.class);
+        long transcurrido = System.nanoTime() - inicio;
+
+        // Al menos se agoto el presupuesto y no se anadio un segundo plazo completo.
+        assertThat(Duration.ofNanos(transcurrido)).as("no se espera menos que el presupuesto")
+                .isGreaterThanOrEqualTo(properties.deadline());
+        assertThat(Duration.ofNanos(transcurrido)).as("confirm + espera nunca suman dos plazos")
+                .isLessThan(properties.deadline().plus(properties.deadline().dividedBy(2)));
+        assertThat(transcurrido).as("el total sigue dentro del presupuesto absoluto")
+                .isLessThan(presupuestoNanos + properties.deadline().toNanos() / 2);
+        assertThat(correlaciones.enVuelo()).isZero();
+    }
+
+    /** El cierre del BFF cancela las correlaciones en vuelo en lugar de dejarlas huerfanas. */
+    @Test
+    void elCierreDelAdaptadorCancelaLasCorrelacionesEnVuelo() {
+        var adaptador = adaptadorUsuarios();
+        var espera = correlaciones.registrar("corr-en-vuelo");
+        assertThat(correlaciones.enVuelo()).isEqualTo(1);
+        adaptador.alCerrar();
+        assertThat(espera).isCompletedExceptionally();
+        assertThat(correlaciones.enVuelo()).isZero();
     }
 
     @Test

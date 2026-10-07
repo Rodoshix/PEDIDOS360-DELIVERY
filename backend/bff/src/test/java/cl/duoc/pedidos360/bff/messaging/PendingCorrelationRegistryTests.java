@@ -108,4 +108,72 @@ class PendingCorrelationRegistryTests {
         assertThat(registro.descartar(null)).isFalse();
         assertThat(registro.completar(null, cuerpo("x"))).isFalse();
     }
+
+    @Test
+    void unCorrelationIdDuplicadoSeRechazaYNoSobrescribeLaEsperaViva() {
+        var registro = new PendingCorrelationRegistry(8);
+        CompletableFuture<byte[]> primera = registro.registrar("corr-dup");
+        assertThatThrownBy(() -> registro.registrar("corr-dup")).isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("duplicado");
+        assertThat(registro.enVuelo()).as("el rechazo no descuadra el contador").isEqualTo(1);
+        // La espera original sigue viva y recibe su respuesta.
+        assertThat(registro.completar("corr-dup", cuerpo("primera"))).isTrue();
+        assertThat(primera.join()).isEqualTo(cuerpo("primera"));
+        assertThat(registro.enVuelo()).isZero();
+        // Tras resolverse, el identificador vuelve a estar libre.
+        assertThat(registro.registrar("corr-dup")).isNotNull();
+        assertThat(registro.enVuelo()).isEqualTo(1);
+    }
+
+    @Test
+    void cancelarTodoCompletaDeFormaExcepcionalLasEsperasEnVuelo() {
+        var registro = new PendingCorrelationRegistry(8);
+        CompletableFuture<byte[]> primera = registro.registrar("corr-1");
+        CompletableFuture<byte[]> segunda = registro.registrar("corr-2");
+        assertThat(registro.enVuelo()).isEqualTo(2);
+
+        assertThat(registro.cancelarTodo()).as("se cancelan las dos esperas").isEqualTo(2);
+        assertThat(registro.enVuelo()).isZero();
+        assertThat(primera).isCompletedExceptionally();
+        assertThat(segunda).isCompletedExceptionally();
+        assertThat(registro.pendiente("corr-1")).isEmpty();
+        // Una respuesta que llegue despues del cierre ya no encuentra espera.
+        assertThat(registro.completar("corr-1", cuerpo("tardia"))).isFalse();
+        // Cancelar sin nada pendiente es inocuo.
+        assertThat(registro.cancelarTodo()).isZero();
+    }
+
+    @Test
+    void cancelarTodoConcurrenteNoDejaElContadorDescuadrado() throws Exception {
+        var registro = new PendingCorrelationRegistry(64);
+        int total = 32;
+        for (int i = 0; i < total; i++) {
+            registro.registrar("corr-" + i);
+        }
+        var executor = Executors.newFixedThreadPool(4);
+        try {
+            List<CompletableFuture<Integer>> cancelaciones = new ArrayList<>();
+            for (int i = 0; i < 4; i++) {
+                cancelaciones.add(CompletableFuture.supplyAsync(registro::cancelarTodo, executor));
+            }
+            int totalCanceladas = cancelaciones.stream().mapToInt(futuro -> {
+                try {
+                    return futuro.get(10, TimeUnit.SECONDS);
+                } catch (InterruptedException interrumpido) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("cancelacion interrumpida", interrumpido);
+                } catch (java.util.concurrent.ExecutionException fallo) {
+                    throw new IllegalStateException("cancelacion fallida", fallo.getCause());
+                } catch (java.util.concurrent.TimeoutException vencido) {
+                    throw new IllegalStateException("cancelacion fuera de plazo", vencido);
+                }
+            }).sum();
+            assertThat(totalCanceladas).as("cada correlacion se cancela exactamente una vez").isEqualTo(total);
+            assertThat(registro.enVuelo()).as("el contador vuelve a cero sin negativos").isZero();
+            assertThat(registro.registrar("corr-nueva")).isNotNull();
+            assertThat(registro.enVuelo()).isEqualTo(1);
+        } finally {
+            executor.shutdownNow();
+        }
+    }
 }

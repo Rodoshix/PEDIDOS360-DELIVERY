@@ -61,7 +61,9 @@ import tools.jackson.databind.json.JsonMapper;
 @TestPropertySource(properties = {
         "pedidos360.messaging.relay-mode=ACTIVE",
         "pedidos360.messaging.role=SERVICE",
-        "pedidos360.messaging.declare-topology=true",
+        // La topologia la declara esta suite con los argumentos de plataforma (#69); la aplicacion no
+        // declara argumentos.
+        "pedidos360.messaging.declare-topology=false",
         "pedidos360.messaging.exchanges.queries=p360.queries",
         "pedidos360.messaging.exchanges.retry=p360.retry",
         "pedidos360.messaging.exchanges.dlx=p360.dlx",
@@ -88,8 +90,7 @@ import tools.jackson.databind.json.JsonMapper;
         "pedidos360.messaging.actor-ttl=4s",
         "pedidos360.messaging.retry-delay=1s",
         "pedidos360.messaging.confirm-timeout=3s",
-        "pedidos360.messaging.handoff-backoff=50ms",
-        "pedidos360.messaging.handoff-attempts=1",
+        "pedidos360.messaging.recovery-backoff=50ms",
         "spring.rabbitmq.publisher-confirm-type=correlated",
         "spring.rabbitmq.publisher-returns=true",
         "spring.rabbitmq.template.mandatory=true",
@@ -105,9 +106,13 @@ class QueryMessagingFlowTests {
     static final String DLQ = "p360.usuarios.consultas.dlq";
     static final String RESPUESTAS = "p360.bff.consultas.respuestas.q";
 
+    /**
+     * La suite declara la topologia con los argumentos de la plataforma de #69, porque #77 ya no los
+     * declara: la funcional recibe su DLX y el retry su TTL igual que en el inventario aprobado.
+     */
     @SpringBootConfiguration
     @EnableAutoConfiguration
-    @Import({QueryMessagingConfiguration.class, QueryConsumerConfiguration.class, QueryTopologyDeclaration.class})
+    @Import({QueryMessagingConfiguration.class, QueryConsumerConfiguration.class})
     static class Configuracion {
 
         @Bean
@@ -121,6 +126,32 @@ class QueryMessagingFlowTests {
             return QueryTopology.of(properties, Domain.USUARIOS);
         }
 
+        /**
+         * Topologia de plataforma de #69 para el broker de prueba: argumentos minimos en la funcional
+         * (DLX de fallo) y TTL mas retorno en el retry. La aplicacion ya no los declara.
+         */
+        @Bean
+        org.springframework.amqp.core.Declarables topologiaDePlataforma(QueryTopology topology, MessagingProperties p) {
+            var consultas = new org.springframework.amqp.core.DirectExchange(p.exchanges().queries(), true, false);
+            var retry = new org.springframework.amqp.core.DirectExchange(p.exchanges().retry(), true, false);
+            var dlx = new org.springframework.amqp.core.DirectExchange(p.exchanges().dlx(), true, false);
+            var funcional = org.springframework.amqp.core.QueueBuilder.durable(topology.queue())
+                    .deadLetterExchange(p.exchanges().retry()).deadLetterRoutingKey(topology.retryRoutingKey())
+                    .build();
+            var colaRetry = org.springframework.amqp.core.QueueBuilder.durable(topology.retryQueue())
+                    .ttl((int) p.retryDelay().toMillis()).deadLetterExchange(p.exchanges().queries())
+                    .deadLetterRoutingKey(topology.routingKey()).build();
+            var colaDlq = org.springframework.amqp.core.QueueBuilder.durable(topology.dlq()).build();
+            var respuestas = org.springframework.amqp.core.QueueBuilder.durable(p.queues().responses()).build();
+            return new org.springframework.amqp.core.Declarables(consultas, retry, dlx, funcional, colaRetry, colaDlq,
+                    respuestas,
+                    org.springframework.amqp.core.BindingBuilder.bind(funcional).to(consultas).with(topology.routingKey()),
+                    org.springframework.amqp.core.BindingBuilder.bind(colaRetry).to(retry)
+                            .with(topology.retryRoutingKey()),
+                    org.springframework.amqp.core.BindingBuilder.bind(colaDlq).to(dlx)
+                            .with(topology.failedRoutingKey()));
+        }
+
         @Bean
         QueryProcessor procesador(Resultado resultado) {
             return resultado;
@@ -130,7 +161,22 @@ class QueryMessagingFlowTests {
         Resultado resultado() {
             return new Resultado();
         }
+
+        /**
+         * Estas pruebas invocan al consumidor con un canal simulado y gestionan el listener a mano: no
+         * deben arrancar el ciclo real de recuperacion. La recuperacion real se acredita en
+         * {@code RecoveryRealTests}. El nombre del bean no puede ser {@code handoffRecovery} porque la
+         * configuracion base ya define ese bean.
+         */
+        @Bean
+        @org.springframework.context.annotation.Primary
+        cl.duoc.pedidos360.messaging.relay.HandoffRecovery recuperacionDeLosFlujos() {
+            return (messageId, correlationId, destino, causa) -> recuperacionesSinConfirmar.incrementAndGet();
+        }
     }
+
+    /** Cuenta las recuperaciones solicitadas sin llegar a reiniciar el listener. */
+    static final AtomicInteger recuperacionesSinConfirmar = new AtomicInteger();
 
     /** Procesador controlable: exito, error de negocio o fallo transitorio. */
     static class Resultado implements QueryProcessor {
@@ -271,22 +317,17 @@ class QueryMessagingFlowTests {
     }
 
     @Test
-    void laColaFuncionalYElRetrySonDurablesYSinConsumerPropio() {
-        // Cola funcional y DLQ sin consumer propio; la de retry existe y no tiene listener.
+    void lasColasDelDominioSonDurablesYSinConsumerPropio() {
+        // Cola funcional, retry y DLQ existen, son durables y no tienen listener propio.
         assertThat(admin.getQueueInfo(COLA)).isNotNull();
         assertThat(admin.getQueueInfo(RETRY)).isNotNull();
         assertThat(admin.getQueueInfo(DLQ)).isNotNull();
         detenerListener();
-        assertThat(admin.getQueueInfo(RETRY).getConsumerCount()).isEqualTo(0);
-        assertThat(admin.getQueueInfo(DLQ).getConsumerCount()).isEqualTo(0);
-
-        // Y el mensaje en retry regresa a la cola funcional tras el TTL, sin renovar el plazo.
-        RequestEnvelope envelope = envelope(Instant.now(), Duration.ofSeconds(4));
-        rabbit.send("", RETRY, mensaje(envelope, "corr-ttl", 1));
-        Message devuelto = recibir(COLA);
-        assertThat(devuelto.getMessageProperties().getMessageId()).isEqualTo(envelope.messageId().toString());
-        assertThat(devuelto.getMessageProperties().getRetryCount()).isEqualTo(1L);
-        assertThat(contexto.leer(devuelto.getBody(), 262_144).expiresAt()).isEqualTo(envelope.expiresAt());
+        assertThat(admin.getQueueInfo(RETRY).getConsumerCount()).isZero();
+        assertThat(admin.getQueueInfo(DLQ).getConsumerCount()).isZero();
+        assertThat(consumer.topology().functional().isDurable()).isTrue();
+        assertThat(consumer.topology().retry().isDurable()).isTrue();
+        assertThat(consumer.topology().deadLetter().isDurable()).isTrue();
     }
 
     @Test
@@ -315,11 +356,24 @@ class QueryMessagingFlowTests {
         Message enRetry = rabbit.receive(RETRY, 5000);
         assertThat(enRetry).as("mensaje en la cola de retry").isNotNull();
         assertThat(enRetry.getMessageProperties().getMessageId()).isEqualTo(envelope.messageId().toString());
-        assertThat(enRetry.getMessageProperties().getRetryCount()).isEqualTo(1L);
-        assertThat((String) enRetry.getMessageProperties().getHeader("destino")).isEqualTo("retry");
-        RequestEnvelope releido = contexto.leer(enRetry.getBody(), 262_144);
-        assertThat(releido.messageId()).isEqualTo(envelope.messageId());
-        assertThat(releido.expiresAt()).isEqualTo(envelope.expiresAt());
+        assertThat(enRetry.getMessageProperties().getCorrelationId()).as("correlationId preservado")
+                .isEqualTo("corr-retry");
+        assertThat(enRetry.getMessageProperties().getReplyTo()).as("replyTo preservado")
+                .isEqualTo(RESPUESTAS);
+        // El handoff incrementa el contador: la entrega de retry llega con retry-count=1 y no vuelve a
+        // incrementarse, de modo que el segundo fallo agota el intento unico.
+        assertThat((int) enRetry.getMessageProperties().getRetryCount()).isEqualTo(1);
+
+        // La vuelta a la cola funcional la aporta la policy de plataforma de #69 (TTL + DLX): se
+        // simula su efecto marcando el intento consumido y republicando en el exchange de retry.
+        var conIntentoConsumido = enRetry.getMessageProperties();
+        conIntentoConsumido.setRetryCount(1);
+        conIntentoConsumido.setReceivedExchange(null);
+        conIntentoConsumido.setReceivedRoutingKey(null);
+        rabbit.send(properties.exchanges().retry(), consumer.topology().retryRoutingKey(),
+                new Message(enRetry.getBody(), conIntentoConsumido));
+        assertThat(admin.getQueueInfo(RETRY).getMessageCount()).as("el mensaje queda a la espera del TTL")
+                .isPositive();
     }
 
     @Test
@@ -333,7 +387,12 @@ class QueryMessagingFlowTests {
         assertThat(rabbit.receive(RETRY, 300)).as("no hay segundo retry").isNull();
         Message enDlq = recibir(DLQ);
         assertThat(enDlq.getMessageProperties().getMessageId()).isEqualTo(envelope.messageId().toString());
-        assertThat(enDlq.getMessageProperties().getRetryCount()).isEqualTo(1L);
+        assertThat(enDlq.getMessageProperties().getCorrelationId()).as("correlationId preservado en la DLQ")
+                .isEqualTo("corr-dlq");
+        // La transferencia a DLQ conserva el contador con el que llego la entrega: 1 en la entrega de
+        // retry, que es la que agota el intento unico.
+        assertThat((int) enDlq.getMessageProperties().getRetryCount()).isEqualTo(1);
+        assertThat((String) enDlq.getMessageProperties().getHeader("destino")).isEqualTo("dlq");
     }
 
     @Test
@@ -457,6 +516,121 @@ class QueryMessagingFlowTests {
         org.awaitility.Awaitility.await().atMost(Duration.ofSeconds(5))
                 .until(() -> correlacion.getReturned() != null);
         assertThat(correlacion.getReturned()).isNotNull();
+    }
+
+    /**
+     * El retry conserva las propiedades AMQP del request original.
+     *
+     * <p>Sin {@code correlationId} ni {@code replyTo} la respuesta del segundo intento no podria
+     * volver al BFF y un error de negocio acabaria en DLQ. Se verifica el ciclo completo: la cola de
+     * retry devuelve el mensaje tras el TTL conservando las propiedades y el plazo original.
+     */
+    @Test
+    void elRetryRealConservaCorrelationIdReplyToYPlazo() {
+        RequestEnvelope envelope = envelope(Instant.now(), Duration.ofSeconds(4));
+        detenerListener();
+        var metadatos = new MessageProperties();
+        metadatos.setMessageId(envelope.messageId().toString());
+        metadatos.setCorrelationId("corr-propiedades");
+        metadatos.setReplyTo(RESPUESTAS);
+        metadatos.setContentType("application/json");
+        metadatos.setContentEncoding("UTF-8");
+        metadatos.setAppId("pedidos360-prueba");
+        metadatos.setDeliveryMode(org.springframework.amqp.core.MessageDeliveryMode.PERSISTENT);
+        metadatos.setRetryCount(1);
+        metadatos.setHeader("dominio", COLA);
+        metadatos.setHeader("destino", "retry");
+
+        rabbit.send(properties.exchanges().retry(), "usuario.consultar-actual.retry.1s",
+                new Message(contexto.escribir(envelope), metadatos));
+
+        Message devuelto = recibir(COLA);
+        MessageProperties props = devuelto.getMessageProperties();
+        assertThat(props.getCorrelationId()).as("correlationId preservado tras el retry")
+                .isEqualTo("corr-propiedades");
+        assertThat(props.getReplyTo()).as("replyTo preservado tras el retry").isEqualTo(RESPUESTAS);
+        assertThat(props.getMessageId()).isEqualTo(envelope.messageId().toString());
+        assertThat(props.getAppId()).isEqualTo("pedidos360-prueba");
+        assertThat(props.getContentType()).isEqualTo("application/json");
+        assertThat(props.getContentEncoding()).isEqualTo("UTF-8");
+        assertThat((int) props.getRetryCount()).isEqualTo(1);
+        assertThat(props.getReceivedExchange()).as("el retorno limpia el origen anterior")
+                .isEqualTo(properties.exchanges().queries());
+        assertThat(contexto.leer(devuelto.getBody(), 262_144).expiresAt())
+                .as("el retry no renueva el plazo").isEqualTo(envelope.expiresAt());
+    }
+
+    /**
+     * Un 403 que aparece en la entrega de retry vuelve al BFF y NO termina en DLQ.
+     *
+     * <p>Es el caso que rompia el handoff anterior: al perder {@code replyTo} la respuesta de negocio
+     * no podia publicarse y el fallo se degradaba a transferencia a retry hasta agotarse en DLQ.
+     */
+    @Test
+    void unErrorDeNegocioEnLaEntregaDeRetryVuelveAlBffYNoVaADlq() throws Exception {
+        RequestEnvelope envelope = envelope(Instant.now(), Duration.ofSeconds(4));
+        detenerListener();
+        resultado.fallo.set(QueryBusinessException.prohibido("No pertenece al solicitante."));
+        Channel channel = mock(Channel.class);
+        consumer.consumir(mensaje(envelope, "corr-403-retry", 1), channel);
+
+        verify(channel, times(1)).basicAck(7, false);
+        Message respuesta = recibir(RESPUESTAS);
+        assertThat(new String(respuesta.getBody(), StandardCharsets.UTF_8)).contains("\"success\":false")
+                .contains("\"status\":403").contains("ACCESO_DENEGADO");
+        assertThat(respuesta.getMessageProperties().getCorrelationId()).isEqualTo("corr-403-retry");
+        assertThat(rabbit.receive(RETRY, 300)).as("un 403 no se reintenta").isNull();
+        assertThat(rabbit.receive(DLQ, 300)).as("un 403 no va a DLQ").isNull();
+    }
+
+    /** Un 404 de recurso concreto en la entrega de retry tambien vuelve correlacionado al BFF. */
+    @Test
+    void unNotFoundConcretoEnLaEntregaDeRetryVuelveAlBffYNoVaADlq() throws Exception {
+        RequestEnvelope envelope = envelope(Instant.now(), Duration.ofSeconds(4));
+        detenerListener();
+        resultado.fallo.set(QueryBusinessException.noEncontrado("Perfil no habilitado."));
+        Channel channel = mock(Channel.class);
+        consumer.consumir(mensaje(envelope, "corr-404-retry", 1), channel);
+
+        verify(channel, times(1)).basicAck(7, false);
+        Message respuesta = recibir(RESPUESTAS);
+        assertThat(new String(respuesta.getBody(), StandardCharsets.UTF_8)).contains("\"status\":404");
+        assertThat(respuesta.getMessageProperties().getCorrelationId()).isEqualTo("corr-404-retry");
+        assertThat(rabbit.receive(DLQ, 300)).as("un 404 de recurso concreto no va a DLQ").isNull();
+    }
+
+    /** Un 409 tambien se responde correlacionado, sin retry y sin DLQ. */
+    @Test
+    void unConflictoSeRespondeCorrelacionadoSinRetryNiDlq() throws Exception {
+        RequestEnvelope envelope = envelope(Instant.now(), Duration.ofSeconds(4));
+        detenerListener();
+        resultado.fallo.set(QueryBusinessException.conflicto("La version cambio durante la operacion."));
+        Channel channel = mock(Channel.class);
+        consumer.consumir(mensaje(envelope, "corr-409", 0), channel);
+
+        verify(channel, times(1)).basicAck(7, false);
+        Message respuesta = recibir(RESPUESTAS);
+        assertThat(new String(respuesta.getBody(), StandardCharsets.UTF_8)).contains("\"success\":false")
+                .contains("\"status\":409");
+        assertThat(respuesta.getMessageProperties().getCorrelationId()).isEqualTo("corr-409");
+        assertThat(rabbit.receive(RETRY, 300)).as("un 409 no se reintenta").isNull();
+        assertThat(rabbit.receive(DLQ, 300)).as("un 409 no va a DLQ").isNull();
+    }
+
+    /** Un {@code replyTo} fuera del contrato se rechaza y la respuesta no se publica. */
+    @Test
+    void unReplyToArbitrarioNoAutorizaLaRespuesta() {
+        RequestEnvelope envelope = envelope(Instant.now(), Duration.ofSeconds(4));
+        detenerListener();
+        var publicador = new cl.duoc.pedidos360.messaging.relay.RequestPublisher(rabbit, contexto, properties,
+                "pedidos360-prueba");
+        assertThatThrownBy(() -> publicador.publicar(envelope, null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> publicador.publicar(envelope, "  "))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThat(publicador.replyToPermitido()).isEqualTo(RESPUESTAS);
+        assertThat(properties.queues().responses()).isEqualTo(RESPUESTAS);
+        assertThat(rabbit.receive(RESPUESTAS, 200)).as("no se publico nada").isNull();
     }
 
     @Test

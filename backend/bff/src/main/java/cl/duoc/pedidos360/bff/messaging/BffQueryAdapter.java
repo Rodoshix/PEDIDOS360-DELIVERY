@@ -37,9 +37,10 @@ import tools.jackson.databind.JsonNode;
  *
  * <p>Garantias cubiertas:
  * <ul>
- *   <li>plazo absoluto configurable, sin reintentos implicitos;</li>
+ *   <li>plazo absoluto configurable, sin reintentos implicitos: la publicacion confirmada descuenta su
+ *       tiempo del presupuesto, de modo que confirm + espera nunca superan el deadline;</li>
  *   <li>descarte de respuestas tardias o duplicadas por parte del registro de correlaciones;</li>
- *   <li>limpieza de la correlacion al vencer o al cancelar la espera;</li>
+ *   <li>limpieza de la correlacion al vencer, al cancelar la espera o al cerrar el BFF;</li>
  *   <li>broker no disponible o publicacion sin ruta: error equivalente al HTTP 502;</li>
  *   <li>plazo agotado: error equivalente al HTTP 504.</li>
  * </ul>
@@ -97,17 +98,22 @@ public class BffQueryAdapter {
                 java.time.Instant.now());
         CompletableFuture<byte[]> espera = correlaciones.registrar(plan.correlationId());
         long inicio = System.nanoTime();
+        long presupuesto = properties.deadline().toNanos();
         try {
-            publicador.publicar(plan.envelope(), plan.correlationId());
-            byte[] cuerpo = espera.get(properties.deadline().toMillis(), TimeUnit.MILLISECONDS);
+            long consumido = publicador.publicarConMedicion(plan.envelope(), plan.correlationId());
+            // El deadline es absoluto: la espera de la respuesta recibe solo lo que queda del
+            // presupuesto, no un plazo nuevo. Antes se sumaban confirm (3 s) + espera (5 s).
+            long restante = presupuesto - consumido;
+            if (restante <= 0) throw new TimeoutException("presupuesto agotado en la publicacion");
+            byte[] cuerpo = espera.get(restante, TimeUnit.NANOSECONDS);
             return resolver(plan, cuerpo, System.nanoTime() - inicio);
         } catch (QueryUnavailableException sinBroker) {
             correlaciones.descartar(plan.correlationId());
             throw sinBroker;
         } catch (TimeoutException vencido) {
             correlaciones.descartar(plan.correlationId());
-            log.warn("Consulta domain={} correlationId={} plazo agotado tras {} ms", domain, plan.correlationId(),
-                    properties.deadline().toMillis());
+            log.warn("Consulta domain={} correlationId={} presupuesto de {} ms agotado", domain,
+                    plan.correlationId(), properties.deadline().toMillis());
             throw new QueryTimeoutException("plazo de la consulta agotado");
         } catch (InterruptedException interrumpido) {
             correlaciones.descartar(plan.correlationId());
@@ -117,6 +123,14 @@ public class BffQueryAdapter {
             correlaciones.descartar(plan.correlationId());
             throw new QueryUnavailableException("la espera de la consulta fallo", fallo.getCause());
         }
+    }
+
+    /** Cancela las correlaciones en vuelo: el apagado no debe dejar esperas huerfanas. */
+    @jakarta.annotation.PreDestroy
+    public void alCerrar() {
+        int canceladas = correlaciones.cancelarTodo();
+        if (canceladas > 0)
+            log.warn("BFF cerrando: {} correlaciones en vuelo canceladas", canceladas);
     }
 
     /** Resuelve el cuerpo de la respuesta en el resultado equivalente al contrato HTTP. */

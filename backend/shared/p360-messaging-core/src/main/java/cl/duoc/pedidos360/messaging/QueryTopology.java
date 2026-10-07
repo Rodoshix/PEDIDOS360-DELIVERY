@@ -20,10 +20,16 @@ import org.springframework.amqp.core.QueueBuilder;
  *
  * <pre>
  * p360.queries  --routing key del dominio-->   cola funcional        (ACK manual desde el consumer)
- * cola funcional --x-dead-letter-exchange-->   p360.retry            (retry corto, un intento)
- * retry         --x-dead-letter-exchange-->    p360.queries          (vuelve a la cola funcional)
- * cola funcional --x-dead-letter-exchange-->   p360.dlx              (fallo definitivo)
+ * cola funcional --x-dead-letter-exchange-->   p360.retry            (retry corto, un intento)   [policy]
+ * retry         --x-dead-letter-exchange-->    p360.queries          (vuelve a la cola funcional) [policy]
+ * cola funcional --x-dead-letter-exchange-->   p360.dlx              (fallo definitivo)           [policy]
  * </pre>
+ *
+ * <p>Las tres transferencias programadas del broker (marcadas {@code [policy]}) las configura la
+ * plataforma de #69 con policies por cola, no con argumentos de cola. Esta clase declara colas,
+ * exchanges y bindings <strong>sin</strong> {@code x-message-ttl}, {@code x-dead-letter-exchange} ni
+ * {@code x-dead-letter-routing-key}: asi la redeclaracion de la aplicacion es compatible con el
+ * inventario ya aprovisionado y no provoca {@code PRECONDITION_FAILED}.
  *
  * <p>Este tipo no declara nada por si mismo: {@link #declarations()} entrega los objetos para que el
  * servicio los registre como beans. La decision de declarar la topologia completa corresponde a #69,
@@ -98,25 +104,27 @@ public final class QueryTopology {
         return endpoint.mapNotFound();
     }
 
-    /** Cola funcional: durable, con DLX hacia el retry corto de su dominio. */
+    /**
+     * Cola funcional: durable y sin argumentos propios.
+     *
+     * <p>El DLX hacia el retry corto y la routing key de fallo <strong>no</strong> se declaran aqui:
+     * son propiedad de las policies de la plataforma de #69. Declararlos como argumentos inmutables
+     * obligaria al broker a compararlos con la policy efectiva y produciria
+     * {@code PRECONDITION_FAILED} al redeclarar una cola ya aprovisionada.
+     */
     public Queue functional() {
-        return QueueBuilder.durable(queue())
-                .deadLetterExchange(properties.exchanges().retry())
-                .deadLetterRoutingKey(retryRoutingKey())
-                .build();
+        return QueueBuilder.durable(queue()).build();
     }
 
     /**
-     * Cola de retry corto: durable, sin consumer, con TTL aprobado y retorno a la cola funcional.
+     * Cola de retry corto: durable, sin consumer y sin argumentos propios.
      *
      * <p>Su unica funcion es devolver el mensaje tras el TTL; no reintenta en bucle ni renueva plazo.
+     * El TTL ({@code message-ttl}) y el retorno a la cola funcional son propiedad de la policy
+     * {@code ep2-<cola>} de #69, no de esta declaracion.
      */
     public Queue retry() {
-        return QueueBuilder.durable(retryQueue())
-                .ttl((int) properties.retryDelay().toMillis())
-                .deadLetterExchange(properties.exchanges().queries())
-                .deadLetterRoutingKey(routingKey())
-                .build();
+        return QueueBuilder.durable(retryQueue()).build();
     }
 
     /** DLQ del dominio: durable, sin consumer y sin replay automatico. */

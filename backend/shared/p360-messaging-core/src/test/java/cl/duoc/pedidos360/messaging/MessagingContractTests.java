@@ -60,7 +60,7 @@ class MessagingContractTests {
                         "producto.listar-disponibles.v1", "pago.consultar.v1", "usuario.consultar-actual",
                         "restaurante.listar", "producto.listar-disponibles", "pago.consultar"),
                 Duration.ofSeconds(5), Duration.ofSeconds(4), Duration.ofSeconds(1), Duration.ofSeconds(3),
-                Duration.ofMillis(500), 2, 1024, 262_144);
+                Duration.ofMillis(200), false, 1024, 262_144);
     }
 
     static SigningKeyProvider claves() {
@@ -224,21 +224,30 @@ class MessagingContractTests {
     }
 
     @Test
-    void colaFuncionalDeclaraRetryCortoConTtlAprobadoYRetornoALaMismaCola() {
+    void lasColasDelDominioNoDeclaranArgumentosQuePertenecenALasPoliciesDePlataforma() {
         QueryTopology productos = QueryTopology.of(propiedades(), Domain.PRODUCTOS);
         Queue funcional = productos.functional();
         assertThat(funcional.isDurable()).isTrue();
-        assertThat(funcional.getArguments()).containsEntry("x-dead-letter-exchange", "p360.retry")
-                .containsEntry("x-dead-letter-routing-key", "producto.listar-disponibles.retry.1s");
+        assertThat(funcional.getArguments()).as("el DLX de la funcional es propiedad de la policy de #69").isEmpty();
+
         Queue retry = productos.retry();
         assertThat(retry.isDurable()).isTrue();
-        assertThat(retry.getArguments()).containsEntry("x-message-ttl", 1000)
-                .containsEntry("x-dead-letter-exchange", "p360.queries")
-                .containsEntry("x-dead-letter-routing-key", "producto.listar-disponibles.v1");
+        assertThat(retry.getArguments()).as("el TTL y el retorno del retry son propiedad de la policy de #69")
+                .isEmpty();
+
+        Queue dlq = productos.deadLetter();
+        assertThat(dlq.isDurable()).isTrue();
+        assertThat(dlq.getArguments()).isEmpty();
+
+        // Pese a no declarar argumentos, la estructura logica (nombres, exchanges y bindings) se conserva.
         assertThat(productos.declarations().getDeclarables())
                 .as("3 exchanges, 3 colas y 3 bindings").hasSize(9);
-        assertThat(productos.bindings()).containsKeys("p360.productos.consultas.q",
-                "p360.productos.consultas.retry.1s.q", "p360.productos.consultas.dlq");
+        assertThat(productos.bindings()).containsEntry("p360.productos.consultas.q", "p360.queries -> "
+                + "producto.listar-disponibles.v1").containsEntry("p360.productos.consultas.retry.1s.q",
+                        "p360.retry -> producto.listar-disponibles.retry.1s")
+                .containsEntry("p360.productos.consultas.dlq", "p360.dlx -> producto.listar-disponibles.failed");
+        assertThat(productos.retryRoutingKey()).isEqualTo("producto.listar-disponibles.retry.1s");
+        assertThat(productos.failedRoutingKey()).isEqualTo("producto.listar-disponibles.failed");
     }
 
     @Test
@@ -339,7 +348,7 @@ class MessagingContractTests {
                         "producto.listar-disponibles.v1", "pago.consultar.v1", "usuario.consultar-actual",
                         "restaurante.listar", "producto.listar-disponibles", "pago.consultar"),
                 Duration.ofSeconds(5), Duration.ofSeconds(4), Duration.ofSeconds(1), Duration.ofSeconds(3),
-                Duration.ofMillis(500), 2, 1024, 262_144);
+                Duration.ofMillis(200), false, 1024, 262_144);
         assertThat(incompleta.isNombresValidos()).isFalse();
         assertThat(propiedades().isNombresValidos()).isTrue();
         assertThat(propiedades().isPlantillasValidas()).isTrue();
