@@ -89,6 +89,7 @@ Una misión solo se considera terminada cuando cumple:
 La planificación fue integrada mediante PR #75. El núcleo de #65/#66 fue integrado mediante PR #76 (22f5c4d) y sus issues están completados; el corte y la política completa de fallos siguen pendientes.
 
 - [Implementación, convivencia HTTP y evidencia del núcleo](NUCLEO-RABBITMQ.md).
+- [Base común request/reply y reliability simple (#77)](REQUEST-REPLY-RABBITMQ.md).
 - [Plan de actividades e issues reales](PLAN-ACTIVIDADES.md).
 - Misiones: [Integrante 1](misiones/INTEGRANTE-1.md), [Integrante 2](misiones/INTEGRANTE-2.md), [Integrante 3](misiones/INTEGRANTE-3.md), [Integrante 4](misiones/INTEGRANTE-4.md) e [Integrante 5](misiones/INTEGRANTE-5.md).
 - Las ramas restantes se crean al iniciar la misión correspondiente. El seguimiento usa Issues, PRs y el plan versionado.

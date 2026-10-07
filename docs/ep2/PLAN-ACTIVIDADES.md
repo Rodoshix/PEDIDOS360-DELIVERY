@@ -109,4 +109,6 @@ Fuente: [adenda aprobada](ADENDA-RABBITMQ-6-SERVICIOS.md). Objetivo 21 queues/7 
 
 #68 conserva reliability avanzada de Pedidos. #69 plataforma ampliada; #70 cortes graduales. #77 entrega base simple separada. No reasignar misiones anteriores sin confirmar responsable.
 
+Nota de avance: #77 está implementado y en revisión mediante PR (rama `feature/ep2-rabbit-request-reply`). La base común vive en `backend/shared/p360-messaging-core` y su diseño implementado está en [REQUEST-REPLY-RABBITMQ.md](REQUEST-REPLY-RABBITMQ.md). #78 a #81 siguen pendientes: deben aportar su procesador de dominio, `QueryInvoker` y su prueba extremo a extremo. La declaración operativa de la topología sigue coordinada con #69.
+
 Orden: adenda integrada → #77 y #69 coordinados → #78/#79/#80/#81; #68 en paralelo. #82 requiere contrato/vinculación revisados, base #77 y plataforma suficiente #69; su outbox es entregable propio. #70 depende de todas las piezas para cierre completo. Las ramas de los issues son sugerencias futuras; no creadas aquí. Seguimiento mediante Issues, PRs y este plan.
