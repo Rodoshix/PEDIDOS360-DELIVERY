@@ -11,7 +11,8 @@ del conteo docente. El BFF participa técnicamente en request/reply.
 
 Esta adenda registra diseño aprobado y trabajo pendiente, no implementación ni
 activación. HTTP sigue siendo el modo predeterminado. #64/#65/#66 están completados;
-#68/#69/#70 continúan pendientes. No se crean ramas de implementación en este cambio.
+#68/#69/#70 continuaban pendientes al incorporar la adenda por PR #83.
+Este párrafo conserva el contexto de esa incorporación; ver estado posterior abajo.
 
 ## Necesidad real y adaptación docente
 
@@ -183,6 +184,18 @@ Riesgos: pérdida de autorización fuera de HTTP; vaciado tardío; dual-write; A
 de handoff; respuestas tardías/duplicadas; TTL que renueve deadlines; tipos de cola
 incompatibles; doble ejecución durante corte; consumo de recursos/backlog. Medir
 CPU/RAM/disco en #69. La cantidad de colas no autoriza cluster ni cambios AWS.
+
+## Estado posterior: reliability y plataforma
+
+#68 fue integrado mediante PR #84 (ff40c7d) y cerrado como COMPLETED después de
+verificar arquitectura/pruebas. #69 incorpora la plataforma local reproducible;
+ver [PLATAFORMA-RABBITMQ.md](PLATAFORMA-RABBITMQ.md) para tipos, argumentos, policies,
+permisos, health y evidencia. Son 21 queues quorum, 7 exchanges direct y 20 bindings
+personalizados, sin alterar nombres/contratos ni implementar adapters #77–#82.
+Principal Pedidos conserva argumentos; quorum es default explícito. DLQ tiene policy
+exacta de retención independiente del límite 5. TTL simple inicial 1000 por policy.
+Request/reply conserva deadline y autorización como responsabilidades de #77.
+No se activa coordinación oficial: #70 mantiene corte/rollback y #71 AWS pendientes.
 
 Contraste: servicios reales y Graphify; UsuarioService.obtenerActual(),
 RestauranteService.listar(), ProductoService.listarDisponiblesPorRestaurante(),

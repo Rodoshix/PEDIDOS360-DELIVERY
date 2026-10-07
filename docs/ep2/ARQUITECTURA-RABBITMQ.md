@@ -240,4 +240,16 @@ Las secciones anteriores conservan el diseño y semántica del núcleo Pago → 
 
 Topología objetivo: 21 queues (6 funcionales, 8 retries, 6 DLQ, 1 respuesta BFF) y 7 exchanges personalizados direct. Mantener los tres p360.pedidos.*; añadir p360.commands, p360.queries, p360.retry y p360.dlx. No migración destructiva ni p360.events.
 
-Pedidos conserva retry 5/30/120. Otros cinco dominios: un retry corto configurable (inicial 1 s) y DLQ propia. Cuatro consultas existentes cambian solo transporte interno; Carrito requiere outbox en Pedidos, vinculación verificada y versión. Las políticas nuevas no están implementadas. HTTP predeterminado y corte exclusivo por flujo en #70; el scheduler HTTP puede seguir atendiendo históricos de modo HTTP según NUCLEO-RABBITMQ.md.
+Pedidos conserva retry 5/30/120. Otros cinco dominios: un retry corto configurable (inicial 1 s) y DLQ propia. Cuatro consultas existentes cambian solo transporte interno; Carrito requiere outbox en Pedidos, vinculación verificada y versión. HTTP predeterminado y corte exclusivo por flujo en #70; el scheduler HTTP puede seguir atendiendo históricos de modo HTTP según NUCLEO-RABBITMQ.md.
+
+## 13. Plataforma local implementada en #69
+
+[PLATAFORMA-RABBITMQ.md](PLATAFORMA-RABBITMQ.md) especifica inventario completo,
+tipos/argumentos/policies, permisos, runbook y evidencia. Topología aprobada intacta:
+21 queues quorum y 7 exchanges direct, broker RabbitMQ 4.1.8 local separado y volumen
+persistente. Default quorum compatible con las declaraciones actuales; no migración
+de queues previas. Policies exactas separan delivery-limit=5 de principal y -1 de DLQ.
+Retries simples usan TTL configurable por policy; Pedidos conserva argumentos 5/30/120.
+Aplicaciones preaprovisionadas con credenciales restringidas y spring.rabbitmq.dynamic=false.
+HTTP/platform-ready predeterminados no cambian. #77–#82 implementan lógica adicional;
+#70 coordina activación y #71 AWS. Un nodo quorum no ofrece HA de host.
