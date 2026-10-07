@@ -86,3 +86,16 @@ pedidos360:
     batch-size: 10
     dispatch-interval-ms: 5000
     publisher-retry-delay: 30s
+    reliability:
+      platform-ready: ${PEDIDOS360_RELIABILITY_PLATFORM_READY:false}
+      retry-exchange: p360.pedidos.retry
+      dlx: p360.pedidos.dlx
+      dlq: p360.pedidos.confirmacion.dlq
+      failed-routing-key: pedido.confirmar.failed
+      retry5-queue: p360.pedidos.confirmacion.retry.5s.q
+      retry30-queue: p360.pedidos.confirmacion.retry.30s.q
+      retry120-queue: p360.pedidos.confirmacion.retry.120s.q
+      retry5-key: pedido.confirmar.retry.5s
+      retry30-key: pedido.confirmar.retry.30s
+      retry120-key: pedido.confirmar.retry.120s
+      recovery-backoff: 5s

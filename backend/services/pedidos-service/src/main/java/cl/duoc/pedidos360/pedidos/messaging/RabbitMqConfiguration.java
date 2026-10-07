@@ -4,9 +4,10 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.boot.autoconfigure.condition.*;
 import org.springframework.context.annotation.*;
-import org.slf4j.LoggerFactory;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @Configuration(proxyBeanMethods=false)
+@EnableConfigurationProperties(ConfirmacionReliabilityProperties.class)
 @ConditionalOnProperty(prefix="pedidos360.messaging",name="coordination-mode",havingValue="RABBITMQ")
 public class RabbitMqConfiguration {
     @Bean DirectExchange pedidosCommandsExchange(RabbitProperties p) { return new DirectExchange(p.exchanges().commands(),true,false); }
@@ -16,21 +17,24 @@ public class RabbitMqConfiguration {
     }
     @Bean SimpleRabbitListenerContainerFactory confirmacionListenerFactory(ConnectionFactory cf) {
         var factory=new SimpleRabbitListenerContainerFactory();
+        factory.setContainerCustomizer(c -> c.setMessagePropertiesConverter(new ConfirmacionMessagePropertiesConverter()));
         factory.setConnectionFactory(cf); factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-        factory.setPrefetchCount(1); factory.setConcurrentConsumers(1); factory.setMaxConcurrentConsumers(1);
+        factory.setForceStop(true); factory.setRecoveryInterval(5000L); factory.setPrefetchCount(1); factory.setConcurrentConsumers(1); factory.setMaxConcurrentConsumers(1);
         return factory;
     }
-    @Bean @ConditionalOnMissingBean(PedidoConfirmacionFailureHandler.class)
-    PedidoConfirmacionFailureHandler pendingReliabilityPolicy() {
-        // Deliberately retain unacked; no implicit framework requeue loop or competing policy.
-        // Prefetch=1 stops this consumer until #68 settles failures or channel is restarted.
-        return (message,channel,failure) -> LoggerFactory.getLogger(PedidoConfirmacionFailureHandler.class)
-            .error("Confirmation messageId={} retained UNACKED: failure={} reason={}",
-                safeMessageId(message),failure.getClass().getSimpleName(),
-                failure instanceof ConfirmacionDefinitivaException d?d.reason():"UNEXPECTED");
+    @Bean ConfirmacionErrorClassifier confirmacionErrorClassifier() { return new ConfirmacionErrorClassifier(); }
+    @Bean ConfirmacionRetryPublisher confirmacionRetryPublisher(org.springframework.amqp.rabbit.core.RabbitTemplate template,RabbitProperties p,ConfirmacionReliabilityProperties r) { return new ConfirmacionRetryPublisher(template,p,r); }
+    @Bean ConfirmacionFailureReporter confirmacionFailureReporter(tools.jackson.databind.json.JsonMapper json) { return new ConfirmacionFailureReporter(json); }
+    @Bean(destroyMethod="close") ConfirmacionConsumerRecovery confirmacionConsumerRecovery(org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry registry,ConfirmacionReliabilityProperties r) { return new ConfirmacionConsumerRecovery(registry,r); }
+    @Bean PedidoConfirmacionFailureHandler pedidoConfirmacionFailureHandler(ConfirmacionErrorClassifier c,ConfirmacionRetryPublisher p,ConfirmacionConsumerRecovery recovery,ConfirmacionFailureReporter reporter,ConfirmacionReliabilityProperties r) { return new DefaultPedidoConfirmacionFailureHandler(c,p,recovery,reporter,r); }
+    @Bean Declarables confirmacionReliabilityTopology(RabbitProperties p,ConfirmacionReliabilityProperties r) {
+        var retry=new DirectExchange(r.retryExchange(),true,false); var dlx=new DirectExchange(r.dlx(),true,false);
+        var q5=retryQueue(r.retry5Queue(),5000,p); var q30=retryQueue(r.retry30Queue(),30000,p); var q120=retryQueue(r.retry120Queue(),120000,p);
+        // Queue type and DLQ delivery-limit belong to platform #69, not this declaration.
+        var dlq=QueueBuilder.durable(r.dlq()).build();
+        return new Declarables(retry,dlx,q5,q30,q120,dlq,
+            BindingBuilder.bind(q5).to(retry).with(r.retry5Key()),BindingBuilder.bind(q30).to(retry).with(r.retry30Key()),
+            BindingBuilder.bind(q120).to(retry).with(r.retry120Key()),BindingBuilder.bind(dlq).to(dlx).with(r.failedRoutingKey()));
     }
-    private static String safeMessageId(Message message) {
-        try { return java.util.UUID.fromString(message.getMessageProperties().getMessageId()).toString(); }
-        catch (RuntimeException invalid) { return "INVALID"; }
-    }
+    private Queue retryQueue(String name,int ttl,RabbitProperties p) { return QueueBuilder.durable(name).ttl(ttl).deadLetterExchange(p.exchanges().commands()).deadLetterRoutingKey(p.routingKeys().confirmar()).build(); }
 }

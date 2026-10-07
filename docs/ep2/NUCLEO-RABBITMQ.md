@@ -1,7 +1,8 @@
 # Núcleo RabbitMQ — implementación de #65 y #66
 
-Responsable: Integrante 1. Esta entrega implementa el núcleo y prepara la integración;
-no activa el corte de producción ni implementa #67, #68, #69 o #70.
+Responsable original: Integrante 1. La entrega #65/#66 implementó el núcleo y preparó
+la integración sin activar el corte ni implementar #67/#68/#69/#70. La ampliación
+posterior #68 descrita aquí agrega reliability; plataforma #69 y corte #70 siguen pendientes.
 La arquitectura y el contrato V1 aprobados siguen siendo la fuente de verdad.
 
 ## Flujo implementado
@@ -93,9 +94,12 @@ El scheduler solo consulta pagos HTTP: puede resolver históricos mientras el
 dispatcher publica los nuevos pagos RabbitMQ. No coordinan el mismo Pago.
 No se migra automáticamente un Pago histórico ni se cambia su modo por un reintento.
 
-En RABBITMQ se habilitan publisher/dispatcher en Pagos y listener/declaración mínima
-en Pedidos. Pedidos declara únicamente exchange principal durable, Queue durable y
-Binding principal. Retry/DLX/DLQ quedan para #68 y plataforma/vhosts/usuarios para #69.
+En RABBITMQ se habilitan publisher/dispatcher en Pagos y declaraciones en Pedidos.
+El listener requiere además reliability.platform-ready=true, deshabilitado por defecto.
+La declaración original de Pedidos contenía exchange principal, Queue durable y
+Binding principal. #68 añade exchanges retry/DLX, colas retry/DLQ y bindings; ver
+RELIABILITY-RABBITMQ.md. Plataforma/vhosts/usuarios y policies de la principal
+siguen en #69.
 La salud Rabbit queda deshabilitada inicialmente para preservar `/actuator/health`
 en HTTP sin requerir broker; su integración operativa queda para #69/#70.
 
@@ -122,12 +126,20 @@ campos duplicados o contenido JSON posterior. No consulta Pagos ni invoca HTTP.
 La fábrica usa ACK MANUAL, prefetch 1 y concurrencia 1. ACK ocurre tras el servicio
 transaccional. Si se pierde después del commit, la redelivery no repite el efecto.
 
-El handler provisional **mantiene el fallo sin ACK** y registra su clase/razón;
-con prefetch 1 ese consumidor queda detenido hasta intervención/reinicio del canal.
-Esto es una limitación explícita del núcleo, no una política final de retry/DLQ.
-El bean es sustituible por #68 sin reescribir el listener ni el servicio. #68 debe
-implementar NACK, transferencia confirmada a retry, agotamiento, DLQ, replay y
-pruebas avanzadas. El fallo provisional no provoca un ciclo automático de requeue.
+El handler provisional del PR #76 fue reemplazado en #68 por
+DefaultPedidoConfirmacionFailureHandler: clasificación, retries confirmados 5/30/120,
+NACK sin requeue y recuperación del container con backoff para handoff/ACK incierto.
+La corrección de auditoría de PR #84 conserva solicitudes durante stop/start con
+estados, pending y tokens; close/ContextClosedEvent cancela reinicios pendientes.
+Ver [RELIABILITY-RABBITMQ.md](RELIABILITY-RABBITMQ.md) para componentes, runbook y
+pruebas. No queda bean pendingReliabilityPolicy activo.
+
+La principal conserva su declaración compatible sin tipo/DLX hardcodeados;
+#69 debe proporcionar las policies quorum/dead-lettering/delivery-limit, incluida
+retención de DLQ independiente del límite 5 de la principal. Ninguna declaración
+de #68 fuerza tipos de queue ni x-delivery-limit en la DLQ. Listener
+con autoStartup condicionado a reliability.platform-ready=false por defecto hasta
+verificarlas. HTTP sigue predeterminado; activación/corte corresponde a #70.
 
 ## Evidencia reproducible
 
@@ -164,3 +176,7 @@ encuentran en `target/surefire-reports/` de cada servicio, fuera de Git.
 #65/#66 fueron integrados mediante PR #76 en develop (22f5c4d) y están completados. Las cifras de pruebas anteriores corresponden a esa entrega, no a una nueva ejecución en esta actualización documental.
 
 La [adenda de seis servicios](ADENDA-RABBITMQ-6-SERVICIOS.md) amplía el objetivo futuro a 21 queues/7 exchanges. Este documento sigue describiendo el núcleo realmente implementado: no hay consumers nuevos, outbox de Carrito ni cortes adicionales. HTTP predeterminado y ConfirmarPedidoPorPago V1 se conservan. #68 completa reliability de Pedidos; base simple/consultas/Carrito tienen issues separados; #69 plataforma ampliada; #70 cortes graduales.
+
+## Evidencia de #68
+
+Los resultados históricos anteriores son del núcleo #65/#66. Consultar RELIABILITY-RABBITMQ.md para evidencia de la política avanzada y sus límites; no implementa la ampliación #77–#82.
