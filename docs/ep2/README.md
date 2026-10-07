@@ -86,8 +86,9 @@ Una misión solo se considera terminada cuando cumple:
 
 ## Organización y seguimiento
 
-Esta incorporación agrega exclusivamente documentación y planificación; RabbitMQ todavía no está implementado.
+La planificación fue integrada mediante PR #75. El núcleo de #65/#66 está implementado en la rama `feature/ep2-rabbit-core`, sujeto a revisión; el corte y la política completa de fallos siguen pendientes.
 
+- [Implementación, convivencia HTTP y evidencia del núcleo](NUCLEO-RABBITMQ.md).
 - [Plan de actividades e issues reales](PLAN-ACTIVIDADES.md).
 - Misiones: [Integrante 1](misiones/INTEGRANTE-1.md), [Integrante 2](misiones/INTEGRANTE-2.md), [Integrante 3](misiones/INTEGRANTE-3.md), [Integrante 4](misiones/INTEGRANTE-4.md) e [Integrante 5](misiones/INTEGRANTE-5.md).
-- Las ramas de las misiones son sugerencias futuras; esta incorporación solo crea la rama de documentación.
+- Las ramas restantes se crean al iniciar la misión correspondiente. El seguimiento usa Issues, PRs y el plan versionado.

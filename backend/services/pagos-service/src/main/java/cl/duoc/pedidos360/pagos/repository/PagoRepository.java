@@ -17,5 +17,6 @@ public interface PagoRepository extends JpaRepository<Pago, Long> {
     boolean existsByPedidoIdAndEstadoIn(Long pedidoId, List<EstadoPago> estados);
 
     /** Pagos activos cuya coordinación con Pedidos todavía no se aplicó (para reconciliación). */
-    List<Pago> findByPedidoConfirmadoFalseAndEstadoIn(List<EstadoPago> estados);
+    List<Pago> findByPedidoConfirmadoFalseAndEstadoInAndCoordinacion(List<EstadoPago> estados,
+            cl.duoc.pedidos360.pagos.messaging.RabbitProperties.Mode coordinacion);
 }
