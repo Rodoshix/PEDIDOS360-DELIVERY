@@ -129,11 +129,15 @@ transaccional. Si se pierde después del commit, la redelivery no repite el efec
 El handler provisional del PR #76 fue reemplazado en #68 por
 DefaultPedidoConfirmacionFailureHandler: clasificación, retries confirmados 5/30/120,
 NACK sin requeue y recuperación del container con backoff para handoff/ACK incierto.
+La corrección de auditoría de PR #84 conserva solicitudes durante stop/start con
+estados, pending y tokens; close/ContextClosedEvent cancela reinicios pendientes.
 Ver [RELIABILITY-RABBITMQ.md](RELIABILITY-RABBITMQ.md) para componentes, runbook y
 pruebas. No queda bean pendingReliabilityPolicy activo.
 
 La principal conserva su declaración compatible sin tipo/DLX hardcodeados;
-#69 debe proporcionar las policies quorum/dead-lettering/delivery-limit. Listener
+#69 debe proporcionar las policies quorum/dead-lettering/delivery-limit, incluida
+retención de DLQ independiente del límite 5 de la principal. Ninguna declaración
+de #68 fuerza tipos de queue ni x-delivery-limit en la DLQ. Listener
 con autoStartup condicionado a reliability.platform-ready=false por defecto hasta
 verificarlas. HTTP sigue predeterminado; activación/corte corresponde a #70.
 

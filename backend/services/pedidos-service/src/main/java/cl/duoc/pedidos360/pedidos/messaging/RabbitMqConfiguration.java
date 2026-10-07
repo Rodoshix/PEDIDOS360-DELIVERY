@@ -30,7 +30,8 @@ public class RabbitMqConfiguration {
     @Bean Declarables confirmacionReliabilityTopology(RabbitProperties p,ConfirmacionReliabilityProperties r) {
         var retry=new DirectExchange(r.retryExchange(),true,false); var dlx=new DirectExchange(r.dlx(),true,false);
         var q5=retryQueue(r.retry5Queue(),5000,p); var q30=retryQueue(r.retry30Queue(),30000,p); var q120=retryQueue(r.retry120Queue(),120000,p);
-        var dlq=QueueBuilder.durable(r.dlq()).withArgument("x-delivery-limit",-1).build();
+        // Queue type and DLQ delivery-limit belong to platform #69, not this declaration.
+        var dlq=QueueBuilder.durable(r.dlq()).build();
         return new Declarables(retry,dlx,q5,q30,q120,dlq,
             BindingBuilder.bind(q5).to(retry).with(r.retry5Key()),BindingBuilder.bind(q30).to(retry).with(r.retry30Key()),
             BindingBuilder.bind(q120).to(retry).with(r.retry120Key()),BindingBuilder.bind(dlq).to(dlx).with(r.failedRoutingKey()));

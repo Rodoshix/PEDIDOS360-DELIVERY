@@ -54,6 +54,19 @@ class ReliabilityPolicyTests {
   for(var failure:List.of(new DataAccessResourceFailureException("db"),new CannotAcquireLockException("deadlock"),new OptimisticLockingFailureException("lock"),new IllegalStateException())) assertThat(c.classify(failure)).isEqualTo(ConfirmacionErrorClassifier.Classification.TRANSITORIO);
   assertThat(c.classify(new java.io.IOException())).isEqualTo(ConfirmacionErrorClassifier.Classification.INFRAESTRUCTURA);
  }
+ @Test void definitivosEnvueltosNoSeReintentan() throws Exception {
+  for(var definitive:List.of(new ConfirmacionDefinitivaException(ConfirmacionDefinitivaException.Reason.PEDIDO_CANCELADO,null),new InvalidRetryMetadataException())) {
+   var wrapped=new IllegalStateException(new java.io.IOException(definitive));
+   var channel=mock(Channel.class);handler.handle(message(),channel,wrapped);
+   assertThat(new ConfirmacionErrorClassifier().classify(wrapped)).isEqualTo(ConfirmacionErrorClassifier.Classification.DEFINITIVO);
+   verify(channel).basicNack(7,false,false);
+  }
+  verifyNoInteractions(publisher,recovery);
+ }
+ @Test void causasCiclicasNoBloqueanClassifierNiConviertenInesperadosEnDefinitivos() {
+  var first=new IllegalStateException();var second=new RuntimeException(first);first.initCause(second);
+  assertThat(new ConfirmacionErrorClassifier().classify(first)).isEqualTo(ConfirmacionErrorClassifier.Classification.TRANSITORIO);
+ }
  @ParameterizedTest @ValueSource(strings={"ACK","NACK","RETURN","TIMEOUT","CONNECTION"}) void publisherConfirmsReturnsTimeout(String result) throws Exception {
   var template=mock(RabbitTemplate.class);var props=new RabbitProperties(RabbitProperties.Mode.RABBITMQ,new RabbitProperties.Exchanges("cmd"),new RabbitProperties.RoutingKeys("key"),new RabbitProperties.Queues("main"),Duration.ofMillis(30),Duration.ofSeconds(30),1,1000,Duration.ofSeconds(30));
   var msg=message();

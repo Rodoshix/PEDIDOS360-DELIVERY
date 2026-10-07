@@ -34,7 +34,9 @@ class RabbitConsumerTests {
                 .withCopyToContainer(org.testcontainers.utility.MountableFile.forClasspathResource("rabbitmq-reliability.conf"),"/etc/rabbitmq/rabbitmq.conf");
             broker.start();
             try {
-                var result=broker.execInContainer("rabbitmqctl","set_policy","--apply-to","quorum_queues","reliable","^p360\\.pedidos\\.confirmacion", "{\"dead-letter-strategy\":\"at-least-once\",\"overflow\":\"reject-publish\",\"delivery-limit\":5}");
+                var result=broker.execInContainer("rabbitmqctl","set_policy","--apply-to","quorum_queues","reliable","^p360\\.pedidos\\.confirmacion\\.retry\\.(5s|30s|120s)\\.q$", "{\"dead-letter-strategy\":\"at-least-once\",\"overflow\":\"reject-publish\"}");
+                if(result.getExitCode()!=0) throw new IllegalStateException(result.getStderr());
+                result=broker.execInContainer("rabbitmqctl","set_policy","--apply-to","quorum_queues","dlq-retention","^p360\\.pedidos\\.confirmacion\\.dlq$", "{\"delivery-limit\":-1,\"overflow\":\"reject-publish\"}");
                 if(result.getExitCode()!=0) throw new IllegalStateException(result.getStderr());
                 result=broker.execInContainer("rabbitmqctl","set_policy","--priority","10","--apply-to","quorum_queues","main-dlx","^p360\\.pedidos\\.confirmacion\\.q$", "{\"dead-letter-exchange\":\"p360.pedidos.dlx\",\"dead-letter-routing-key\":\"pedido.confirmar.failed\",\"dead-letter-strategy\":\"at-least-once\",\"overflow\":\"reject-publish\",\"delivery-limit\":5}");
                 if(result.getExitCode()!=0) throw new IllegalStateException(result.getStderr());
@@ -346,17 +348,96 @@ class RabbitConsumerTests {
     @Test void deliveryLimitCincoProtegeRedeliveryRepetida() throws Exception {
         registry.stop();var msg=message(500);rabbit.send(properties.exchanges().commands(),properties.routingKeys().confirmar(),msg);
         var connection=connectionFactory.createConnection();
+        int lastDeliveryCount=0;
         for(int i=0;i<7;i++) {
             var ch=connection.createChannel(false);
             var delivery=new java.util.concurrent.atomic.AtomicReference<com.rabbitmq.client.GetResponse>();
             try {
                 await().atMost(3,TimeUnit.SECONDS).until(()->{delivery.set(ch.basicGet(properties.queues().confirmacion(),false));return delivery.get()!=null;});
             } catch(org.awaitility.core.ConditionTimeoutException exhausted) {ch.close();break;}
+            lastDeliveryCount=((Number)delivery.get().getProps().getHeaders().getOrDefault("x-delivery-count",0L)).intValue();
             ((org.springframework.amqp.rabbit.connection.ChannelProxy)ch).getTargetChannel().abort();ch.close();
         }
+        assertThat(lastDeliveryCount).as("Effective quorum delivery-limit in fixture").isEqualTo(5);
         await().atMost(15,TimeUnit.SECONDS).untilAsserted(()->{
             var failed=rabbit.receive(reliability.dlq());assertThat(failed).isNotNull();assertThat(failed.getMessageProperties().getMessageId()).isEqualTo(msg.getMessageProperties().getMessageId());
+            var death=failed.getMessageProperties().getXDeathHeader().getFirst();
+            assertThat(death.get("reason").toString()).isEqualTo("delivery_limit");
+            assertThat(death.get("queue").toString()).isEqualTo(properties.queues().confirmacion());
         });registry.start();
+    }
+
+    @Test void dlqConservaOriginalTrasVeinticincoCierresSinAckConPolicyDePlataformaFixture() throws Exception {
+        registry.stop(); var msg=message(500);
+        rabbit.send(reliability.dlx(),reliability.failedRoutingKey(),msg);
+        var factory=new com.rabbitmq.client.ConnectionFactory();
+        factory.setHost(broker.getHost());factory.setPort(broker.getAmqpPort());
+        factory.setUsername(broker.getAdminUsername());factory.setPassword(broker.getAdminPassword());
+        try(var connection=factory.newConnection()) {
+            for(int i=0;i<25;i++) {
+                try(var channel=connection.createChannel()) {
+                    var delivery=get(channel,reliability.dlq());
+                    assertThat(delivery.getProps().getMessageId()).isEqualTo(msg.getMessageProperties().getMessageId());
+                    assertThat(delivery.getBody()).isEqualTo(msg.getBody());
+                    if(i>0) assertThat(delivery.getEnvelope().isRedeliver()).isTrue();
+                    // Physical AMQP channel close leaves delivery unsettled for inspection/replay.
+                }
+            }
+            try(var channel=connection.createChannel()) {
+                var retained=get(channel,reliability.dlq());
+                assertThat(retained.getProps().getMessageId()).isEqualTo(msg.getMessageProperties().getMessageId());
+                assertThat(((Number)retained.getProps().getHeaders().get("x-delivery-count")).intValue()).isGreaterThanOrEqualTo(25);
+                channel.basicAck(retained.getEnvelope().getDeliveryTag(),false);
+            }
+        } finally {registry.start();}
+    }
+
+    @Test void recoveryDuranteStartRealPreservaFailureYRedeliveryConPrefetchUno() throws Exception {
+        registry.stop();
+        var simple=(org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer)registry.getListenerContainer(ConfirmacionConsumerRecovery.LISTENER_ID);
+        var previous=simple.getMessageListener();
+        var wrapper=mock(MessageListenerContainer.class);
+        var controlledRegistry=mock(RabbitListenerEndpointRegistry.class);
+        when(controlledRegistry.getListenerContainer(ConfirmacionConsumerRecovery.LISTENER_ID)).thenReturn(wrapper);
+        var recovery=new ConfirmacionConsumerRecovery(controlledRegistry,reliability);
+        var failureDuringStart=new java.util.concurrent.CountDownLatch(1);
+        var starts=new java.util.concurrent.atomic.AtomicInteger();
+        doAnswer(inv->{simple.stop(inv.getArgument(0,Runnable.class));return null;}).when(wrapper).stop(any(Runnable.class));
+        doAnswer(inv->{simple.stop();return null;}).when(wrapper).stop();
+        doAnswer(inv->{
+            simple.start();
+            if(starts.incrementAndGet()==1)
+                assertThat(failureDuringStart.await(10,TimeUnit.SECONDS)).as("Second failure completed BEFORE start() returns").isTrue();
+            return null;
+        }).when(wrapper).start();
+        var failedPublisher=mock(ConfirmacionRetryPublisher.class);
+        doThrow(new RetryPublicationException(RetryPublicationException.Reason.RETURNED)).when(failedPublisher).publish(any(),anyInt());
+        var handler=new DefaultPedidoConfirmacionFailureHandler(new ConfirmacionErrorClassifier(),failedPublisher,recovery,new ConfirmacionFailureReporter(json),reliability);
+        var local=mock(PedidoService.class);
+        var invocations=new java.util.concurrent.atomic.AtomicInteger();
+        doAnswer(inv->{
+            if(invocations.incrementAndGet()<=2) throw new IllegalStateException("Injected handoff prerequisite failure");
+            context.getBean(PedidoService.class).confirmarPorPago(inv.getArgument(0)); return null;
+        }).when(local).confirmarPorPago(anyLong());
+        var instrumented=new PedidoConfirmacionConsumer(new PedidoConfirmacionProcessor(json,local),handler);
+        var original=pedido(EstadoPedido.CREADO);var msg=message(original.getId());
+        var deliveries=new java.util.concurrent.CopyOnWriteArrayList<String>();
+        simple.setMessageListener((org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener)(delivery,ch)->{
+            if(delivery.getMessageProperties().getMessageId().equals(msg.getMessageProperties().getMessageId())) {
+                deliveries.add(delivery.getMessageProperties().getMessageId());
+                instrumented.consume(delivery,ch);
+                if(deliveries.size()==2) failureDuringStart.countDown();
+            } else consumer.consume(delivery,ch);
+        });
+        try {
+            rabbit.send(properties.exchanges().commands(),properties.routingKeys().confirmar(),msg);simple.start();
+            await().atMost(30,TimeUnit.SECONDS).untilAsserted(()->assertThat(repository.findById(original.getId()).orElseThrow().getEstado()).isEqualTo(EstadoPedido.CONFIRMADO));
+            var barrier=pedido(EstadoPedido.CREADO);rabbit.send(properties.exchanges().commands(),properties.routingKeys().confirmar(),message(barrier.getId()));
+            await().atMost(10,TimeUnit.SECONDS).untilAsserted(()->assertThat(repository.findById(barrier.getId()).orElseThrow().getEstado()).isEqualTo(EstadoPedido.CONFIRMADO));
+            assertThat(deliveries).containsExactly(msg.getMessageProperties().getMessageId(),msg.getMessageProperties().getMessageId(),msg.getMessageProperties().getMessageId());
+            verify(wrapper,times(2)).start();verify(wrapper,times(2)).stop(any(Runnable.class));
+            verify(failedPublisher,times(2)).publish(any(),eq(0));
+        } finally {recovery.close();simple.stop();simple.setMessageListener(previous);registry.start();}
     }
 
     @Test void postgresRealInaccesibleGeneraRetryRecuperable() throws Exception {
