@@ -110,8 +110,10 @@ Fuente: [adenda aprobada](ADENDA-RABBITMQ-6-SERVICIOS.md). Objetivo 21 queues/7 
 #68 conserva reliability avanzada de Pedidos. #69 plataforma ampliada; #70 cortes graduales. #77 entrega base simple separada. No reasignar misiones anteriores sin confirmar responsable.
 
 Estado 7 de octubre de 2026: #68 CLOSED/COMPLETED, PR #84 integrado en ff40c7d;
-#69 continúa OPEN hasta revisión/integración, con plataforma local y evidencia en
+#69 integrado mediante PR #85 (d96e247), con plataforma local y evidencia en
 [PLATAFORMA-RABBITMQ.md](PLATAFORMA-RABBITMQ.md). #77–#82 conservan alcance y
 dependencias; #70 no fue iniciado ni se cambiaron flags del stack. AWS final en #71.
+
+Nota de avance: #77 está implementado y en revisión mediante PR #86 (rama `feature/ep2-rabbit-request-reply`). La base común vive en `backend/shared/p360-messaging-core` y su diseño implementado está en [REQUEST-REPLY-RABBITMQ.md](REQUEST-REPLY-RABBITMQ.md). #78 a #81 siguen pendientes: deben aportar su procesador de dominio, `QueryInvoker` y su prueba extremo a extremo. La declaración operativa de la topología pertenece a #69: #77 no declara argumentos de TTL/DLX que ya son propiedad de las policies de plataforma.
 
 Orden: adenda integrada → #77 y #69 coordinados → #78/#79/#80/#81; #68 en paralelo. #82 requiere contrato/vinculación revisados, base #77 y plataforma suficiente #69; su outbox es entregable propio. #70 depende de todas las piezas para cierre completo. Las ramas de los issues son sugerencias futuras; no creadas aquí. Seguimiento mediante Issues, PRs y este plan.

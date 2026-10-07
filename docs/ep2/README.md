@@ -86,10 +86,11 @@ Una misión solo se considera terminada cuando cumple:
 
 ## Organización y seguimiento
 
-La planificación fue integrada mediante PR #75. El núcleo de #65/#66 fue integrado mediante PR #76 (22f5c4d) y sus issues están completados. Reliability #68 fue integrada mediante PR #84 (ff40c7d); plataforma local #69 está en revisión y el corte #70 sigue pendiente.
+La planificación fue integrada mediante PR #75. El núcleo de #65/#66 fue integrado mediante PR #76 (22f5c4d) y sus issues están completados. Reliability #68 fue integrada mediante PR #84 (ff40c7d); plataforma local #69 fue integrada mediante PR #85 (d96e247) y el corte #70 sigue pendiente.
 
 - [Implementación, convivencia HTTP y evidencia del núcleo](NUCLEO-RABBITMQ.md).
 - [Plataforma local, inventario, permisos, runbook y evidencia](PLATAFORMA-RABBITMQ.md).
+- [Base común request/reply y reliability simple (#77)](REQUEST-REPLY-RABBITMQ.md).
 - [Plan de actividades e issues reales](PLAN-ACTIVIDADES.md).
 - Misiones: [Integrante 1](misiones/INTEGRANTE-1.md), [Integrante 2](misiones/INTEGRANTE-2.md), [Integrante 3](misiones/INTEGRANTE-3.md), [Integrante 4](misiones/INTEGRANTE-4.md) e [Integrante 5](misiones/INTEGRANTE-5.md).
 - Las ramas restantes se crean al iniciar la misión correspondiente. El seguimiento usa Issues, PRs y el plan versionado.
