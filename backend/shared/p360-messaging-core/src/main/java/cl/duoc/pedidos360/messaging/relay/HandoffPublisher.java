@@ -1,5 +1,7 @@
 package cl.duoc.pedidos360.messaging.relay;
 
+import static cl.duoc.pedidos360.messaging.relay.HandoffFailureException.ResultadoPublicacion.*;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -50,6 +52,7 @@ public final class HandoffPublisher {
         this.contexto = contexto;
         this.properties = properties;
         this.topology = topology;
+        rabbit.setMandatory(true);
     }
 
     public QueryTopology topology() {
@@ -64,18 +67,21 @@ public final class HandoffPublisher {
      */
     public void aRetry(RequestEnvelope envelope, int retryCountActual, String claseDeFallo,
             MessageProperties original) {
+        if (retryCountActual >= 1 || envelope.vencido(java.time.Instant.now()))
+            throw new HandoffFailureException("retry agotado o plazo vencido");
         MessageProperties metadatos = clonarConDiagnostico(original, envelope, retryCountActual + 1, claseDeFallo,
                 "retry", topology.queue());
         confirmar(properties.exchanges().retry(), topology.retryRoutingKey(),
-                new Message(contexto.escribir(envelope), metadatos), "retry corto");
+                new Message(serializar(envelope), metadatos), "retry corto", envelope);
     }
 
     /** Envia a la DLQ del dominio sin replay automatico. */
     public void aDlq(RequestEnvelope envelope, int retryCount, String claseDeFallo, MessageProperties original) {
         MessageProperties metadatos = clonarConDiagnostico(original, envelope, retryCount, claseDeFallo, "dlq",
                 topology.queue());
+        metadatos.setHeader("plazo-vencido", envelope.vencido(java.time.Instant.now()));
         confirmar(properties.exchanges().dlx(), topology.failedRoutingKey(),
-                new Message(contexto.escribir(envelope), metadatos), "DLQ");
+                new Message(serializar(envelope), metadatos), "DLQ", null);
     }
 
     /**
@@ -133,24 +139,47 @@ public final class HandoffPublisher {
         return copia;
     }
 
-    private void confirmar(String exchange, String routingKey, Message mensaje, String destino) {
+    private void confirmar(String exchange, String routingKey, Message mensaje, String destino, RequestEnvelope request) {
         var correlacion = new CorrelationData(mensaje.getMessageProperties().getMessageId() + ":" + destino);
         try {
+            confirmBudget(request);
             rabbit.send(exchange, routingKey, mensaje, correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
-                    .get(properties.confirmTimeout().toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS);
+                    .get(confirmBudgetTrasEnvio(request), java.util.concurrent.TimeUnit.NANOSECONDS);
             if (!confirmacion.ack())
-                throw new HandoffFailureException("el broker rechazo la transferencia a " + destino);
+                throw new HandoffFailureException("el broker rechazo la transferencia a " + destino, RECHAZADO_CONFIRMADO);
             if (correlacion.getReturned() != null)
-                throw new HandoffFailureException("la transferencia a " + destino + " volvio sin ruta");
+                throw new HandoffFailureException("la transferencia a " + destino + " volvio sin ruta", RECHAZADO_CONFIRMADO);
         } catch (HandoffFailureException yaClasificado) {
             throw yaClasificado;
         } catch (InterruptedException interrumpido) {
             Thread.currentThread().interrupt();
-            throw new HandoffFailureException("transferencia a " + destino + " interrumpida", interrumpido);
+            throw new HandoffFailureException("transferencia a " + destino + " interrumpida", INCIERTO, interrumpido);
         } catch (Exception fallo) {
-            throw new HandoffFailureException("no fue posible transferir a " + destino, fallo);
+            throw new HandoffFailureException("no fue posible transferir a " + destino, INCIERTO, fallo);
         }
+    }
+
+    private byte[] serializar(RequestEnvelope envelope) {
+        try { return contexto.escribir(envelope); }
+        catch (RuntimeException invalid) {
+            throw new HandoffFailureException("no fue posible serializar transferencia", NO_ENVIADO, invalid);
+        }
+    }
+
+    private long confirmBudgetTrasEnvio(RequestEnvelope request) {
+        try { return confirmBudget(request); }
+        catch (HandoffFailureException exhausted) {
+            throw new HandoffFailureException("plazo agotado tras enviar retry; confirm incierto", INCIERTO, exhausted);
+        }
+    }
+
+    /** DLQ diagnóstica tiene ventana propia; nunca renueva ni ejecuta el request. */
+    private long confirmBudget(RequestEnvelope request) {
+        if (request == null) return properties.confirmTimeout().toNanos();
+        long remaining = java.time.Duration.between(java.time.Instant.now(), request.expiresAt()).toNanos();
+        if (remaining <= 0) throw new HandoffFailureException("plazo de retry agotado");
+        return Math.min(remaining, properties.confirmTimeout().toNanos());
     }
 
     /** Bindings de la topologia del dominio, para diagnostico. */

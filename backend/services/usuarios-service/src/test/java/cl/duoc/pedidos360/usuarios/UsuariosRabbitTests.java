@@ -1,5 +1,7 @@
 package cl.duoc.pedidos360.usuarios;
 
+import cl.duoc.pedidos360.messaging.fixture.FixtureActorKeys;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.*;
@@ -46,7 +48,6 @@ import tools.jackson.databind.json.JsonMapper;
     "usuarios.identidad-local.object-id=bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee",
     "pedidos360.messaging.relay-mode=ACTIVE", "pedidos360.messaging.actor.emisor=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
     "pedidos360.messaging.actor.clave-id=11111111-2222-3333-4444-555555555555",
-    "pedidos360.messaging.actor.secreto=fixture-only-not-a-deployed-secret-12345",
     "pedidos360.messaging.actor.tolerancia-reloj=0s", "pedidos360.messaging.recovery-backoff=500ms"})
 class UsuariosRabbitTests {
     static final UUID OID = UUID.fromString("bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee");
@@ -63,6 +64,7 @@ class UsuariosRabbitTests {
     @Container static RabbitMQContainer broker = new RabbitMQContainer("rabbitmq:4.1.8-management-alpine");
 
     @DynamicPropertySource static void configure(DynamicPropertyRegistry p) throws Exception {
+        p.add("pedidos360.messaging.actor.public-jwks", FixtureActorKeys::publicJwks);
         provision(); // Before the real listener starts. TEST fixture only, no application declarations.
         p.add("spring.datasource.url", postgres::getJdbcUrl);
         p.add("spring.datasource.username", postgres::getUsername);
@@ -144,7 +146,7 @@ class UsuariosRabbitTests {
         Instant deadline = expired ? now.minusSeconds(1) : now.plusSeconds(5);
         var actor = new ActorContext(tenant, OID, roles, scopes, created,
                 deadline.minusMillis(100), audience, KEY);
-        return RequestEnvelope.crear(UUID.randomUUID(), operation, payload, signer.emitir(actor, deadline), created, deadline);
+        return RequestEnvelope.crear(UUID.randomUUID(), operation, payload, FixtureActorKeys.signer().emitir(actor, deadline), created, deadline);
     }
     RequestEnvelope valid() {
         return request(JSON.createObjectNode(), OPERATION, TENANT, Set.of("CLIENTE"),
@@ -261,7 +263,7 @@ class UsuariosRabbitTests {
     @Test void deadlineExpiredDoesNotExecuteOrRetry() throws Exception {
         var r=request(JSON.createObjectNode(),OPERATION,TENANT,Set.of("CLIENTE"),Set.of("access_as_user"),MAIN,true);
         dlqWithoutDomain(r,envelopes.escribir(r));
-        assertThat(JSON.readTree(receive(REPLIES).getBody()).path("status").asInt()).isEqualTo(504);
+        assertThat(channel.queueDeclarePassive(REPLIES).getMessageCount()).isZero(); // No respuesta funcional fuera de plazo.
     }
     @Test void businessErrorReturns409AndIsAcked() throws Exception {
         doThrow(QueryBusinessException.conflicto("fixture-conflict")).when(service).obtenerActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
@@ -275,7 +277,7 @@ class UsuariosRabbitTests {
         var actor=new ActorContext(TENANT,OID,Set.of("CLIENTE"),Set.of("access_as_user"),
                 now.minusSeconds(30),now.minusSeconds(1),MAIN,KEY);
         var tree=(tools.jackson.databind.node.ObjectNode)JSON.readTree(envelopes.escribir(r));
-        tree.put("actor",signer.emitir(actor,r.expiresAt())); dlqWithoutDomain(r,JSON.writeValueAsBytes(tree));
+        tree.put("actor",FixtureActorKeys.signer().emitir(actor,r.expiresAt())); dlqWithoutDomain(r,JSON.writeValueAsBytes(tree));
     }
     @Test void requestWaitsWhileConsumerStoppedThenRecovers() throws Exception {
         var listener=registry.getListenerContainer(QueryConsumerRecovery.QUERY_LISTENER_ID);

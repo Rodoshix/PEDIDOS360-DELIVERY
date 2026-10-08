@@ -92,7 +92,9 @@ public final class QueryFailureHandler {
      */
     public Resultado gestionar(RequestEnvelope envelope, int retryCount, Exception fallo, String correlationId,
             String replyTo, boolean plazoVencido, MessageProperties original) {
-        if (plazoVencido) {
+        if (fallo instanceof HandoffFailureException publication && publication.resultadoIncierto())
+            return Resultado.SIN_CONFIRMAR;
+        if (plazoVencido || envelope.vencido(respuestas.ahora())) {
             log.error("Consulta messageId={} correlationId={} plazo vencido: no se ejecuta ni se reintenta; {}",
                     messageIdSeguro(envelope), correlationId, fallo.getClass().getSimpleName());
             return transferir(envelope, retryCount, fallo, Destino.DLQ, original);
@@ -104,9 +106,11 @@ public final class QueryFailureHandler {
                 respuestas.publicar(envelope, replyTo, correlationId, respuestaDeFallo(envelope, fallo, correlationId));
                 return Resultado.RESPONDIDO;
             } catch (HandoffFailureException handoffFallido) {
+                if (handoffFallido.resultadoIncierto()) return Resultado.SIN_CONFIRMAR;
                 log.error("Consulta messageId={} correlationId={} respuesta de negocio no confirmada: {}",
                         messageIdSeguro(envelope), correlationId, handoffFallido.getMessage());
-                return transferir(envelope, retryCount, fallo, Destino.RETRY, original);
+                return transferir(envelope, retryCount, fallo,
+                        retryCount >= 1 || envelope.vencido(respuestas.ahora()) ? Destino.DLQ : Destino.RETRY, original);
             }
         }
         if (definitivo(fallo)) {
@@ -174,11 +178,17 @@ public final class QueryFailureHandler {
     private Resultado transferir(RequestEnvelope envelope, int retryCount, Exception fallo, Destino destino,
             MessageProperties original) {
         try {
+            if (destino == Destino.RETRY && envelope.vencido(respuestas.ahora())) {
+                log.warn("Consulta messageId={} plazo vencido antes del handoff; destino DLQ", messageIdSeguro(envelope));
+                destino = Destino.DLQ;
+            }
             if (destino == Destino.RETRY) {
                 handoff.aRetry(envelope, retryCount, claseDeFallo(fallo), original);
                 return Resultado.REINTENTADO;
             }
             handoff.aDlq(envelope, retryCount, claseDeFallo(fallo), original);
+            log.info("Consulta messageId={} transferencia diagnóstica DLQ confirmada; plazoVencido={}",
+                    messageIdSeguro(envelope), envelope.vencido(respuestas.ahora()));
             return Resultado.DLQ;
         } catch (HandoffFailureException handoffFallido) {
             log.error("Consulta messageId={} transferencia a {} no confirmada; queda SIN CONFIRMAR "

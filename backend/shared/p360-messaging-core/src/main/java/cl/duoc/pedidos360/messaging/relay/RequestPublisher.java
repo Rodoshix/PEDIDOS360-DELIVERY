@@ -1,6 +1,7 @@
 package cl.duoc.pedidos360.messaging.relay;
 
 import java.util.concurrent.TimeUnit;
+import static cl.duoc.pedidos360.messaging.relay.HandoffFailureException.ResultadoPublicacion.*;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageDeliveryMode;
@@ -64,6 +65,7 @@ public final class RequestPublisher {
             throw new IllegalArgumentException("correlationId requerido");
         if (!properties.queues().responses().equals(replyToPermitido()))
             throw new QueryUnavailableException("el destino de respuesta no esta autorizado", null);
+        requireBudget(envelope);
         MessageProperties metadatos = new MessageProperties();
         metadatos.setMessageId(envelope.messageId().toString());
         metadatos.setCorrelationId(correlationId);
@@ -76,24 +78,49 @@ public final class RequestPublisher {
         metadatos.setRetryCount(0);
         var correlacion = new CorrelationData(correlationId);
         long inicio = System.nanoTime();
+        boolean envioIniciado = false;
+        boolean publicacionConfirmada = false;
         try {
+            byte[] cuerpo = contexto.escribir(envelope);
+            requireBudget(envelope);
+            envioIniciado = true;
             rabbit.send(properties.exchanges().queries(), envelope.operacion(),
-                    new Message(contexto.escribir(envelope), metadatos), correlacion);
+                    new Message(cuerpo, metadatos), correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
-                    .get(properties.confirmTimeout().toMillis(), TimeUnit.MILLISECONDS);
-            if (!confirmacion.ack()) throw new QueryUnavailableException("el broker rechazo la publicacion", null);
+                    .get(remainingNanos(envelope), TimeUnit.NANOSECONDS);
+            if (!confirmacion.ack()) throw new QueryUnavailableException("el broker rechazo la publicacion", new HandoffFailureException("nack", RECHAZADO_CONFIRMADO));
             if (correlacion.getReturned() != null)
-                throw new QueryUnavailableException("la publicacion volvio sin ruta disponible", null);
+                throw new QueryUnavailableException("la publicacion volvio sin ruta disponible", new HandoffFailureException("return", RECHAZADO_CONFIRMADO));
+            publicacionConfirmada = true;
+            requireBudget(envelope);
             return System.nanoTime() - inicio;
+        } catch (QueryTimeoutException timeout) {
+            throw new QueryTimeoutException(timeout.getMessage(), new HandoffFailureException(
+                    "plazo de publicación agotado", publicacionConfirmada ? CONFIRMADO : envioIniciado ? INCIERTO : NO_ENVIADO, timeout));
+        } catch (java.util.concurrent.TimeoutException timeout) {
+            if (envelope.vencido(java.time.Instant.now()))
+                throw new QueryTimeoutException("plazo de publicación agotado",
+                        new HandoffFailureException("confirm incierto", INCIERTO, timeout));
+            throw new QueryUnavailableException("confirm de publicación incierto",
+                    new HandoffFailureException("confirm incierto", INCIERTO, timeout));
         } catch (QueryUnavailableException yaClasificado) {
             throw yaClasificado;
         } catch (InterruptedException interrumpido) {
             Thread.currentThread().interrupt();
-            throw new QueryUnavailableException("publicacion interrumpida", interrumpido);
+            throw new QueryUnavailableException("publicacion interrumpida", new HandoffFailureException("publicación interrumpida", envioIniciado ? INCIERTO : NO_ENVIADO, interrumpido));
         } catch (Exception fallo) {
-            throw new QueryUnavailableException("no fue posible publicar la consulta", fallo);
+            throw new QueryUnavailableException("no fue posible publicar la consulta", new HandoffFailureException("publicación fallida", envioIniciado ? INCIERTO : NO_ENVIADO, fallo));
         }
     }
+
+    private long remainingNanos(RequestEnvelope request) {
+        long remaining = java.time.Duration.between(java.time.Instant.now(), request.expiresAt()).toNanos();
+        if (remaining <= 0) throw new QueryTimeoutException("plazo de publicación agotado",
+                new HandoffFailureException("plazo agotado antes del envio", NO_ENVIADO));
+        return Math.min(remaining, properties.confirmTimeout().toNanos());
+    }
+
+    private void requireBudget(RequestEnvelope request) { remainingNanos(request); }
 
     /** Unico destino de respuesta autorizado: la cola tecnica desde configuracion. */
     public String replyToPermitido() {

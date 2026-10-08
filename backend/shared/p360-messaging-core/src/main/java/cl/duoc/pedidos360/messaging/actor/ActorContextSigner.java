@@ -1,7 +1,8 @@
 package cl.duoc.pedidos360.messaging.actor;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.crypto.ECDSAVerifier;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -13,30 +14,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 
-/**
- * Emite y verifica el contexto de actor con HMAC-SHA256 sobre una representacion canonica.
- *
- * <p>El algoritmo es HMAC simetrico porque los seis servicios ya comparten un broker dentro del
- * vhost de negocio y la operacion puede provisionar el mismo secreto a emisor y verificadores.
- * El material se inyecta desde fuera de Git mediante {@link SigningKeyProvider} y su rotacion esta
- * soportada por {@code keyId}: un sobre con clave retirada se rechaza.
- *
- * <p>Si no hay clave disponible, {@link #emitir} falla cerrado en vez de emitir un sobre sin
- * autenticidad. {@link #verificar} exige firma valida, emisor esperado, destino permitido y plazo
- * vigente, ademas de coherencia entre el plazo del actor y el del request.
- */
+/** JWS compacto ES256 estricto; kid protegido y claves confiables locales, sin fallback HMAC. */
 public final class ActorContextSigner {
 
-    private static final String HMAC = "HmacSHA256";
-    private static final String VERSION = "p360act1";
+    private static final String VERSION = "p360act2";
     private static final Set<String> CAMPOS = Set.of("v", "tenantId", "sujetoId", "roles", "scopes",
-            "emitidoEn", "expiraEn", "audiencia", "keyId");
+            "emitidoEn", "expiraEn", "audiencia");
 
     /** Tolerancia de reloj admitida al comparar emision y expiracion. Configurable por constructor. */
     private final Duration tolerancia;
@@ -51,8 +38,8 @@ public final class ActorContextSigner {
     public ActorContextSigner(SigningKeyProvider claves, Clock reloj, Duration tolerancia) {
         if (claves == null) throw new IllegalArgumentException("proveedor de claves requerido");
         if (reloj == null) throw new IllegalArgumentException("reloj requerido");
-        if (tolerancia == null || tolerancia.isNegative())
-            throw new IllegalArgumentException("tolerancia no puede ser negativa");
+        if (tolerancia == null || tolerancia.isNegative() || tolerancia.compareTo(Duration.ofMinutes(1)) > 0)
+            throw new IllegalArgumentException("tolerancia debe estar entre cero y un minuto");
         this.claves = claves;
         this.reloj = reloj;
         this.tolerancia = tolerancia;
@@ -87,9 +74,23 @@ public final class ActorContextSigner {
         claims.put("emitidoEn", contexto.emitidoEn().toString());
         claims.put("expiraEn", contexto.expiraEn().toString());
         claims.put("audiencia", contexto.audiencia());
-        claims.put("keyId", clave.keyId().toString());
-        byte[] payload = json.writeValueAsBytes(claims);
-        return VERSION + "." + b64(payload) + "." + b64(hmac(clave.material(), VERSION + "." + b64(payload)));
+        if (!clave.material().isPrivate() || !clave.keyId().equals(contexto.keyId()))
+            throw new ActorContextException(ActorContextException.Reason.CLAVE_DESCONOCIDA,
+                    "no hay clave privada de emisión coincidente");
+        // Aplicar límites/tipos también al emisor sin alterar la semántica temporal del verificador.
+        textos(claims.get("roles")); textos(claims.get("scopes"));
+        if (contexto.audiencia().length() > 256 || Duration.between(contexto.emitidoEn(), contexto.expiraEn())
+                .compareTo(Duration.ofMinutes(5)) > 0)
+            throw new ActorContextException(ActorContextException.Reason.FORMATO_INVALIDO, "actor fuera de límites");
+        try {
+            var jws = new JWSObject(new JWSHeader.Builder(JWSAlgorithm.ES256)
+                    .type(new JOSEObjectType(VERSION)).keyID(clave.keyId().toString()).build(),
+                    new Payload(json.writeValueAsBytes(claims)));
+            jws.sign(new ECDSASigner(clave.material()));
+            return jws.serialize();
+        } catch (JOSEException invalid) {
+            throw new ActorContextException(ActorContextException.Reason.FIRMA_INVALIDA, "no fue posible firmar actor");
+        }
     }
 
     /** Verifica el sobre y devuelve el contexto solo si es autentico, vigente y dirigido a este consumidor. */
@@ -99,35 +100,47 @@ public final class ActorContextSigner {
                 ActorContextException.Reason.SOBRE_AUSENTE, "sobre de actor ausente");
         if (destinosPermitidos == null || destinosPermitidos.isEmpty()) throw new ActorContextException(
                 ActorContextException.Reason.DESTINO_INVALIDO, "el consumidor no declaro destinos permitidos");
+        if (sobre.length() > 16384) throw new ActorContextException(
+                ActorContextException.Reason.FORMATO_INVALIDO, "sobre fuera de límites");
         String[] partes = sobre.split("\\.", -1);
         if (partes.length != 3) throw new ActorContextException(ActorContextException.Reason.FORMATO_INVALIDO,
                 "el sobre no tiene tres segmentos");
-        if (!VERSION.equals(partes[0])) throw new ActorContextException(ActorContextException.Reason.FORMATO_INVALIDO,
-                "version de sobre no soportada");
-        Map<String, Object> claims = claims(partes[1]);
-        if (!CAMPOS.equals(claims.keySet())) throw new ActorContextException(
-                ActorContextException.Reason.FORMATO_INVALIDO, "campos del sobre no corresponden al contrato");
-        if (!VERSION.equals(texto(claims.get("v")))) throw new ActorContextException(
-                ActorContextException.Reason.FORMATO_INVALIDO, "version de claims no soportada");
-        UUID keyId = uuid(texto(claims.get("keyId")));
+        if (partes[0].length() > 1024) throw new ActorContextException(
+                ActorContextException.Reason.FORMATO_INVALIDO, "cabecera fuera de límites");
+        Map<String, Object> header = claims(partes[0]);
+        if (!header.keySet().equals(Set.of("alg", "typ", "kid"))
+                || !"ES256".equals(header.get("alg")) || !VERSION.equals(header.get("typ")))
+            throw new ActorContextException(ActorContextException.Reason.FORMATO_INVALIDO,
+                    "cabecera JWS no corresponde al contrato ES256 p360act2");
+        UUID keyId = uuid(texto(header.get("kid")));
+        if (!keyId.toString().equals(header.get("kid"))) throw new ActorContextException(
+                ActorContextException.Reason.FORMATO_INVALIDO, "kid no canónico");
         SigningKey clave = claves.clavePorId(keyId).orElseThrow(() -> new ActorContextException(
-                ActorContextException.Reason.CLAVE_DESCONOCIDA, "clave de firma desconocida o retirada"));
-        byte[] esperado = hmac(clave.material(), partes[0] + "." + partes[1]);
-        byte[] recibido = b64(partes[2]);
-        if (!MessageDigest.isEqual(esperado, recibido)) throw new ActorContextException(
-                ActorContextException.Reason.FIRMA_INVALIDA, "firma del sobre no coincide");
+                ActorContextException.Reason.CLAVE_DESCONOCIDA, "clave desconocida o retirada"));
+        if (b64(partes[2]).length != 64) throw new ActorContextException(
+                ActorContextException.Reason.FIRMA_INVALIDA, "firma ES256 fuera de rango");
+        try {
+            if (!JWSObject.parse(sobre).verify(new ECDSAVerifier(clave.material().toPublicJWK())))
+                throw new ActorContextException(ActorContextException.Reason.FIRMA_INVALIDA, "firma inválida");
+        } catch (java.text.ParseException | JOSEException invalid) {
+            throw new ActorContextException(ActorContextException.Reason.FIRMA_INVALIDA, "JWS inválido");
+        }
+        Map<String, Object> claims = claims(partes[1]);
+        if (!CAMPOS.equals(claims.keySet()) || !VERSION.equals(claims.get("v")))
+            throw new ActorContextException(ActorContextException.Reason.FORMATO_INVALIDO,
+                    "claims no corresponden al contrato");
         if (emisorEsperado == null || !emisorEsperado.equals(texto(claims.get("tenantId"))))
             throw new ActorContextException(ActorContextException.Reason.EMISOR_INVALIDO,
                     "emisor del sobre no es el esperado");
         String audiencia = texto(claims.get("audiencia"));
-        if (!destinosPermitidos.contains(audiencia)) throw new ActorContextException(
+        if (audiencia.length() > 256 || !destinosPermitidos.contains(audiencia)) throw new ActorContextException(
                 ActorContextException.Reason.DESTINO_INVALIDO, "el sobre no esta dirigido a este consumidor");
         Instant emitidoEn = instante(texto(claims.get("emitidoEn")));
         Instant expiraEn = instante(texto(claims.get("expiraEn")));
         Instant ahora = reloj.instant();
         if (emitidoEn.isAfter(ahora.plus(tolerancia))) throw new ActorContextException(
                 ActorContextException.Reason.PLAZO_INCOHERENTE, "emision en el futuro fuera de tolerancia");
-        if (!expiraEn.isAfter(emitidoEn)) throw new ActorContextException(
+        if (!expiraEn.isAfter(emitidoEn) || Duration.between(emitidoEn, expiraEn).compareTo(Duration.ofMinutes(5)) > 0) throw new ActorContextException(
                 ActorContextException.Reason.PLAZO_INCOHERENTE, "vigencia del actor no es positiva");
         // El vencimiento propio del actor se comprueba antes de contrastarlo con el plazo del request:
         // si el sobre expiro, la causa es la vigencia del actor, no una incoherencia de plazos.
@@ -167,22 +180,16 @@ public final class ActorContextSigner {
         return claims;
     }
 
-    private static byte[] hmac(byte[] material, String mensaje) {
-        try {
-            Mac mac = Mac.getInstance(HMAC);
-            mac.init(new SecretKeySpec(material, HMAC));
-            return mac.doFinal(mensaje.getBytes(StandardCharsets.US_ASCII));
-        } catch (java.security.GeneralSecurityException imposible) {
-            throw new IllegalStateException("HMAC-SHA256 no disponible", imposible);
-        }
-    }
-
-    private static String b64(byte[] valor) {
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(valor);
-    }
-
     private static byte[] b64(String valor) {
-        return Base64.getUrlDecoder().decode(valor);
+        try {
+            if (!valor.matches("[A-Za-z0-9_-]+")) throw new IllegalArgumentException();
+            byte[] bytes = Base64.getUrlDecoder().decode(valor);
+            if (!Base64.getUrlEncoder().withoutPadding().encodeToString(bytes).equals(valor))
+                throw new IllegalArgumentException();
+            return bytes;
+        } catch (IllegalArgumentException invalid) {
+            throw new ActorContextException(ActorContextException.Reason.FORMATO_INVALIDO, "base64url inválido");
+        }
     }
 
     private static String texto(Object valor) {
@@ -213,12 +220,15 @@ public final class ActorContextSigner {
     private static Set<String> textos(Object valor) {
         if (!(valor instanceof List<?> lista)) throw new ActorContextException(
                 ActorContextException.Reason.FORMATO_INVALIDO, "lista de autorizacion invalida");
+        if (lista.size() > 64) throw new ActorContextException(
+                ActorContextException.Reason.FORMATO_INVALIDO, "lista fuera de límites");
         var result = new java.util.LinkedHashSet<String>();
         for (Object elemento : lista) {
             if (!(elemento instanceof String texto) || texto.isBlank() || texto.length() > 64
                     || !texto.matches("[A-Za-z0-9_.:-]+")) throw new ActorContextException(
                     ActorContextException.Reason.FORMATO_INVALIDO, "elemento de autorizacion invalido");
-            result.add(texto);
+            if (!result.add(texto)) throw new ActorContextException(
+                    ActorContextException.Reason.FORMATO_INVALIDO, "autorización duplicada");
         }
         return result;
     }

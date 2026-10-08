@@ -1,5 +1,7 @@
 package cl.duoc.pedidos360.messaging.relay;
 
+import static cl.duoc.pedidos360.messaging.relay.HandoffFailureException.ResultadoPublicacion.*;
+
 import java.time.Instant;
 
 import org.springframework.amqp.core.Message;
@@ -27,12 +29,19 @@ public final class QueryReplyPublisher {
     private final RabbitTemplate rabbit;
     private final RequestEnvelopeContext contexto;
     private final MessagingProperties properties;
+    private final java.time.Clock reloj;
 
     public QueryReplyPublisher(RabbitTemplate rabbit, RequestEnvelopeContext contexto,
             MessagingProperties properties) {
+        this(rabbit, contexto, properties, java.time.Clock.systemUTC());
+    }
+
+    public QueryReplyPublisher(RabbitTemplate rabbit, RequestEnvelopeContext contexto,
+            MessagingProperties properties, java.time.Clock reloj) {
         this.rabbit = rabbit;
         this.contexto = contexto;
         this.properties = properties;
+        this.reloj = java.util.Objects.requireNonNull(reloj);
         rabbit.setMandatory(true);
     }
 
@@ -50,7 +59,12 @@ public final class QueryReplyPublisher {
         if (!properties.queues().responses().equals(replyTo))
             throw new HandoffFailureException("el replyTo no corresponde a la cola tecnica autorizada");
         if (respuesta == null) throw new HandoffFailureException("no hay respuesta que publicar");
-        byte[] cuerpo = contexto.escribirRespuesta(respuesta);
+        remainingNanos(request);
+        byte[] cuerpo;
+        try { cuerpo = contexto.escribirRespuesta(respuesta); }
+        catch (RuntimeException invalid) {
+            throw new HandoffFailureException("no fue posible serializar respuesta", NO_ENVIADO, invalid);
+        }
         MessageProperties metadatos = new MessageProperties();
         metadatos.setCorrelationId(correlationId);
         metadatos.setMessageId(respuesta.messageId().toString());
@@ -59,25 +73,41 @@ public final class QueryReplyPublisher {
         metadatos.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
         var correlacion = new CorrelationData(correlationId);
         try {
+            long ttlMillis = java.time.Duration.between(ahora(), request.expiresAt()).toMillis();
+            if (ttlMillis <= 0) throw new HandoffFailureException("plazo de respuesta agotado");
+            metadatos.setExpiration(Long.toString(ttlMillis));
             rabbit.send("", replyTo, new Message(cuerpo, metadatos), correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
-                    .get(properties.confirmTimeout().toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS);
-            if (!confirmacion.ack()) throw new HandoffFailureException("el broker rechazo la respuesta");
+                    .get(confirmWaitNanos(request), java.util.concurrent.TimeUnit.NANOSECONDS);
+            if (!confirmacion.ack()) throw new HandoffFailureException("el broker rechazo la respuesta", RECHAZADO_CONFIRMADO);
             if (correlacion.getReturned() != null)
-                throw new HandoffFailureException("la respuesta volvio sin destino disponible");
+                throw new HandoffFailureException("la respuesta volvio sin destino disponible", RECHAZADO_CONFIRMADO);
         } catch (HandoffFailureException yaClasificado) {
             throw yaClasificado;
         } catch (InterruptedException interrumpido) {
             Thread.currentThread().interrupt();
-            throw new HandoffFailureException("publicacion de la respuesta interrumpida", interrumpido);
+            throw new HandoffFailureException("publicacion de la respuesta interrumpida", INCIERTO, interrumpido);
         } catch (Exception fallo) {
-            throw new HandoffFailureException("no fue posible confirmar la respuesta", fallo);
+            throw new HandoffFailureException("no fue posible confirmar la respuesta", INCIERTO, fallo);
         }
         return cuerpo;
     }
 
+    private long confirmWaitNanos(RequestEnvelope request) {
+        try { return remainingNanos(request); }
+        catch (HandoffFailureException exhausted) {
+            throw new HandoffFailureException("plazo agotado tras enviar respuesta; confirm incierto", INCIERTO, exhausted);
+        }
+    }
+
+    private long remainingNanos(RequestEnvelope request) {
+        long remaining = java.time.Duration.between(ahora(), request.expiresAt()).toNanos();
+        if (remaining <= 0) throw new HandoffFailureException("plazo de respuesta agotado");
+        return Math.min(remaining, properties.confirmTimeout().toNanos());
+    }
+
     /** Marca temporal UTC de la respuesta. */
     public Instant ahora() {
-        return Instant.now();
+        return reloj.instant();
     }
 }

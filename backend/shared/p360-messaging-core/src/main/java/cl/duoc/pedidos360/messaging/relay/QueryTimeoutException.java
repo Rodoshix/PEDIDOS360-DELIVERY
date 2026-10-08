@@ -5,4 +5,5 @@ public class QueryTimeoutException extends RuntimeException {
     public QueryTimeoutException(String detalle) {
         super(detalle);
     }
+    public QueryTimeoutException(String detalle, Throwable causa) { super(detalle, causa); }
 }

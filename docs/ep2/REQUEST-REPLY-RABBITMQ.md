@@ -36,7 +36,7 @@ Ocho campos exactos, sin admitir campos extra, faltantes ni duplicados:
   "version": 1,
   "occurredAt": "2026-10-07T01:30:00Z",
   "expiresAt": "2026-10-07T01:30:05Z",
-  "actor": "p360act1.<claims base64url>.<firma HMAC>",
+  "actor": "<header JWS base64url>.<claims base64url>.<firma ES256>",
   "operacion": "usuario.consultar-actual.v1",
   "payload": { }
 }
@@ -142,12 +142,27 @@ Reglas:
 - La vigencia del actor debe ser **menor** que el plazo del request: así el retry corto siempre
   encuentra autorización vigente. La configuración se valida al arrancar y al planificar.
 - Un mensaje vencido no se ejecuta, no se reintenta y se diagnostica; termina en DLQ.
-- Si al solicitante todavía le queda presupuesto cuando el mensaje llega vencido, recibe un error
-  correlacionado `504` (`PLAZO_AGOTADO`). Si su plazo ya se agotó, no se envía respuesta.
+- Una consulta vencida no publica respuesta funcional. El timeout del solicitante conserva el
+  resultado equivalente a HTTP `504`; el diagnóstico del mensaje se transfiere a DLQ.
 - Un timeout HTTP no garantiza que la consulta nunca se haya ejecutado.
 - `recovery-backoff` reemplaza al antiguo `handoff-backoff`: ya **no** es una espera bloqueante entre
   intentos de handoff en el hilo del listener, sino el backoff entre la detención y el reinicio del
   listener durante la recuperación.
+
+### Confirms y excepción diagnóstica de DLQ
+
+El consumer vuelve a comprobar expiresAt después del processor y el handler lo recalcula al
+gestionar fallos. Requests, respuestas y retry no se publican si ya vencieron; su espera de confirm
+se limita al menor de confirm-timeout y presupuesto restante, recalculado después del envío.
+Las respuestas tienen expiración AMQP igual al resto, sin renovar el deadline; requests no agregan
+TTL individual. Un return/nack conocido de una respuesta de negocio admite como máximo un retry.
+
+Solo el handoff diagnóstico a DLQ usa confirm-timeout independientemente del deadline agotado.
+No ejecuta negocio ni renueva expiresAt. ACK del original únicamente tras confirm positivo sin
+return. Ante confirm negativo, return o incertidumbre del handoff, conservar original y recuperar
+con backoff existente. Una respuesta con resultado incierto conserva también el original sin
+publicar otra copia; la redelivery vuelve a comprobar el deadline antes de ejecutar.
+El timeout limita la espera de confirms, no interrumpe un processor ni una llamada send bloqueante.
 
 ## 5. Retry corto y DLQ
 
@@ -227,7 +242,7 @@ Clasificación de errores:
 | Fallo transitorio (primer intento) | Transferencia confirmada al retry corto |
 | Fallo transitorio (ya reintentado) | DLQ |
 | Envelope inválido, actor no autenticado, autorización denegada | DLQ |
-| Plazo vencido | DLQ (con respuesta `504` si queda presupuesto) |
+| Plazo vencido | DLQ diagnóstica; sin respuesta funcional fuera de plazo |
 | Error de negocio esperado | Respuesta correlacionada y ACK |
 
 ### Regla de confirmación (ACK solo tras handoff seguro)
@@ -293,22 +308,25 @@ Los listeners RabbitMQ **no heredan** el `SecurityContext` HTTP. Por eso el BFF 
 y emite un **sobre firmado** con el contexto de actor:
 
 ```text
-p360act1.<claims JSON en base64url>.<HMAC-SHA256>
+<header JWS en base64url>.<claims JSON en base64url>.<firma ES256>
 ```
+
+Cabecera protegida exacta: `{"alg":"ES256","typ":"p360act2","kid":"11111111-2222-3333-4444-555555555555"}`.
+JWS compacto con Nimbus JOSE JWT 10.9.1, curva P-256. Sin cabeceras adicionales, URLs, claves
+aportadas por el mensaje, `crit`, `b64`, algoritmos alternativos ni fallback a HMAC.
 
 Claims:
 
 ```json
 {
-  "v": "p360act1",
+  "v": "p360act2",
   "tenantId": "11111111-1111-1111-1111-111111111111",
   "sujetoId": "44444444-4444-4444-4444-444444444444",
   "roles": ["CLIENTE"],
   "scopes": ["access_as_user"],
   "emitidoEn": "2026-10-07T01:30:00Z",
   "expiraEn": "2026-10-07T01:30:04Z",
-  "audiencia": "p360.usuarios.consultas.q",
-  "keyId": "11111111-2222-3333-4444-555555555555"
+  "audiencia": "p360.usuarios.consultas.q"
 }
 ```
 
@@ -325,15 +343,34 @@ Reglas:
   para esas comprobaciones.
 - Si no hay clave de firma configurada, el BFF **no emite** sobre y el consumidor **no verifica**:
   falla cerrado en lugar de aceptar un contexto sin autenticidad.
-- `keyId` permite rotar claves y rechazar sobres firmados con una clave retirada.
+- `kid` protegido identifica la clave confiable; no forma parte de los claims de identidad.
+  `ActorContext.keyId()` conserva esa metadata para compatibilidad interna.
+- Payload JSON estricto, campos exactos, sin duplicados; base64url canónico sin padding.
+  Límites: sobre 16384 caracteres, header codificado 1024, payload decodificado 8192 bytes,
+  roles/scopes hasta 64 elementos únicos de hasta 64 caracteres, audiencia hasta 256 caracteres,
+  vigencia positiva hasta 5 minutos; tolerancia de emisión configurable de 0 a 60 segundos.
+- El contrato permite redelivery de lecturas durante la vigencia. No garantiza uso único del actor
+  ni lo enlaza a messageId/payload. Reutilización en otra audiencia o después de expirar se rechaza.
+  La pertenencia y autorización local se siguen comprobando en cada entrega.
 
-### Decisión pendiente de seguridad
+### Configuración y migración asimétrica
 
-El algoritmo (HMAC-SHA256 simétrico, 32 bytes mínimo) y el contrato quedan implementados y probados.
-Lo que **no** está especificado todavía y requiere decisión arquitectónica antes de operar es la
-**provisión y rotación distribuidas de las claves** entre BFF y servicios consumidores, y su
-integración con el gestor de secretos de AWS. La base no la inventa: hoy la clave se inyecta por
-variable de entorno o gestor de secretos y su ausencia impide firmar o verificar.
+Solo BFF carga la privada mediante `pedidos360.messaging.actor.private-jwk` y su kid activo mediante
+`clave-id`. Todos cargan `public-jwks`, conjunto JWK local confiable con 1 a 16 públicas EC P-256,
+kids UUID únicos. SERVICE rechaza privadas en cualquiera de estas propiedades. BFF exige que la
+privada coincida con una pública confiable, validando una firma de configuración al arrancar.
+No hay claves reales versionadas. ACTIVE sin claves válidas falla al iniciar; DISABLED no carga claves.
+El secreto HMAC antiguo no satisface esta configuración. Claves retiradas del conjunto se rechazan.
+
+Mantener relay DISABLED para actualizar coordinadamente BFF, core y consumers. Verificar todo el
+conjunto local con fixtures efímeros antes del corte futuro de #70. No mezclar versiones HMAC/ES256
+en ACTIVE. Para rotar: distribuir la pública nueva, cambiar privada/kid emisor, esperar vigencia y
+drenado de mensajes, retirar pública antigua. Una revocación exige retirar la pública y recargar
+configuración en cada proceso. La distribución operativa de claves y AWS quedan fuera de este PR.
+
+Rollback documental: desactivar relay y mantener HTTP oficial antes de revertir binarios y
+configuración; no aceptar HMAC automáticamente ni reproducir consultas vencidas. El solicitante
+inicia una consulta nueva autorizada. No purgar colas ni modificar topología/policies.
 
 ## 7. Configuración central
 
@@ -377,11 +414,14 @@ pedidos360:
     max-body-bytes: 262144
     actor:
       emisor: ${ENTRA_TENANT_ID:}
-      clave-id: ${PEDIDOS360_ACTOR_KEY_ID:}
-      secreto: ${PEDIDOS360_ACTOR_SECRET:}
+      public-jwks: ${PEDIDOS360_ACTOR_PUBLIC_JWKS:} # Solo públicas; JSON JWK Set confiable
       tolerancia-reloj: 5s
       roles-permitidos: CLIENTE,ADMIN
 ```
+
+El BFF agrega además bajo `pedidos360.messaging.actor`:
+`clave-id: ${PEDIDOS360_ACTOR_KEY_ID:}` y `private-jwk: ${PEDIDOS360_ACTOR_PRIVATE_JWK:}`.
+No inyectar estas variables privadas en procesos SERVICE.
 
 El BFF agrega:
 
@@ -608,7 +648,7 @@ Los tests usan el vhost `/` del broker de prueba, no el vhost `pedidos360` de la
 
 | Límite | Dónde se resuelve |
 |---|---|
-| Provisión y rotación **distribuidas** de claves HMAC y su integración con el gestor de secretos de AWS | #71 (hoy: variable de entorno o gestor, una sola clave vigente) |
+| Provisión y rotación **distribuidas** de claves ES256 y su integración con el gestor de secretos de AWS | #71 (hoy: configuración local confiable con públicas coexistentes) |
 | Escalado horizontal del BFF: la cola de respuestas es compartida y un consumidor competidor robaría correlaciones ajenas | #71 (requiere cola de respuestas por instancia o propiedad de correlaciones) |
 | `concurrencia=1` en el listener de consultas | #71 |
 | Política operativa de indisponibilidad de broker (alertas, capacidad, cuándo dejar de recuperar) | #69/#71 |

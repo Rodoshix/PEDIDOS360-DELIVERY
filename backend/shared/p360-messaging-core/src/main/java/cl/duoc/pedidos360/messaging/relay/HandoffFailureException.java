@@ -1,17 +1,34 @@
 package cl.duoc.pedidos360.messaging.relay;
 
-/**
- * La transferencia de responsabilidad del mensaje no quedo confirmada.
- *
- * <p>Implica no confirmar el request original: ya sea hacia el retry corto, hacia la DLQ o hacia la
- * respuesta correlacionada. Se aplica recuperacion acotada y nunca {@code requeue=true}.
- */
+/** Publicación sin transferencia confirmada; su estado no depende de la causa Java. */
 public class HandoffFailureException extends RuntimeException {
-    public HandoffFailureException(String detalle) {
-        super(detalle);
+    public enum ResultadoPublicacion {
+        /** No se invocó el envío al transporte. */
+        NO_ENVIADO,
+        /** El broker devolvió nack o return concluyente. */
+        RECHAZADO_CONFIRMADO,
+        /** Se inició el envío y no se obtuvo un resultado concluyente. */
+        INCIERTO,
+        /** Publicación confirmada; el plazo del solicitante puede agotarse después. */
+        CONFIRMADO
     }
 
-    public HandoffFailureException(String detalle, Throwable causa) {
-        super(detalle, causa);
+    private final ResultadoPublicacion resultado;
+
+    /** Compatible con validaciones anteriores al envío. */
+    public HandoffFailureException(String detalle) {
+        this(detalle, ResultadoPublicacion.NO_ENVIADO);
     }
+
+    public HandoffFailureException(String detalle, ResultadoPublicacion resultado) {
+        this(detalle, resultado, null);
+    }
+
+    public HandoffFailureException(String detalle, ResultadoPublicacion resultado, Throwable causa) {
+        super(detalle, causa);
+        this.resultado = java.util.Objects.requireNonNull(resultado);
+    }
+
+    public ResultadoPublicacion resultado() { return resultado; }
+    public boolean resultadoIncierto() { return resultado == ResultadoPublicacion.INCIERTO; }
 }

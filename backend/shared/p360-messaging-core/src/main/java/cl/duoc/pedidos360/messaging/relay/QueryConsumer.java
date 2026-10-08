@@ -75,6 +75,13 @@ public class QueryConsumer {
     public QueryConsumer(RequestEnvelopeContext contexto, ActorContextSigner actor, QueryProcessor procesador,
             QueryReplyPublisher respuestas, QueryFailureHandler fallos, QueryTopology topology,
             String emisorEsperado, QueryPrecheck precheck, HandoffRecovery recuperacion, int maxBodyBytes) {
+        this(contexto, actor, procesador, respuestas, fallos, topology, emisorEsperado, precheck,
+                recuperacion, maxBodyBytes, Clock.systemUTC());
+    }
+
+    public QueryConsumer(RequestEnvelopeContext contexto, ActorContextSigner actor, QueryProcessor procesador,
+            QueryReplyPublisher respuestas, QueryFailureHandler fallos, QueryTopology topology,
+            String emisorEsperado, QueryPrecheck precheck, HandoffRecovery recuperacion, int maxBodyBytes, Clock reloj) {
         this.contexto = contexto;
         this.actor = actor;
         this.procesador = procesador;
@@ -86,7 +93,7 @@ public class QueryConsumer {
         this.destinosPermitidos = List.of(topology.queue());
         this.precheck = precheck;
         this.recuperacion = recuperacion;
-        this.reloj = Clock.systemUTC();
+        this.reloj = java.util.Objects.requireNonNull(reloj);
         this.maxBodyBytes = maxBodyBytes;
     }
 
@@ -107,25 +114,30 @@ public class QueryConsumer {
         String correlationId = metadatos.getCorrelationId();
         String messageId = metadatos.getMessageId();
         // retry-count es un campo reservado de Spring AMQP: se lee por su API, no como header libre.
-        int intentos = (int) Math.max(0, metadatos.getRetryCount());
+        int intentos = (int) Math.min(Integer.MAX_VALUE, Math.max(0, metadatos.getRetryCount()));
         RequestEnvelope envelope = null;
         try {
             envelope = contexto.leer(message.getBody(), maxBodyBytes);
             if (envelope.vencido(reloj.instant())) {
-                responderVencida(envelope, correlationId, metadatos.getReplyTo());
-                // responderVencida siempre lanza: no se llega aqui.
+                throw new PlazoVencidoException("consulta vencida antes de ejecutarse");
             }
             validarOperacion(envelope);
             ActorContext contextoActor = actor.verificar(envelope.actor(), emisorEsperado, destinosPermitidos,
                     envelope.expiresAt());
             if (precheck != null) precheck.validar(contextoActor);
+            if (envelope.vencido(reloj.instant()))
+                throw new PlazoVencidoException("consulta vencida antes del procesamiento");
             var payload = procesador.procesar(contextoActor, envelope);
+            if (envelope.vencido(reloj.instant()))
+                throw new PlazoVencidoException("consulta vencida durante el procesamiento");
             respuestas.publicar(envelope, metadatos.getReplyTo(), correlationId,
                     QueryResponse.exito(envelope, correlationId, payload, respuestas.ahora()));
-            confirmar(channel, metadatos.getDeliveryTag(), messageId, correlationId, intentos, "RESPONDIDA");
         } catch (Exception fallo) {
             gestionarFallo(message, channel, envelope, fallo, correlationId, intentos, messageId);
+            return;
         }
+        // Settlement fuera del tratamiento de negocio: nunca origina otra publicación.
+        confirmar(channel, metadatos.getDeliveryTag(), messageId, correlationId, intentos, "RESPONDIDA");
     }
 
     private void gestionarFallo(Message message, Channel channel, RequestEnvelope envelope, Exception fallo,
@@ -137,7 +149,7 @@ public class QueryConsumer {
             // Las propiedades originales viajan a la transferencia: sin ellas el retry perderia
             // correlationId y replyTo, y la respuesta del segundo intento no tendria destino.
             resultado = fallos.gestionar(diagnosticable, intentos, fallo, correlationId,
-                    original.getReplyTo(), fallo instanceof PlazoVencidoException, original);
+                    original.getReplyTo(), fallo instanceof PlazoVencidoException || diagnosticable.vencido(reloj.instant()), original);
         } catch (RuntimeException inesperado) {
             log.error("Consulta messageId={} fallo al gestionar el error; mensaje SIN CONFIRMAR: {}", messageId,
                     inesperado.getMessage());
@@ -159,33 +171,16 @@ public class QueryConsumer {
                     "la operacion no corresponde a esta cola funcional");
     }
 
-    /**
-     * Un mensaje vencido no se ejecuta ni se reintenta. Si al solicitante todavia le queda
-     * presupuesto, recibe un error correlacionado 504; en ambos casos el mensaje se diagnostica y
-     * termina en DLQ.
-     */
-    private void responderVencida(RequestEnvelope envelope, String correlationId, String replyTo) {
-        var error = new QueryResponse.ErrorDetail("PLAZO_AGOTADO", "Plazo agotado",
-                "La consulta no se ejecuto porque su plazo ya habia vencido.", 504);
-        try {
-            respuestas.publicar(envelope, replyTo, correlationId,
-                    QueryResponse.error(envelope, correlationId, error, respuestas.ahora()));
-        } catch (HandoffFailureException sinPresupuesto) {
-            log.warn("Consulta messageId={} vencida y sin respuesta confirmada: {}", envelope.messageId(),
-                    sinPresupuesto.getMessage());
-        }
-        throw new PlazoVencidoException("consulta vencida antes de ejecutarse");
-    }
-
     private void confirmar(Channel channel, long deliveryTag, String messageId, String correlationId, int intentos,
             String resultado) {
         try {
             channel.basicAck(deliveryTag, false);
-        } catch (IOException ackIncierto) {
-            // El ACK no quedo confirmado: el broker reentregara. No se vuelve a transferir el mensaje
-            // para no duplicar la respuesta ni la entrada en retry/DLQ.
+        } catch (IOException | com.rabbitmq.client.ShutdownSignalException ackIncierto) {
+            // Settlement incierto: conservar el original y recuperar con backoff.
+            // La redelivery puede repetir una lectura; no se publica otra copia aquí.
             log.error("Consulta messageId={} correlationId={} ACK no confirmado; se espera redelivery: {}",
-                    messageId, correlationId, ackIncierto.getMessage());
+                    messageId, correlationId, ackIncierto.getClass().getSimpleName());
+            recuperacion.sinConfirmar(messageId, correlationId, "settlement", ackIncierto);
             return;
         }
         log.info("Consulta messageId={} correlationId={} retryCount={} {} ACK", messageId, correlationId, intentos,
