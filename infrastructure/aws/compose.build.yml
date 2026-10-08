@@ -20,6 +20,8 @@ services:
   productos:
     build:
       context: ../../backend/services/productos-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   carrito:
     build:
       context: ../../backend/services/carrito-service

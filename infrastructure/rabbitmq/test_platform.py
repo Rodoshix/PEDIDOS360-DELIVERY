@@ -162,6 +162,9 @@ class PlatformTests(unittest.TestCase):
                 if domain != 'carrito':
                     identity = publish('', 'p360.bff.consultas.respuestas.q', user=user)
                     receive('p360.bff.consultas.respuestas.q', identity, user='p360-bff')
+                if domain == 'productos':
+                    identity = publish('p360.dlx', key + '.failed', user=user)
+                    receive('p360.productos.consultas.dlq', identity)
 
     def test_08_bff_query_and_response_permissions(self):
         identity = publish('p360.queries', 'usuario.consultar-actual.v1', user='p360-bff')
