@@ -19,6 +19,8 @@ services:
   restaurantes:
     build:
       context: ../../backend/services/restaurantes-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   productos:
     build:
       context: ../../backend/services/productos-service

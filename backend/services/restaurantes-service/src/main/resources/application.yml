@@ -30,6 +30,18 @@ spring:
     create-schemas: true
     clean-disabled: true
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    virtual-host: ${RABBITMQ_VHOST:pedidos360}
+    dynamic: false
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+
 server:
   port: 8082
   address: 127.0.0.1
@@ -42,3 +54,46 @@ management:
   endpoint:
     health:
       show-details: always
+  health:
+    rabbit:
+      enabled: false # HTTP oficial, sin exigir broker con relay DISABLED.
+
+pedidos360:
+  messaging:
+    relay-mode: ${PEDIDOS360_RELAY_MODE:DISABLED}
+    role: SERVICE
+    declare-topology: false # Provisioning/policies corresponden a #69, sin configure.
+    exchanges:
+      queries: p360.queries
+      retry: p360.retry
+      dlx: p360.dlx
+    queues:
+      responses: p360.bff.consultas.respuestas.q
+    naming:
+      prefix: p360.
+      query-suffix: .consultas.q
+      retry-suffix: .consultas.retry.1s.q
+      dlq-suffix: .consultas.dlq
+      retry-key-suffix: .retry.1s
+      failed-key-suffix: .failed
+    routing:
+      usuario: usuario.consultar-actual.v1
+      restaurante: restaurante.listar.v1
+      producto: producto.listar-disponibles.v1
+      pago: pago.consultar.v1
+      usuario-base: usuario.consultar-actual
+      restaurante-base: restaurante.listar
+      producto-base: producto.listar-disponibles
+      pago-base: pago.consultar
+    deadline: ${PEDIDOS360_QUERY_DEADLINE:5s}
+    actor-ttl: ${PEDIDOS360_ACTOR_TTL:4s}
+    retry-delay: ${PEDIDOS360_RETRY_DELAY:1s}
+    confirm-timeout: ${PEDIDOS360_CONFIRM_TIMEOUT:3s}
+    recovery-backoff: ${PEDIDOS360_RECOVERY_BACKOFF:500ms}
+    max-pending-correlations: 1024
+    max-body-bytes: 262144
+    actor:
+      emisor: ${ENTRA_TENANT_ID:}
+      clave-id: ${PEDIDOS360_ACTOR_KEY_ID:}
+      secreto: ${PEDIDOS360_ACTOR_SECRET:}
+      tolerancia-reloj: ${PEDIDOS360_ACTOR_CLOCK_SKEW:5s}

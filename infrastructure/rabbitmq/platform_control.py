@@ -95,8 +95,8 @@ def accounts():
               ('p360-admin-demo', 'ADMIN_DEMO_PASSWORD', SANDBOX, '^demo\\.', '^demo\\.', '^demo\\.', 'management')]
     for domain, operation, _, _ in DOMAINS:
         writes = ['p360.retry'] + ([] if domain == 'carrito' else ['amq.default'])
-        # #78/#80: shared query handlers use confirmed publication for DLQ handoff.
-        if domain in ('usuarios', 'productos'):
+        # #78/#79/#80: shared query handlers use confirmed publication for DLQ handoff.
+        if domain in ('usuarios', 'restaurantes', 'productos'):
             writes.append('p360.dlx')
         result.append((f'p360-{domain}-consumer', domain.upper() + '_CONSUMER_PASSWORD', BUSINESS,
                        DENY, exact(*writes), exact(f'p360.{domain}.{operation}.q'), ''))

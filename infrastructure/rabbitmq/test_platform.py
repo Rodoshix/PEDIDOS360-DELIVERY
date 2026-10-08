@@ -162,7 +162,7 @@ class PlatformTests(unittest.TestCase):
                 if domain != 'carrito':
                     identity = publish('', 'p360.bff.consultas.respuestas.q', user=user)
                     receive('p360.bff.consultas.respuestas.q', identity, user='p360-bff')
-                if domain in ('usuarios', 'productos'):
+                if domain in ('usuarios', 'restaurantes', 'productos'):
                     identity = publish('p360.dlx', key + '.failed', user=user)
                     receive(f'p360.{domain}.{operation}.dlq', identity)
                     with connection(user) as conn:
