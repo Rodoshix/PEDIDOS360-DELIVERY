@@ -1,5 +1,8 @@
 # Pedidos360 — Evaluación Parcial 2 (EP2)
 
+Preparación de seguridad PR 2: [prueba de identidad firmada por Usuarios](IDENTITY-PROOF-PR2.md).
+Firma/verificación deshabilitadas por defecto; consumer Pagos y corte siguen pendientes.
+
 ## Objetivo
 
 Incorporar RabbitMQ al sistema existente sin romper la lógica funcional de Pedidos360.
