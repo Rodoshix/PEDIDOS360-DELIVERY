@@ -55,6 +55,12 @@ public final class BffActorContextFactory {
             else if (value.startsWith("SCOPE_")) scopes.add(value.substring("SCOPE_".length()));
         }
         Instant expira = emision.plus(properties.ttl());
+        if (jwt.getExpiresAt() == null || !jwt.getExpiresAt().isAfter(emision))
+            throw new org.springframework.security.access.AccessDeniedException("JWT vigente requerido");
+        if (expira.isAfter(plazoRequest)) expira = plazoRequest;
+        if (expira.isAfter(jwt.getExpiresAt())) expira = jwt.getExpiresAt();
+        expira = cl.duoc.pedidos360.messaging.identity.IdentityProofCodec.millis(expira);
+        if (!expira.isAfter(emision)) throw new cl.duoc.pedidos360.messaging.relay.QueryTimeoutException("vigencia del actor agotada");
         ActorContext contexto = new ActorContext(tenant, sujeto, roles, scopes, emision, expira, colaDestino,
                 claveDeFirma());
         return firmante.emitir(contexto, plazoRequest);

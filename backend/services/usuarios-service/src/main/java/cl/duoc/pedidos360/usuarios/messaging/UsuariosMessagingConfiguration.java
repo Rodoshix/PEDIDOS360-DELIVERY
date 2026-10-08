@@ -25,8 +25,9 @@ public class UsuariosMessagingConfiguration {
     }
 
     @Bean
-    UsuariosQueryProcessor usuariosQueryProcessor(UsuarioService usuarios, JsonMapper json) {
-        return new UsuariosQueryProcessor(usuarios, json);
+    UsuariosQueryProcessor usuariosQueryProcessor(UsuarioService usuarios, JsonMapper json,
+            org.springframework.beans.factory.ObjectProvider<UsuariosIdentityProofSigner> pruebas) {
+        return new UsuariosQueryProcessor(usuarios, json, pruebas.getIfAvailable());
     }
 
     @Bean

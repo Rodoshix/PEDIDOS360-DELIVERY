@@ -100,6 +100,13 @@ pedidos360:
     recovery-backoff: ${PEDIDOS360_RECOVERY_BACKOFF:500ms}
     max-pending-correlations: 1024
     max-body-bytes: 262144
+    # Preparación de PR2: habilitación coordinada; HTTP permanece oficial.
+    identity-proof:
+      enabled: ${PEDIDOS360_IDENTITY_PROOF_ENABLED:false}
+      public-jwks: ${PEDIDOS360_IDENTITY_PROOF_PUBLIC_JWKS:}
+      clock-margin: ${PEDIDOS360_IDENTITY_PROOF_CLOCK_MARGIN:250ms}
+      key-id: ${USUARIOS_IDENTITY_PROOF_KEY_ID:}
+      private-jwk: ${USUARIOS_IDENTITY_PROOF_PRIVATE_JWK:}
     actor:
       emisor: ${ENTRA_TENANT_ID:}
       public-jwks: ${PEDIDOS360_ACTOR_PUBLIC_JWKS:}

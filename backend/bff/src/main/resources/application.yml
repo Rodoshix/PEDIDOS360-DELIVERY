@@ -93,6 +93,11 @@ pedidos360:
     recovery-backoff: ${PEDIDOS360_RECOVERY_BACKOFF:500ms}
     max-pending-correlations: ${PEDIDOS360_MAX_PENDING:1024}
     max-body-bytes: ${PEDIDOS360_MAX_BODY_BYTES:262144}
+    # Preparación de PR2: habilitación coordinada; HTTP permanece oficial.
+    identity-proof:
+      enabled: ${PEDIDOS360_IDENTITY_PROOF_ENABLED:false}
+      public-jwks: ${PEDIDOS360_IDENTITY_PROOF_PUBLIC_JWKS:}
+      clock-margin: ${PEDIDOS360_IDENTITY_PROOF_CLOCK_MARGIN:250ms}
     actor:
       # Tenant de Entra emisor del sobre. Sin valor, relay-mode ACTIVE no arranca.
       emisor: ${ENTRA_TENANT_ID:}

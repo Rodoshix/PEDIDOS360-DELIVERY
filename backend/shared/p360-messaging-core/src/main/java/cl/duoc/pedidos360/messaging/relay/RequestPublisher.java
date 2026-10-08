@@ -61,11 +61,16 @@ public final class RequestPublisher {
      * @return nanosegundos consumidos por la publicacion confirmada.
      */
     public long publicarConMedicion(RequestEnvelope envelope, String correlationId) {
+        return publicarConMedicion(envelope, correlationId, () -> remainingNanos(envelope));
+    }
+
+    /** El BFF puede aportar su presupuesto monotónico sin cambiar los estados de publicación. */
+    public long publicarConMedicion(RequestEnvelope envelope, String correlationId, java.util.function.LongSupplier budget) {
         if (correlationId == null || correlationId.isBlank())
             throw new IllegalArgumentException("correlationId requerido");
         if (!properties.queues().responses().equals(replyToPermitido()))
             throw new QueryUnavailableException("el destino de respuesta no esta autorizado", null);
-        requireBudget(envelope);
+        remainingNanos(envelope, budget);
         MessageProperties metadatos = new MessageProperties();
         metadatos.setMessageId(envelope.messageId().toString());
         metadatos.setCorrelationId(correlationId);
@@ -82,23 +87,25 @@ public final class RequestPublisher {
         boolean publicacionConfirmada = false;
         try {
             byte[] cuerpo = contexto.escribir(envelope);
-            requireBudget(envelope);
+            remainingNanos(envelope, budget);
             envioIniciado = true;
             rabbit.send(properties.exchanges().queries(), envelope.operacion(),
                     new Message(cuerpo, metadatos), correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
-                    .get(remainingNanos(envelope), TimeUnit.NANOSECONDS);
+                    .get(remainingNanos(envelope, budget), TimeUnit.NANOSECONDS);
             if (!confirmacion.ack()) throw new QueryUnavailableException("el broker rechazo la publicacion", new HandoffFailureException("nack", RECHAZADO_CONFIRMADO));
             if (correlacion.getReturned() != null)
                 throw new QueryUnavailableException("la publicacion volvio sin ruta disponible", new HandoffFailureException("return", RECHAZADO_CONFIRMADO));
             publicacionConfirmada = true;
-            requireBudget(envelope);
+            remainingNanos(envelope, budget);
             return System.nanoTime() - inicio;
         } catch (QueryTimeoutException timeout) {
             throw new QueryTimeoutException(timeout.getMessage(), new HandoffFailureException(
                     "plazo de publicación agotado", publicacionConfirmada ? CONFIRMADO : envioIniciado ? INCIERTO : NO_ENVIADO, timeout));
         } catch (java.util.concurrent.TimeoutException timeout) {
-            if (envelope.vencido(java.time.Instant.now()))
+            boolean exhausted = envelope.vencido(java.time.Instant.now());
+            try { budget.getAsLong(); } catch (QueryTimeoutException expired) { exhausted = true; }
+            if (exhausted)
                 throw new QueryTimeoutException("plazo de publicación agotado",
                         new HandoffFailureException("confirm incierto", INCIERTO, timeout));
             throw new QueryUnavailableException("confirm de publicación incierto",
@@ -120,7 +127,15 @@ public final class RequestPublisher {
         return Math.min(remaining, properties.confirmTimeout().toNanos());
     }
 
-    private void requireBudget(RequestEnvelope request) { remainingNanos(request); }
+    private long remainingNanos(RequestEnvelope request, java.util.function.LongSupplier budget) {
+        long available;
+        try { available = budget.getAsLong(); }
+        catch (QueryTimeoutException exhausted) {
+            throw new QueryTimeoutException("presupuesto global agotado", new HandoffFailureException("plazo agotado", NO_ENVIADO));
+        }
+        if (available <= 0) throw new QueryTimeoutException("presupuesto global agotado", new HandoffFailureException("plazo agotado", NO_ENVIADO));
+        return Math.min(available, remainingNanos(request));
+    }
 
     /** Unico destino de respuesta autorizado: la cola tecnica desde configuracion. */
     public String replyToPermitido() {
