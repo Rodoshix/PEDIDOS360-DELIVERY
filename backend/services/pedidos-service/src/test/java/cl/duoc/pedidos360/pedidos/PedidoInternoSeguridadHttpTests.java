@@ -54,6 +54,7 @@ class PedidoInternoSeguridadHttpTests {
 
     @DynamicPropertySource
     static void propiedades(DynamicPropertyRegistry registry) {
+        registry.add("entra.tenant-id", () -> TENANT);
         registry.add("pedidos.interno.enabled", () -> "true");
         registry.add("pedidos.interno.tenant-id", () -> TENANT);
         registry.add("pedidos.interno.audience", () -> AUD);
@@ -115,8 +116,16 @@ class PedidoInternoSeguridadHttpTests {
         assertThat(respuesta.statusCode()).isIn(401, 403);
     }
 
+    @Test
+    void elWorkerNoPuedeLeerLaProyeccionInterna() throws Exception {
+        long id = crearPedido();
+        var respuesta = get("/internal/pedidos/" + id + "/resumen-pago",
+                jwks.tokenValido(TENANT, AUD, WORKER, ROL));
+        assertThat(respuesta.statusCode()).isIn(401, 403);
+    }
+
     private long crearPedido() {
-        var pedido = pedidos.crear(new IdentidadUsuario(10L, Set.of(Rol.CLIENTE)),
+        var pedido = pedidos.crear(new IdentidadUsuario(java.util.UUID.fromString(TENANT), 10L, Set.of(Rol.CLIENTE)),
                 new CrearPedidoRequest(20L, "Av. Ejemplo 123", List.of(new LineaPedidoRequest(101L, 1))));
         return pedido.pedidoId();
     }

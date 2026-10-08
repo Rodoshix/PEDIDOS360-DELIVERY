@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Import(PostgresTestConfiguration.class)
 class PedidoConfirmacionPagoTests {
 
-    private static final IdentidadUsuario CLIENTE = new IdentidadUsuario(10L, Set.of(Rol.CLIENTE));
+    private static final IdentidadUsuario CLIENTE = new IdentidadUsuario(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 10L, Set.of(Rol.CLIENTE));
 
     @Autowired
     private PedidoService pedidos;
@@ -45,7 +45,7 @@ class PedidoConfirmacionPagoTests {
     void confirmaUnPedidoCreado() {
         var pedido = pedidos.crear(CLIENTE, request());
 
-        pedidos.confirmarPorPago(pedido.pedidoId());
+        pedidos.confirmarPorPago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), pedido.pedidoId());
 
         assertThat(repositorio.findById(pedido.pedidoId()).orElseThrow().getEstado())
                 .isEqualTo(EstadoPedido.CONFIRMADO);
@@ -54,10 +54,10 @@ class PedidoConfirmacionPagoTests {
     @Test
     void esIdempotenteSiYaEstaConfirmadoOEnEstadoPosterior() {
         var pedido = pedidos.crear(CLIENTE, request());
-        pedidos.confirmarPorPago(pedido.pedidoId());
+        pedidos.confirmarPorPago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), pedido.pedidoId());
 
         // Repetir no falla y no cambia el estado.
-        assertThatCode(() -> pedidos.confirmarPorPago(pedido.pedidoId())).doesNotThrowAnyException();
+        assertThatCode(() -> pedidos.confirmarPorPago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), pedido.pedidoId())).doesNotThrowAnyException();
         assertThat(repositorio.findById(pedido.pedidoId()).orElseThrow().getEstado())
                 .isEqualTo(EstadoPedido.CONFIRMADO);
     }
@@ -66,9 +66,9 @@ class PedidoConfirmacionPagoTests {
     void pedidoCanceladoDevuelveConflictoYNoSeConfirma() {
         var pedido = pedidos.crear(CLIENTE, request());
         // ADMIN cancela (única vía de cambio de estado).
-        pedidos.cambiarEstado(new IdentidadUsuario(1L, Set.of(Rol.ADMIN)), pedido.pedidoId(), EstadoPedido.CANCELADO);
+        pedidos.cambiarEstado(new IdentidadUsuario(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 1L, Set.of(Rol.ADMIN)), pedido.pedidoId(), EstadoPedido.CANCELADO);
 
-        assertThatThrownBy(() -> pedidos.confirmarPorPago(pedido.pedidoId()))
+        assertThatThrownBy(() -> pedidos.confirmarPorPago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), pedido.pedidoId()))
                 .isInstanceOf(PedidoException.class)
                 .satisfies(error -> assertThat(((PedidoException) error).getStatus()).isEqualTo(HttpStatus.CONFLICT));
         assertThat(repositorio.findById(pedido.pedidoId()).orElseThrow().getEstado())
@@ -77,7 +77,7 @@ class PedidoConfirmacionPagoTests {
 
     @Test
     void pedidoInexistenteSeReporta() {
-        assertThatThrownBy(() -> pedidos.confirmarPorPago(9999L))
+        assertThatThrownBy(() -> pedidos.confirmarPorPago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 9999L))
                 .isInstanceOf(PedidoNoEncontradoException.class);
     }
 

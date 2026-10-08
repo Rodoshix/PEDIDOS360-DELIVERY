@@ -38,7 +38,7 @@ class RabbitCoreTests {
             return new RabbitMQContainer("rabbitmq:4.1-management-alpine");
         }
     }
-    static final IdentidadUsuario CLIENTE=new IdentidadUsuario(10L,Set.of(Rol.CLIENTE));
+    static final IdentidadUsuario CLIENTE=new IdentidadUsuario(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 10L,Set.of(Rol.CLIENTE));
     @Autowired PagoService service;
     @Autowired PagoRepository pagos;
     @Autowired OutboxRepository outbox;
@@ -100,7 +100,7 @@ class RabbitCoreTests {
         assertThat(pagos.findAll().getFirst().getEstado()).isEqualTo(EstadoPago.PENDIENTE);
         UUID id=outbox.findAll().getFirst().getMessageId();
         registrar(MetodoPago.EFECTIVO);
-        service.aprobar(new IdentidadUsuario(1L,Set.of(Rol.ADMIN)),pagos.findAll().getFirst().getId());
+        service.aprobar(new IdentidadUsuario(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 1L,Set.of(Rol.ADMIN)),pagos.findAll().getFirst().getId());
         assertThat(outbox.count()).isEqualTo(1);
         assertThat(outbox.findAll().getFirst().getMessageId()).isEqualTo(id);
     }
@@ -125,7 +125,7 @@ class RabbitCoreTests {
     @Test void rollbackDespuesDeGuardarAmbosNoDejaHuerfanos() {
         var tx=new TransactionTemplate(transactionManager);
         assertThatThrownBy(()->tx.executeWithoutResult(status->{
-            var pago=pagos.saveAndFlush(new Pago(500L,10L,13980L,"CLP",MetodoPago.TARJETA,EstadoPago.APROBADO,"rollback"));
+            var pago=pagos.saveAndFlush(new Pago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 500L,10L,13980L,"CLP",MetodoPago.TARJETA,EstadoPago.APROBADO,"rollback"));
             store.crear(pago); throw new IllegalStateException("rollback");
         })).isInstanceOf(IllegalStateException.class);
         assertThat(pagos.count()).isZero(); assertThat(outbox.count()).isZero();
@@ -193,7 +193,7 @@ class RabbitCoreTests {
     @Test void schedulerSoloReconciliacionHttpHistorica() {
         registrar(MetodoPago.TARJETA);
         pedidos.registrarPedido(600,10,"CREADO",13980,"CLP");
-        pagos.saveAndFlush(new Pago(600L,10L,13980L,"CLP",MetodoPago.TARJETA,EstadoPago.APROBADO,"legacy"));
+        pagos.saveAndFlush(new Pago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 600L,10L,13980L,"CLP",MetodoPago.TARJETA,EstadoPago.APROBADO,"legacy"));
         assertThat(service.reconciliarConfirmacionesPendientes()).isEqualTo(1);
         assertThat(pedidos.confirmaciones()).isEqualTo(1);
         assertThat(pedidos.estaConfirmado(600)).isTrue();
@@ -206,5 +206,54 @@ class RabbitCoreTests {
         new OutboxDispatcher(store,publisher,json,properties).dispatch();
         assertThat(outbox.findById(id).orElseThrow().getEstado()).isEqualTo(OutboxMessage.State.PUBLISHED);
         assertThat(rabbit.receive(properties.queues().confirmacion(),3000).getMessageProperties().getMessageId()).isEqualTo(id.toString());
+    }
+
+    @Test void legacyPedidoRejectedBeforeAtomicPaymentOutboxOrBrokerEffect() {
+        pedidos.registrarResumen(new cl.duoc.pedidos360.pagos.client.PedidoResumen(500L,CLIENTE.tenantId(),10L,"CREADO",13980L,"CLP","RECONCILED_LEGACY"));
+        assertThatThrownBy(()->registrar(MetodoPago.TARJETA)).isInstanceOf(cl.duoc.pedidos360.pagos.exception.PagoException.class);
+        assertThat(pagos.count()).isZero(); assertThat(outbox.count()).isZero();
+        dispatcher.dispatch();
+        assertThat(rabbit.receive(properties.queues().confirmacion(),100)).isNull();
+        assertThat(pedidos.confirmaciones()).isZero();
+    }
+    @Test void unknownAndReconciledOutboxNeverClaimedEvenAfterLeaseExpiration() {
+        registrar(MetodoPago.TARJETA);
+        var before=outbox.findAll().getFirst();
+        UUID id=before.getMessageId(); String payload=before.getPayload();
+        try {
+            for(String origin:java.util.List.of("UNKNOWN","RECONCILED_LEGACY")) {
+                // Historical-state fixture in this disposable container, not operational reconciliation.
+                jdbc.execute("ALTER TABLE pagos.pagos DISABLE TRIGGER guard_tenant_origin");
+                try { jdbc.update("UPDATE pagos.pagos SET tenant_id=?::uuid,tenant_origin=?",origin.equals("UNKNOWN")?null:CLIENTE.tenantId().toString(),origin); }
+                finally { jdbc.execute("ALTER TABLE pagos.pagos ENABLE TRIGGER guard_tenant_origin"); }
+                jdbc.execute("UPDATE pagos.confirmacion_outbox SET estado='IN_FLIGHT',lease_until=now()-interval '1 second',lease_token=gen_random_uuid()");
+                assertThat(store.claim()).isEmpty();
+                dispatcher.dispatch();
+                assertThat(rabbit.receive(properties.queues().confirmacion(),100)).isNull();
+                assertThat(outbox.findById(id).orElseThrow().getPayload()).isEqualTo(payload);
+            }
+        } finally {
+            jdbc.execute("ALTER TABLE pagos.pagos DISABLE TRIGGER guard_tenant_origin");
+            try { jdbc.update("UPDATE pagos.pagos SET tenant_id=?::uuid,tenant_origin='AUTHENTICATED_NEW'",CLIENTE.tenantId().toString()); }
+            finally { jdbc.execute("ALTER TABLE pagos.pagos ENABLE TRIGGER guard_tenant_origin"); }
+        }
+    }
+    @Test void claimJoinDoesNotLockPaymentParent() throws Exception {
+        registrar(MetodoPago.TARJETA);
+        long id=pagos.findAll().getFirst().getId();
+        var locked=new CountDownLatch(1); var release=new CountDownLatch(1);
+        try(var executor=Executors.newFixedThreadPool(2)) {
+            var holder=executor.submit(()->new TransactionTemplate(transactionManager).executeWithoutResult(status->{
+                jdbc.queryForList("SELECT id FROM pagos.pagos WHERE id=? FOR UPDATE",id);
+                locked.countDown();
+                try { if(!release.await(10,TimeUnit.SECONDS)) throw new IllegalStateException("test release timeout"); }
+                catch(InterruptedException error) { Thread.currentThread().interrupt(); throw new IllegalStateException(error); }
+            }));
+            try {
+                assertThat(locked.await(5,TimeUnit.SECONDS)).isTrue();
+                assertThat(executor.submit(()->store.claim()).get(3,TimeUnit.SECONDS)).hasSize(1);
+            } finally { release.countDown(); }
+            holder.get(5,TimeUnit.SECONDS);
+        }
     }
 }

@@ -29,7 +29,7 @@ public class IdentidadActual {
                 throw new org.springframework.security.access.AccessDeniedException("Perfil no habilitado.");
             var roles = authorities.stream().filter(r -> r.equals("ROLE_CLIENTE") || r.equals("ROLE_ADMIN"))
                 .map(r -> IdentidadUsuario.Rol.valueOf(r.substring(5))).collect(java.util.stream.Collectors.toSet());
-            return new IdentidadUsuario(id.longValue(), roles);
+            return new IdentidadUsuario(java.util.UUID.fromString(token.getToken().getClaimAsString("tid")), id.longValue(), roles);
         }
         if (authentication == null || !authentication.isAuthenticated()
                 || !(authentication.getPrincipal() instanceof IdentidadUsuario identidad)) {

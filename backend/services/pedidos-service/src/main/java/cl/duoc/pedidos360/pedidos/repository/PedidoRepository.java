@@ -7,5 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
-    List<Pedido> findByUsuarioId(Long usuarioId);
+    List<Pedido> findByTenantIdAndUsuarioId(java.util.UUID tenantId, Long usuarioId);
+    List<Pedido> findByTenantId(java.util.UUID tenantId);
+    java.util.Optional<Pedido> findByTenantIdAndId(java.util.UUID tenantId, Long id);
 }

@@ -7,12 +7,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface OutboxRepository extends JpaRepository<OutboxMessage,UUID> {
     @Query(value="""
-        SELECT * FROM pagos.confirmacion_outbox
-        WHERE (estado='PENDING' AND next_attempt_at <= :now)
-           OR (estado='IN_FLIGHT' AND lease_until <= :now)
-        ORDER BY next_attempt_at LIMIT :batch FOR UPDATE SKIP LOCKED
+        SELECT o.* FROM pagos.confirmacion_outbox o JOIN pagos.pagos p ON p.id=o.pago_id
+        WHERE p.tenant_id=:tenant AND p.tenant_origin='AUTHENTICATED_NEW' AND ((o.estado='PENDING' AND o.next_attempt_at <= :now)
+           OR (o.estado='IN_FLIGHT' AND o.lease_until <= :now))
+        ORDER BY o.next_attempt_at LIMIT :batch FOR UPDATE OF o SKIP LOCKED
         """, nativeQuery=true)
-    List<OutboxMessage> claimable(@Param("now") Instant now, @Param("batch") int batch);
+    List<OutboxMessage> claimable(@Param("now") Instant now, @Param("batch") int batch, @Param("tenant") UUID tenant);
 
     @Modifying
     @Query(value="""

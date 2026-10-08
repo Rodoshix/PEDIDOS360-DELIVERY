@@ -57,6 +57,6 @@ class PedidoRepositoryTests {
     }
 
     private Pedido nuevoPedido() {
-        return new Pedido(10L, 20L, "Av. Ejemplo 123", "CLP");
+        return new Pedido(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 10L, 20L, "Av. Ejemplo 123", "CLP");
     }
 }

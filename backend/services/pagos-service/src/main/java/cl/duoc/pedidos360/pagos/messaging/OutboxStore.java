@@ -14,20 +14,21 @@ public class OutboxStore {
     private final OutboxRepository repository;
     private final RabbitProperties properties;
     private final JsonMapper json;
+    private final cl.duoc.pedidos360.pagos.security.TenantSistema tenant;
     public record Claim(UUID messageId, UUID token, String payload) {}
-    public OutboxStore(OutboxRepository repository, RabbitProperties properties, JsonMapper json) {
-        this.repository=repository; this.properties=properties; this.json=json;
+    public OutboxStore(OutboxRepository repository, RabbitProperties properties, JsonMapper json, cl.duoc.pedidos360.pagos.security.TenantSistema tenant) {
+        this.repository=repository; this.properties=properties; this.json=json; this.tenant=tenant;
     }
     @Transactional(propagation=Propagation.MANDATORY)
     public void crear(Pago pago) {
-        if (!pago.estaActivo()) throw new IllegalArgumentException("Payment is not eligible");
+        if (!pago.estaActivo() || !pago.esNuevoAutenticado() || !tenant.obtener().equals(pago.getTenantId())) throw new IllegalArgumentException("Payment is not eligible");
         var command=ConfirmarPedidoPorPago.crear(pago.getPedidoId(),pago.getId());
         repository.saveAndFlush(new OutboxMessage(command,json.writeValueAsString(command)));
     }
     @Transactional
     public List<Claim> claim() {
         Instant now=Instant.now();
-        return repository.claimable(now, 1).stream().map(row -> {
+        return repository.claimable(now, 1, tenant.obtener()).stream().map(row -> {
             row.estado=OutboxMessage.State.IN_FLIGHT; row.attempts++;
             row.leaseToken=UUID.randomUUID(); row.leaseUntil=now.plus(properties.lease());
             return new Claim(row.messageId,row.leaseToken,row.payload);

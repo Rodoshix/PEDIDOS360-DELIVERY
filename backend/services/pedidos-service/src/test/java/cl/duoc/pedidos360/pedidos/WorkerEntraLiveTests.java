@@ -26,7 +26,7 @@ class WorkerEntraLiveTests {
     @LocalServerPort int port;
     @Autowired PedidoService pedidos;
     @Test void workerConfirmaIdempotentementePeroNoAccedeComoUsuario() throws Exception {
-        var actor = new IdentidadUsuario(10L, Set.of(IdentidadUsuario.Rol.CLIENTE));
+        var actor = new IdentidadUsuario(java.util.UUID.fromString(System.getenv("ENTRA_TENANT_ID")), 10L, Set.of(IdentidadUsuario.Rol.CLIENTE));
         var pedido = pedidos.crear(actor, new CrearPedidoRequest(20L, "Prueba aislada worker",
             List.of(new LineaPedidoRequest(101L, 1))));
         String token = System.getenv("WORKER_ACCESS_TOKEN");

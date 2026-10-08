@@ -36,7 +36,7 @@ public class PedidoService {
     public PedidoResponse crear(IdentidadUsuario identidad, CrearPedidoRequest request) {
         // El carrito envía los ítems; la regla "un restaurante por pedido" se valida aquí
         // porque es el backend quien crea el pedido. Los ítems deben ser del restaurante indicado.
-        Pedido pedido = new Pedido(identidad.usuarioId(), request.restauranteId(),
+        Pedido pedido = new Pedido(identidad.tenantId(), identidad.usuarioId(), request.restauranteId(),
                 request.direccionEntrega(), "CLP");
         for (LineaPedidoRequest item : request.items()) {
             if (item == null || item.cantidad() < 1)
@@ -54,7 +54,7 @@ public class PedidoService {
     /** Detalle del pedido: solo el propietario o ADMIN. */
     @Transactional(readOnly = true)
     public PedidoResponse obtener(IdentidadUsuario identidad, Long id) {
-        Pedido pedido = buscar(id);
+        Pedido pedido = buscar(identidad.tenantId(), id);
         exigirAcceso(identidad, pedido);
         return toResponse(pedido);
     }
@@ -62,7 +62,7 @@ public class PedidoService {
     /** Historial de la identidad autenticada (ruta /pedidos/me). No recibe usuarioId del cliente. */
     @Transactional(readOnly = true)
     public List<PedidoResponse> listarPropios(IdentidadUsuario identidad) {
-        return pedidos.findByUsuarioId(identidad.usuarioId()).stream().map(this::toResponse).toList();
+        return pedidos.findByTenantIdAndUsuarioId(identidad.tenantId(), identidad.usuarioId()).stream().map(this::toResponse).toList();
     }
 
     /** Historial de otro usuario: solo ADMIN o el propio usuario. */
@@ -71,7 +71,7 @@ public class PedidoService {
         if (!identidad.puedeAccederA(usuarioId)) {
             throw new PedidoException(HttpStatus.FORBIDDEN, "No tienes acceso a los pedidos de este usuario.");
         }
-        return pedidos.findByUsuarioId(usuarioId).stream().map(this::toResponse).toList();
+        return pedidos.findByTenantIdAndUsuarioId(identidad.tenantId(), usuarioId).stream().map(this::toResponse).toList();
     }
 
     /** Listado global: solo ADMIN (un CLIENTE usa /pedidos/me). */
@@ -80,16 +80,17 @@ public class PedidoService {
         if (!identidad.esAdmin()) {
             throw new PedidoException(HttpStatus.FORBIDDEN, "Solo ADMIN puede listar todos los pedidos.");
         }
-        return pedidos.findAll().stream().map(this::toResponse).toList();
+        return pedidos.findByTenantId(identidad.tenantId()).stream().map(this::toResponse).toList();
     }
 
     /** Cambio de estado: solo ADMIN (gestión de restaurante/logística inicial). */
     @Transactional
     public PedidoResponse cambiarEstado(IdentidadUsuario identidad, Long id, EstadoPedido destino) {
+        Pedido pedido = buscar(identidad.tenantId(), id);
         if (!identidad.puedeGestionarPedidos()) {
             throw new PedidoException(HttpStatus.FORBIDDEN, "No tienes permiso para cambiar el estado de pedidos.");
         }
-        Pedido pedido = buscar(id);
+        exigirNuevo(pedido);
         pedido.transicionarA(destino);
         return toResponse(pedidos.save(pedido));
     }
@@ -101,8 +102,9 @@ public class PedidoService {
      * PedidoNoEncontradoException si no existe. El llamante (/internal/...) traduce a 204/409/404.
      */
     @Transactional
-    public void confirmarPorPago(Long id) {
-        Pedido pedido = buscar(id);
+    public void confirmarPorPago(java.util.UUID tenantId, Long id) {
+        Pedido pedido = buscar(tenantId, id);
+        exigirNuevo(pedido);
         if (pedido.getEstado() == EstadoPedido.CANCELADO) {
             throw new PedidoException(HttpStatus.CONFLICT,
                     "El pedido " + id + " está CANCELADO y no puede confirmarse.");
@@ -114,14 +116,28 @@ public class PedidoService {
         // CONFIRMADO o posterior: nada que hacer (idempotente).
     }
 
+    @Transactional(readOnly=true)
+    public cl.duoc.pedidos360.pedidos.dto.PedidoResumenPagoResponse resumenParaPago(IdentidadUsuario identidad, Long id) {
+        Pedido pedido=buscar(identidad.tenantId(), id);
+        exigirAcceso(identidad,pedido);
+        return new cl.duoc.pedidos360.pedidos.dto.PedidoResumenPagoResponse(pedido.getId(),
+            pedido.getTenantId(),pedido.getUsuarioId(),pedido.getEstado().name(),pedido.getTotal(),pedido.getMoneda(),pedido.getTenantOrigin().name());
+    }
+
+    private void exigirNuevo(Pedido pedido) {
+        if (!pedido.esNuevoAutenticado())
+            throw new cl.duoc.pedidos360.pedidos.exception.PedidoHistoricoRetenidoException();
+    }
+
     private void exigirAcceso(IdentidadUsuario identidad, Pedido pedido) {
         if (!identidad.puedeAccederA(pedido.getUsuarioId())) {
             throw new PedidoException(HttpStatus.FORBIDDEN, "No tienes acceso a este pedido.");
         }
     }
 
-    private Pedido buscar(Long id) {
-        return pedidos.findById(id)
+    private Pedido buscar(java.util.UUID tenantId, Long id) {
+        java.util.Objects.requireNonNull(tenantId, "tenant");
+        return pedidos.findByTenantIdAndId(tenantId, id)
                 .orElseThrow(() -> new PedidoNoEncontradoException("Pedido no encontrado: " + id));
     }
 

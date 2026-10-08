@@ -24,6 +24,14 @@ class PedidosRestClientTests {
 
     private PedidosHttpServerStub stub;
 
+    @BeforeEach
+    void identidadDelegada() {
+        var jwt=cl.duoc.pedidos360.pagos.security.EntraTestTokens.decoder().decode(
+            cl.duoc.pedidos360.pagos.security.EntraTestTokens.token(java.util.Map.of()));
+        org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(
+            new org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken(jwt,
+                cl.duoc.pedidos360.pagos.security.EntraConfiguration.authorities(jwt)));
+    }
     @AfterEach
     void detener() {
         org.springframework.security.core.context.SecurityContextHolder.clearContext();
@@ -212,5 +220,46 @@ class PedidosRestClientTests {
             @Override public TokenAplicacionProvider getIfAvailable() { return null; }
             @Override public TokenAplicacionProvider getIfUnique() { return null; }
         };
+    }
+
+    static final String RESUMEN="{\"pedidoId\":1,\"tenantId\":\"11111111-1111-1111-1111-111111111111\",\"usuarioId\":10,\"estado\":\"CREADO\",\"total\":13980,\"moneda\":\"CLP\",\"tenantOrigin\":\"AUTHENTICATED_NEW\"}";
+    @Test void aceptaSoloLosDosOrigenesAcreditadosEnLaRutaInterna() throws Exception {
+        try(var cliente=delegado()) {
+            for(String origin:java.util.List.of("AUTHENTICATED_NEW","RECONCILED_LEGACY")) {
+                stub.responderJson(RESUMEN.replace("AUTHENTICATED_NEW",origin));
+                assertThat(cliente.obtener(1L).tenantOrigin()).isEqualTo(origin);
+                assertThat(stub.ultimoPath()).isEqualTo("/internal/pedidos/1/resumen-pago");
+            }
+        }
+    }
+    @Test void origenAusenteNuloDesconocidoOExtraNuncaConcedeAutorizacion() throws Exception {
+        try(var cliente=delegado()) {
+            for(String body:java.util.List.of(
+                RESUMEN.replace(",\"tenantOrigin\":\"AUTHENTICATED_NEW\"",""),
+                RESUMEN.replace("\"AUTHENTICATED_NEW\"","null"),
+                RESUMEN.replace("AUTHENTICATED_NEW","UNKNOWN"),
+                RESUMEN.replace("AUTHENTICATED_NEW","authenticated_new"),
+                RESUMEN.replace("AUTHENTICATED_NEW","OTRO"),
+                RESUMEN.replace("\"AUTHENTICATED_NEW\"","42"),
+                RESUMEN.replace("}"," ,\"extra\":true}"),
+                RESUMEN.replace("\"pedidoId\":1","\"pedidoId\":2"),
+                RESUMEN.replace("\"usuarioId\":10","\"usuarioId\":\"10\""),
+                RESUMEN.replace("\"total\":13980","\"total\":1.5"),
+                RESUMEN.replace("}"," ,\"tenantOrigin\":\"AUTHENTICATED_NEW\"}"),
+                RESUMEN+" {}","[]","null")) {
+                stub.responderJson(body);
+                assertThatThrownBy(()->cliente.obtener(1L)).isInstanceOfSatisfying(PagoException.class,
+                    error->assertThat(error.getStatus()).isEqualTo(HttpStatus.BAD_GATEWAY));
+                assertThat(stub.ultimoPath()).isEqualTo("/internal/pedidos/1/resumen-pago");
+            }
+            assertThat(stub.confirmacionesInternas()).isZero();
+        }
+    }
+    @Test void tenantDiscordanteDevuelve404SinFallback() throws Exception {
+        try(var cliente=delegado()) {
+            stub.responderJson(RESUMEN.replace("11111111-1111-1111-1111-111111111111","aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"));
+            assertThatThrownBy(()->cliente.obtener(1L)).isInstanceOfSatisfying(PagoException.class,
+                error->assertThat(error.getStatus()).isEqualTo(HttpStatus.NOT_FOUND));
+        }
     }
 }

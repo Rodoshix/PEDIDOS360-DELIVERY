@@ -23,12 +23,12 @@ public class LocalIdentityConfiguration {
             throw new IllegalStateException(
                     "La identidad de prueba requiere solo el perfil local y escucha en loopback.");
         }
-        if (properties.usuarioId() == null || properties.roles() == null
+        if (properties.tenantId() == null || properties.usuarioId() == null || properties.roles() == null
                 || properties.roles().isEmpty()) {
-            throw new IllegalStateException("La identidad local requiere usuario-id y roles.");
+            throw new IllegalStateException("La identidad local requiere tenant-id, usuario-id y roles.");
         }
         LoggerFactory.getLogger(LocalIdentityConfiguration.class)
                 .warn("IDENTIDAD LOCAL SIMULADA ACTIVADA: solo para desarrollo, sin tokens Entra ID.");
-        return new IdentidadUsuario(properties.usuarioId(), properties.roles());
+        return new IdentidadUsuario(properties.tenantId(), properties.usuarioId(), properties.roles());
     }
 }

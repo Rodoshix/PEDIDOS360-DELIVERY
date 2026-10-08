@@ -6,5 +6,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("pagos.identidad-local")
 public record LocalIdentityProperties(
-        boolean enabled, Long usuarioId, Set<IdentidadUsuario.Rol> roles) {
+        boolean enabled, java.util.UUID tenantId, Long usuarioId, Set<IdentidadUsuario.Rol> roles) {
 }

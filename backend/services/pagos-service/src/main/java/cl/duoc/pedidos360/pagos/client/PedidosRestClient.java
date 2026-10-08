@@ -16,7 +16,7 @@ import org.springframework.web.client.RestClientException;
  *
  * <p>Hay dos usos con identidades distintas:
  * <ul>
- *   <li><b>Consultas y creación de pago</b>: Bearer delegado del usuario (lo aporta la capa de seguridad).</li>
+ *   <li><b>Proyección interna de siete campos y creación de pago</b>: Bearer delegado del usuario (lo aporta la capa de seguridad).</li>
  *   <li><b>Confirmación por pago</b>: token de <b>aplicación</b> (client_credentials) contra el
  *       endpoint interno {@code PUT /internal/pedidos/{id}/confirmacion-pago} (acuerdo issue #47).</li>
  * </ul>
@@ -64,11 +64,12 @@ public class PedidosRestClient implements PedidosClient, AutoCloseable {
     @Override
     public PedidoResumen obtener(Long pedidoId) {
         try {
-            return restClient.get()
-                    .uri("/pedidos/{id}", pedidoId)
+            String body = restClient.get()
+                    .uri("/internal/pedidos/{id}/resumen-pago", pedidoId)
                     .headers(PedidosRestClient::identidadDelegada)
                     .retrieve()
-                    .body(PedidoResumen.class);
+                    .body(String.class);
+            return validarResumen(body,pedidoId);
         } catch (HttpClientErrorException error) {
             if (error.getStatusCode() == HttpStatus.FORBIDDEN) {
                 throw new PagoException(HttpStatus.FORBIDDEN,
@@ -83,6 +84,38 @@ public class PedidosRestClient implements PedidosClient, AutoCloseable {
             throw new PagoException(HttpStatus.BAD_GATEWAY,
                     "No se pudo consultar el pedido " + pedidoId + " en Pedidos.");
         }
+    }
+
+    private PedidoResumen validarResumen(String body,Long pedidoId) {
+        try {
+            var json=tools.jackson.databind.json.JsonMapper.builder()
+                .enable(tools.jackson.core.StreamReadFeature.STRICT_DUPLICATE_DETECTION)
+                .enable(tools.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS).build();
+            var tree=json.readTree(body);
+            if (!tree.isObject() || tree.size()!=7
+                || !tree.path("pedidoId").isIntegralNumber() || !tree.path("pedidoId").canConvertToLong()
+                || !tree.path("usuarioId").isIntegralNumber() || !tree.path("usuarioId").canConvertToLong()
+                || !tree.path("total").isIntegralNumber() || !tree.path("total").canConvertToLong()
+                || !tree.path("tenantId").isString() || !tree.path("estado").isString()
+                || !tree.path("moneda").isString() || !tree.path("tenantOrigin").isString()) throw new IllegalArgumentException();
+            var tenantId=java.util.UUID.fromString(tree.path("tenantId").stringValue());
+            var estado=tree.path("estado").stringValue();
+            if (!tenantId.toString().equals(tree.path("tenantId").stringValue())
+                || tree.path("pedidoId").longValue()!=pedidoId || pedidoId<1
+                || tree.path("usuarioId").longValue()<1 || tree.path("total").longValue()<0
+                || !"CLP".equals(tree.path("moneda").stringValue())
+                || !Set.of("AUTHENTICATED_NEW","RECONCILED_LEGACY").contains(tree.path("tenantOrigin").stringValue())
+                || !Set.of("CREADO","CONFIRMADO","PREPARANDO","LISTO","EN_REPARTO","ENTREGADO","CANCELADO").contains(estado))
+                throw new IllegalArgumentException();
+            var auth=org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (!(auth instanceof org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken jwt)
+                || !jwt.isAuthenticated()) throw new IllegalArgumentException();
+            if (!tenantId.equals(java.util.UUID.fromString(jwt.getToken().getClaimAsString("tid"))))
+                throw new PagoException(HttpStatus.NOT_FOUND,"Recurso no encontrado.");
+            return new PedidoResumen(pedidoId,tenantId,tree.path("usuarioId").longValue(),estado,
+                tree.path("total").longValue(),tree.path("moneda").stringValue(),tree.path("tenantOrigin").stringValue());
+        } catch (PagoException error) { throw error; }
+        catch (RuntimeException invalid) { throw new PagoException(HttpStatus.BAD_GATEWAY,"Resumen inválido."); }
     }
 
     @Override
