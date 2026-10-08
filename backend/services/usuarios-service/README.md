@@ -329,3 +329,40 @@ Esta rama no incorpora login de frontend, despliegue ni autenticaciÃ³n de produc
 El contrato descrito aquÃ­ es el comportamiento actual del servicio local.
 
 Seguimiento: Issue #6; rama `feature/i1-6-usuarios-service`.
+
+## #78 — Consulta del perfil actual por RabbitMQ
+
+Consumer de `p360.usuarios.consultas.q`, operación `usuario.consultar-actual.v1`,
+payload `{}`. El core verifica firma, tenant emisor, audiencia y vigencia; el
+precheck exige `access_as_user` y CLIENTE/ADMIN. `UsuarioService.obtenerActual`
+comparte la resolución `tenantId + entraObjectId -> Usuario.id` entre HTTP y
+Rabbit mediante identidad explícita, sin contexto HTTP en el listener ni JWT original.
+Perfil ausente devuelve 404 y desactivado 403, sin retry/DLQ. Payload inválido
+(incluyendo IDs de perfil), actor inválido y plazo vencido terminan en DLQ.
+
+Se reutiliza el ACK manual del core después de confirm/mandatory sin return,
+un retry corto con TTL de plataforma y recuperación del handoff con backoff.
+Los nombres y parámetros se centralizan en `pedidos360.messaging`.
+No se declaran colas/policies desde la aplicación (`declare-topology=false`);
+la cuenta consumer no necesita permiso configure. Provisioning corresponde a #69.
+`PEDIDOS360_RELAY_MODE=DISABLED` es el valor por defecto. No se activa el corte #70.
+El adaptador BFF de #77 ya soporta la operación; no requiere cambios para #78.
+
+Construcción reproducible desde la raíz:
+
+```powershell
+& backend/services/usuarios-service/mvnw.cmd -B -ntp -f backend/shared/p360-messaging-core/pom.xml install
+Push-Location backend/services/usuarios-service
+.\mvnw.cmd -B -ntp verify
+Pop-Location
+docker build --build-context messaging-core=backend/shared/p360-messaging-core -t pedidos360-usuarios:ep2-13 backend/services/usuarios-service
+```
+
+El build Docker ahora necesita el contexto adicional `messaging-core`. Los compose
+compartidos de infraestructura todavía no lo pasan para Usuarios; su adaptación
+queda pendiente de coordinación de plataforma, fuera de este cambio. No ejecutar
+ese build de compose sin proporcionar el contexto adicional.
+
+Evidencia y matriz: [EP2-13-EVIDENCIAS.md](EP2-13-EVIDENCIAS.md).
+#81 continúa bloqueado por resolución de identidad; esta consulta no agrega
+integración de Pagos ni modifica ActorContext.
