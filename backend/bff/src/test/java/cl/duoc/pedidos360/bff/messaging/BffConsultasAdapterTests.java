@@ -202,7 +202,9 @@ class BffConsultasAdapterTests {
                     Instant expiry = now.plusSeconds(4).isBefore(envelope.expiresAt()) ? now.plusSeconds(4) : envelope.expiresAt();
                     var proof = new cl.duoc.pedidos360.messaging.identity.IdentityProof(actor.tenantId(), actor.sujetoId(),42L,
                             now, now, expiry,envelope.expiresAt(),envelope.messageId(),java.util.UUID.randomUUID());
-                    payload.put("id",alterarId ? 999L : 42L).put("activo",true).put("pruebaIdentidad",
+                    payload.put("nombre","Ana").put("apellido","Perez").put("email","ana@example.test").putNull("telefono")
+                            .put("creadoEn",now.toString()).put("actualizadoEn",now.toString())
+                            .put("id",alterarId ? 999L : 42L).put("activo",true).put("pruebaIdentidad",
                             cl.duoc.pedidos360.messaging.fixture.FixtureIdentityKeys.sign(proof));
                 }
                 respuesta = QueryResponse.exito(envelope, correlationId,

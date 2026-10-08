@@ -19,6 +19,7 @@ public final class QueryOperationBudget {
     private final long started;
     private final long initialNanos;
     private boolean usuariosSolicitado;
+    private boolean agotado;
     private QueryOperationBudget(Instant deadline, UUID tenant, UUID oid, Clock clock, LongSupplier ticks, long started, long nanos) {
         this.originalDeadline = deadline; this.tenant = tenant; this.oid = oid;
         this.clock = clock; this.ticks = ticks; this.started = started; this.initialNanos = nanos;
@@ -42,20 +43,29 @@ public final class QueryOperationBudget {
     public UUID tenant() { return tenant; }
     public UUID oid() { return oid; }
     public Instant now() { return clock.instant(); }
-    public long requireRemaining(Instant effectiveDeadline) {
+    public synchronized long requireRemaining(Instant effectiveDeadline) {
         if (effectiveDeadline == null || effectiveDeadline.isAfter(originalDeadline)) throw new IllegalArgumentException("plazo no puede renovarse");
+        if (agotado) throw new QueryTimeoutException("presupuesto global agotado");
         long elapsed = Math.max(0, ticks.getAsLong() - started);
         long functional = initialNanos - elapsed;
         // También limita un subplazo con el reloj monotónico original, aunque el reloj de pared retroceda.
         long narrowed = functional - Duration.between(effectiveDeadline, originalDeadline).toNanos();
         long remaining = Math.min(narrowed, Duration.between(clock.instant(), effectiveDeadline).toNanos());
-        if (remaining <= 0) throw new QueryTimeoutException("presupuesto global agotado"); return remaining;
+        if (remaining <= 0) {
+            agotado = true;
+            throw new QueryTimeoutException("presupuesto global agotado");
+        }
+        return remaining;
     }
+    /** Un timeout observado fuera del cálculo también invalida esta operación; no existe reset. */
+    public synchronized void invalidate() { agotado = true; }
     public synchronized void claimUsuarios() {
+        requireRemaining(originalDeadline);
         if (usuariosSolicitado) throw new IllegalStateException("Usuarios ya fue solicitado para esta operación; no se renueva la prueba");
         usuariosSolicitado = true;
     }
-    public void requireIdentity(JwtAuthenticationToken token) {
+    public synchronized void requireIdentity(JwtAuthenticationToken token) {
+        requireRemaining(originalDeadline);
         if (token == null || !token.isAuthenticated()
                 || !tenant.toString().equals(token.getToken().getClaimAsString("tid"))
                 || !oid.toString().equals(token.getToken().getClaimAsString("oid"))

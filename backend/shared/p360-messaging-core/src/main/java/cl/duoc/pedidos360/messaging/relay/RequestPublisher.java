@@ -104,7 +104,7 @@ public final class RequestPublisher {
                     "plazo de publicación agotado", publicacionConfirmada ? CONFIRMADO : envioIniciado ? INCIERTO : NO_ENVIADO, timeout));
         } catch (java.util.concurrent.TimeoutException timeout) {
             boolean exhausted = envelope.vencido(java.time.Instant.now());
-            try { budget.getAsLong(); } catch (QueryTimeoutException expired) { exhausted = true; }
+            try { exhausted |= budget.getAsLong() <= 0; } catch (QueryTimeoutException expired) { exhausted = true; }
             if (exhausted)
                 throw new QueryTimeoutException("plazo de publicación agotado",
                         new HandoffFailureException("confirm incierto", INCIERTO, timeout));

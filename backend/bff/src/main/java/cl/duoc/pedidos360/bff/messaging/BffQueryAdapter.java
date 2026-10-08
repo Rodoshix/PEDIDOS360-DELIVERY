@@ -1,6 +1,7 @@
 package cl.duoc.pedidos360.bff.messaging;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
@@ -115,14 +116,19 @@ public class BffQueryAdapter {
             if (restante <= 0) throw new TimeoutException("presupuesto agotado en la publicacion");
             byte[] cuerpo = espera.get(restante, TimeUnit.NANOSECONDS);
             budget.requireRemaining(plan.envelope().expiresAt());
-            return resolver(domain, plan, cuerpo, System.nanoTime() - inicio, budget);
+            var resolved = resolver(domain, plan, cuerpo, System.nanoTime() - inicio, budget);
+            budget.requireRemaining(budget.originalDeadline());
+            budget.requireRemaining(resolved.effectiveDeadline());
+            return resolved.result();
         } catch (QueryUnavailableException sinBroker) {
             correlaciones.descartar(plan.correlationId());
             throw sinBroker;
         } catch (QueryTimeoutException vencido) {
+            budget.invalidate();
             correlaciones.descartar(plan.correlationId());
             throw vencido;
         } catch (TimeoutException vencido) {
+            budget.invalidate();
             correlaciones.descartar(plan.correlationId());
             log.warn("Consulta domain={} correlationId={} presupuesto de {} ms agotado", domain,
                     plan.correlationId(), properties.deadline().toMillis());
@@ -146,7 +152,9 @@ public class BffQueryAdapter {
     }
 
     /** Resuelve el cuerpo de la respuesta en el resultado equivalente al contrato HTTP. */
-    private OperationResult resolver(Domain domain, RequestPlan plan, byte[] cuerpo, long nanos, QueryOperationBudget budget) {
+    private record ResolvedResult(OperationResult result, Instant effectiveDeadline) {}
+
+    private ResolvedResult resolver(Domain domain, RequestPlan plan, byte[] cuerpo, long nanos, QueryOperationBudget budget) {
         QueryResponse respuesta = esquema.leer(cuerpo, properties.maxBodyBytes()).orElseThrow(
                 () -> new QueryUnavailableException("la respuesta no corresponde al contrato", null));
         if (!plan.envelope().messageId().equals(respuesta.messageId())
@@ -157,12 +165,17 @@ public class BffQueryAdapter {
             if (respuesta.payload() == null || respuesta.payload().isNull())
                 throw new QueryUnavailableException("la respuesta exitosa no trae payload", null);
             JsonNode payload = respuesta.payload();
-            if (domain == Domain.USUARIOS && pruebas != null)
-                payload = pruebas.validate(payload, plan, budget).perfil();
+            Instant effectiveDeadline = plan.envelope().expiresAt();
+            if (domain == Domain.USUARIOS && pruebas != null) {
+                var verified = pruebas.validate(payload, plan, budget);
+                payload = verified.perfil();
+                effectiveDeadline = verified.usableUntil();
+            }
             else if (payload.has("pruebaIdentidad"))
                 throw new QueryUnavailableException("respuesta con prueba de identidad requiere verificador habilitado", null);
-            return new OperationResult(respuesta.operacion(), respuesta.status(), payload);
+            return new ResolvedResult(new OperationResult(respuesta.operacion(), respuesta.status(), payload), effectiveDeadline);
         }
+        budget.requireRemaining(plan.envelope().expiresAt());
         var detalle = respuesta.error();
         log.info("Consulta operacion={} correlationId={} error de negocio status={} code={} {} ms",
                 plan.envelope().operacion(), plan.correlationId(), respuesta.status(),

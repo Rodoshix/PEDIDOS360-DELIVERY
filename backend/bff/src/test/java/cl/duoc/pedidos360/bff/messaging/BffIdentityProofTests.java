@@ -28,9 +28,15 @@ class BffIdentityProofTests {
     RequestPlan plan(QueryOperationBudget b) { return new RequestPlan(RequestEnvelope.crear(UUID.randomUUID(),"usuario.consultar-actual.v1",json.createObjectNode(),"actor",now,b.originalDeadline()),UUID.randomUUID().toString()); }
     IdentityProof proof(RequestPlan p,QueryOperationBudget b) { return new IdentityProof(tenant,oid,42,now,now,now.plusSeconds(4),b.originalDeadline(),p.envelope().messageId(),UUID.randomUUID()); }
     BffIdentityProofValidator validator(Instant time) { return new BffIdentityProofValidator(new IdentityProofVerifier(FixtureIdentityKeys.keys(),Clock.fixed(time,ZoneOffset.UTC),Duration.ofMillis(250))); }
+    tools.jackson.databind.node.ObjectNode profile(String signed) {
+        return json.createObjectNode().put("id",42).put("nombre","Ana").put("apellido","Perez")
+                .put("email","ana@example.test").putNull("telefono").put("activo",true)
+                .put("creadoEn",now.toString()).put("actualizadoEn",now.plusNanos(123456789).toString())
+                .put("pruebaIdentidad",signed);
+    }
     @Test void validResponseYieldsLocalIdentityAndHttpProjectionWithoutProof() {
         var b=budget(Clock.fixed(now,ZoneOffset.UTC)); var p=plan(b); var proof=proof(p,b);
-        var result=validator(now).validate(json.createObjectNode().put("id",42).put("activo",true).put("pruebaIdentidad",FixtureIdentityKeys.sign(proof)),p,b);
+        var result=validator(now).validate(profile(FixtureIdentityKeys.sign(proof)),p,b);
         assertThat(result.perfil().has("pruebaIdentidad")).isFalse(); assertThat(result.prueba()).isEqualTo(proof);
     }
     @ParameterizedTest @ValueSource(strings={"tenant","oid","request","deadline","id","active","missing","signature"})
@@ -40,13 +46,13 @@ class BffIdentityProofTests {
                 mutation.equals("deadline")?now.plusSeconds(6):b.originalDeadline(),mutation.equals("request")?UUID.randomUUID():p.envelope().messageId(),UUID.randomUUID());
         String signed=FixtureIdentityKeys.sign(modified);
         if(mutation.equals("signature")) signed=signed.substring(0,signed.lastIndexOf('.')+1)+IdentityProofCodec.encode(new byte[64]);
-        var payload=json.createObjectNode().put("id",mutation.equals("id")?999:42).put("activo",!mutation.equals("active")).put("pruebaIdentidad",signed);
+        var payload=profile(signed).put("id",mutation.equals("id")?999:42).put("activo",!mutation.equals("active"));
         if(mutation.equals("missing")) payload.remove("pruebaIdentidad");
         assertThatThrownBy(()->validator(now).validate(payload,p,b)).isInstanceOf(QueryUnavailableException.class);
     }
     @Test void authenticatedButExpiredProofIsFunctionalTimeout() {
         var b=budget(Clock.fixed(now,ZoneOffset.UTC)); var p=plan(b);
-        var payload=json.createObjectNode().put("id",42).put("activo",true).put("pruebaIdentidad",FixtureIdentityKeys.sign(proof(p,b)));
+        var payload=profile(FixtureIdentityKeys.sign(proof(p,b)));
         assertThatThrownBy(()->validator(now.plusSeconds(4)).validate(payload,p,b)).isInstanceOf(QueryTimeoutException.class);
     }
     @Test void jwtNearExpiryClipsOriginalDeadlineAndRequiresValidExpiry() {
@@ -77,7 +83,7 @@ class BffIdentityProofTests {
     }
     @Test void conservativeMarginAlsoAppliesToMonotonicBudgetAfterClockRollback() {
         var clock=new MutableClock(now); var b=budget(clock); var p=plan(b);
-        var payload=json.createObjectNode().put("id",42).put("activo",true).put("pruebaIdentidad",FixtureIdentityKeys.sign(proof(p,b)));
+        var payload=profile(FixtureIdentityKeys.sign(proof(p,b)));
         nanos.set(Duration.ofMillis(3750).toNanos()); clock.now=now.minusMillis(100);
         var verifier=new IdentityProofVerifier(FixtureIdentityKeys.keys(),clock,Duration.ofMillis(250));
         assertThatThrownBy(()->new BffIdentityProofValidator(verifier).validate(payload,p,b)).isInstanceOf(QueryTimeoutException.class);
