@@ -24,7 +24,7 @@ Done
 | [#68](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/68) | ACK/NACK, Retry, DLX/DLQ y pruebas de fallos | Integrante 3 | #66; policies de plataforma coordinadas con #69 | Done — PR #84 integrado |
 | [#69](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/69) | Plataforma RabbitMQ | Integrante 4 | #64 / adenda PR #83 / núcleo PR #84; coordinar #77 | Review — plataforma local en esta rama, sin merge |
 | [#70](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/70) | Integración y corte HTTP → RabbitMQ | Integrante 5 | #65 / #66 / #68 / #69 / #77–#82 | Backlog |
-| [#71](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/71) | Integración AWS | Integrante 5 | #70 | Backlog |
+| [#71](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/71) | Integración AWS | Integrante 5 | #69 para infraestructura; #70 para E2E funcional | Review — infraestructura validada; artefactos reproducibles en PR, sin merge; E2E pendiente #70 |
 | [#72](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/72) | Pruebas E2E y regresión de Entrega 1 | Integrante 3 + Integrante 5 | #70 / #71 | Backlog |
 | [#73](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/73) | Cluster demostrativo, solo si se confirma como requisito | Integrante 4 | Confirmación explícita del requisito / #69 | Backlog |
 | [#74](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/74) | Defensa técnica y evidencias finales | Todos; integrador: Integrante 5 | #67 / #72 / #73 (solo si se confirma obligatorio) | Backlog |

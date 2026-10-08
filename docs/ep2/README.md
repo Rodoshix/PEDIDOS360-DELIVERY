@@ -90,6 +90,7 @@ La planificación fue integrada mediante PR #75. El núcleo de #65/#66 fue integ
 
 - [Implementación, convivencia HTTP y evidencia del núcleo](NUCLEO-RABBITMQ.md).
 - [Plataforma local, inventario, permisos, runbook y evidencia](PLATAFORMA-RABBITMQ.md).
+- [Infraestructura AWS validada, capacidad, reboot y artefactos reproducibles (#71)](AWS-RABBITMQ.md). HTTP continúa predeterminado; #70 sigue desactivado.
 - [Base común request/reply y reliability simple (#77)](REQUEST-REPLY-RABBITMQ.md).
 - [Plan de actividades e issues reales](PLAN-ACTIVIDADES.md).
 - Misiones: [Integrante 1](misiones/INTEGRANTE-1.md), [Integrante 2](misiones/INTEGRANTE-2.md), [Integrante 3](misiones/INTEGRANTE-3.md), [Integrante 4](misiones/INTEGRANTE-4.md) e [Integrante 5](misiones/INTEGRANTE-5.md).
