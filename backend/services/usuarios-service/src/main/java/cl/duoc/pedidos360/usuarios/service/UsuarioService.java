@@ -41,7 +41,12 @@ public class UsuarioService {
     }
 
     public UsuarioResponse obtenerActual() {
-        var actor = actorActivo();
+        return obtenerActual(identidadActual.obtener());
+    }
+
+    /** Identidad previamente verificada por el transporte; no depende de contexto HTTP. */
+    public UsuarioResponse obtenerActual(IdentidadUsuario identidad) {
+        var actor = actorActivo(identidad);
         return usuarios.findByTenantIdAndEntraObjectId(actor.tenantId(), actor.objectId())
                 .map(UsuarioResponse::desde)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Todavía no tienes un perfil."));
@@ -77,7 +82,10 @@ public class UsuarioService {
     }
 
     private IdentidadUsuario actorActivo() {
-        var actor = identidadActual.obtener();
+        return actorActivo(identidadActual.obtener());
+    }
+
+    private IdentidadUsuario actorActivo(IdentidadUsuario actor) {
         usuarios.findByTenantIdAndEntraObjectId(actor.tenantId(), actor.objectId())
                 .filter(usuario -> !usuario.isActivo())
                 .ifPresent(usuario -> {

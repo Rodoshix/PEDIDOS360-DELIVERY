@@ -329,3 +329,54 @@ Esta rama no incorpora login de frontend, despliegue ni autenticaciÃ³n de produc
 El contrato descrito aquÃ­ es el comportamiento actual del servicio local.
 
 Seguimiento: Issue #6; rama `feature/i1-6-usuarios-service`.
+
+## #78 — Consulta del perfil actual por RabbitMQ
+
+Consumer de `p360.usuarios.consultas.q`, operación `usuario.consultar-actual.v1`,
+payload `{}`. El core verifica firma, tenant emisor, audiencia y vigencia; el
+precheck exige `access_as_user` y CLIENTE/ADMIN. `UsuarioService.obtenerActual`
+comparte la resolución `tenantId + entraObjectId -> Usuario.id` entre HTTP y
+Rabbit mediante identidad explícita, sin contexto HTTP en el listener ni JWT original.
+Perfil ausente devuelve 404 y desactivado 403, sin retry/DLQ. Payload inválido
+(incluyendo IDs de perfil), actor inválido y plazo vencido terminan en DLQ.
+
+Se reutiliza el ACK manual del core después de confirm/mandatory sin return,
+un retry corto con TTL de plataforma y recuperación del handoff con backoff.
+Los nombres y parámetros se centralizan en `pedidos360.messaging`.
+No se declaran colas/policies desde la aplicación (`declare-topology=false`);
+la cuenta consumer no necesita permiso configure. Provisioning corresponde a #69.
+`PEDIDOS360_RELAY_MODE=DISABLED` es el valor por defecto. No se activa el corte #70.
+El adaptador BFF de #77 ya soporta la operación; no requiere cambios para #78.
+
+Construcción reproducible desde la raíz:
+
+```powershell
+& backend/services/usuarios-service/mvnw.cmd -B -ntp -f backend/shared/p360-messaging-core/pom.xml install
+Push-Location backend/services/usuarios-service
+.\mvnw.cmd -B -ntp verify
+Pop-Location
+docker build --build-context messaging-core=backend/shared/p360-messaging-core -t pedidos360-usuarios:ep2-13 backend/services/usuarios-service
+```
+
+El build Docker necesita el contexto adicional `messaging-core`.
+`infrastructure/aws/compose.build.yml` lo proporciona para Usuarios. Para validar
+el caller real sin iniciar servicios ni desplegar:
+
+```powershell
+docker compose -p pedidos360-pr89-build -f infrastructure/aws/compose.yml -f infrastructure/aws/compose.build.yml build --no-cache usuarios
+```
+
+La interpolación exige las variables del compose (registro/tag, Entra, frontend,
+RDS y worker). En la prueba local se usan UUID y dominios `.invalid` de fixture;
+no se conectan servicios AWS. El runtime de `infrastructure/aws/compose.yml`
+permanece intacto.
+
+La fuente de plataforma #69 concede a `p360-usuarios-consumer` write sobre
+`p360.retry`, `amq.default` y `p360.dlx`; configure sigue `^$`. Productos conserva
+su permiso DLX ya integrado. Restaurantes, Pagos y Carrito no lo reciben.
+La suite completa `infrastructure/rabbitmq/test_platform.py` valida el publish
+DLX de Usuarios y su llegada a `p360.usuarios.consultas.dlq`.
+
+Evidencia y matriz: [EP2-13-EVIDENCIAS.md](EP2-13-EVIDENCIAS.md).
+#81 continúa bloqueado por resolución de identidad; esta consulta no agrega
+integración de Pagos ni modifica ActorContext.
