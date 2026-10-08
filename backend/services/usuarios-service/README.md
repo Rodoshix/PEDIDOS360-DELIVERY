@@ -330,25 +330,26 @@ El contrato descrito aqu√≠ es el comportamiento actual del servicio local.
 
 Seguimiento: Issue #6; rama `feature/i1-6-usuarios-service`.
 
-## #78 ó Consulta del perfil actual por RabbitMQ
+## #78 ‚Äî Consulta del perfil actual por RabbitMQ
 
-Consumer de `p360.usuarios.consultas.q`, operaciÛn `usuario.consultar-actual.v1`,
+Consumer de `p360.usuarios.consultas.q`, operaci√≥n `usuario.consultar-actual.v1`,
 payload `{}`. El core verifica firma, tenant emisor, audiencia y vigencia; el
 precheck exige `access_as_user` y CLIENTE/ADMIN. `UsuarioService.obtenerActual`
-comparte la resoluciÛn `tenantId + entraObjectId -> Usuario.id` entre HTTP y
-Rabbit mediante identidad explÌcita, sin contexto HTTP en el listener ni JWT original.
-Perfil ausente devuelve 404 y desactivado 403, sin retry/DLQ. Payload inv·lido
-(incluyendo IDs de perfil), actor inv·lido y plazo vencido terminan en DLQ.
+comparte la resoluci√≥n `tenantId + entraObjectId -> Usuario.id` entre HTTP y
+Rabbit mediante identidad expl√≠cita, sin contexto HTTP en el listener ni JWT original.
+Perfil ausente devuelve 404 y desactivado 403, sin retry/DLQ. Payload inv√°lido
+(incluyendo IDs de perfil), actor inv√°lido y plazo vencido terminan en DLQ.
 
-Se reutiliza el ACK manual del core despuÈs de confirm/mandatory sin return,
-un retry corto con TTL de plataforma y recuperaciÛn del handoff con backoff.
-Los nombres y par·metros se centralizan en `pedidos360.messaging`.
-No se declaran colas/policies desde la aplicaciÛn (`declare-topology=false`);
+Se reutiliza el ACK manual del core despu√©s de confirm/mandatory sin return,
+un retry corto con TTL de plataforma y recuperaci√≥n del handoff con backoff.
+Los nombres y par√°metros se centralizan en `pedidos360.messaging`.
+No se declaran colas/policies desde la aplicaci√≥n (`declare-topology=false`);
 la cuenta consumer no necesita permiso configure. Provisioning corresponde a #69.
 `PEDIDOS360_RELAY_MODE=DISABLED` es el valor por defecto. No se activa el corte #70.
-El adaptador BFF de #77 ya soporta la operaciÛn; no requiere cambios para #78.
+La base gen√©rica del BFF existe en #77; el registro de operaciones concretas y
+el corte de las rutas HTTP quedan en #70.
 
-ConstrucciÛn reproducible desde la raÌz:
+Construcci√≥n reproducible desde la ra√≠z:
 
 ```powershell
 & backend/services/usuarios-service/mvnw.cmd -B -ntp -f backend/shared/p360-messaging-core/pom.xml install
@@ -366,7 +367,7 @@ el caller real sin iniciar servicios ni desplegar:
 docker compose -p pedidos360-pr89-build -f infrastructure/aws/compose.yml -f infrastructure/aws/compose.build.yml build --no-cache usuarios
 ```
 
-La interpolaciÛn exige las variables del compose (registro/tag, Entra, frontend,
+La interpolaci√≥n exige las variables del compose (registro/tag, Entra, frontend,
 RDS y worker). En la prueba local se usan UUID y dominios `.invalid` de fixture;
 no se conectan servicios AWS. El runtime de `infrastructure/aws/compose.yml`
 permanece intacto.
@@ -378,5 +379,10 @@ La suite completa `infrastructure/rabbitmq/test_platform.py` valida el publish
 DLX de Usuarios y su llegada a `p360.usuarios.consultas.dlq`.
 
 Evidencia y matriz: [EP2-13-EVIDENCIAS.md](EP2-13-EVIDENCIAS.md).
-#81 contin˙a bloqueado por resoluciÛn de identidad; esta consulta no agrega
-integraciÛn de Pagos ni modifica ActorContext.
+#81 contin√∫a bloqueado por resoluci√≥n de identidad; esta consulta no agrega
+integraci√≥n de Pagos ni modifica ActorContext.
+
+Estado: implementaci√≥n integrada por [PR #89](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/pull/89).
+La auditor√≠a t√©cnica no identific√≥ blockers funcionales. La decisi√≥n del responsable
+y el cierre posterior est√°n en [CIERRE-78-80.md](../../../docs/ep2/CIERRE-78-80.md).
+#78 permanece OPEN hasta autorizar y mergear el PR documental.

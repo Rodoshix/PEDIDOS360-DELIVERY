@@ -41,14 +41,16 @@ JWT real del endpoint se cubre por las pruebas de regresión existentes.
 La suite BFF usa su fixture de servicio: no se afirma un despliegue conjunto
 BFF + usuarios-service con Entra real.
 
-## Límites y revisión pendiente
+## Límites y estado de cierre
 
 Relay DISABLED; sin corte, merge ni despliegue. Provisioning y policies de producción
 siguen en #69. La corrección del mismo PR #89 añade exclusivamente el contexto
 Docker `messaging-core` al build de Usuarios en `infrastructure/aws/compose.build.yml`
 y el permiso write DLX de Usuarios en la fuente de plataforma. El runtime AWS
 permanece intacto; no se despliega ni se amplían permisos de otros consumidores.
-Pendientes revisión I1/I5 y coordinación I3/I4 antes de declarar el DoD aprobado.
+La exigencia interna de revisión I1/I5 y coordinación I3/I4 se sustituye por la
+auditoría técnica de Codex por decisión explícita del responsable del proyecto.
+No se atribuyen aprobaciones a esos integrantes. Véase [CIERRE-78-80.md](../../../docs/ep2/CIERRE-78-80.md).
 ActorContext y Pagos no cambiaron. #81 sigue bloqueado por resolución de identidad:
 esta consulta devuelve el perfil actual, sin convertir UUID a Long ni copiar datos.
 
@@ -95,7 +97,9 @@ La comparación de `inventory()` y `accounts()` contra develop comprueba que no
 cambian queues/exchanges/bindings/policies ni configure/read/tags/vhosts.
 Write Usuarios: `^(p360\.retry|amq\.default|p360\.dlx)$`.
 Relay sigue DISABLED por defecto; HTTP oficial; ActorContext/Pagos intactos;
-#81 bloqueado; #78 abierto; PR borrador sin merge. Revisión humana pendiente.
+#81 bloqueado; #78 abierto. PR #89 MERGED mediante merge normal, SHA
+`cd35d310731367d08bd31a324f053dfc32b617c6`. La auditoría técnica no identificó
+blockers funcionales; el cierre se realizará después de autorizar y mergear el PR documental.
 
 Reproducción de plataforma en el broker local dedicado, sin consumidores ni
 mensajes funcionales (la inicialización usa el inventario versionado actualizado):
