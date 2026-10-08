@@ -132,6 +132,17 @@ de respuesta. Un retroceso del reloj no reinicia los cinco segundos. No cancela 
 mismo SQL/send ya iniciados. No se garantiza disponibilidad del segundo request o retry.
 Tras verificar la prueba, BFF aplica también `E - margen` al presupuesto monotónico:
 un retroceso del reloj de pared no permite recuperar los últimos 250ms reservados.
+La construcción de la proyección tiene controles anteriores y posteriores de E-margen y D.
+El resultado interno conserva ese límite efectivo y el adaptador comprueba ambos plazos
+nuevamente después de resolver y construir el resultado, justo antes de devolverlo.
+La garantía temporal llega hasta esa última comprobación local; no cubre una pausa posterior
+del runtime ni el transporte/serialización HTTP que todavía no se ha integrado.
+
+Un agotamiento observado de D o de un subplazo invalida definitivamente la operación.
+El estado terminal y sus comprobaciones están sincronizados: un retroceso del reloj o
+una llamada concurrente no puede reactivarlo. Los timeouts observados al verificar la
+prueba, publicar o esperar también invalidan el presupuesto. No existe reset; RequestFactory
+y claimUsuarios rechazan el mismo presupuesto terminal.
 
 Con prueba habilitada el adaptador solicita Usuarios como máximo una vez por presupuesto;
 la redelivery/retry del mismo request en el servicio conserva el deadline original.
@@ -141,6 +152,13 @@ No se implementa refresco de prueba mediante una nueva consulta.
 firma y pública local de Usuarios, esquema, issuer/audiencia/operación, tenant/OID,
 usuariosRequestId, D exacto, vigencia/frescura, ID del DTO igual al firmado y activo=true.
 Devuelve la proyección sin JWS y la prueba validada como resultado interno tipado.
+La proyección exige exactamente los ocho campos HTTP más pruebaIdentidad en la respuesta
+interna: id Long positivo coincidente, activo=true, nombre/apellido/email strings no nulos,
+telefono string o null explícito y creadoEn/actualizadoEn como instantes ISO-8601 UTC.
+Los instantes del perfil conservan su precisión original; el requisito de milisegundos
+canónicos corresponde a la prueba firmada. Se rechazan campos faltantes, tipos incorrectos,
+campos extra y objetos anidados; la whitelist copia únicamente los ocho escalares permitidos.
+No se modifican UsuarioResponse, sus rutas ni las reglas de negocio del dominio.
 El adaptador devuelve solamente la proyección HTTP. Un payload con prueba recibido con
 verificador deshabilitado se rechaza: no se expone automáticamente ni se utiliza sin validar.
 
@@ -166,6 +184,10 @@ al envío mantienen resultado incierto. El nuevo callback monotónico conserva e
 NO_ENVIADO antes de send, INCIERTO después de enviar sin confirm observado, CONFIRMADO
 después del confirm positivo sin return aunque el presupuesto se agote después.
 Un resultado incierto no publica alternativa; conserva original y recovery con backoff.
+Si la espera de confirm termina en timeout, un callback que devuelve cero/negativo o
+lanza QueryTimeoutException demuestra agotamiento funcional (504) y conserva INCIERTO.
+Con presupuesto vigente, el timeout de confirm/transporte sigue siendo indisponibilidad
+(502); nack/return concluyentes conservan RECHAZADO_CONFIRMADO. No hay publicación alternativa.
 
 El handoff diagnóstico a DLQ conserva su timeout propio de publisher confirm, independiente
 de D. No renueva negocio/respuesta/retry. Se conserva un retry corto por request y las policies
@@ -213,6 +235,24 @@ fallback automático tras una firma inválida. No ampliar timeouts para ocultar 
   multitenant, alcance ADMIN y autorización entre tenants antes de autorizar su consumer.
   La prueba no resuelve automáticamente ese problema. PagoService.obtener y su dominio no cambian.
 
+## Correcciones de auditoría del PR #93
+
+HEAD auditado: d69f80015070b307ff9a81cd73499937082fdf9d. La autorización posterior
+se limita a los cuatro hallazgos y sus regresiones; no incorpora activación ni consumer Pagos.
+
+| Hallazgo | Corrección y reproducción permanente |
+|---|---|
+| P1, éxito posterior a expiración durante proyección/devolución | BffIdentityCorrectionTests: pausas locales en la copia de un escalar permitido y tras el validador real; 3749ms acepta, 3750/4001/5001ms rechazan con QueryTimeoutException para E=4000ms, D=5000ms, margen=250ms |
+| P2, proyección arbitraria/JWS anidado | Whitelist de ocho campos y forma interna exacta de nueve; regresiones de cada campo ausente/tipo incorrecto, extras, JWS anidado, nulabilidad, timestamps, ID y actividad |
+| P2, presupuesto reactivado tras timeout | Estado terminal sincronizado; regresiones avance a D/subplazo, timeout, retroceso y nueva planificación rechazada; 32 llamadas concurrentes continúan rechazadas |
+| P2, cero/negativo interpretado como indisponibilidad tras timeout de confirm | RequestPublisherBudgetCorrectionTests: cero, negativo y excepción → timeout funcional INCIERTO; presupuesto positivo/transporte → indisponibilidad; nack/return mantienen rechazo concluyente; vencido antes del send → NO_ENVIADO |
+
+La reproducción temporal original del P1 copiaba un payload mínimo de dos campos,
+que ya no pertenece al contrato aceptado. La regresión permanente utiliza el perfil
+completo y una copia lenta de un campo de la whitelist para aislar el control temporal.
+Los avances de reloj y fallos de confirm/transporte son inyecciones deterministas,
+no evidencia de pausas reales del runtime, partitions de red ni llamadas a Pagos.
+
 ## Pruebas y evidencia
 
 Resultados reproducibles de la ejecución final en `evidencias/PR2-tests.json`.
@@ -222,33 +262,36 @@ No afirmar pruebas de partición real de red, despliegue AWS, secretos operativo
 consumer Pagos o corte HTTP→RabbitMQ: ninguno se ejecuta en esta entrega.
 
 Ejecución del 8 de octubre de 2026 sobre el código del commit
-`4756415a45fd40c93105a40e36eca7a7bfbd37b6` (los commits documentales posteriores no cambian ese código):
+`d36943cbe792380bb3536bec98cc40110ed45df8` (los commits documentales posteriores no cambian ese código):
 
 | Módulo / comando completo | Casos | Fallos / errores | Omitidos |
 |---|---:|---:|---:|
-| p360-messaging-core / mvn -B -ntp install | 186 | 0 / 0 | 0 |
-| BFF / mvn -B -ntp test | 96 | 0 / 0 | 0 |
+| p360-messaging-core / mvn -B -ntp install | 197 | 0 / 0 | 0 |
+| BFF / mvn -B -ntp test | 139 | 0 / 0 | 0 |
 | Usuarios / mvn -B -ntp test | 79 | 0 / 0 | 0 |
 | Restaurantes / mvn -B -ntp test | 34 | 0 / 0 | 0 |
 | Productos / mvn -B -ntp test | 44 | 0 / 0 | 0 |
 | Pagos / mvn -B -ntp test | 81 | 0 / 0 | 1 |
-| Total | 520 | 0 / 0 | 1 |
+| Total | 574 | 0 / 0 | 1 |
 
-**519 casos ejecutados con éxito; 1 omitido.** La omisión es
+**573 casos ejecutados con éxito; 1 omitido.** La omisión es
 `EntraWorkerLiveTests.autenticaConProveedorReal`: no está definida la variable
 RUN_ENTRA_WORKER_LIVE. No se probó autenticación con el proveedor Entra real.
 
-Los módulos modificados se ejecutaron completos sobre sus fuentes finales. Las regresiones
-de Restaurantes/Productos/Pagos precedieron la adición final del helper usableUntil del core;
-esos módulos no lo invocan y sus fuentes no se modificaron. No se atribuye a esa corrida una
-ejecución sobre un artefacto posterior. La evidencia incluye timestamps, casos, resultados,
-hashes de reportes y SHA-256 normalizado a LF de los 31 archivos de implementación.
+Las seis suites completas se ejecutaron después de instalar el core corregido, sobre
+las fuentes finales identificadas por el commit de código indicado. La evidencia incluye
+casos, resultados, hashes de reportes/logs, marcas UTC de escritura de los reportes y
+SHA-256 normalizado a LF de los 33 archivos de implementación de este PR.
+Primero se ejecutaron las regresiones específicas: core 49 casos y BFF 58 casos,
+ambas sin fallos/errores/omisiones. Esos casos están incluidos en las suites completas,
+no se suman dos veces. Se añaden 54 regresiones nuevas (11 core y 43 BFF).
 
 | Evidencia | Naturaleza |
 |---|---|
 | IdentityProofTests / BffIdentityProofTests / UsuariosIdentityProofTests | Criptografía real con claves efímeras en memoria; escenarios unitarios y configuración aislada |
 | UsuariosRabbitTests | Listener real, RabbitMQ quorum y PostgreSQL reales; fallos DB/servicio específicos inyectados mediante spy |
 | BffConsultasAdapterTests | RabbitMQ real; servicio de Usuarios simulado, validación/proyección BFF real |
+| BffIdentityCorrectionTests / RequestPublisherBudgetCorrectionTests | Regresiones permanentes de los cuatro hallazgos; relojes, pausas y transporte inyectados, sin broker en esas clases |
 | SettlementPublicationTests | Fallos confirm/transporte/ACK/tiempo inyectados; incluye presupuesto monotónico y estados de publicación |
 | QueryMessagingFlowTests / PlatformCompatibilityTests / RecoveryRealTests | Integración de broker existente, no despliegue de producción |
 | RestaurantesRabbitTests / ProductosRabbitTests | Regresiones de listeners y broker/DB reales |

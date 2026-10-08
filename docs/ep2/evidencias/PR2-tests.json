@@ -1,23 +1,26 @@
 {
   "base": "94777e48bfa4e954269c22669c45feec84489069",
-  "implementationCommit": "4756415a45fd40c93105a40e36eca7a7bfbd37b6",
-  "generatedAtUtc": "2026-10-08T19:49:32.692216+00:00",
+  "auditedHead": "d69f80015070b307ff9a81cd73499937082fdf9d",
+  "implementationCommit": "d36943cbe792380bb3536bec98cc40110ed45df8",
+  "generatedAtUtc": "2026-10-08T20:42:55.884169+00:00",
   "modules": [
     {
       "module": "backend/shared/p360-messaging-core",
       "command": "mvn -B -ntp install",
       "counts": {
-        "tests": 186,
+        "tests": 197,
         "failures": 0,
         "errors": 0,
         "skipped": 0
       },
+      "logSha256": "8d90136d112f42655cca0b2f96c944f7ae7898e3a3ecdb266e7d20d91af83c71",
       "suites": [
         {
           "class": "cl.duoc.pedidos360.messaging.ActorSecurityTests",
           "timestamp": null,
-          "seconds": "2.565",
-          "reportSha256": "b743a56a31b917f38f246516dc6e91ece42ddb9ee1c166766e3416bcbc0f1660",
+          "reportWrittenAtUtc": "2026-10-08T20:37:08.774134+00:00",
+          "seconds": "2.614",
+          "reportSha256": "ef73d50b6bc0541c951e08f6c2da790e02859efde0ff0449ade8055a6a64c41c",
           "counts": {
             "tests": 29,
             "failures": 0,
@@ -146,8 +149,9 @@
         {
           "class": "cl.duoc.pedidos360.messaging.ClasificacionFallosTest",
           "timestamp": null,
-          "seconds": "0.191",
-          "reportSha256": "0c685dd2668c94981b08aa9f74ba30d741686e82cfcc127f31f783816e24722b",
+          "reportWrittenAtUtc": "2026-10-08T20:37:08.923484+00:00",
+          "seconds": "0.18",
+          "reportSha256": "b8e8ba5d364982d03387c7d4134aa23a0b8d6cfa986df7b12360c7311d4f9ddd",
           "counts": {
             "tests": 3,
             "failures": 0,
@@ -172,8 +176,9 @@
         {
           "class": "cl.duoc.pedidos360.messaging.IdentityProofTests",
           "timestamp": null,
-          "seconds": "0.369",
-          "reportSha256": "d83509072b7c5cdc9bf7e3ab782e4b159af81f7079ba4bb84a2bb461fef40eed",
+          "reportWrittenAtUtc": "2026-10-08T20:37:09.326188+00:00",
+          "seconds": "0.405",
+          "reportSha256": "1752af30edc8b4af71bc37f64003c41d64689d50226b92f5b68d085bafde0bed",
           "counts": {
             "tests": 48,
             "failures": 0,
@@ -378,8 +383,9 @@
         {
           "class": "cl.duoc.pedidos360.messaging.MessagingContractTests",
           "timestamp": null,
-          "seconds": "0.088",
-          "reportSha256": "4fc90ae8396f421d014604484c0d5da35d364d5df3f90a312cdf2a0f1e77b072",
+          "reportWrittenAtUtc": "2026-10-08T20:37:09.410532+00:00",
+          "seconds": "0.075",
+          "reportSha256": "0192dbe30973aef7270bc4ce872f4ce550bac01493bcb3e40c538a934b1c9afc",
           "counts": {
             "tests": 17,
             "failures": 0,
@@ -460,8 +466,9 @@
         {
           "class": "cl.duoc.pedidos360.messaging.PlatformCompatibilityTests",
           "timestamp": null,
-          "seconds": "13.012",
-          "reportSha256": "4efe517f011a6aa27f1495af0f8d8d3a786f7c0ef178b531965d0587459158ff",
+          "reportWrittenAtUtc": "2026-10-08T20:37:22.950965+00:00",
+          "seconds": "13.531",
+          "reportSha256": "09298514fb9862288c2e262ba53a2de558706ff3fd27993953b8bfe71594936b",
           "counts": {
             "tests": 4,
             "failures": 0,
@@ -490,8 +497,9 @@
         {
           "class": "cl.duoc.pedidos360.messaging.QueryMessagingFlowTests",
           "timestamp": null,
-          "seconds": "13.061",
-          "reportSha256": "c5b649b01577329cc471f8751a6a82e90f1fffc2edffa593ca2e2ab2def61ce5",
+          "reportWrittenAtUtc": "2026-10-08T20:37:35.779137+00:00",
+          "seconds": "12.818",
+          "reportSha256": "0406ab53653733bb0d09e81cd916948c4a9761244726854d6d86c939a25433f3",
           "counts": {
             "tests": 22,
             "failures": 0,
@@ -592,8 +600,9 @@
         {
           "class": "cl.duoc.pedidos360.messaging.RecoveryRealTests",
           "timestamp": null,
-          "seconds": "7.441",
-          "reportSha256": "f216fb39aa7a22dcd91e64e80415a1143c84df1b4341b6fbb26d161473560c41",
+          "reportWrittenAtUtc": "2026-10-08T20:37:43.143300+00:00",
+          "seconds": "7.365",
+          "reportSha256": "4e7581ff7743a26d67cc4c136a66fe104cc9490b55ce827a160c6c0712ff1017",
           "counts": {
             "tests": 1,
             "failures": 0,
@@ -610,8 +619,9 @@
         {
           "class": "cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests",
           "timestamp": null,
-          "seconds": "1.24",
-          "reportSha256": "471758a17f74beef3c18a89c4547ae92e7b0843c8ca5db278ff246d9203d152f",
+          "reportWrittenAtUtc": "2026-10-08T20:37:44.381934+00:00",
+          "seconds": "1.242",
+          "reportSha256": "bf759168684b14f9aeffa477ad2129d25ea580f13568ba2496b6d186347cfeee",
           "counts": {
             "tests": 7,
             "failures": 0,
@@ -652,8 +662,9 @@
         {
           "class": "cl.duoc.pedidos360.messaging.RelayReliabilityTests",
           "timestamp": null,
-          "seconds": "1.135",
-          "reportSha256": "33b75b6f406d3549d0bf61fbc239f9fae22fe64e2198c4f75edf0c433c6b13f6",
+          "reportWrittenAtUtc": "2026-10-08T20:37:45.491018+00:00",
+          "seconds": "1.105",
+          "reportSha256": "026862a5fd9213ad0d3a9db479854b2e78e40200fa9db426256d4f123bf2a1d1",
           "counts": {
             "tests": 17,
             "failures": 0,
@@ -732,10 +743,70 @@
           ]
         },
         {
+          "class": "cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:45.564805+00:00",
+          "seconds": "0.082",
+          "reportSha256": "9cad63789711c0086c64d455984382f87ebc148dde15acdb2c04f20f2a19a405",
+          "counts": {
+            "tests": 11,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "conclusiveRejectionRemainsUnavailableRatherThanUncertain(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionRemainsUnavailableRatherThanUncertain(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "wallDeadlineExpiredBeforeSendNeverPublishes",
+              "status": "PASS"
+            },
+            {
+              "name": "exhaustedCallbackBeforeSendNeverPublishes(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "exhaustedCallbackBeforeSendNeverPublishes(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "exhaustedCallbackBeforeSendNeverPublishes(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAfterSendUsesActualBudgetEvidenceAndKeepsUncertainty(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAfterSendUsesActualBudgetEvidenceAndKeepsUncertainty(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAfterSendUsesActualBudgetEvidenceAndKeepsUncertainty(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAfterSendUsesActualBudgetEvidenceAndKeepsUncertainty(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "transportFailureWithLiveBudgetIsNotConvertedToTimeout",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
           "class": "cl.duoc.pedidos360.messaging.SettlementPublicationTests",
           "timestamp": null,
-          "seconds": "1.602",
-          "reportSha256": "a608750f2ad2c0fb548b12269397abf57ba2c63d353acf01b62c2e6c8881994d",
+          "reportWrittenAtUtc": "2026-10-08T20:37:47.075231+00:00",
+          "seconds": "1.494",
+          "reportSha256": "ea9748fa2d3071ca8c3bf43d455f7583460f5ea8104d8bddf90c05a26a27000b",
           "counts": {
             "tests": 38,
             "failures": 0,
@@ -903,17 +974,19 @@
       "module": "backend/bff",
       "command": "mvn -B -ntp test",
       "counts": {
-        "tests": 96,
+        "tests": 139,
         "failures": 0,
         "errors": 0,
         "skipped": 0
       },
+      "logSha256": "e3a1ea9ac756da1f5a9ef6a3bac6916e4d9a6ed95ed40d5210735584cfd04fe9",
       "suites": [
         {
           "class": "cl.duoc.pedidos360.bff.BffSecurityTests",
           "timestamp": null,
-          "seconds": "6.811",
-          "reportSha256": "a25cd8c69b4c89cff4c3ae08c42828928cf52d971ff621cd1f0377e768976f14",
+          "reportWrittenAtUtc": "2026-10-08T20:38:52.455904+00:00",
+          "seconds": "6.389",
+          "reportSha256": "a30fbbda7469c351872bd5b3bfa2a196327ddc13812a3ebc249d5ffe28398ae6",
           "counts": {
             "tests": 4,
             "failures": 0,
@@ -942,8 +1015,9 @@
         {
           "class": "cl.duoc.pedidos360.bff.ConnectionConfigurationTests",
           "timestamp": null,
-          "seconds": "0.083",
-          "reportSha256": "30fa1fe7b738f99c2eb2b4f4500ffe65e45255e74026e696e3c72fc5bfb94b54",
+          "reportWrittenAtUtc": "2026-10-08T20:38:52.521051+00:00",
+          "seconds": "0.088",
+          "reportSha256": "645a197be241e449ef9d31d23fc00daf71c99ecdd2496ae063f87759252a2b7e",
           "counts": {
             "tests": 9,
             "failures": 0,
@@ -992,8 +1066,9 @@
         {
           "class": "cl.duoc.pedidos360.bff.JwtHttpTests",
           "timestamp": null,
-          "seconds": "4.255",
-          "reportSha256": "435b94ffc7ec47546da0c2a1a1749c7c3b4cd36438d246aac9bb70f108b4cbcc",
+          "reportWrittenAtUtc": "2026-10-08T20:38:57.479753+00:00",
+          "seconds": "4.957",
+          "reportSha256": "75cbd9982767d219271ea60adb9e280039e4d1289b9aeaa51429bc942544106d",
           "counts": {
             "tests": 27,
             "failures": 0,
@@ -1114,8 +1189,9 @@
         {
           "class": "cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests",
           "timestamp": null,
-          "seconds": "34.192",
-          "reportSha256": "56fb6181be0e27dce2aea48362e7e8daa857c7e2b7c33d8e84d23d7db5862d41",
+          "reportWrittenAtUtc": "2026-10-08T20:39:31.772304+00:00",
+          "seconds": "34.28",
+          "reportSha256": "b0e5369933d49b8efdade73208f202064b715bfc5b28cc02dfb2ac76ffa5cde5",
           "counts": {
             "tests": 13,
             "failures": 0,
@@ -1178,10 +1254,198 @@
           ]
         },
         {
+          "class": "cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:32.460247+00:00",
+          "seconds": "0.695",
+          "reportSha256": "dd6d53d35484334d73a3972884e53c1700fa4de7b8533134831da3a639fe78ed",
+          "counts": {
+            "tests": 43,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "exactVerificationBoundaries(long)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "exactVerificationBoundaries(long)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "exactVerificationBoundaries(long)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "exactVerificationBoundaries(long)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "terminalStateIsVisibleToConcurrentCallsAfterRollback",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "clockChangesWhileLiveKeepOriginalMonotonicSubdeadlineCalculation",
+              "status": "PASS"
+            },
+            {
+              "name": "adapterChecksAgainAfterSuccessfulValidationBeforeReturning(long)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "adapterChecksAgainAfterSuccessfulValidationBeforeReturning(long)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "adapterChecksAgainAfterSuccessfulValidationBeforeReturning(long)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "adapterChecksAgainAfterSuccessfulValidationBeforeReturning(long)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "validProjectionPreservesEightFieldsPrecisionAndNullablePhone(boolean)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "validProjectionPreservesEightFieldsPrecisionAndNullablePhone(boolean)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "observedEffectiveOrGlobalExpiryCannotBeReactivatedOrPlanAnotherQuery(long)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "observedEffectiveOrGlobalExpiryCannotBeReactivatedOrPlanAnotherQuery(long)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "projectionMustFinishBeforeConservativeAndGlobalLimits(long)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "projectionMustFinishBeforeConservativeAndGlobalLimits(long)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "projectionMustFinishBeforeConservativeAndGlobalLimits(long)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "projectionMustFinishBeforeConservativeAndGlobalLimits(long)[4]",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
           "class": "cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests",
           "timestamp": null,
-          "seconds": "0.259",
-          "reportSha256": "f55aa313515122a5566b6855be197d9081549aa2954331b59458202122793713",
+          "reportWrittenAtUtc": "2026-10-08T20:39:32.679163+00:00",
+          "seconds": "0.217",
+          "reportSha256": "3d239d4e2bd2058f3bef0105e155f0afaf7b165fbb72296f6796f4ccedf27591",
           "counts": {
             "tests": 15,
             "failures": 0,
@@ -1254,8 +1518,9 @@
         {
           "class": "cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests",
           "timestamp": null,
-          "seconds": "0.048",
-          "reportSha256": "f1b2dc3984d2a0316f9cd8ca86278417d29e0a50911953e91065288f0d2f783c",
+          "reportWrittenAtUtc": "2026-10-08T20:39:32.725260+00:00",
+          "seconds": "0.044",
+          "reportSha256": "f9f1bae38cf084e1621ed05348447c8890603458b631fd27b6830e5e34990054",
           "counts": {
             "tests": 10,
             "failures": 0,
@@ -1308,8 +1573,9 @@
         {
           "class": "cl.duoc.pedidos360.bff.PedidosPagosDisabledTests",
           "timestamp": null,
-          "seconds": "1.84",
-          "reportSha256": "9463ac2418a09164331f7f1283c78c7ed92b36cb877c993f0ed7c2b5027d48ef",
+          "reportWrittenAtUtc": "2026-10-08T20:39:34.277280+00:00",
+          "seconds": "1.55",
+          "reportSha256": "db90b84e0b0b70caacd31433156bc58437f3ea8e422920db50aa0dd640cbafec",
           "counts": {
             "tests": 1,
             "failures": 0,
@@ -1326,8 +1592,9 @@
         {
           "class": "cl.duoc.pedidos360.bff.security.EntraJwtTests",
           "timestamp": null,
-          "seconds": "0.19",
-          "reportSha256": "935755a017669faa95c528d75ebb11bc0e252dec48a11ac180d456ee117b89d8",
+          "reportWrittenAtUtc": "2026-10-08T20:39:34.592970+00:00",
+          "seconds": "0.315",
+          "reportSha256": "7728aa7a1c2ce641bebb0b8d8ab75b17d000ee1ba90f0a6570c5d62822f12bdf",
           "counts": {
             "tests": 17,
             "failures": 0,
@@ -1416,12 +1683,14 @@
         "errors": 0,
         "skipped": 0
       },
+      "logSha256": "b20d1889eb846b672eac8d57004debf6d11ade62db7adc3b7591de6a8d9db58f",
       "suites": [
         {
           "class": "cl.duoc.pedidos360.usuarios.JwtHttpTests",
           "timestamp": null,
-          "seconds": "15.204",
-          "reportSha256": "b99056f289ff771a007b251b8fd7c6cdc1359585b33191ea7218e236d8167228",
+          "reportWrittenAtUtc": "2026-10-08T20:39:01.734644+00:00",
+          "seconds": "15.368",
+          "reportSha256": "2c7a06aee42c35a4dfffdbfc53c64c1c102ef7d68a707ac32ce07dac338ba825",
           "counts": {
             "tests": 4,
             "failures": 0,
@@ -1450,8 +1719,9 @@
         {
           "class": "cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests",
           "timestamp": null,
-          "seconds": "0.119",
-          "reportSha256": "68c574691527f5f6e8ffcbb0c646ad00686f00947d92886038c4dafb13f4c6ed",
+          "reportWrittenAtUtc": "2026-10-08T20:39:01.847704+00:00",
+          "seconds": "0.127",
+          "reportSha256": "1b846d6318e3c2cbb9004c937e4e6d01bd12dfd41796e00ce7e060babae643ca",
           "counts": {
             "tests": 4,
             "failures": 0,
@@ -1480,8 +1750,9 @@
         {
           "class": "cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests",
           "timestamp": null,
-          "seconds": "1.401",
-          "reportSha256": "eabc782d429b0f7dd61894f44edd4903a95cc3956d70f92480cece2d1afb415b",
+          "reportWrittenAtUtc": "2026-10-08T20:39:03.000241+00:00",
+          "seconds": "1.152",
+          "reportSha256": "090a60664d1fc5c5d91dc29b1d15c9743fff02037cb5969cec57764cac9e6a78",
           "counts": {
             "tests": 6,
             "failures": 0,
@@ -1518,8 +1789,9 @@
         {
           "class": "cl.duoc.pedidos360.usuarios.security.EntraJwtTests",
           "timestamp": null,
-          "seconds": "0.31",
-          "reportSha256": "8b9d5d2ed53f4a5d208fcfe1892491337ac1f10a518e799f974d4138e939439a",
+          "reportWrittenAtUtc": "2026-10-08T20:39:03.293197+00:00",
+          "seconds": "0.284",
+          "reportSha256": "60fa7d2acf8e7130041aab2ec64ff2f0103cf8952e6313c9cf59c698ad829144",
           "counts": {
             "tests": 17,
             "failures": 0,
@@ -1600,8 +1872,9 @@
         {
           "class": "cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests",
           "timestamp": null,
-          "seconds": "0.063",
-          "reportSha256": "da027ce018ccf569f0c3f1a5b4c7ff77b81325db4edec258f0e2cafb062838b6",
+          "reportWrittenAtUtc": "2026-10-08T20:39:03.359402+00:00",
+          "seconds": "0.068",
+          "reportSha256": "b683f7904ece2f2c2218c821cbd8a0cd3054ff17aa32b3d301bc37b349cc9735",
           "counts": {
             "tests": 3,
             "failures": 0,
@@ -1626,8 +1899,9 @@
         {
           "class": "cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests",
           "timestamp": null,
-          "seconds": "5.143",
-          "reportSha256": "c7d6a59bf3d8b508d0bed9aa696cdf3a64fac753d8cf70bdc8ef8cd5631df80e",
+          "reportWrittenAtUtc": "2026-10-08T20:39:08.267641+00:00",
+          "seconds": "4.907",
+          "reportSha256": "dbcba50bd183f36a7fb9eedcfa12ed311d005c0a344ab5c63742765d7def41cb",
           "counts": {
             "tests": 4,
             "failures": 0,
@@ -1656,8 +1930,9 @@
         {
           "class": "cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests",
           "timestamp": null,
-          "seconds": "3.839",
-          "reportSha256": "72bd4f448a9b3244c8ea60f5fad67fbcc945596f7ab2ab4c870980dd1059893c",
+          "reportWrittenAtUtc": "2026-10-08T20:39:11.758920+00:00",
+          "seconds": "3.48",
+          "reportSha256": "c97c3d89c89e08c36c5610ba8ae9244adcb4c4df176838226a7d5fdd33a0cb3d",
           "counts": {
             "tests": 8,
             "failures": 0,
@@ -1702,8 +1977,9 @@
         {
           "class": "cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests",
           "timestamp": null,
-          "seconds": "2.551",
-          "reportSha256": "4c0192dbc9333b8bba55e5ab5e12a2e9bdec7d003e7f9316a8b553fe8b64488c",
+          "reportWrittenAtUtc": "2026-10-08T20:39:14.291026+00:00",
+          "seconds": "2.541",
+          "reportSha256": "5fda1acc94c9bdc6a613dc6957cc9657d61a1b78581b2e2e60f89508af417567",
           "counts": {
             "tests": 6,
             "failures": 0,
@@ -1740,8 +2016,9 @@
         {
           "class": "cl.duoc.pedidos360.usuarios.UsuariosApplicationTests",
           "timestamp": null,
-          "seconds": "3.572",
-          "reportSha256": "8386ea9b30056e84467c294adcf986cf10179ff59b34d54b25d1d8c14eb19f64",
+          "reportWrittenAtUtc": "2026-10-08T20:39:16.972691+00:00",
+          "seconds": "2.681",
+          "reportSha256": "4eade8b8be56cc65a0b13897d883d5393f7f39e1e78ef882c991cea04d9d6287",
           "counts": {
             "tests": 2,
             "failures": 0,
@@ -1762,8 +2039,9 @@
         {
           "class": "cl.duoc.pedidos360.usuarios.UsuariosRabbitTests",
           "timestamp": null,
-          "seconds": "22.931",
-          "reportSha256": "ebdc06bb0649b6ffa77688a939e05113b9a6b23bd40a8169430e48d528e41427",
+          "reportWrittenAtUtc": "2026-10-08T20:39:39.995184+00:00",
+          "seconds": "22.983",
+          "reportSha256": "19d997fab71d66a2a9192f50d246f73fad1cfe61a28cbddfdffef26aa6a9e2ab",
           "counts": {
             "tests": 25,
             "failures": 0,
@@ -1884,12 +2162,14 @@
         "errors": 0,
         "skipped": 0
       },
+      "logSha256": "3fa5bb1bd783dc3354b9878d2b5cabda78003635f1dba310aca723810bd98df9",
       "suites": [
         {
           "class": "cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests",
           "timestamp": null,
-          "seconds": "0.956",
-          "reportSha256": "eaf8891ce77ba1cc187595a7b977e6d5cdadfb66ef4f9f0c8077a8124abf9162",
+          "reportWrittenAtUtc": "2026-10-08T20:40:12.977008+00:00",
+          "seconds": "1.032",
+          "reportSha256": "af7a32be8db75bb391118fc422ac8cf1add9b3f0cfda7aa2fd4a33ffabcbc937",
           "counts": {
             "tests": 3,
             "failures": 0,
@@ -1914,8 +2194,9 @@
         {
           "class": "cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests",
           "timestamp": null,
-          "seconds": "13.392",
-          "reportSha256": "ff75b36141710544f1ac8a15616b9e3ddedbfad9ad07ceb729457c081429da31",
+          "reportWrittenAtUtc": "2026-10-08T20:40:31.809701+00:00",
+          "seconds": "18.822",
+          "reportSha256": "db3e1e770f5ab3e8e9a4788cb2e8d83ae9184c9df6d5320f5c06ba6a42503b83",
           "counts": {
             "tests": 6,
             "failures": 0,
@@ -1952,8 +2233,9 @@
         {
           "class": "cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests",
           "timestamp": null,
-          "seconds": "31.225",
-          "reportSha256": "985d8d62b62211ddae5ca84f4d6f2dc942e26de3d3c38585bb57ebdb08f65ef4",
+          "reportWrittenAtUtc": "2026-10-08T20:41:05.901795+00:00",
+          "seconds": "34.071",
+          "reportSha256": "5d0129dd876c1b244b94ef449a364538b41ce26879c8ecf6dee4229887e173b2",
           "counts": {
             "tests": 25,
             "failures": 0,
@@ -2074,12 +2356,14 @@
         "errors": 0,
         "skipped": 0
       },
+      "logSha256": "2e37fc0c96a351cc309c5936370913ec6d61b8514b90cf263e5f19f701f27bad",
       "suites": [
         {
           "class": "cl.duoc.pedidos360.productos.ProductosConfigurationTests",
           "timestamp": null,
-          "seconds": "0.938",
-          "reportSha256": "a01a1befc8d1e465c867163f24f6a127c2b317c55aa3dbeec9bf433bd9eafdb7",
+          "reportWrittenAtUtc": "2026-10-08T20:40:10.836854+00:00",
+          "seconds": "1.004",
+          "reportSha256": "7e9e18121335bab88d17345650ed42170d6f639c925b37fce00f1fa9331083ba",
           "counts": {
             "tests": 3,
             "failures": 0,
@@ -2104,8 +2388,9 @@
         {
           "class": "cl.duoc.pedidos360.productos.ProductosHttpRegressionTests",
           "timestamp": null,
-          "seconds": "13.582",
-          "reportSha256": "c3227aa938a6554d62a5958f959ea550e6be078e6a3d37cd967a751aa417f6a8",
+          "reportWrittenAtUtc": "2026-10-08T20:40:29.367218+00:00",
+          "seconds": "18.491",
+          "reportSha256": "b494603977f50eb8c514b32ef874c2d3edc2ac9c345bcfd052245e4f3a9b66b5",
           "counts": {
             "tests": 6,
             "failures": 0,
@@ -2142,8 +2427,9 @@
         {
           "class": "cl.duoc.pedidos360.productos.ProductosQueryProcessorTests",
           "timestamp": null,
-          "seconds": "0.896",
-          "reportSha256": "da791d30e68cf4c9db8c37a968b749081700bb695efbe8b4218b1e39dbb8350d",
+          "reportWrittenAtUtc": "2026-10-08T20:40:30.685988+00:00",
+          "seconds": "1.337",
+          "reportSha256": "4906a3eb1653ed13659cbca3dc0601a4e3ba5804c40fb3c8a7980280e55b1aa9",
           "counts": {
             "tests": 13,
             "failures": 0,
@@ -2208,8 +2494,9 @@
         {
           "class": "cl.duoc.pedidos360.productos.ProductosRabbitTests",
           "timestamp": null,
-          "seconds": "28.239",
-          "reportSha256": "70c863a1f24f5d325d17b3dbb60dd30384b9e73bf1d940c71189f908ce310165",
+          "reportWrittenAtUtc": "2026-10-08T20:41:02.027819+00:00",
+          "seconds": "31.271",
+          "reportSha256": "f0cc16bf5c4d0efd87b32a97f9a5800bbbda3fa356e2c1df12bf1a832d1ec104",
           "counts": {
             "tests": 22,
             "failures": 0,
@@ -2318,12 +2605,14 @@
         "errors": 0,
         "skipped": 1
       },
+      "logSha256": "b91b1b92d5d58c3eec1a628c51c8d8fec0a59c24239c7b3fd95efe9072d64756",
       "suites": [
         {
           "class": "cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests",
           "timestamp": null,
-          "seconds": "0.02",
-          "reportSha256": "495cbbfd04a5c9ce8ef7532211a4af11348761a0cd1283d2bc5d02f657adb2ac",
+          "reportWrittenAtUtc": "2026-10-08T20:40:11.653036+00:00",
+          "seconds": "0.021",
+          "reportSha256": "a4b1586c6f7c629e591f67bd8a17d097f83ed59dcc341d3b34273d34966b8ce9",
           "counts": {
             "tests": 1,
             "failures": 0,
@@ -2333,16 +2622,16 @@
           "cases": [
             {
               "name": "autenticaConProveedorReal",
-              "status": "SKIPPED",
-              "reason": "Environment variable [RUN_ENTRA_WORKER_LIVE] does not exist"
+              "status": "SKIPPED"
             }
           ]
         },
         {
           "class": "cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests",
           "timestamp": null,
-          "seconds": "1.207",
-          "reportSha256": "0feb620ed8c6b63215e15c5589d1e2d9e51d309b88607986d017843adeafa783",
+          "reportWrittenAtUtc": "2026-10-08T20:40:13.029993+00:00",
+          "seconds": "1.366",
+          "reportSha256": "0be1b7609417dbe06794b4829187ff90af3fe454508448886d92e59758163ad1",
           "counts": {
             "tests": 5,
             "failures": 0,
@@ -2375,8 +2664,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.DelegadoHttpTests",
           "timestamp": null,
-          "seconds": "14.368",
-          "reportSha256": "5ec0f015ee9994e573fe60812a43df5d87673a96371398a4a3935cdb2ca3724c",
+          "reportWrittenAtUtc": "2026-10-08T20:40:32.234274+00:00",
+          "seconds": "19.178",
+          "reportSha256": "aa86788675592d517bc9540fbc9c6908eec4a86224e8f964a7418a726a39d76f",
           "counts": {
             "tests": 3,
             "failures": 0,
@@ -2401,8 +2691,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.PagoAutorizacionTests",
           "timestamp": null,
-          "seconds": "4.358",
-          "reportSha256": "d60f2fa97345f1dcfeb0ea893ea484f4450d2565beedefb0150d826d6069c994",
+          "reportWrittenAtUtc": "2026-10-08T20:40:36.611304+00:00",
+          "seconds": "4.384",
+          "reportSha256": "cbbb7e6b6adc99c4cd79eafe615b0d255225985a788d147ece6d9fd3a902f042",
           "counts": {
             "tests": 8,
             "failures": 0,
@@ -2447,8 +2738,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.PagoConcurrenciaTests",
           "timestamp": null,
-          "seconds": "0.181",
-          "reportSha256": "0a861de6e9fe0464f8c0604c6d289b42f9851a956c3e9b84dc893a25d5007fa0",
+          "reportWrittenAtUtc": "2026-10-08T20:40:36.793409+00:00",
+          "seconds": "0.179",
+          "reportSha256": "a70a8e0fdbb8133e11ff16555c6df9a49366f10157c0ea4f21e15754264801a8",
           "counts": {
             "tests": 3,
             "failures": 0,
@@ -2473,8 +2765,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.PagoEstadosTests",
           "timestamp": null,
-          "seconds": "0.006",
-          "reportSha256": "b16de62a6d2d85f793d86905f5ab3a0f4808b3a360621050b53205074333825d",
+          "reportWrittenAtUtc": "2026-10-08T20:40:36.800055+00:00",
+          "seconds": "0.004",
+          "reportSha256": "4f09f326eecdce9220ffce920750a2d87915b766e9b08d9548bd543732a3d687",
           "counts": {
             "tests": 3,
             "failures": 0,
@@ -2499,8 +2792,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.PagoIdempotenciaTests",
           "timestamp": null,
-          "seconds": "0.154",
-          "reportSha256": "5ed4ca452306d67d847c69a500eb84350bf061267905a83d2fdd30a1e5182579",
+          "reportWrittenAtUtc": "2026-10-08T20:40:36.945406+00:00",
+          "seconds": "0.15",
+          "reportSha256": "8919b12f2844770c3525c18dac3506bebbfeb43d0d76d57668f9dbc6d3829584",
           "counts": {
             "tests": 4,
             "failures": 0,
@@ -2529,8 +2823,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.PagoRecuperacionTests",
           "timestamp": null,
-          "seconds": "0.138",
-          "reportSha256": "e98248c966ba97db83cbf449e45204c25671c11549d57749a437d5fd96ec4e62",
+          "reportWrittenAtUtc": "2026-10-08T20:40:37.087366+00:00",
+          "seconds": "0.14",
+          "reportSha256": "726ba3ca469a238e87652a0acaf9a6c0167891139abe5e01bc6fbc43575ab7d5",
           "counts": {
             "tests": 3,
             "failures": 0,
@@ -2555,8 +2850,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.PagosApplicationTests",
           "timestamp": null,
-          "seconds": "3.166",
-          "reportSha256": "624c25c663dbd4b3a626915c7d7e568735a693be3f4a4428d529f86771c08769",
+          "reportWrittenAtUtc": "2026-10-08T20:40:40.162198+00:00",
+          "seconds": "3.072",
+          "reportSha256": "f4bf2d3dba9faf8614164d97defbab2de0a56cb0282bf335027625a667ca9430",
           "counts": {
             "tests": 1,
             "failures": 0,
@@ -2573,8 +2869,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.PagoServiceTests",
           "timestamp": null,
-          "seconds": "0.229",
-          "reportSha256": "4dfd7e250af4d74e2bcf18191c24d8f71a018717ec0553becbd6ce4c5d11bfb7",
+          "reportWrittenAtUtc": "2026-10-08T20:40:40.348725+00:00",
+          "seconds": "0.187",
+          "reportSha256": "25a7d390a3912c2e05edd6ec47e3847eb0aaf066b01b62b826c700aa3ad70d9c",
           "counts": {
             "tests": 6,
             "failures": 0,
@@ -2611,8 +2908,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.PedidosRestClientTests",
           "timestamp": null,
-          "seconds": "0.255",
-          "reportSha256": "acf6d3718e251948628ea05d2e7569c902d20e654c3294fada8b53aef001fdbe",
+          "reportWrittenAtUtc": "2026-10-08T20:40:40.617161+00:00",
+          "seconds": "0.261",
+          "reportSha256": "1e1e3b94bdb3149bb00696e90a9feb94cad994c043fa0ec289eab143d0f6a08b",
           "counts": {
             "tests": 15,
             "failures": 0,
@@ -2685,8 +2983,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.RabbitCoreTests",
           "timestamp": null,
-          "seconds": "13.872",
-          "reportSha256": "28e3563b9d63e9cbfd9ace1e8f275276a054b5ba9504bb9fcab780f42ac0ae0b",
+          "reportWrittenAtUtc": "2026-10-08T20:40:58.109785+00:00",
+          "seconds": "17.489",
+          "reportSha256": "4dfedf91c0072ac7282c38361468549ca064dcded5046e3881860da777867adf",
           "counts": {
             "tests": 12,
             "failures": 0,
@@ -2747,8 +3046,9 @@
         {
           "class": "cl.duoc.pedidos360.pagos.security.EntraJwtTests",
           "timestamp": null,
-          "seconds": "0.117",
-          "reportSha256": "7d45dda028ea190c959c43242e4929b0f4e87a220ba227d74ba75f37ec328f2b",
+          "reportWrittenAtUtc": "2026-10-08T20:40:58.235692+00:00",
+          "seconds": "0.123",
+          "reportSha256": "17f9b9a926ad3b47b48bd7b2739c7296700f5095d082ef0eaf8bcb31d56da04d",
           "counts": {
             "tests": 17,
             "failures": 0,
@@ -2830,30 +3130,80 @@
     }
   ],
   "totals": {
-    "tests": 520,
+    "tests": 574,
     "failures": 0,
     "errors": 0,
     "skipped": 1,
-    "executed": 519
+    "executed": 573
+  },
+  "focusedRuns": [
+    {
+      "module": "backend/shared/p360-messaging-core",
+      "command": "mvn -B -ntp -Dtest=RequestPublisherBudgetCorrectionTests,SettlementPublicationTests test",
+      "counts": {
+        "tests": 49,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logSha256": "d919b8a772c8ee1b0a921b89341212e7ab18737e632d5a02a1d9e3751bba4399",
+      "note": "Executed before full suites; same cases are included in full totals, not added again."
+    },
+    {
+      "module": "backend/bff",
+      "command": "mvn -B -ntp -Dtest=BffIdentityCorrectionTests,BffIdentityProofTests test",
+      "counts": {
+        "tests": 58,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logSha256": "67c1db8b3c65416bfd543a261ce5e9a44176452cdfefd2e7ee21d3a9c38f36f8",
+      "note": "Executed before full suites; same cases are included in full totals, not added again."
+    }
+  ],
+  "correctionRegressionSuites": {
+    "cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests": {
+      "cases": 43,
+      "scope": [
+        "projection/final-adapter timing boundaries",
+        "strict eight-field HTTP projection",
+        "irreversible effective/global expiry",
+        "concurrent terminal-state checks"
+      ]
+    },
+    "cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests": {
+      "cases": 11,
+      "scope": [
+        "zero/negative/throwing budget callback",
+        "confirm uncertainty",
+        "conclusive nack/return",
+        "pre-send deadline",
+        "live-budget transport failure"
+      ]
+    }
   },
   "limitations": [
     "No live Entra provider test: RUN_ENTRA_WORKER_LIVE absent.",
     "No AWS, operational key provisioning, relay activation, Pagos query consumer or HTTP-to-RabbitMQ cutover.",
     "BFF broker integration uses a simulated Usuarios service; Usuarios broker suite uses actual application listener and PostgreSQL.",
     "Transport/ACK uncertainty and database failures include unit or spy injection; no claim of a real network partition.",
-    "Restaurantes, Productos and Pagos regressions preceded the final additive usableUntil helper; those modules do not invoke that helper."
+    "All six complete suites ran after installation of the corrected core artifact.",
+    "Projection/adapter delays and concurrency/clock changes are deterministic unit injection, not real runtime stalls or partitions.",
+    "Temporal guarantees stop at the last local check; no claim for subsequent runtime pauses, HTTP transport, or the unimplemented Pagos query chain."
   ],
   "validatedSourceSha256Lf": {
     "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffActorContextFactory.java": "acaa7e8437a2bdcb2aa7a5f21816cb7e3ce565f7de66e32ae7f8957a83a34114",
     "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffActorProperties.java": "68b078eb7b69a170805103547448341d1093df2949da8d507fdc9b26ad47f5dc",
-    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffIdentityProofValidator.java": "a420fa31f892d62634e0456bb619c690a1df99d408497e90eff8037650333be4",
-    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffQueryAdapter.java": "efbd502dfc93813872e18cfc8636122ef3ab149bf4d2aeb2ba3dcda355a4c76e",
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffIdentityProofValidator.java": "fa86e9e35475302338d7964ca5559a88d90554b622eed3254941ecc35291e77b",
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffQueryAdapter.java": "065bd349497cbf1948e9319b9d1a8937721f505bb6dfbc5b9960893e35bc10aa",
     "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffQueryConfiguration.java": "17053a468a3e16ec035ee713cb97229590d693a95a212b4c199405fc1126f7ac",
-    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/QueryOperationBudget.java": "6b43a32e7af276d6688e28328d91763319978ba86052ebda04cdde4744f753c7",
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/QueryOperationBudget.java": "bccc6172ef08f36c5706258e84e16c654d00a917ce9b26d8ccd20852fbfc7bc2",
     "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/RequestFactory.java": "ac5b38cff7f8c773fa3b5d1768f1714a47daf975f5ab7edb648350239ede2553",
     "backend/bff/src/main/resources/application.yml": "403564e9973ad4a326c7bbb2ba43bbacd32f48694fba4838b1e6a07bac1ec616",
-    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffConsultasAdapterTests.java": "a39a7db94792dd75be8927606ba04ad58f53a9bd3277f38e73d7f4b96404b376",
-    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffIdentityProofTests.java": "8aaebb87828cd1be3c8fa773949dfc3d0ebe5d04a3c317636e09bd07971ff262",
+    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffConsultasAdapterTests.java": "f989186cbf55440ac6476f181628fb29fee63147b2ab6e6382edb70f387bc027",
+    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffIdentityCorrectionTests.java": "64825bd68ceb92d28a2780a407b32e8f169611c7ee2846de109cae21e5bf89c6",
+    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffIdentityProofTests.java": "37b37456785127ddf371da2c05671b455ccf5aa7663f34aa571704a19d7d7777",
     "backend/bff/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureIdentityKeys.java": "ef345566fd37d4a631b8b749ec7f6fa380e2f6afd827f3f1cce92bc6c3a83e97",
     "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuarioQueryResponse.java": "f9ccde6c380891b3030a42d6cdfa9ce04eb55f88731586abcac51cf5221a25de",
     "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosIdentityProofConfiguration.java": "cd9fb2d2e86b74556e31ab1ca3a7942c597556420b0c867fe6f037ac3aeb255b",
@@ -2871,8 +3221,9 @@
     "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofException.java": "353b7fc7bc4d83e45ed870360c393f0ab15bd0dbaf6c7814eb71b6e494a616b7",
     "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofKeys.java": "78a5700f34d23d9272819b55b50f0e726d942aa8bcfe1bdf4288ec8cbaa24b2f",
     "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofVerifier.java": "ecb602b744d4c8ac183ceee611fbee0f163bddc4d43a74919a8f723c3940e527",
-    "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/RequestPublisher.java": "492b69cffb702fc2c059ff701315ee2df09e126d9d55ee33ec953507128533f1",
+    "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/RequestPublisher.java": "6711960d8b342b8ffc3aaa5c7d121410f9a7a6c9e3c3e9167d69a72d76913838",
     "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/IdentityProofTests.java": "e235fadf71f66f6e3bded5938fbecb7ed68f5b944199c123392cf8db2d6dda7c",
+    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/RequestPublisherBudgetCorrectionTests.java": "bcbba5c85f72f44b6c48f38b6140d23eebe0dbe5c604a2657b79a49959108f9c",
     "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/SettlementPublicationTests.java": "75c716a17ceea1179fd6f209499c5d4b5d0975cd5c9d8a49afe117a5ca7aecc0",
     "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureIdentityKeys.java": "ef345566fd37d4a631b8b749ec7f6fa380e2f6afd827f3f1cce92bc6c3a83e97"
   }
