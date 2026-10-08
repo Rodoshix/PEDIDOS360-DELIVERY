@@ -50,6 +50,7 @@ public final class HandoffPublisher {
         this.contexto = contexto;
         this.properties = properties;
         this.topology = topology;
+        rabbit.setMandatory(true);
     }
 
     public QueryTopology topology() {
@@ -64,18 +65,21 @@ public final class HandoffPublisher {
      */
     public void aRetry(RequestEnvelope envelope, int retryCountActual, String claseDeFallo,
             MessageProperties original) {
+        if (retryCountActual >= 1 || envelope.vencido(java.time.Instant.now()))
+            throw new HandoffFailureException("retry agotado o plazo vencido");
         MessageProperties metadatos = clonarConDiagnostico(original, envelope, retryCountActual + 1, claseDeFallo,
                 "retry", topology.queue());
         confirmar(properties.exchanges().retry(), topology.retryRoutingKey(),
-                new Message(contexto.escribir(envelope), metadatos), "retry corto");
+                new Message(contexto.escribir(envelope), metadatos), "retry corto", envelope);
     }
 
     /** Envia a la DLQ del dominio sin replay automatico. */
     public void aDlq(RequestEnvelope envelope, int retryCount, String claseDeFallo, MessageProperties original) {
         MessageProperties metadatos = clonarConDiagnostico(original, envelope, retryCount, claseDeFallo, "dlq",
                 topology.queue());
+        metadatos.setHeader("plazo-vencido", envelope.vencido(java.time.Instant.now()));
         confirmar(properties.exchanges().dlx(), topology.failedRoutingKey(),
-                new Message(contexto.escribir(envelope), metadatos), "DLQ");
+                new Message(contexto.escribir(envelope), metadatos), "DLQ", null);
     }
 
     /**
@@ -133,12 +137,13 @@ public final class HandoffPublisher {
         return copia;
     }
 
-    private void confirmar(String exchange, String routingKey, Message mensaje, String destino) {
+    private void confirmar(String exchange, String routingKey, Message mensaje, String destino, RequestEnvelope request) {
         var correlacion = new CorrelationData(mensaje.getMessageProperties().getMessageId() + ":" + destino);
         try {
+            confirmBudget(request);
             rabbit.send(exchange, routingKey, mensaje, correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
-                    .get(properties.confirmTimeout().toMillis(), java.util.concurrent.TimeUnit.MILLISECONDS);
+                    .get(confirmBudget(request), java.util.concurrent.TimeUnit.NANOSECONDS);
             if (!confirmacion.ack())
                 throw new HandoffFailureException("el broker rechazo la transferencia a " + destino);
             if (correlacion.getReturned() != null)
@@ -151,6 +156,14 @@ public final class HandoffPublisher {
         } catch (Exception fallo) {
             throw new HandoffFailureException("no fue posible transferir a " + destino, fallo);
         }
+    }
+
+    /** DLQ diagnóstica tiene ventana propia; nunca renueva ni ejecuta el request. */
+    private long confirmBudget(RequestEnvelope request) {
+        if (request == null) return properties.confirmTimeout().toNanos();
+        long remaining = java.time.Duration.between(java.time.Instant.now(), request.expiresAt()).toNanos();
+        if (remaining <= 0) throw new HandoffFailureException("plazo de retry agotado");
+        return Math.min(remaining, properties.confirmTimeout().toNanos());
     }
 
     /** Bindings de la topologia del dominio, para diagnostico. */

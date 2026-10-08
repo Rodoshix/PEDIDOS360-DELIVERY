@@ -1,6 +1,9 @@
 package cl.duoc.pedidos360.messaging;
 
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.JWKSet;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.Optional;
@@ -43,10 +46,11 @@ public class QueryMessagingConfiguration {
     /** Emisor del sobre: tenant de Entra compartido por BFF y servicios. */
     public static final String EMISOR_PROPERTY = "pedidos360.messaging.actor.emisor";
 
-    /** Clave de firma vigente. Nunca un valor por defecto: sin clave no se firma ni se verifica. */
+    /** kid activo del BFF. Nunca un valor por defecto. SERVICE no necesita clave de emisión. */
     public static final String CLAVE_ID_PROPERTY = "pedidos360.messaging.actor.clave-id";
 
-    public static final String SECRETO_PROPERTY = "pedidos360.messaging.actor.secreto";
+    public static final String PRIVADA_PROPERTY = "pedidos360.messaging.actor.private-jwk";
+    public static final String PUBLICAS_PROPERTY = "pedidos360.messaging.actor.public-jwks";
 
     /**
      * Alias con nombre estable de la configuracion central.
@@ -75,34 +79,56 @@ public class QueryMessagingConfiguration {
         return new ActorContextSigner(proveedorDeClave(env), Clock.systemUTC(), tolerancia);
     }
 
-    /** Una sola clave simetrica vigente; la rotacion agrega claves historicas sin cambiar el contrato. */
+    /** Carga exclusivamente configuración local confiable. Nunca URLs ni claves del mensaje. */
     public static SigningKeyProvider proveedorDeClave(Environment env) {
-        String claveId = env.getProperty(CLAVE_ID_PROPERTY, "");
-        String secreto = env.getProperty(SECRETO_PROPERTY, "");
-        if (claveId.isBlank() || secreto.isBlank()) throw new IllegalStateException(
-                "relay-mode ACTIVE exige " + CLAVE_ID_PROPERTY + " y " + SECRETO_PROPERTY
-                        + " (32 caracteres o mas) desde variable de entorno o gestor de secretos.");
-        UUID id;
+        String role = env.getProperty("pedidos360.messaging.role", "SERVICE");
+        if (!role.equals("BFF") && !role.equals("SERVICE"))
+            throw new IllegalStateException("rol de relay inválido");
+        String privada = env.getProperty(PRIVADA_PROPERTY, "");
+        String publicas = env.getProperty(PUBLICAS_PROPERTY, "");
+        if (!role.equals("BFF") && !privada.isBlank())
+            throw new IllegalStateException("un consumer no puede cargar clave privada de emisión");
         try {
-            id = UUID.fromString(claveId.trim());
-        } catch (RuntimeException invalido) {
-            throw new IllegalStateException("el identificador de clave debe ser un UUID.", invalido);
+            var json = tools.jackson.databind.json.JsonMapper.builder()
+                    .enable(tools.jackson.core.StreamReadFeature.STRICT_DUPLICATE_DETECTION)
+                    .enable(tools.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS).build();
+            if (publicas.isBlank() || publicas.length() > 65536) throw new IllegalArgumentException();
+            json.readTree(publicas);
+            Map<UUID, SigningKey> confiables = new LinkedHashMap<>();
+            var set = JWKSet.parse(publicas);
+            if (set.getKeys().isEmpty() || set.getKeys().size() > 16) throw new IllegalArgumentException();
+            for (var raw : set.getKeys()) {
+                if (!(raw instanceof ECKey ec) || ec.isPrivate()) throw new IllegalArgumentException();
+                var key = new SigningKey(UUID.fromString(ec.getKeyID()), ec);
+                if (confiables.putIfAbsent(key.keyId(), key) != null) throw new IllegalArgumentException();
+            }
+            SigningKey emision = null;
+            if (role.equals("BFF")) {
+                if (privada.isBlank() || privada.length() > 8192) throw new IllegalArgumentException();
+                json.readTree(privada);
+                ECKey ec = ECKey.parse(privada);
+                emision = new SigningKey(UUID.fromString(ec.getKeyID()), ec);
+                if (!ec.isPrivate() || !emision.keyId().toString().equals(env.getProperty(CLAVE_ID_PROPERTY))
+                        || !confiables.containsKey(emision.keyId())
+                        || !ec.toPublicJWK().equals(confiables.get(emision.keyId()).material()))
+                    throw new IllegalArgumentException();
+                // Detecta privada incoherente con la pública antes de recibir tráfico.
+                var probe = new com.nimbusds.jose.JWSObject(new com.nimbusds.jose.JWSHeader(
+                        com.nimbusds.jose.JWSAlgorithm.ES256), new com.nimbusds.jose.Payload("configuration-check"));
+                probe.sign(new com.nimbusds.jose.crypto.ECDSASigner(ec));
+                if (!probe.verify(new com.nimbusds.jose.crypto.ECDSAVerifier(ec.toPublicJWK())))
+                    throw new IllegalArgumentException();
+            }
+            final SigningKey firma = emision;
+            final Map<UUID, SigningKey> verificadores = Map.copyOf(confiables);
+            return new SigningKeyProvider() {
+                public Optional<SigningKey> claveParaFirmar() { return Optional.ofNullable(firma); }
+                public Optional<SigningKey> clavePorId(UUID id) { return Optional.ofNullable(verificadores.get(id)); }
+            };
+        } catch (Exception invalid) {
+            // No adjuntar la causa: los parsers pueden incluir material criptográfico en sus mensajes.
+            throw new IllegalStateException("relay ACTIVE exige claves EC P-256 locales válidas; privada solo BFF");
         }
-        byte[] material = secreto.getBytes(StandardCharsets.UTF_8);
-        if (material.length < 32) throw new IllegalStateException(
-                "el material de firma debe tener al menos 32 bytes; nunca se versiona en Git.");
-        SigningKey clave = new SigningKey(id, material);
-        return new SigningKeyProvider() {
-            @Override
-            public Optional<SigningKey> claveParaFirmar() {
-                return Optional.of(clave);
-            }
-
-            @Override
-            public Optional<SigningKey> clavePorId(UUID keyId) {
-                return clave.keyId().equals(keyId) ? Optional.of(clave) : Optional.empty();
-            }
-        };
     }
 
     /** Tenant esperado como emisor del sobre. */

@@ -1,0 +1,2099 @@
+{
+  "date": "2026-10-08",
+  "timezone": "America/Santiago",
+  "base": "e62959c29e5d2e693c68746a113280cec843919a",
+  "branch": "feature/81-asymmetric-actor-security",
+  "evidenceLimit": "Broker-backed suites may also include mocked faults or Channel assertions. No real network partition injected. No production broker inventory measured.",
+  "staticInventory": {
+    "queues": 21,
+    "exchanges": 7,
+    "bindings": 20,
+    "policies": 21
+  },
+  "modules": [
+    {
+      "module": "shared/p360-messaging-core",
+      "tests": 100,
+      "suites": [
+        {
+          "name": "cl.duoc.pedidos360.messaging.ActorSecurityTests",
+          "tests": 29,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "1.72",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml",
+          "cases": [
+            {
+              "name": "activeMissingKeysFailsClosedAndDisabledNeedsNoKeys",
+              "time": "1.159",
+              "result": "passed"
+            },
+            {
+              "name": "publicOnlyConsumerVerifiesButCannotIssueAndKidIsNotAnIdentityClaim",
+              "time": "0.192",
+              "result": "passed"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[1]",
+              "time": "0.021",
+              "result": "passed"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[2]",
+              "time": "0.005",
+              "result": "passed"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[3]",
+              "time": "0.004",
+              "result": "passed"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[4]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[5]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "validRedeliveryAllowedUntilExpiryButCrossAudienceAndExpiredReplayRejected",
+              "time": "0.029",
+              "result": "passed"
+            },
+            {
+              "name": "duplicateHeaderMalformedSegmentsAndLegacyHmacAreRejected",
+              "time": "0.012",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[1]",
+              "time": "0.005",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[2]",
+              "time": "0.004",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[3]",
+              "time": "0.012",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[4]",
+              "time": "0.004",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[5]",
+              "time": "0.005",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[6]",
+              "time": "0.004",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[7]",
+              "time": "0.006",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[8]",
+              "time": "0.006",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[9]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[10]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "unknownKidWrongPublicKeyAndRetiredKeysAreRejected",
+              "time": "0.006",
+              "result": "passed"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[1]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[2]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[3]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[4]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[5]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[6]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "malformedDuplicateRevokedAndWrongCurveConfigurationFailsClosed",
+              "time": "0.013",
+              "result": "passed"
+            },
+            {
+              "name": "payloadTamperingWithoutResigningIsRejected",
+              "time": "0.004",
+              "result": "passed"
+            },
+            {
+              "name": "privateKeysAreRejectedInServiceAndBffRequiresMatchingPair",
+              "time": "0.004",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.ClasificacionFallosTest",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.118",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml",
+          "cases": [
+            {
+              "name": "unFalloTransitorioVaAlRetry",
+              "time": "0.083",
+              "result": "passed"
+            },
+            {
+              "name": "unFalloDefinitivoNoSeReintenta",
+              "time": "0.006",
+              "result": "passed"
+            },
+            {
+              "name": "unErrorDeNegocioEsperadoNoSeReintentaYSeResponde",
+              "time": "0.028",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.MessagingContractTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.07",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml",
+          "cases": [
+            {
+              "name": "vigenciaDelActorNoPuedeSuperarElPlazoDelRequest",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "respuestaFueraDeContratoSeDescarta",
+              "time": "0.012",
+              "result": "passed"
+            },
+            {
+              "name": "messageIdEsEstableYUnRetryNoRenuevaElPlazo",
+              "time": "0.004",
+              "result": "passed"
+            },
+            {
+              "name": "payloadDebeSerObjetoYElArregloSeRechaza",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "lasColasDelDominioNoDeclaranArgumentosQuePertenecenALasPoliciesDePlataforma",
+              "time": "0.009",
+              "result": "passed"
+            },
+            {
+              "name": "sobreConDestinoAjenoEmisorAjenoOFirmaManipuladaSeRechaza",
+              "time": "0.006",
+              "result": "passed"
+            },
+            {
+              "name": "topologiaDelDominioRespetaElInventarioAprobado",
+              "time": "0.0",
+              "result": "passed"
+            },
+            {
+              "name": "politicaAprobadaEsUnSoloRetryCortoConPlazoDeCincoSegundos",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "configuracionIncompletaNoSeConsideraValida",
+              "time": "0.0",
+              "result": "passed"
+            },
+            {
+              "name": "envelopeRechazaInstanteSinUtcJsonInvalidoYExcesoDeTamano",
+              "time": "0.004",
+              "result": "passed"
+            },
+            {
+              "name": "sobreVencidoOConVigenciaPosteriorAlRequestSeRechaza",
+              "time": "0.005",
+              "result": "passed"
+            },
+            {
+              "name": "respuestaExitosaYDeErrorViajanConCorrelacionYReferenciaAlRequest",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "envelopeViajaConOchoCamposEnOrdenYSeReleeIdentico",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "emisorSinClaveNoFirmaNiVerifica",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "sobreDeActorSeFirmaYVerificaConDestinoEmisorYPlazo",
+              "time": "0.007",
+              "result": "passed"
+            },
+            {
+              "name": "envelopeRechazaCampoExtraFaltanteDuplicadoYNoCanonico",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rolesConCaracteresFueraDeContratoSeRechazanAunqueLaFirmaSeaValida",
+              "time": "0.002",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.PlatformCompatibilityTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "9.214",
+          "timestamp": "",
+          "brokerBackedSuite": true,
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml",
+          "cases": [
+            {
+              "name": "laTopologiaDeLaAplicacionConservaNombresExchangesYBindingsDelInventario",
+              "time": "0.01",
+              "result": "passed"
+            },
+            {
+              "name": "laDeclaracionDeLaAplicacionNoProvocaPreconditionFailedConLasPoliciesDeLaPlataforma",
+              "time": "2.184",
+              "result": "passed"
+            },
+            {
+              "name": "elRecoveryUsaElIdentificadorDeListenerDeclaradoEnLaAnotacion",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "elBrokerRechazaArgumentosIncompatiblesDeModoQueLaPruebaEsSensible",
+              "time": "0.053",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.QueryMessagingFlowTests",
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "11.217",
+          "timestamp": "",
+          "brokerBackedSuite": true,
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml",
+          "cases": [
+            {
+              "name": "actorConRolImprocedenteVaADlqSinEjecutarLaOperacion",
+              "time": "0.134",
+              "result": "passed"
+            },
+            {
+              "name": "actorDeOtroEmisorSeRechazaSinEjecutar",
+              "time": "0.017",
+              "result": "passed"
+            },
+            {
+              "name": "brokerCaidoNoConfirmaElRequest",
+              "time": "0.03",
+              "result": "passed"
+            },
+            {
+              "name": "consultaValidaPublicaRespuestaCorrelacionadaYConfirmaTrasElHandoff",
+              "time": "0.017",
+              "result": "passed"
+            },
+            {
+              "name": "consultaVencidaNoSeEjecutaNiSeReintentaYTerminaEnDlq",
+              "time": "0.015",
+              "result": "passed"
+            },
+            {
+              "name": "deadlineDuranteProcessorSoloPublicaDiagnosticoDlqConPlazoOriginal",
+              "time": "1.84",
+              "result": "passed"
+            },
+            {
+              "name": "elConsumidorDeLaColaFuncionalEstaActivoConAckManual",
+              "time": "0.01",
+              "result": "passed"
+            },
+            {
+              "name": "elRetryRealConservaCorrelationIdReplyToYPlazo",
+              "time": "1.014",
+              "result": "passed"
+            },
+            {
+              "name": "errorDeNegocioEsperadoSeRespondeCorrelacionadoYSeConfirmaSinRetry",
+              "time": "0.33",
+              "result": "passed"
+            },
+            {
+              "name": "falloTransitorioVaAlRetryCortoConservandoMessageIdYPlazo",
+              "time": "0.02",
+              "result": "passed"
+            },
+            {
+              "name": "lasColasDelDominioSonDurablesYSinConsumerPropio",
+              "time": "0.011",
+              "result": "passed"
+            },
+            {
+              "name": "notFoundSeRespondeCorrelacionadoEnUnDominioDeRecursoConcreto",
+              "time": "0.015",
+              "result": "passed"
+            },
+            {
+              "name": "nuncaSeUsaNackConRequeueComoRetryNormal",
+              "time": "0.014",
+              "result": "passed"
+            },
+            {
+              "name": "operacionDeOtroDominioSeRechazaSinEjecutar",
+              "time": "0.013",
+              "result": "passed"
+            },
+            {
+              "name": "payloadInvalidoVaADlqSinEjecutarLaOperacion",
+              "time": "0.013",
+              "result": "passed"
+            },
+            {
+              "name": "respuestaDeNegocioReturnedEnSegundoIntentoVaADlqSinSegundoRetry",
+              "time": "0.354",
+              "result": "passed"
+            },
+            {
+              "name": "segundoFalloAgotaElRetryYVaADlq",
+              "time": "0.336",
+              "result": "passed"
+            },
+            {
+              "name": "sinBindingLaTransferenciaNoEsAceptableYNoSeConfirma",
+              "time": "0.118",
+              "result": "passed"
+            },
+            {
+              "name": "unConflictoSeRespondeCorrelacionadoSinRetryNiDlq",
+              "time": "0.64",
+              "result": "passed"
+            },
+            {
+              "name": "unErrorDeNegocioEnLaEntregaDeRetryVuelveAlBffYNoVaADlq",
+              "time": "0.637",
+              "result": "passed"
+            },
+            {
+              "name": "unNotFoundConcretoEnLaEntregaDeRetryVuelveAlBffYNoVaADlq",
+              "time": "0.327",
+              "result": "passed"
+            },
+            {
+              "name": "unReplyToArbitrarioNoAutorizaLaRespuesta",
+              "time": "0.217",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.RecoveryRealTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "6.015",
+          "timestamp": "",
+          "brokerBackedSuite": true,
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml",
+          "cases": [
+            {
+              "name": "handoffNoConfirmadoConservaElOriginalYSeRecuperaConReentregaSinBucleCaliente",
+              "time": "1.105",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "1.185",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml",
+          "cases": [
+            {
+              "name": "lasSolicitudesConcurrentesNoSePierdenYNoSolapanCiclos",
+              "time": "0.292",
+              "result": "passed"
+            },
+            {
+              "name": "unContainerNuncaRegistradoNoRompeLaSolicitud",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "unaSolicitudDuranteStartingQuedaPendienteYNoSePierde",
+              "time": "0.223",
+              "result": "passed"
+            },
+            {
+              "name": "unHandoffSinConfirmarDetieneYReiniciaElListenerTrasElBackoff",
+              "time": "0.215",
+              "result": "passed"
+            },
+            {
+              "name": "elContainerFalsoCumpleElContratoQueUsaElCiclo",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "unListenerNoRegistradoReintentaLaDetencionConBackoffYNoGiraEnVacio",
+              "time": "0.106",
+              "result": "passed"
+            },
+            {
+              "name": "closeEsTerminalYNoPermiteNuevosCiclos",
+              "time": "0.34",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.RelayReliabilityTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.821",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml",
+          "cases": [
+            {
+              "name": "expiryDuringSendIsUncertainAndReplyTtlNeverRenewsDeadline",
+              "time": "0.122",
+              "result": "passed"
+            },
+            {
+              "name": "deadlineIsRecalculatedForBusinessAndTransientFailures",
+              "time": "0.073",
+              "result": "passed"
+            },
+            {
+              "name": "failedBusinessReplyCannotExceedOneRetry(int)[1]",
+              "time": "0.007",
+              "result": "passed"
+            },
+            {
+              "name": "failedBusinessReplyCannotExceedOneRetry(int)[2]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "failedBusinessReplyCannotExceedOneRetry(int)[3]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "failedBusinessReplyCannotExceedOneRetry(int)[4]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "expiredFunctionalSendsAreNotAttemptedAndDlqHasIndependentConfirm",
+              "time": "0.007",
+              "result": "passed"
+            },
+            {
+              "name": "deadlineDuringFailedBusinessPublicationGoesToDlq",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "uncertainPublicationPreservesOriginalWithoutAnotherHandoff",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "expiredDuringProcessorNeverPublishesFunctionalResponseAndAcksOnlyAfterDlq",
+              "time": "0.075",
+              "result": "passed"
+            },
+            {
+              "name": "expiryDuringPrecheckDoesNotExecuteProcessor",
+              "time": "0.036",
+              "result": "passed"
+            },
+            {
+              "name": "failedDiagnosticHandoffNeverAcksAndInvokesExistingRecovery(String)[1]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "failedDiagnosticHandoffNeverAcksAndInvokesExistingRecovery(String)[2]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "failedDiagnosticHandoffNeverAcksAndInvokesExistingRecovery(String)[3]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "confirmWaitUsesRemainingBudget(String)[1]",
+              "time": "0.156",
+              "result": "passed"
+            },
+            {
+              "name": "confirmWaitUsesRemainingBudget(String)[2]",
+              "time": "0.154",
+              "result": "passed"
+            },
+            {
+              "name": "confirmWaitUsesRemainingBudget(String)[3]",
+              "time": "0.155",
+              "result": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "bff",
+      "tests": 79,
+      "suites": [
+        {
+          "name": "cl.duoc.pedidos360.bff.BffSecurityTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "6.204",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.BffSecurityTests.xml",
+          "cases": [
+            {
+              "name": "rutasPrivadasCerradasSinSesion",
+              "time": "0.978",
+              "result": "passed"
+            },
+            {
+              "name": "saludPublica",
+              "time": "0.188",
+              "result": "passed"
+            },
+            {
+              "name": "noHayFormularioDeLoginNiActuatorAdicional",
+              "time": "0.021",
+              "result": "passed"
+            },
+            {
+              "name": "bearerFicticioNoAutentica",
+              "time": "0.016",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.ConnectionConfigurationTests",
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.085",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.ConnectionConfigurationTests.xml",
+          "cases": [
+            {
+              "name": "aceptaHttpsOLoopback",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[1]",
+              "time": "0.007",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[2]",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[3]",
+              "time": "0.0",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[4]",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[5]",
+              "time": "0.0",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[6]",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[7]",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[8]",
+              "time": "0.001",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.JwtHttpTests",
+          "tests": 27,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "4.15",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.JwtHttpTests.xml",
+          "cases": [
+            {
+              "name": "pagoExigeClaveYLaConservaEnReintentosSinReintentarAutomaticamente",
+              "time": "0.347",
+              "result": "passed"
+            },
+            {
+              "name": "carritoReenviaSoloTokenYCuerpoValidado",
+              "time": "0.24",
+              "result": "passed"
+            },
+            {
+              "name": "audienciaDelFrontendNoSirve",
+              "time": "0.039",
+              "result": "passed"
+            },
+            {
+              "name": "esperaAcotada",
+              "time": "1.046",
+              "result": "passed"
+            },
+            {
+              "name": "datosInvalidosNoLleganAlCatalogo",
+              "time": "0.11",
+              "result": "passed"
+            },
+            {
+              "name": "reenviaCreacionActualizacionYBaja",
+              "time": "0.037",
+              "result": "passed"
+            },
+            {
+              "name": "pedidosPagosConsultasConRelaySinIdentidadExterna",
+              "time": "0.042",
+              "result": "passed"
+            },
+            {
+              "name": "catalogoConsultasSinCredencialesNiCabecerasDelNavegador",
+              "time": "0.074",
+              "result": "passed"
+            },
+            {
+              "name": "pedidosPagosPropaganDenegacionSinDetallesNiRedirect",
+              "time": "0.041",
+              "result": "passed"
+            },
+            {
+              "name": "escriturasCatalogoNoReintentanNiFiltranErroresUpstream",
+              "time": "0.07",
+              "result": "passed"
+            },
+            {
+              "name": "origenAjenoNoLlegaAlServicioYErroresTienenCors",
+              "time": "0.014",
+              "result": "passed"
+            },
+            {
+              "name": "tokenValidoAccedeSinCrearSesion",
+              "time": "0.009",
+              "result": "passed"
+            },
+            {
+              "name": "preservaErroresControladosSinExponerDetalleInterno",
+              "time": "0.065",
+              "result": "passed"
+            },
+            {
+              "name": "pedidosPagosRechazanTokenInvalidoScopeYRol",
+              "time": "0.048",
+              "result": "passed"
+            },
+            {
+              "name": "paginaYRechazaRutasNoPermitidas",
+              "time": "0.039",
+              "result": "passed"
+            },
+            {
+              "name": "crearPedidoSinPreciosNiIdentidadAportados",
+              "time": "0.044",
+              "result": "passed"
+            },
+            {
+              "name": "corsPermiteClaveSoloEnCreacionPagoDesdeOrigenConocido",
+              "time": "0.014",
+              "result": "passed"
+            },
+            {
+              "name": "scopeYRolSonObligatorios",
+              "time": "0.014",
+              "result": "passed"
+            },
+            {
+              "name": "comercioExigeJwtScopeRolYSanitizaErrores",
+              "time": "0.112",
+              "result": "passed"
+            },
+            {
+              "name": "sinTokenNiCabecerasFalsificadasAutentican",
+              "time": "0.014",
+              "result": "passed"
+            },
+            {
+              "name": "soloAdminPuedeCambiarEstadoOAprobar",
+              "time": "0.042",
+              "result": "passed"
+            },
+            {
+              "name": "preflightSoloDesdeOrigenPermitido",
+              "time": "0.009",
+              "result": "passed"
+            },
+            {
+              "name": "corsPermitePatchSoloDesdeOrigenConfigurado",
+              "time": "0.013",
+              "result": "passed"
+            },
+            {
+              "name": "administracionRequiereAdminScopeYTokenValidoSinConfiarEnCabeceras",
+              "time": "0.092",
+              "result": "passed"
+            },
+            {
+              "name": "noSigueRedirecciones",
+              "time": "0.015",
+              "result": "passed"
+            },
+            {
+              "name": "listadoGlobalSoloAdminYComandosRestringidos",
+              "time": "0.046",
+              "result": "passed"
+            },
+            {
+              "name": "crudCatalogoAdminReenviaSoloMetodoRutaYCuerpoSinIdentidadDelNavegador",
+              "time": "0.088",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests",
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "29.012",
+          "timestamp": "",
+          "brokerBackedSuite": true,
+          "report": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests.xml",
+          "cases": [
+            {
+              "name": "elCierreDelAdaptadorCancelaLasCorrelacionesEnVuelo",
+              "time": "0.631",
+              "result": "passed"
+            },
+            {
+              "name": "variosRequestsSimultaneosNoSeCruzan",
+              "time": "1.341",
+              "result": "passed"
+            },
+            {
+              "name": "elDeadlineEsTotalYNoSeReiniciaTrasLaPublicacionConfirmada",
+              "time": "5.052",
+              "result": "passed"
+            },
+            {
+              "name": "brokerNoDisponibleSeTraduceEnErrorDeInfraestructura",
+              "time": "0.04",
+              "result": "passed"
+            },
+            {
+              "name": "unErrorDeNegocio403ViajaComoRespuestaEquivalenteAlHttp",
+              "time": "1.076",
+              "result": "passed"
+            },
+            {
+              "name": "unErrorDeNegocio404DeRecursoConcretoViajaComoRespuesta",
+              "time": "1.064",
+              "result": "passed"
+            },
+            {
+              "name": "unaRespuestaDuplicadaNoRompeLaCorrelacion",
+              "time": "1.05",
+              "result": "passed"
+            },
+            {
+              "name": "requestYRespuestaCorrelacionadaExtremoAExtremo",
+              "time": "1.035",
+              "result": "passed"
+            },
+            {
+              "name": "sinServicioQueRespondaElPlazoSeAgotaYSeLimpiaLaCorrelacion",
+              "time": "5.323",
+              "result": "passed"
+            },
+            {
+              "name": "elSobreFirmadoNoTransportaElJwtYSeDirigeAlDominio",
+              "time": "1.025",
+              "result": "passed"
+            },
+            {
+              "name": "vencimientoDurantePublicacionTambienLimpiaCorrelacion",
+              "time": "0.37",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests",
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.047",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests.xml",
+          "cases": [
+            {
+              "name": "descartarUnaCorrelacionDesconocidaNoAfectaElRegistro",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaNuevasEsperasAlSuperarElLimite",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "cancelarTodoCompletaDeFormaExcepcionalLasEsperasEnVuelo",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "unaRespuestaTardiaSeDescartaYLaEsperaSigueViva",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "unCorrelationIdDuplicadoSeRechazaYNoSobrescribeLaEsperaViva",
+              "time": "0.02",
+              "result": "passed"
+            },
+            {
+              "name": "unaCorrelacionDesconocidaSeDescarta",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "resuelveLaEsperaRegistrada",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "cancelarTodoConcurrenteNoDejaElContadorDescuadrado",
+              "time": "0.004",
+              "result": "passed"
+            },
+            {
+              "name": "soportaMultiplesRequestsSimultaneosSinCruzarse",
+              "time": "0.005",
+              "result": "passed"
+            },
+            {
+              "name": "unaRespuestaDuplicadaSeDescartaSinAfectarALaPrimera",
+              "time": "0.001",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.PedidosPagosDisabledTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "1.313",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.PedidosPagosDisabledTests.xml",
+          "cases": [
+            {
+              "name": "inclusoAdminQuedaBloqueadoSinHabilitacionExplicita",
+              "time": "0.04",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.security.EntraJwtTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.229",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.security.EntraJwtTests.xml",
+          "cases": [
+            {
+              "name": "rechazaClaimsInvalidos()[1]",
+              "time": "0.01",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[2]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[3]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[4]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[5]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[6]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[7]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[8]",
+              "time": "0.008",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[9]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[10]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[11]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[12]",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[13]",
+              "time": "0.001",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaFirmaDistinta",
+              "time": "0.135",
+              "result": "passed"
+            },
+            {
+              "name": "noConcedeAutoridadesPorClaimsDesconocidos",
+              "time": "0.006",
+              "result": "passed"
+            },
+            {
+              "name": "aceptaFirmaYClaimsValidos",
+              "time": "0.011",
+              "result": "passed"
+            },
+            {
+              "name": "fallaConfiguracionIncompletaOIdentidadMixta",
+              "time": "0.008",
+              "result": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "services/usuarios-service",
+      "tests": 73,
+      "suites": [
+        {
+          "name": "cl.duoc.pedidos360.usuarios.JwtHttpTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "13.674",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.JwtHttpTests.xml",
+          "cases": [
+            {
+              "name": "audienciaDelFrontendNoSirve",
+              "time": "0.828",
+              "result": "passed"
+            },
+            {
+              "name": "scopeYRolSonObligatorios",
+              "time": "0.052",
+              "result": "passed"
+            },
+            {
+              "name": "identidadJwtPersisteYAislaPerfiles",
+              "time": "0.718",
+              "result": "passed"
+            },
+            {
+              "name": "sinTokenNiCabecerasFalsificadasAutentican",
+              "time": "0.042",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.112",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests.xml",
+          "cases": [
+            {
+              "name": "noActivaIdentidadSinPerfilLocalOEnProduccion",
+              "time": "0.068",
+              "result": "passed"
+            },
+            {
+              "name": "permiteLocalCompletoYExigeHabilitacionExplicita",
+              "time": "0.015",
+              "result": "passed"
+            },
+            {
+              "name": "noPermiteEscucharEnTodasLasInterfacesConIdentidadFalsa",
+              "time": "0.005",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaIdentidadIncompletaYRolesDesconocidos",
+              "time": "0.016",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.security.EntraJwtTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.13",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.EntraJwtTests.xml",
+          "cases": [
+            {
+              "name": "rechazaClaimsInvalidos()[1]",
+              "time": "0.007",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[2]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[3]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[4]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[5]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[6]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[7]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[8]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[9]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[10]",
+              "time": "0.006",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[11]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[12]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[13]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaFirmaDistinta",
+              "time": "0.049",
+              "result": "passed"
+            },
+            {
+              "name": "noConcedeAutoridadesPorClaimsDesconocidos",
+              "time": "0.01",
+              "result": "passed"
+            },
+            {
+              "name": "aceptaFirmaYClaimsValidos",
+              "time": "0.007",
+              "result": "passed"
+            },
+            {
+              "name": "fallaConfiguracionIncompletaOIdentidadMixta",
+              "time": "0.004",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.023",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests.xml",
+          "cases": [
+            {
+              "name": "peticionRemotaNoSeAutenticaAunqueFalsifiqueForwardedHeaders",
+              "time": "0.009",
+              "result": "passed"
+            },
+            {
+              "name": "localhostSoloRecibeLaIdentidadConfiguradaYNoLaDeLosHeaders",
+              "time": "0.008",
+              "result": "passed"
+            },
+            {
+              "name": "limpiaIdentidadInclusoSiElControladorFalla",
+              "time": "0.002",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "2.837",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests.xml",
+          "cases": [
+            {
+              "name": "administraPerfilDelMismoDirectorioYDevuelve404SiNoExiste",
+              "time": "0.122",
+              "result": "passed"
+            },
+            {
+              "name": "adminDesactivadoPierdeAccesoSinImportarSuRol",
+              "time": "0.083",
+              "result": "passed"
+            },
+            {
+              "name": "devuelvePaginaVaciaY404SinCambiarOtrosPerfiles",
+              "time": "0.081",
+              "result": "passed"
+            },
+            {
+              "name": "listaSoloSuDirectorioYRespetaLaPaginacion",
+              "time": "0.057",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "2.766",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests.xml",
+          "cases": [
+            {
+              "name": "respetaLongitudesMaximasYNoPersisteUnPerfilInvalido",
+              "time": "0.11",
+              "result": "passed"
+            },
+            {
+              "name": "noAccedeAListaNiPerfilesAjenosAunqueFalsifiqueHeaders",
+              "time": "0.08",
+              "result": "passed"
+            },
+            {
+              "name": "creaConsultaActualizaYDesactivaSuPerfil",
+              "time": "0.112",
+              "result": "passed"
+            },
+            {
+              "name": "actualizacionRechazadaConservaPerfilEIdentidad",
+              "time": "0.069",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaIdentificadorYParametrosInvalidos",
+              "time": "0.065",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaJsonRotoTiposIncorrectosYCuerpoVacio",
+              "time": "0.067",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaCamposInvalidosEIdentidadORolesEnElJson",
+              "time": "0.06",
+              "result": "passed"
+            },
+            {
+              "name": "conflictoNoFiltraDetallesDeLaBaseNiCreaDuplicado",
+              "time": "0.029",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "2.077",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml",
+          "cases": [
+            {
+              "name": "ejecutaMigracionEnEsquemaPropio",
+              "time": "0.017",
+              "result": "passed"
+            },
+            {
+              "name": "actualizaYDesactivaSinCambiarIdentidadNiEliminarPerfil",
+              "time": "0.013",
+              "result": "passed"
+            },
+            {
+              "name": "rechazaDosPerfilesParaLaMismaIdentidad",
+              "time": "0.027",
+              "result": "passed"
+            },
+            {
+              "name": "distingueDirectoriosAunqueCoincidanObjectIdYEmail",
+              "time": "0.013",
+              "result": "passed"
+            },
+            {
+              "name": "unaEdicionAntiguaNoSobrescribeUnaVersionMasReciente",
+              "time": "0.017",
+              "result": "passed"
+            },
+            {
+              "name": "guardaYRecuperaPerfilPorIdentidadExterna",
+              "time": "0.008",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuariosApplicationTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "3.224",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml",
+          "cases": [
+            {
+              "name": "healthRespondeUpConPostgresSinAzure",
+              "time": "0.076",
+              "result": "passed"
+            },
+            {
+              "name": "bloqueaUsuariosSinIdentidadLocalAunqueSeEnvieUnTokenFalso",
+              "time": "0.025",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuariosRabbitTests",
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "34.888",
+          "timestamp": "",
+          "brokerBackedSuite": true,
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml",
+          "cases": [
+            {
+              "name": "inactiveProfileMatchesHttp403WithoutRetry",
+              "time": "1.156",
+              "result": "passed"
+            },
+            {
+              "name": "identityPayloadIsRejected(String)[1]",
+              "time": "0.306",
+              "result": "passed"
+            },
+            {
+              "name": "identityPayloadIsRejected(String)[2]",
+              "time": "0.259",
+              "result": "passed"
+            },
+            {
+              "name": "identityPayloadIsRejected(String)[3]",
+              "time": "0.247",
+              "result": "passed"
+            },
+            {
+              "name": "failedRetryHandoffKeepsOriginalAndRecoversWithoutTtlOrHotLoop",
+              "time": "1.774",
+              "result": "passed"
+            },
+            {
+              "name": "unexpectedFailureExhaustsOneRetryThenDlq",
+              "time": "1.25",
+              "result": "passed"
+            },
+            {
+              "name": "realListenerMatchesHttpIncludingLocalIdCorrelationAndManualAck",
+              "time": "0.341",
+              "result": "passed"
+            },
+            {
+              "name": "missingScopeIsDefinitive",
+              "time": "0.247",
+              "result": "passed"
+            },
+            {
+              "name": "wrongTenantIsDefinitive",
+              "time": "0.169",
+              "result": "passed"
+            },
+            {
+              "name": "adminResolvesOwnProfile",
+              "time": "0.259",
+              "result": "passed"
+            },
+            {
+              "name": "incorrectSignatureIsDefinitive",
+              "time": "0.255",
+              "result": "passed"
+            },
+            {
+              "name": "sameOidInOtherTenantDoesNotExposeProfile",
+              "time": "0.21",
+              "result": "passed"
+            },
+            {
+              "name": "wrongDestinationIsDefinitive",
+              "time": "0.252",
+              "result": "passed"
+            },
+            {
+              "name": "transientDbFailureRetriesOnceWithRealPolicyTtl",
+              "time": "1.167",
+              "result": "passed"
+            },
+            {
+              "name": "expiredActorOnLiveRequestIsDefinitive",
+              "time": "0.169",
+              "result": "passed"
+            },
+            {
+              "name": "malformedActorIsDefinitive",
+              "time": "0.243",
+              "result": "passed"
+            },
+            {
+              "name": "requestWaitsWhileConsumerStoppedThenRecovers",
+              "time": "1.013",
+              "result": "passed"
+            },
+            {
+              "name": "wrongOperationIsDefinitive",
+              "time": "0.247",
+              "result": "passed"
+            },
+            {
+              "name": "businessErrorReturns409AndIsAcked",
+              "time": "0.198",
+              "result": "passed"
+            },
+            {
+              "name": "deadlineExpiredDoesNotExecuteOrRetry",
+              "time": "0.241",
+              "result": "passed"
+            },
+            {
+              "name": "disallowedRoleIsDefinitive",
+              "time": "0.162",
+              "result": "passed"
+            },
+            {
+              "name": "arrayPayloadIsRejectedAtListener",
+              "time": "0.174",
+              "result": "passed"
+            },
+            {
+              "name": "malformedJsonGoesToDlqWithoutDomain",
+              "time": "0.158",
+              "result": "passed"
+            },
+            {
+              "name": "quorumQueuesHavePolicyTtlAndConsumerCannotConfigure",
+              "time": "2.374",
+              "result": "passed"
+            },
+            {
+              "name": "absentProfileMatchesHttp404WithoutRetry",
+              "time": "0.217",
+              "result": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "services/restaurantes-service",
+      "tests": 34,
+      "suites": [
+        {
+          "name": "cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.718",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests.xml",
+          "cases": [
+            {
+              "name": "clienteAndAdminWithScopeAreAllowed",
+              "time": "0.157",
+              "result": "passed"
+            },
+            {
+              "name": "defaultDoesNotCreateAnyMessagingBeans",
+              "time": "0.518",
+              "result": "passed"
+            },
+            {
+              "name": "scopeAndRoleAreBothRequired",
+              "time": "0.009",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "12.835",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests.xml",
+          "cases": [
+            {
+              "name": "crudAndSoftDeactivationKeepBehavior",
+              "time": "1.304",
+              "result": "passed"
+            },
+            {
+              "name": "listIncludesInactiveWithUnchangedDto",
+              "time": "0.05",
+              "result": "passed"
+            },
+            {
+              "name": "emptyListIsHttp200Array",
+              "time": "0.022",
+              "result": "passed"
+            },
+            {
+              "name": "invalidCrudStillReturns400WithoutPersistence",
+              "time": "0.043",
+              "result": "passed"
+            },
+            {
+              "name": "defaultHttpAndHealthNeedNoBrokerOrSecurityFilterChain",
+              "time": "0.078",
+              "result": "passed"
+            },
+            {
+              "name": "missingRestaurantStillReturns404",
+              "time": "0.05",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests",
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "36.388",
+          "timestamp": "",
+          "brokerBackedSuite": true,
+          "report": "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests.xml",
+          "cases": [
+            {
+              "name": "failedRetryHandoffKeepsOriginalAndRecoversWithoutTtlOrHotLoop",
+              "time": "2.444",
+              "result": "passed"
+            },
+            {
+              "name": "unexpectedFailureExhaustsOneRetryThenDlq",
+              "time": "1.302",
+              "result": "passed"
+            },
+            {
+              "name": "missingScopeIsDefinitive",
+              "time": "0.258",
+              "result": "passed"
+            },
+            {
+              "name": "wrongTenantIsDefinitive",
+              "time": "0.17",
+              "result": "passed"
+            },
+            {
+              "name": "incorrectSignatureIsDefinitive",
+              "time": "0.168",
+              "result": "passed"
+            },
+            {
+              "name": "realListenerMatchesHttpIncludingInactiveCorrelationAndManualAck",
+              "time": "0.458",
+              "result": "passed"
+            },
+            {
+              "name": "malformedOidIsRejectedBeforeDomain",
+              "time": "0.159",
+              "result": "passed"
+            },
+            {
+              "name": "wrongDestinationIsDefinitive",
+              "time": "0.163",
+              "result": "passed"
+            },
+            {
+              "name": "transientDbFailureRetriesOnceWithRealPolicyTtl",
+              "time": "1.265",
+              "result": "passed"
+            },
+            {
+              "name": "expiredActorOnLiveRequestIsDefinitive",
+              "time": "0.25",
+              "result": "passed"
+            },
+            {
+              "name": "malformedActorIsDefinitive",
+              "time": "0.243",
+              "result": "passed"
+            },
+            {
+              "name": "emptyCatalogAndAdminActorReturnEmptySuccess",
+              "time": "0.158",
+              "result": "passed"
+            },
+            {
+              "name": "requestWaitsWhileConsumerStoppedThenRecovers",
+              "time": "1.021",
+              "result": "passed"
+            },
+            {
+              "name": "wrongOperationIsDefinitive",
+              "time": "0.245",
+              "result": "passed"
+            },
+            {
+              "name": "businessErrorReturns409AndIsAcked",
+              "time": "0.192",
+              "result": "passed"
+            },
+            {
+              "name": "deadlineExpiredDoesNotExecuteOrRetry",
+              "time": "0.239",
+              "result": "passed"
+            },
+            {
+              "name": "disallowedRoleIsDefinitive",
+              "time": "0.245",
+              "result": "passed"
+            },
+            {
+              "name": "arrayPayloadIsRejectedAtListener",
+              "time": "0.175",
+              "result": "passed"
+            },
+            {
+              "name": "malformedJsonGoesToDlqWithoutDomain",
+              "time": "0.251",
+              "result": "passed"
+            },
+            {
+              "name": "quorumQueuesHavePolicyTtlAndConsumerCannotConfigure",
+              "time": "3.617",
+              "result": "passed"
+            },
+            {
+              "name": "disallowedReplyToNeverRoutesOutsideTechnicalQueue",
+              "time": "1.268",
+              "result": "passed"
+            },
+            {
+              "name": "extraFieldsGoToDlqWithoutDomain(String)[1]",
+              "time": "0.173",
+              "result": "passed"
+            },
+            {
+              "name": "extraFieldsGoToDlqWithoutDomain(String)[2]",
+              "time": "0.254",
+              "result": "passed"
+            },
+            {
+              "name": "extraFieldsGoToDlqWithoutDomain(String)[3]",
+              "time": "0.167",
+              "result": "passed"
+            },
+            {
+              "name": "extraFieldsGoToDlqWithoutDomain(String)[4]",
+              "time": "0.237",
+              "result": "passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "services/productos-service",
+      "tests": 44,
+      "suites": [
+        {
+          "name": "cl.duoc.pedidos360.productos.ProductosConfigurationTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.718",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosConfigurationTests.xml",
+          "cases": [
+            {
+              "name": "clienteAndAdminWithScopeAreAllowed",
+              "time": "0.128",
+              "result": "passed"
+            },
+            {
+              "name": "defaultDoesNotCreateAnyMessagingBeans",
+              "time": "0.547",
+              "result": "passed"
+            },
+            {
+              "name": "scopeAndRoleAreBothRequired",
+              "time": "0.015",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.productos.ProductosHttpRegressionTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "12.798",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosHttpRegressionTests.xml",
+          "cases": [
+            {
+              "name": "invalidCrudRequestStillReturns400",
+              "time": "1.136",
+              "result": "passed"
+            },
+            {
+              "name": "crudAndAvailabilityEndpointsKeepTheirBehavior",
+              "time": "0.251",
+              "result": "passed"
+            },
+            {
+              "name": "nonexistentProductStillReturns404",
+              "time": "0.024",
+              "result": "passed"
+            },
+            {
+              "name": "httpAndHealthWorkWithoutRabbitOrActorSecretsByDefault",
+              "time": "0.047",
+              "result": "passed"
+            },
+            {
+              "name": "realRepositoryFiltersUnavailableAndOtherRestaurants",
+              "time": "0.03",
+              "result": "passed"
+            },
+            {
+              "name": "emptyRestaurantKeepsHttp200EmptyArray",
+              "time": "0.021",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.productos.ProductosQueryProcessorTests",
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "0.763",
+          "timestamp": "",
+          "brokerBackedSuite": false,
+          "report": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosQueryProcessorTests.xml",
+          "cases": [
+            {
+              "name": "businessFailurePreservedForBaseHandler",
+              "time": "0.113",
+              "result": "passed"
+            },
+            {
+              "name": "technicalFailureRemainsTechnicalForBaseClassifier",
+              "time": "0.009",
+              "result": "passed"
+            },
+            {
+              "name": "restaurantWithoutProductsIsEmptySuccess",
+              "time": "0.028",
+              "result": "passed"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[1]",
+              "time": "0.048",
+              "result": "passed"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[2]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[3]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[4]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[5]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[6]",
+              "time": "0.002",
+              "result": "passed"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[7]",
+              "time": "0.028",
+              "result": "passed"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[8]",
+              "time": "0.004",
+              "result": "passed"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[9]",
+              "time": "0.003",
+              "result": "passed"
+            },
+            {
+              "name": "reusesExistingMethodAndDtoWithoutChangingFields",
+              "time": "0.044",
+              "result": "passed"
+            }
+          ]
+        },
+        {
+          "name": "cl.duoc.pedidos360.productos.ProductosRabbitTests",
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "time": "34.878",
+          "timestamp": "",
+          "brokerBackedSuite": true,
+          "report": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosRabbitTests.xml",
+          "cases": [
+            {
+              "name": "emptyRestaurantAndAdminActorReturnEmptySuccess",
+              "time": "0.971",
+              "result": "passed"
+            },
+            {
+              "name": "failedRetryHandoffKeepsOriginalAndRecoversWithoutTtlOrHotLoop",
+              "time": "1.891",
+              "result": "passed"
+            },
+            {
+              "name": "unexpectedFailureExhaustsOneRetryThenDlq",
+              "time": "1.199",
+              "result": "passed"
+            },
+            {
+              "name": "missingScopeIsDefinitive",
+              "time": "0.243",
+              "result": "passed"
+            },
+            {
+              "name": "wrongTenantIsDefinitive",
+              "time": "0.174",
+              "result": "passed"
+            },
+            {
+              "name": "incorrectSignatureIsDefinitive",
+              "time": "0.252",
+              "result": "passed"
+            },
+            {
+              "name": "realListenerMatchesHttpIncludingFilteringCorrelationAndManualAck",
+              "time": "0.471",
+              "result": "passed"
+            },
+            {
+              "name": "wrongDestinationIsDefinitive",
+              "time": "0.161",
+              "result": "passed"
+            },
+            {
+              "name": "transientDbFailureRetriesOnceWithRealPolicyTtl",
+              "time": "1.231",
+              "result": "passed"
+            },
+            {
+              "name": "expiredActorOnLiveRequestIsDefinitive",
+              "time": "0.159",
+              "result": "passed"
+            },
+            {
+              "name": "invalidIdsGoToDlqWithoutDomain(String)[1]",
+              "time": "0.242",
+              "result": "passed"
+            },
+            {
+              "name": "invalidIdsGoToDlqWithoutDomain(String)[2]",
+              "time": "0.165",
+              "result": "passed"
+            },
+            {
+              "name": "invalidIdsGoToDlqWithoutDomain(String)[3]",
+              "time": "0.247",
+              "result": "passed"
+            },
+            {
+              "name": "invalidIdsGoToDlqWithoutDomain(String)[4]",
+              "time": "0.164",
+              "result": "passed"
+            },
+            {
+              "name": "malformedActorIsDefinitive",
+              "time": "0.243",
+              "result": "passed"
+            },
+            {
+              "name": "requestWaitsWhileConsumerStoppedThenRecovers",
+              "time": "1.017",
+              "result": "passed"
+            },
+            {
+              "name": "wrongOperationIsDefinitive",
+              "time": "0.247",
+              "result": "passed"
+            },
+            {
+              "name": "businessErrorReturns409AndIsAcked",
+              "time": "0.205",
+              "result": "passed"
+            },
+            {
+              "name": "deadlineExpiredDoesNotExecuteOrRetry",
+              "time": "0.165",
+              "result": "passed"
+            },
+            {
+              "name": "disallowedRoleIsDefinitive",
+              "time": "0.166",
+              "result": "passed"
+            },
+            {
+              "name": "malformedJsonGoesToDlqWithoutDomain",
+              "time": "0.165",
+              "result": "passed"
+            },
+            {
+              "name": "quorumQueuesHavePolicyTtlAndConsumerCannotConfigure",
+              "time": "3.436",
+              "result": "passed"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "totalTests": 330
+}

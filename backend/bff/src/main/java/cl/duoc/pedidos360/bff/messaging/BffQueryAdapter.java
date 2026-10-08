@@ -1,5 +1,6 @@
 package cl.duoc.pedidos360.bff.messaging;
 
+import java.time.Duration;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
@@ -98,18 +99,20 @@ public class BffQueryAdapter {
                 java.time.Instant.now());
         CompletableFuture<byte[]> espera = correlaciones.registrar(plan.correlationId());
         long inicio = System.nanoTime();
-        long presupuesto = properties.deadline().toNanos();
         try {
-            long consumido = publicador.publicarConMedicion(plan.envelope(), plan.correlationId());
+            publicador.publicarConMedicion(plan.envelope(), plan.correlationId());
             // El deadline es absoluto: la espera de la respuesta recibe solo lo que queda del
             // presupuesto, no un plazo nuevo. Antes se sumaban confirm (3 s) + espera (5 s).
-            long restante = presupuesto - consumido;
+            long restante = Duration.between(java.time.Instant.now(), plan.envelope().expiresAt()).toNanos();
             if (restante <= 0) throw new TimeoutException("presupuesto agotado en la publicacion");
             byte[] cuerpo = espera.get(restante, TimeUnit.NANOSECONDS);
             return resolver(plan, cuerpo, System.nanoTime() - inicio);
         } catch (QueryUnavailableException sinBroker) {
             correlaciones.descartar(plan.correlationId());
             throw sinBroker;
+        } catch (QueryTimeoutException vencido) {
+            correlaciones.descartar(plan.correlationId());
+            throw vencido;
         } catch (TimeoutException vencido) {
             correlaciones.descartar(plan.correlationId());
             log.warn("Consulta domain={} correlationId={} presupuesto de {} ms agotado", domain,

@@ -94,6 +94,5 @@ pedidos360:
     max-body-bytes: 262144
     actor:
       emisor: ${ENTRA_TENANT_ID:}
-      clave-id: ${PEDIDOS360_ACTOR_KEY_ID:}
-      secreto: ${PEDIDOS360_ACTOR_SECRET:}
+      public-jwks: ${PEDIDOS360_ACTOR_PUBLIC_JWKS:}
       tolerancia-reloj: ${PEDIDOS360_ACTOR_CLOCK_SKEW:5s}

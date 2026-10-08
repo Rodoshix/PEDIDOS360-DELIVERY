@@ -98,7 +98,8 @@ pedidos360:
       emisor: ${ENTRA_TENANT_ID:}
       # Clave de firma del contexto de actor: nunca un valor por defecto ni versionado en Git.
       clave-id: ${PEDIDOS360_ACTOR_KEY_ID:}
-      secreto: ${PEDIDOS360_ACTOR_SECRET:}
+      private-jwk: ${PEDIDOS360_ACTOR_PRIVATE_JWK:}
+      public-jwks: ${PEDIDOS360_ACTOR_PUBLIC_JWKS:}
       tolerancia-reloj: ${PEDIDOS360_ACTOR_CLOCK_SKEW:5s}
   bff:
     actor:

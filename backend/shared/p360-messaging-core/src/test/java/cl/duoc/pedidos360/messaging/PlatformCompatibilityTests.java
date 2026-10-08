@@ -1,5 +1,7 @@
 package cl.duoc.pedidos360.messaging;
 
+import cl.duoc.pedidos360.messaging.fixture.FixtureActorKeys;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -69,7 +71,6 @@ import cl.duoc.pedidos360.messaging.relay.QueryConsumerRecovery;
         "pedidos360.messaging.routing.pago-base=pago.consultar",
         "pedidos360.messaging.actor.emisor=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
         "pedidos360.messaging.actor.clave-id=11111111-2222-3333-4444-555555555555",
-        "pedidos360.messaging.actor.secreto=clave-de-prueba-con-al-menos-32-bytes",
         "pedidos360.messaging.deadline=5s",
         "pedidos360.messaging.actor-ttl=4s",
         "pedidos360.messaging.retry-delay=1s",
@@ -79,6 +80,11 @@ import cl.duoc.pedidos360.messaging.relay.QueryConsumerRecovery;
         "spring.rabbitmq.publisher-returns=true",
         "spring.rabbitmq.virtual-host=/"})
 class PlatformCompatibilityTests {
+    @org.springframework.test.context.DynamicPropertySource
+    static void actorKeys(org.springframework.test.context.DynamicPropertyRegistry p) {
+        p.add("pedidos360.messaging.actor.public-jwks", FixtureActorKeys::publicJwks);
+    }
+
 
     static final String CLAVE_ID = "11111111-2222-3333-4444-555555555555";
     static final String TENANT = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";

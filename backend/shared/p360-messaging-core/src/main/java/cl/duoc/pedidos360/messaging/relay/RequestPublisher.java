@@ -64,6 +64,7 @@ public final class RequestPublisher {
             throw new IllegalArgumentException("correlationId requerido");
         if (!properties.queues().responses().equals(replyToPermitido()))
             throw new QueryUnavailableException("el destino de respuesta no esta autorizado", null);
+        requireBudget(envelope);
         MessageProperties metadatos = new MessageProperties();
         metadatos.setMessageId(envelope.messageId().toString());
         metadatos.setCorrelationId(correlationId);
@@ -77,14 +78,23 @@ public final class RequestPublisher {
         var correlacion = new CorrelationData(correlationId);
         long inicio = System.nanoTime();
         try {
+            byte[] cuerpo = contexto.escribir(envelope);
+            requireBudget(envelope);
             rabbit.send(properties.exchanges().queries(), envelope.operacion(),
-                    new Message(contexto.escribir(envelope), metadatos), correlacion);
+                    new Message(cuerpo, metadatos), correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
-                    .get(properties.confirmTimeout().toMillis(), TimeUnit.MILLISECONDS);
+                    .get(remainingNanos(envelope), TimeUnit.NANOSECONDS);
             if (!confirmacion.ack()) throw new QueryUnavailableException("el broker rechazo la publicacion", null);
             if (correlacion.getReturned() != null)
                 throw new QueryUnavailableException("la publicacion volvio sin ruta disponible", null);
+            requireBudget(envelope);
             return System.nanoTime() - inicio;
+        } catch (QueryTimeoutException timeout) {
+            throw timeout;
+        } catch (java.util.concurrent.TimeoutException timeout) {
+            if (envelope.vencido(java.time.Instant.now()))
+                throw new QueryTimeoutException("plazo de publicación agotado");
+            throw new QueryUnavailableException("confirm de publicación incierto", timeout);
         } catch (QueryUnavailableException yaClasificado) {
             throw yaClasificado;
         } catch (InterruptedException interrumpido) {
@@ -94,6 +104,14 @@ public final class RequestPublisher {
             throw new QueryUnavailableException("no fue posible publicar la consulta", fallo);
         }
     }
+
+    private long remainingNanos(RequestEnvelope request) {
+        long remaining = java.time.Duration.between(java.time.Instant.now(), request.expiresAt()).toNanos();
+        if (remaining <= 0) throw new QueryTimeoutException("plazo de publicación agotado");
+        return Math.min(remaining, properties.confirmTimeout().toNanos());
+    }
+
+    private void requireBudget(RequestEnvelope request) { remainingNanos(request); }
 
     /** Unico destino de respuesta autorizado: la cola tecnica desde configuracion. */
     public String replyToPermitido() {

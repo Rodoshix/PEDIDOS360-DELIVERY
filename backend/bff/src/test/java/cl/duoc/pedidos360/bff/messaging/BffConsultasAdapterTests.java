@@ -1,5 +1,7 @@
 package cl.duoc.pedidos360.bff.messaging;
 
+import cl.duoc.pedidos360.messaging.fixture.FixtureActorKeys;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -86,7 +88,6 @@ import tools.jackson.databind.json.JsonMapper;
         "pedidos360.messaging.routing.pago-base=pago.consultar",
         "pedidos360.messaging.actor.emisor=" + EntraTestTokens.TENANT,
         "pedidos360.messaging.actor.clave-id=" + BffConsultasAdapterTests.CLAVE_ID,
-        "pedidos360.messaging.actor.secreto=clave-de-prueba-con-al-menos-32-bytes",
         "pedidos360.messaging.deadline=5s",
         "pedidos360.messaging.actor-ttl=4s",
         "pedidos360.messaging.retry-delay=1s",
@@ -101,6 +102,12 @@ import tools.jackson.databind.json.JsonMapper;
         "spring.rabbitmq.template.mandatory=true",
         "spring.rabbitmq.virtual-host=/"})
 class BffConsultasAdapterTests {
+    @org.springframework.test.context.DynamicPropertySource
+    static void actorKeys(org.springframework.test.context.DynamicPropertyRegistry p) {
+        p.add("pedidos360.messaging.actor.public-jwks", FixtureActorKeys::publicJwks);
+        p.add("pedidos360.messaging.actor.private-jwk", FixtureActorKeys::privateJwk);
+    }
+
 
     static final String CLAVE_ID = "11111111-2222-3333-4444-555555555555";
     static final String COLA_USUARIOS = "p360.usuarios.consultas.q";
@@ -356,6 +363,21 @@ class BffConsultasAdapterTests {
         assertThat(correlaciones.enVuelo()).isZero();
         // La cola queda limpia: no se acumulan respuestas huerfanas.
         assertThat(rabbit.receive(RESPUESTAS, 300)).isNull();
+    }
+
+    @Test
+    void vencimientoDurantePublicacionTambienLimpiaCorrelacion() {
+        var publisher = org.mockito.Mockito.mock(RequestPublisher.class);
+        org.mockito.Mockito.when(publisher.publicarConMedicion(org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.anyString())).thenThrow(new QueryTimeoutException("fixture"));
+        var adapter = new BffQueryAdapter(new RequestFactory(properties, actores), publisher, correlaciones,
+                contexto, new ResponseSchema(), properties);
+        var operation = org.mockito.Mockito.mock(QueryInvoker.class);
+        org.mockito.Mockito.when(operation.operacion()).thenReturn("usuario.consultar-actual.v1");
+        adapter.registrar(Domain.USUARIOS, operation);
+        assertThatThrownBy(() -> adapter.ejecutar(Domain.USUARIOS,
+                JsonMapper.builder().build().createObjectNode(), token())).isInstanceOf(QueryTimeoutException.class);
+        assertThat(correlaciones.enVuelo()).isZero();
     }
 
     /**

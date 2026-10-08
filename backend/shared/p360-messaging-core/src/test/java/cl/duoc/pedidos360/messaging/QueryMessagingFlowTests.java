@@ -1,5 +1,7 @@
 package cl.duoc.pedidos360.messaging;
 
+import cl.duoc.pedidos360.messaging.fixture.FixtureActorKeys;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -84,7 +86,6 @@ import tools.jackson.databind.json.JsonMapper;
         "pedidos360.messaging.routing.pago-base=pago.consultar",
         "pedidos360.messaging.actor.emisor=" + QueryMessagingFlowTests.TENANT,
         "pedidos360.messaging.actor.clave-id=" + QueryMessagingFlowTests.CLAVE_ID,
-        "pedidos360.messaging.actor.secreto=clave-de-prueba-con-al-menos-32-bytes",
         "pedidos360.messaging.actor.roles-permitidos=CLIENTE,ADMIN",
         "pedidos360.messaging.deadline=5s",
         "pedidos360.messaging.actor-ttl=4s",
@@ -96,6 +97,11 @@ import tools.jackson.databind.json.JsonMapper;
         "spring.rabbitmq.template.mandatory=true",
         "spring.rabbitmq.virtual-host=/"})
 class QueryMessagingFlowTests {
+    @org.springframework.test.context.DynamicPropertySource
+    static void actorKeys(org.springframework.test.context.DynamicPropertyRegistry p) {
+        p.add("pedidos360.messaging.actor.public-jwks", FixtureActorKeys::publicJwks);
+    }
+
 
     static final String TENANT = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
     static final String CLAVE_ID = "11111111-2222-3333-4444-555555555555";
@@ -221,7 +227,7 @@ class QueryMessagingFlowTests {
     }
 
     private RequestEnvelope envelope(Instant emision, Duration vigencia) {
-        String sobre = firmante.emitir(new ActorContext(UUID.fromString(TENANT),
+        String sobre = FixtureActorKeys.signer().emitir(new ActorContext(UUID.fromString(TENANT),
                 UUID.fromString("12345678-1234-1234-1234-123456789012"), java.util.Set.of("CLIENTE"),
                 java.util.Set.of("access_as_user"), emision, emision.plus(vigencia), COLA,
                 UUID.fromString(CLAVE_ID)), emision.plus(properties.deadline()));
@@ -235,7 +241,7 @@ class QueryMessagingFlowTests {
      */
     private RequestEnvelope envelopeVencido() {
         Instant emision = Instant.now().minus(properties.deadline().plusSeconds(1));
-        String sobre = firmante.emitir(new ActorContext(UUID.fromString(TENANT),
+        String sobre = FixtureActorKeys.signer().emitir(new ActorContext(UUID.fromString(TENANT),
                 UUID.fromString("12345678-1234-1234-1234-123456789012"), java.util.Set.of("CLIENTE"),
                 java.util.Set.of("access_as_user"), emision, emision.plus(Duration.ofMinutes(5)), COLA,
                 UUID.fromString(CLAVE_ID)), emision.plus(Duration.ofMinutes(5)));
@@ -247,7 +253,7 @@ class QueryMessagingFlowTests {
     /** Sobre firmado con la clave y emisor correctos, pero con otro tenant emisor. */
     private RequestEnvelope envelopeConEmisorAjeno() {
         Instant ahora = Instant.now();
-        String sobre = firmante.emitir(new ActorContext(UUID.fromString("99999999-bbbb-cccc-dddd-eeeeeeeeeeee"),
+        String sobre = FixtureActorKeys.signer().emitir(new ActorContext(UUID.fromString("99999999-bbbb-cccc-dddd-eeeeeeeeeeee"),
                 UUID.fromString("12345678-1234-1234-1234-123456789012"), java.util.Set.of("CLIENTE"),
                 java.util.Set.of("access_as_user"), ahora, ahora.plusSeconds(4), COLA, UUID.fromString(CLAVE_ID)),
                 ahora.plus(properties.deadline()));
@@ -262,7 +268,7 @@ class QueryMessagingFlowTests {
      */
     private RequestEnvelope envelopeConRolImprocedente() {
         Instant ahora = Instant.now();
-        String sobre = firmante.emitir(new ActorContext(UUID.fromString(TENANT),
+        String sobre = FixtureActorKeys.signer().emitir(new ActorContext(UUID.fromString(TENANT),
                 UUID.fromString("12345678-1234-1234-1234-123456789012"), java.util.Set.of("REPARTIDOR"),
                 java.util.Set.of("access_as_user"), ahora, ahora.plusSeconds(4), COLA, UUID.fromString(CLAVE_ID)),
                 ahora.plus(properties.deadline()));
@@ -393,6 +399,56 @@ class QueryMessagingFlowTests {
         // retry, que es la que agota el intento unico.
         assertThat((int) enDlq.getMessageProperties().getRetryCount()).isEqualTo(1);
         assertThat((String) enDlq.getMessageProperties().getHeader("destino")).isEqualTo("dlq");
+    }
+
+    @Test
+    void respuestaDeNegocioReturnedEnSegundoIntentoVaADlqSinSegundoRetry() throws Exception {
+        detenerListener();
+        RequestEnvelope envelope = envelope(Instant.now(), Duration.ofSeconds(4));
+        resultado.fallo.set(QueryBusinessException.prohibido("fixture"));
+        admin.deleteQueue(RESPUESTAS); // Broker real devuelve mandatory por destino inexistente.
+        try {
+            Channel channel = mock(Channel.class);
+            consumer.consumir(mensaje(envelope, "corr-business-return", 1), channel);
+            verify(channel).basicAck(7, false);
+            assertThat(rabbit.receive(RETRY, 300)).isNull();
+            Message diagnostic = recibir(DLQ);
+            assertThat(diagnostic.getMessageProperties().getRetryCount()).isEqualTo(1);
+            assertThat(diagnostic.getMessageProperties().getMessageId()).isEqualTo(envelope.messageId().toString());
+        } finally {
+            admin.declareQueue(new org.springframework.amqp.core.Queue(RESPUESTAS, true));
+        }
+    }
+
+    @Test
+    void deadlineDuranteProcessorSoloPublicaDiagnosticoDlqConPlazoOriginal() throws Exception {
+        detenerListener();
+        Instant issued = Instant.now();
+        Instant deadline = issued.plusSeconds(1);
+        var actor = new ActorContext(UUID.fromString(TENANT), UUID.randomUUID(), java.util.Set.of("CLIENTE"),
+                java.util.Set.of("access_as_user"), issued, deadline, COLA, UUID.fromString(CLAVE_ID));
+        var request = RequestEnvelope.crear(UUID.randomUUID(), OPERACION,
+                JsonMapper.builder().build().createObjectNode(), FixtureActorKeys.signer().emitir(actor, deadline), issued, deadline);
+        var invocations = new AtomicInteger();
+        QueryProcessor slow = (a, r) -> {
+            invocations.incrementAndGet();
+            try { Thread.sleep(1200); }
+            catch (InterruptedException interrupted) { Thread.currentThread().interrupt(); throw new IllegalStateException(interrupted); }
+            return JsonMapper.builder().build().createObjectNode();
+        };
+        var replies = new cl.duoc.pedidos360.messaging.relay.QueryReplyPublisher(rabbit, contexto, properties);
+        var handoff = new cl.duoc.pedidos360.messaging.relay.HandoffPublisher(rabbit, contexto, properties, consumer.topology());
+        var failures = new cl.duoc.pedidos360.messaging.relay.QueryFailureHandler(handoff, replies, properties, consumer.topology());
+        var isolated = new QueryConsumer(contexto, firmante, slow, replies, failures, consumer.topology(), TENANT,
+                null, (id, corr, destination, cause) -> contadorSinConfirmar.incrementAndGet(), properties.maxBodyBytes());
+        Channel channel = mock(Channel.class);
+        isolated.consumir(mensaje(request, "corr-processing-expiry", 0), channel);
+        assertThat(invocations.get()).isEqualTo(1);
+        verify(channel).basicAck(7, false);
+        Message diagnostic = recibir(DLQ);
+        assertThat(contexto.leer(diagnostic.getBody(), properties.maxBodyBytes()).expiresAt()).isEqualTo(deadline);
+        assertThat(rabbit.receive(RESPUESTAS, 300)).isNull();
+        assertThat(rabbit.receive(RETRY, 300)).isNull();
     }
 
     @Test

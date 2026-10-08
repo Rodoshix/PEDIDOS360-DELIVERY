@@ -19,6 +19,7 @@ import java.util.UUID;
  *       request. El verificador tambien lo contrasta con el reloj actual.</li>
  *   <li>{@code audiencia} es la cola destino: un sobre emitido para un dominio no es aceptable en
  *       otro. La verificacion de destino es obligatoria en el consumidor.</li>
+ *   <li>{@code keyId} es metadata verificada de la cabecera JWS protegida, no un claim de identidad.</li>
  *   <li>{@code roles} y {@code scopes} son autorizacion, no pertenencia: el consumidor debe volver
  *       a aplicar sus propias reglas de tenant, pertenencia y perfil activo.</li>
  * </ul>

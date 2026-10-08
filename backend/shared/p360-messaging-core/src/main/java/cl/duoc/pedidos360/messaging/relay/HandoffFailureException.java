@@ -7,6 +7,9 @@ package cl.duoc.pedidos360.messaging.relay;
  * respuesta correlacionada. Se aplica recuperacion acotada y nunca {@code requeue=true}.
  */
 public class HandoffFailureException extends RuntimeException {
+    /** Excepción de transporte/espera: no sabemos si el broker aceptó la publicación. */
+    public boolean resultadoIncierto() { return getCause() != null; }
+
     public HandoffFailureException(String detalle) {
         super(detalle);
     }

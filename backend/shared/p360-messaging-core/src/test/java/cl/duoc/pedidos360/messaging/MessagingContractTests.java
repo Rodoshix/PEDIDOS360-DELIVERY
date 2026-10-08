@@ -14,8 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import cl.duoc.pedidos360.messaging.fixture.FixtureActorKeys;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.Queue;
@@ -63,20 +62,7 @@ class MessagingContractTests {
                 Duration.ofMillis(200), false, 1024, 262_144);
     }
 
-    static SigningKeyProvider claves() {
-        var firma = new SigningKey(CLAVE, MATERIAL);
-        return new SigningKeyProvider() {
-            @Override
-            public Optional<SigningKey> claveParaFirmar() {
-                return Optional.of(firma);
-            }
-
-            @Override
-            public Optional<SigningKey> clavePorId(UUID keyId) {
-                return firma.keyId().equals(keyId) ? Optional.of(firma) : Optional.empty();
-            }
-        };
-    }
+    static SigningKeyProvider claves() { return FixtureActorKeys.provider(); }
 
     static ActorContextSigner firmante() {
         return new ActorContextSigner(claves(), RELOJ, Duration.ofSeconds(5));
@@ -275,7 +261,11 @@ class MessagingContractTests {
                 List.of("p360.pagos.consultas.q"), AHORA.plusSeconds(5)))
                 .isInstanceOf(ActorContextException.class).extracting("reason")
                 .isEqualTo(ActorContextException.Reason.EMISOR_INVALIDO);
-        String manipulado = sobre.substring(0, sobre.length() - 2) + "aa";
+        String[] segments = sobre.split("\\.");
+        byte[] signature = java.util.Base64.getUrlDecoder().decode(segments[2]);
+        signature[0] ^= 1;
+        String manipulado = segments[0] + "." + segments[1] + "."
+                + java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(signature);
         assertThatThrownBy(() -> firma.verificar(manipulado, TENANT, List.of("p360.pagos.consultas.q"),
                 AHORA.plusSeconds(5))).isInstanceOf(ActorContextException.class).extracting("reason")
                 .isEqualTo(ActorContextException.Reason.FIRMA_INVALIDA);
@@ -331,7 +321,7 @@ class MessagingContractTests {
     @Test
     void rolesConCaracteresFueraDeContratoSeRechazanAunqueLaFirmaSeaValida() {
         String payload = sobreManipuladoConRoles(List.of("CLIENTE'; DROP TABLE"));
-        assertThatThrownBy(() -> firmante().verificar("p360act1." + payload + "." + firmaDe(payload), TENANT,
+        assertThatThrownBy(() -> firmante().verificar(firmaDe(payload), TENANT,
                 List.of("p360.pagos.consultas.q"), AHORA.plusSeconds(5)))
                 .isInstanceOf(ActorContextException.class).extracting("reason")
                 .isEqualTo(ActorContextException.Reason.FORMATO_INVALIDO);
@@ -366,7 +356,7 @@ class MessagingContractTests {
 
     private String sobreManipuladoConRoles(List<String> roles) {
         var claims = new LinkedHashMap<String, Object>();
-        claims.put("v", "p360act1");
+        claims.put("v", "p360act2");
         claims.put("tenantId", TENANT);
         claims.put("sujetoId", "12345678-1234-1234-1234-123456789012");
         claims.put("roles", roles);
@@ -374,19 +364,12 @@ class MessagingContractTests {
         claims.put("emitidoEn", AHORA.toString());
         claims.put("expiraEn", AHORA.plusSeconds(4).toString());
         claims.put("audiencia", "p360.pagos.consultas.q");
-        claims.put("keyId", CLAVE.toString());
         return java.util.Base64.getUrlEncoder().withoutPadding()
                 .encodeToString(json.writeValueAsBytes(claims));
     }
 
     private String firmaDe(String payload) {
-        try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(MATERIAL, "HmacSHA256"));
-            return java.util.Base64.getUrlEncoder().withoutPadding()
-                    .encodeToString(mac.doFinal(("p360act1." + payload).getBytes(StandardCharsets.US_ASCII)));
-        } catch (java.security.GeneralSecurityException imposible) {
-            throw new IllegalStateException(imposible);
-        }
+        return FixtureActorKeys.signRaw("{\"alg\":\"ES256\",\"typ\":\"p360act2\",\"kid\":\"" + CLAVE + "\"}",
+                new String(java.util.Base64.getUrlDecoder().decode(payload), StandardCharsets.UTF_8));
     }
 }

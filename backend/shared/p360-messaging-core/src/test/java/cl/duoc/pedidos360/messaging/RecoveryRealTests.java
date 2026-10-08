@@ -1,5 +1,7 @@
 package cl.duoc.pedidos360.messaging;
 
+import cl.duoc.pedidos360.messaging.fixture.FixtureActorKeys;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -99,7 +101,6 @@ import tools.jackson.databind.json.JsonMapper;
         "pedidos360.messaging.routing.pago-base=pago.consultar",
         "pedidos360.messaging.actor.emisor=" + RecoveryRealTests.TENANT,
         "pedidos360.messaging.actor.clave-id=" + RecoveryRealTests.CLAVE_ID,
-        "pedidos360.messaging.actor.secreto=clave-de-prueba-con-al-menos-32-bytes",
         "pedidos360.messaging.actor.roles-permitidos=CLIENTE,ADMIN",
         "pedidos360.messaging.deadline=5s",
         "pedidos360.messaging.actor-ttl=4s",
@@ -111,6 +112,11 @@ import tools.jackson.databind.json.JsonMapper;
         "spring.rabbitmq.template.mandatory=true",
         "spring.rabbitmq.virtual-host=/"})
 class RecoveryRealTests {
+    @org.springframework.test.context.DynamicPropertySource
+    static void actorKeys(org.springframework.test.context.DynamicPropertyRegistry p) {
+        p.add("pedidos360.messaging.actor.public-jwks", FixtureActorKeys::publicJwks);
+    }
+
 
     static final String TENANT = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
     static final String CLAVE_ID = "11111111-2222-3333-4444-555555555555";
@@ -301,7 +307,7 @@ class RecoveryRealTests {
 
     private RequestEnvelope envelope() {
         Instant ahora = Instant.now();
-        String sobre = firmante.emitir(new ActorContext(UUID.fromString(TENANT),
+        String sobre = FixtureActorKeys.signer().emitir(new ActorContext(UUID.fromString(TENANT),
                 UUID.fromString("12345678-1234-1234-1234-123456789012"), java.util.Set.of("CLIENTE"),
                 java.util.Set.of("access_as_user"), ahora, ahora.plusSeconds(4), COLA, UUID.fromString(CLAVE_ID)),
                 ahora.plus(properties.deadline()));
