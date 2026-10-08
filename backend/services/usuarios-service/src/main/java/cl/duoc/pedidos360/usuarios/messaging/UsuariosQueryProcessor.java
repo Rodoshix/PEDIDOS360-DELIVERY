@@ -16,10 +16,16 @@ import tools.jackson.databind.json.JsonMapper;
 public final class UsuariosQueryProcessor implements QueryProcessor {
     private final UsuarioService usuarios;
     private final JsonMapper json;
+    private final UsuariosIdentityProofSigner pruebas;
 
     public UsuariosQueryProcessor(UsuarioService usuarios, JsonMapper json) {
+        this(usuarios, json, null);
+    }
+
+    public UsuariosQueryProcessor(UsuarioService usuarios, JsonMapper json, UsuariosIdentityProofSigner pruebas) {
         this.usuarios = usuarios;
         this.json = json;
+        this.pruebas = pruebas;
     }
 
     @Override
@@ -33,6 +39,10 @@ public final class UsuariosQueryProcessor implements QueryProcessor {
                 .map(IdentidadUsuario.Rol::valueOf).collect(Collectors.toSet());
         var identidad = new IdentidadUsuario(actor.tenantId(), actor.sujetoId(), roles);
         try {
+            if (pruebas != null) {
+                var perfil = usuarios.resolverActual(identidad);
+                return json.valueToTree(UsuarioQueryResponse.desde(perfil.perfil(), pruebas.emitir(actor, request, perfil)));
+            }
             return json.valueToTree(usuarios.obtenerActual(identidad));
         } catch (ApiException fallo) {
             throw switch (fallo.getStatus()) {

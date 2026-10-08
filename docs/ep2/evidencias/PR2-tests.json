@@ -1,0 +1,3230 @@
+{
+  "base": "94777e48bfa4e954269c22669c45feec84489069",
+  "auditedHead": "d69f80015070b307ff9a81cd73499937082fdf9d",
+  "implementationCommit": "d36943cbe792380bb3536bec98cc40110ed45df8",
+  "generatedAtUtc": "2026-10-08T20:42:55.884169+00:00",
+  "modules": [
+    {
+      "module": "backend/shared/p360-messaging-core",
+      "command": "mvn -B -ntp install",
+      "counts": {
+        "tests": 197,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logSha256": "8d90136d112f42655cca0b2f96c944f7ae7898e3a3ecdb266e7d20d91af83c71",
+      "suites": [
+        {
+          "class": "cl.duoc.pedidos360.messaging.ActorSecurityTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:08.774134+00:00",
+          "seconds": "2.614",
+          "reportSha256": "ef73d50b6bc0541c951e08f6c2da790e02859efde0ff0449ade8055a6a64c41c",
+          "counts": {
+            "tests": 29,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "activeMissingKeysFailsClosedAndDisabledNeedsNoKeys",
+              "status": "PASS"
+            },
+            {
+              "name": "publicOnlyConsumerVerifiesButCannotIssueAndKidIsNotAnIdentityClaim",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongAlgorithmsAreRejected(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "validRedeliveryAllowedUntilExpiryButCrossAudienceAndExpiredReplayRejected",
+              "status": "PASS"
+            },
+            {
+              "name": "duplicateHeaderMalformedSegmentsAndLegacyHmacAreRejected",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidClaimsAreRejectedEvenWithValidSignature(String)[10]",
+              "status": "PASS"
+            },
+            {
+              "name": "unknownKidWrongPublicKeyAndRetiredKeysAreRejected",
+              "status": "PASS"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "allUnexpectedHeadersIncludingRemoteOrEmbeddedKeysAreRejected(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "malformedDuplicateRevokedAndWrongCurveConfigurationFailsClosed",
+              "status": "PASS"
+            },
+            {
+              "name": "payloadTamperingWithoutResigningIsRejected",
+              "status": "PASS"
+            },
+            {
+              "name": "privateKeysAreRejectedInServiceAndBffRequiresMatchingPair",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.ClasificacionFallosTest",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:08.923484+00:00",
+          "seconds": "0.18",
+          "reportSha256": "b8e8ba5d364982d03387c7d4134aa23a0b8d6cfa986df7b12360c7311d4f9ddd",
+          "counts": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "unFalloTransitorioVaAlRetry",
+              "status": "PASS"
+            },
+            {
+              "name": "unFalloDefinitivoNoSeReintenta",
+              "status": "PASS"
+            },
+            {
+              "name": "unErrorDeNegocioEsperadoNoSeReintentaYSeResponde",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.IdentityProofTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:09.326188+00:00",
+          "seconds": "0.405",
+          "reportSha256": "1752af30edc8b4af71bc37f64003c41d64689d50226b92f5b68d085bafde0bed",
+          "counts": {
+            "tests": 48,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "rejectsUnknownKidWrongTypeDuplicateHeaderAndNonCanonicalKid",
+              "status": "PASS"
+            },
+            {
+              "name": "configurationRejectsPrivateDuplicateMissingWrongCurveAndActorKeyReuse",
+              "status": "PASS"
+            },
+            {
+              "name": "conservativeMarginRejectsExactBoundaryWithoutExpiryGraceAndAllowsReadReplay",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAlternateAlgorithms(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAlternateAlgorithms(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAlternateAlgorithms(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAlternateAlgorithms(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAlternateAlgorithms(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAlternateAlgorithms(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[10]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[11]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[12]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[13]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[14]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[15]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[16]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[17]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[18]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[19]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[20]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[21]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[22]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsInvalidClaimsWithCorrectSignature(String)[23]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsBoundsPaddingSegmentsAndWrongSignatureLength",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsNonCanonicalJson(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsNonCanonicalJson(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsNonCanonicalJson(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsNonCanonicalJson(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsNonCanonicalJson(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "bindsTenantOidOriginalRequestAndDeadline",
+              "status": "PASS"
+            },
+            {
+              "name": "publicOnlyVerifiesAndPreservesPositiveLongWithoutRolesOrPii",
+              "status": "PASS"
+            },
+            {
+              "name": "rotationAndRemovalUnknownAndRevokedKeysFailClosed",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsSignatureMutationAndWrongPublicKey",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAdditionalProtectedHeaders(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAdditionalProtectedHeaders(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAdditionalProtectedHeaders(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAdditionalProtectedHeaders(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAdditionalProtectedHeaders(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "rejectsAdditionalProtectedHeaders(String)[6]",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.MessagingContractTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:09.410532+00:00",
+          "seconds": "0.075",
+          "reportSha256": "0192dbe30973aef7270bc4ce872f4ce550bac01493bcb3e40c538a934b1c9afc",
+          "counts": {
+            "tests": 17,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "vigenciaDelActorNoPuedeSuperarElPlazoDelRequest",
+              "status": "PASS"
+            },
+            {
+              "name": "respuestaFueraDeContratoSeDescarta",
+              "status": "PASS"
+            },
+            {
+              "name": "messageIdEsEstableYUnRetryNoRenuevaElPlazo",
+              "status": "PASS"
+            },
+            {
+              "name": "payloadDebeSerObjetoYElArregloSeRechaza",
+              "status": "PASS"
+            },
+            {
+              "name": "lasColasDelDominioNoDeclaranArgumentosQuePertenecenALasPoliciesDePlataforma",
+              "status": "PASS"
+            },
+            {
+              "name": "sobreConDestinoAjenoEmisorAjenoOFirmaManipuladaSeRechaza",
+              "status": "PASS"
+            },
+            {
+              "name": "topologiaDelDominioRespetaElInventarioAprobado",
+              "status": "PASS"
+            },
+            {
+              "name": "politicaAprobadaEsUnSoloRetryCortoConPlazoDeCincoSegundos",
+              "status": "PASS"
+            },
+            {
+              "name": "configuracionIncompletaNoSeConsideraValida",
+              "status": "PASS"
+            },
+            {
+              "name": "envelopeRechazaInstanteSinUtcJsonInvalidoYExcesoDeTamano",
+              "status": "PASS"
+            },
+            {
+              "name": "sobreVencidoOConVigenciaPosteriorAlRequestSeRechaza",
+              "status": "PASS"
+            },
+            {
+              "name": "respuestaExitosaYDeErrorViajanConCorrelacionYReferenciaAlRequest",
+              "status": "PASS"
+            },
+            {
+              "name": "envelopeViajaConOchoCamposEnOrdenYSeReleeIdentico",
+              "status": "PASS"
+            },
+            {
+              "name": "emisorSinClaveNoFirmaNiVerifica",
+              "status": "PASS"
+            },
+            {
+              "name": "sobreDeActorSeFirmaYVerificaConDestinoEmisorYPlazo",
+              "status": "PASS"
+            },
+            {
+              "name": "envelopeRechazaCampoExtraFaltanteDuplicadoYNoCanonico",
+              "status": "PASS"
+            },
+            {
+              "name": "rolesConCaracteresFueraDeContratoSeRechazanAunqueLaFirmaSeaValida",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.PlatformCompatibilityTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:22.950965+00:00",
+          "seconds": "13.531",
+          "reportSha256": "09298514fb9862288c2e262ba53a2de558706ff3fd27993953b8bfe71594936b",
+          "counts": {
+            "tests": 4,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "laTopologiaDeLaAplicacionConservaNombresExchangesYBindingsDelInventario",
+              "status": "PASS"
+            },
+            {
+              "name": "laDeclaracionDeLaAplicacionNoProvocaPreconditionFailedConLasPoliciesDeLaPlataforma",
+              "status": "PASS"
+            },
+            {
+              "name": "elRecoveryUsaElIdentificadorDeListenerDeclaradoEnLaAnotacion",
+              "status": "PASS"
+            },
+            {
+              "name": "elBrokerRechazaArgumentosIncompatiblesDeModoQueLaPruebaEsSensible",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.QueryMessagingFlowTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:35.779137+00:00",
+          "seconds": "12.818",
+          "reportSha256": "0406ab53653733bb0d09e81cd916948c4a9761244726854d6d86c939a25433f3",
+          "counts": {
+            "tests": 22,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "actorConRolImprocedenteVaADlqSinEjecutarLaOperacion",
+              "status": "PASS"
+            },
+            {
+              "name": "actorDeOtroEmisorSeRechazaSinEjecutar",
+              "status": "PASS"
+            },
+            {
+              "name": "brokerCaidoNoConfirmaElRequest",
+              "status": "PASS"
+            },
+            {
+              "name": "consultaValidaPublicaRespuestaCorrelacionadaYConfirmaTrasElHandoff",
+              "status": "PASS"
+            },
+            {
+              "name": "consultaVencidaNoSeEjecutaNiSeReintentaYTerminaEnDlq",
+              "status": "PASS"
+            },
+            {
+              "name": "deadlineDuranteProcessorSoloPublicaDiagnosticoDlqConPlazoOriginal",
+              "status": "PASS"
+            },
+            {
+              "name": "elConsumidorDeLaColaFuncionalEstaActivoConAckManual",
+              "status": "PASS"
+            },
+            {
+              "name": "elRetryRealConservaCorrelationIdReplyToYPlazo",
+              "status": "PASS"
+            },
+            {
+              "name": "errorDeNegocioEsperadoSeRespondeCorrelacionadoYSeConfirmaSinRetry",
+              "status": "PASS"
+            },
+            {
+              "name": "falloTransitorioVaAlRetryCortoConservandoMessageIdYPlazo",
+              "status": "PASS"
+            },
+            {
+              "name": "lasColasDelDominioSonDurablesYSinConsumerPropio",
+              "status": "PASS"
+            },
+            {
+              "name": "notFoundSeRespondeCorrelacionadoEnUnDominioDeRecursoConcreto",
+              "status": "PASS"
+            },
+            {
+              "name": "nuncaSeUsaNackConRequeueComoRetryNormal",
+              "status": "PASS"
+            },
+            {
+              "name": "operacionDeOtroDominioSeRechazaSinEjecutar",
+              "status": "PASS"
+            },
+            {
+              "name": "payloadInvalidoVaADlqSinEjecutarLaOperacion",
+              "status": "PASS"
+            },
+            {
+              "name": "respuestaDeNegocioReturnedEnSegundoIntentoVaADlqSinSegundoRetry",
+              "status": "PASS"
+            },
+            {
+              "name": "segundoFalloAgotaElRetryYVaADlq",
+              "status": "PASS"
+            },
+            {
+              "name": "sinBindingLaTransferenciaNoEsAceptableYNoSeConfirma",
+              "status": "PASS"
+            },
+            {
+              "name": "unConflictoSeRespondeCorrelacionadoSinRetryNiDlq",
+              "status": "PASS"
+            },
+            {
+              "name": "unErrorDeNegocioEnLaEntregaDeRetryVuelveAlBffYNoVaADlq",
+              "status": "PASS"
+            },
+            {
+              "name": "unNotFoundConcretoEnLaEntregaDeRetryVuelveAlBffYNoVaADlq",
+              "status": "PASS"
+            },
+            {
+              "name": "unReplyToArbitrarioNoAutorizaLaRespuesta",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.RecoveryRealTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:43.143300+00:00",
+          "seconds": "7.365",
+          "reportSha256": "4e7581ff7743a26d67cc4c136a66fe104cc9490b55ce827a160c6c0712ff1017",
+          "counts": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "handoffNoConfirmadoConservaElOriginalYSeRecuperaConReentregaSinBucleCaliente",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:44.381934+00:00",
+          "seconds": "1.242",
+          "reportSha256": "bf759168684b14f9aeffa477ad2129d25ea580f13568ba2496b6d186347cfeee",
+          "counts": {
+            "tests": 7,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "lasSolicitudesConcurrentesNoSePierdenYNoSolapanCiclos",
+              "status": "PASS"
+            },
+            {
+              "name": "unContainerNuncaRegistradoNoRompeLaSolicitud",
+              "status": "PASS"
+            },
+            {
+              "name": "unaSolicitudDuranteStartingQuedaPendienteYNoSePierde",
+              "status": "PASS"
+            },
+            {
+              "name": "unHandoffSinConfirmarDetieneYReiniciaElListenerTrasElBackoff",
+              "status": "PASS"
+            },
+            {
+              "name": "elContainerFalsoCumpleElContratoQueUsaElCiclo",
+              "status": "PASS"
+            },
+            {
+              "name": "unListenerNoRegistradoReintentaLaDetencionConBackoffYNoGiraEnVacio",
+              "status": "PASS"
+            },
+            {
+              "name": "closeEsTerminalYNoPermiteNuevosCiclos",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.RelayReliabilityTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:45.491018+00:00",
+          "seconds": "1.105",
+          "reportSha256": "026862a5fd9213ad0d3a9db479854b2e78e40200fa9db426256d4f123bf2a1d1",
+          "counts": {
+            "tests": 17,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "expiryDuringSendIsUncertainAndReplyTtlNeverRenewsDeadline",
+              "status": "PASS"
+            },
+            {
+              "name": "deadlineIsRecalculatedForBusinessAndTransientFailures",
+              "status": "PASS"
+            },
+            {
+              "name": "failedBusinessReplyCannotExceedOneRetry(int)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "failedBusinessReplyCannotExceedOneRetry(int)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "failedBusinessReplyCannotExceedOneRetry(int)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "failedBusinessReplyCannotExceedOneRetry(int)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "expiredFunctionalSendsAreNotAttemptedAndDlqHasIndependentConfirm",
+              "status": "PASS"
+            },
+            {
+              "name": "deadlineDuringFailedBusinessPublicationGoesToDlq",
+              "status": "PASS"
+            },
+            {
+              "name": "uncertainPublicationPreservesOriginalWithoutAnotherHandoff",
+              "status": "PASS"
+            },
+            {
+              "name": "expiredDuringProcessorNeverPublishesFunctionalResponseAndAcksOnlyAfterDlq",
+              "status": "PASS"
+            },
+            {
+              "name": "expiryDuringPrecheckDoesNotExecuteProcessor",
+              "status": "PASS"
+            },
+            {
+              "name": "failedDiagnosticHandoffNeverAcksAndInvokesExistingRecovery(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "failedDiagnosticHandoffNeverAcksAndInvokesExistingRecovery(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "failedDiagnosticHandoffNeverAcksAndInvokesExistingRecovery(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "confirmWaitUsesRemainingBudget(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "confirmWaitUsesRemainingBudget(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "confirmWaitUsesRemainingBudget(String)[3]",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:45.564805+00:00",
+          "seconds": "0.082",
+          "reportSha256": "9cad63789711c0086c64d455984382f87ebc148dde15acdb2c04f20f2a19a405",
+          "counts": {
+            "tests": 11,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "conclusiveRejectionRemainsUnavailableRatherThanUncertain(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionRemainsUnavailableRatherThanUncertain(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "wallDeadlineExpiredBeforeSendNeverPublishes",
+              "status": "PASS"
+            },
+            {
+              "name": "exhaustedCallbackBeforeSendNeverPublishes(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "exhaustedCallbackBeforeSendNeverPublishes(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "exhaustedCallbackBeforeSendNeverPublishes(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAfterSendUsesActualBudgetEvidenceAndKeepsUncertainty(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAfterSendUsesActualBudgetEvidenceAndKeepsUncertainty(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAfterSendUsesActualBudgetEvidenceAndKeepsUncertainty(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAfterSendUsesActualBudgetEvidenceAndKeepsUncertainty(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "transportFailureWithLiveBudgetIsNotConvertedToTimeout",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.messaging.SettlementPublicationTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:37:47.075231+00:00",
+          "seconds": "1.494",
+          "reportSha256": "ea9748fa2d3071ca8c3bf43d455f7583460f5ea8104d8bddf90c05a26a27000b",
+          "counts": {
+            "tests": 38,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[10]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[11]",
+              "status": "PASS"
+            },
+            {
+              "name": "conclusiveRejectionAndTransportFailuresHaveExplicitStates(String, String)[12]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAwaitingConfirmIsUncertain(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAwaitingConfirmIsUncertain(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "timeoutAwaitingConfirmIsUncertain(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "settlementNeverReentersBusinessOrPublishesAnAlternative(String, String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "settlementNeverReentersBusinessOrPublishesAnAlternative(String, String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "settlementNeverReentersBusinessOrPublishesAnAlternative(String, String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "settlementNeverReentersBusinessOrPublishesAnAlternative(String, String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "settlementNeverReentersBusinessOrPublishesAnAlternative(String, String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "settlementNeverReentersBusinessOrPublishesAnAlternative(String, String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "settlementNeverReentersBusinessOrPublishesAnAlternative(String, String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "settlementNeverReentersBusinessOrPublishesAnAlternative(String, String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "settlementNeverReentersBusinessOrPublishesAnAlternative(String, String)[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "monotonicExpiryDuringSendPreservesUncertainty",
+              "status": "PASS"
+            },
+            {
+              "name": "expiryDuringSendIsUncertainForEveryFunctionalPublisher(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "expiryDuringSendIsUncertainForEveryFunctionalPublisher(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "expiryDuringSendIsUncertainForEveryFunctionalPublisher(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "monotonicExpiryAfterPositiveConfirmIsExplicitlyConfirmed",
+              "status": "PASS"
+            },
+            {
+              "name": "expiryBeforeSendIsNotSent(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "expiryBeforeSendIsNotSent(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "expiryBeforeSendIsNotSent(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "uncertaintyIsExplicitAndIndependentOfJavaCause",
+              "status": "PASS"
+            },
+            {
+              "name": "monotonicBudgetExpiredBeforeSendIsExplicitlyNotSent",
+              "status": "PASS"
+            },
+            {
+              "name": "programmingErrorsInSettlementAreNotHiddenOrRoutedToFailurePolicy",
+              "status": "PASS"
+            },
+            {
+              "name": "serializationFailureWithCauseIsNotSent(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "serializationFailureWithCauseIsNotSent(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "serializationFailureWithCauseIsNotSent(String)[3]",
+              "status": "PASS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "backend/bff",
+      "command": "mvn -B -ntp test",
+      "counts": {
+        "tests": 139,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logSha256": "e3a1ea9ac756da1f5a9ef6a3bac6916e4d9a6ed95ed40d5210735584cfd04fe9",
+      "suites": [
+        {
+          "class": "cl.duoc.pedidos360.bff.BffSecurityTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:38:52.455904+00:00",
+          "seconds": "6.389",
+          "reportSha256": "a30fbbda7469c351872bd5b3bfa2a196327ddc13812a3ebc249d5ffe28398ae6",
+          "counts": {
+            "tests": 4,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "rutasPrivadasCerradasSinSesion",
+              "status": "PASS"
+            },
+            {
+              "name": "saludPublica",
+              "status": "PASS"
+            },
+            {
+              "name": "noHayFormularioDeLoginNiActuatorAdicional",
+              "status": "PASS"
+            },
+            {
+              "name": "bearerFicticioNoAutentica",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.bff.ConnectionConfigurationTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:38:52.521051+00:00",
+          "seconds": "0.088",
+          "reportSha256": "645a197be241e449ef9d31d23fc00daf71c99ecdd2496ae063f87759252a2b7e",
+          "counts": {
+            "tests": 9,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "aceptaHttpsOLoopback",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaOrigenInseguroOConRuta(String)[8]",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.bff.JwtHttpTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:38:57.479753+00:00",
+          "seconds": "4.957",
+          "reportSha256": "75cbd9982767d219271ea60adb9e280039e4d1289b9aeaa51429bc942544106d",
+          "counts": {
+            "tests": 27,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "pagoExigeClaveYLaConservaEnReintentosSinReintentarAutomaticamente",
+              "status": "PASS"
+            },
+            {
+              "name": "carritoReenviaSoloTokenYCuerpoValidado",
+              "status": "PASS"
+            },
+            {
+              "name": "audienciaDelFrontendNoSirve",
+              "status": "PASS"
+            },
+            {
+              "name": "esperaAcotada",
+              "status": "PASS"
+            },
+            {
+              "name": "datosInvalidosNoLleganAlCatalogo",
+              "status": "PASS"
+            },
+            {
+              "name": "reenviaCreacionActualizacionYBaja",
+              "status": "PASS"
+            },
+            {
+              "name": "pedidosPagosConsultasConRelaySinIdentidadExterna",
+              "status": "PASS"
+            },
+            {
+              "name": "catalogoConsultasSinCredencialesNiCabecerasDelNavegador",
+              "status": "PASS"
+            },
+            {
+              "name": "pedidosPagosPropaganDenegacionSinDetallesNiRedirect",
+              "status": "PASS"
+            },
+            {
+              "name": "escriturasCatalogoNoReintentanNiFiltranErroresUpstream",
+              "status": "PASS"
+            },
+            {
+              "name": "origenAjenoNoLlegaAlServicioYErroresTienenCors",
+              "status": "PASS"
+            },
+            {
+              "name": "tokenValidoAccedeSinCrearSesion",
+              "status": "PASS"
+            },
+            {
+              "name": "preservaErroresControladosSinExponerDetalleInterno",
+              "status": "PASS"
+            },
+            {
+              "name": "pedidosPagosRechazanTokenInvalidoScopeYRol",
+              "status": "PASS"
+            },
+            {
+              "name": "paginaYRechazaRutasNoPermitidas",
+              "status": "PASS"
+            },
+            {
+              "name": "crearPedidoSinPreciosNiIdentidadAportados",
+              "status": "PASS"
+            },
+            {
+              "name": "corsPermiteClaveSoloEnCreacionPagoDesdeOrigenConocido",
+              "status": "PASS"
+            },
+            {
+              "name": "scopeYRolSonObligatorios",
+              "status": "PASS"
+            },
+            {
+              "name": "comercioExigeJwtScopeRolYSanitizaErrores",
+              "status": "PASS"
+            },
+            {
+              "name": "sinTokenNiCabecerasFalsificadasAutentican",
+              "status": "PASS"
+            },
+            {
+              "name": "soloAdminPuedeCambiarEstadoOAprobar",
+              "status": "PASS"
+            },
+            {
+              "name": "preflightSoloDesdeOrigenPermitido",
+              "status": "PASS"
+            },
+            {
+              "name": "corsPermitePatchSoloDesdeOrigenConfigurado",
+              "status": "PASS"
+            },
+            {
+              "name": "administracionRequiereAdminScopeYTokenValidoSinConfiarEnCabeceras",
+              "status": "PASS"
+            },
+            {
+              "name": "noSigueRedirecciones",
+              "status": "PASS"
+            },
+            {
+              "name": "listadoGlobalSoloAdminYComandosRestringidos",
+              "status": "PASS"
+            },
+            {
+              "name": "crudCatalogoAdminReenviaSoloMetodoRutaYCuerpoSinIdentidadDelNavegador",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:31.772304+00:00",
+          "seconds": "34.28",
+          "reportSha256": "b0e5369933d49b8efdade73208f202064b715bfc5b28cc02dfb2ac76ffa5cde5",
+          "counts": {
+            "tests": 13,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "elCierreDelAdaptadorCancelaLasCorrelacionesEnVuelo",
+              "status": "PASS"
+            },
+            {
+              "name": "variosRequestsSimultaneosNoSeCruzan",
+              "status": "PASS"
+            },
+            {
+              "name": "elDeadlineEsTotalYNoSeReiniciaTrasLaPublicacionConfirmada",
+              "status": "PASS"
+            },
+            {
+              "name": "preparesSecondEnvelopeWithSameRootAndShorterExpiryWithoutCallingPagos",
+              "status": "PASS"
+            },
+            {
+              "name": "brokerNoDisponibleSeTraduceEnErrorDeInfraestructura",
+              "status": "PASS"
+            },
+            {
+              "name": "proofTravelsOnRealBrokerAndBffReturnsOnlyHttpProjection",
+              "status": "PASS"
+            },
+            {
+              "name": "unErrorDeNegocio403ViajaComoRespuestaEquivalenteAlHttp",
+              "status": "PASS"
+            },
+            {
+              "name": "unErrorDeNegocio404DeRecursoConcretoViajaComoRespuesta",
+              "status": "PASS"
+            },
+            {
+              "name": "unaRespuestaDuplicadaNoRompeLaCorrelacion",
+              "status": "PASS"
+            },
+            {
+              "name": "requestYRespuestaCorrelacionadaExtremoAExtremo",
+              "status": "PASS"
+            },
+            {
+              "name": "sinServicioQueRespondaElPlazoSeAgotaYSeLimpiaLaCorrelacion",
+              "status": "PASS"
+            },
+            {
+              "name": "elSobreFirmadoNoTransportaElJwtYSeDirigeAlDominio",
+              "status": "PASS"
+            },
+            {
+              "name": "vencimientoDurantePublicacionTambienLimpiaCorrelacion",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:32.460247+00:00",
+          "seconds": "0.695",
+          "reportSha256": "dd6d53d35484334d73a3972884e53c1700fa4de7b8533134831da3a639fe78ed",
+          "counts": {
+            "tests": 43,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "exactVerificationBoundaries(long)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "exactVerificationBoundaries(long)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "exactVerificationBoundaries(long)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "exactVerificationBoundaries(long)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldHasItsActualDtoType(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "terminalStateIsVisibleToConcurrentCallsAfterRollback",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "everyHttpFieldMustBePresent(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "clockChangesWhileLiveKeepOriginalMonotonicSubdeadlineCalculation",
+              "status": "PASS"
+            },
+            {
+              "name": "adapterChecksAgainAfterSuccessfulValidationBeforeReturning(long)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "adapterChecksAgainAfterSuccessfulValidationBeforeReturning(long)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "adapterChecksAgainAfterSuccessfulValidationBeforeReturning(long)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "adapterChecksAgainAfterSuccessfulValidationBeforeReturning(long)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "validProjectionPreservesEightFieldsPrecisionAndNullablePhone(boolean)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "validProjectionPreservesEightFieldsPrecisionAndNullablePhone(boolean)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "observedEffectiveOrGlobalExpiryCannotBeReactivatedOrPlanAnotherQuery(long)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "observedEffectiveOrGlobalExpiryCannotBeReactivatedOrPlanAnotherQuery(long)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedDataAndInvalidProfileAreRejected(String)[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "projectionMustFinishBeforeConservativeAndGlobalLimits(long)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "projectionMustFinishBeforeConservativeAndGlobalLimits(long)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "projectionMustFinishBeforeConservativeAndGlobalLimits(long)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "projectionMustFinishBeforeConservativeAndGlobalLimits(long)[4]",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:32.679163+00:00",
+          "seconds": "0.217",
+          "reportSha256": "3d239d4e2bd2058f3bef0105e155f0afaf7b165fbb72296f6796f4ccedf27591",
+          "counts": {
+            "tests": 15,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "authenticatedButExpiredProofIsFunctionalTimeout",
+              "status": "PASS"
+            },
+            {
+              "name": "jwtNearExpiryClipsOriginalDeadlineAndRequiresValidExpiry",
+              "status": "PASS"
+            },
+            {
+              "name": "crossValidationRejectsSwappingEvenWithValidUsersSignature(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "crossValidationRejectsSwappingEvenWithValidUsersSignature(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "crossValidationRejectsSwappingEvenWithValidUsersSignature(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "crossValidationRejectsSwappingEvenWithValidUsersSignature(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "crossValidationRejectsSwappingEvenWithValidUsersSignature(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "crossValidationRejectsSwappingEvenWithValidUsersSignature(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "crossValidationRejectsSwappingEvenWithValidUsersSignature(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "crossValidationRejectsSwappingEvenWithValidUsersSignature(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "conservativeMarginAlsoAppliesToMonotonicBudgetAfterClockRollback",
+              "status": "PASS"
+            },
+            {
+              "name": "publicOnlyConfigurationRejectsPrivateMissingAndSharedActorMaterial",
+              "status": "PASS"
+            },
+            {
+              "name": "secondUsersQueryCannotRefreshAndWallClockJumpOnlyShortens",
+              "status": "PASS"
+            },
+            {
+              "name": "validResponseYieldsLocalIdentityAndHttpProjectionWithoutProof",
+              "status": "PASS"
+            },
+            {
+              "name": "monotonicBudgetPreventsClockRollbackAndSubdeadlineRenewal",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:32.725260+00:00",
+          "seconds": "0.044",
+          "reportSha256": "f9f1bae38cf084e1621ed05348447c8890603458b631fd27b6830e5e34990054",
+          "counts": {
+            "tests": 10,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "descartarUnaCorrelacionDesconocidaNoAfectaElRegistro",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaNuevasEsperasAlSuperarElLimite",
+              "status": "PASS"
+            },
+            {
+              "name": "cancelarTodoCompletaDeFormaExcepcionalLasEsperasEnVuelo",
+              "status": "PASS"
+            },
+            {
+              "name": "unaRespuestaTardiaSeDescartaYLaEsperaSigueViva",
+              "status": "PASS"
+            },
+            {
+              "name": "unCorrelationIdDuplicadoSeRechazaYNoSobrescribeLaEsperaViva",
+              "status": "PASS"
+            },
+            {
+              "name": "unaCorrelacionDesconocidaSeDescarta",
+              "status": "PASS"
+            },
+            {
+              "name": "resuelveLaEsperaRegistrada",
+              "status": "PASS"
+            },
+            {
+              "name": "cancelarTodoConcurrenteNoDejaElContadorDescuadrado",
+              "status": "PASS"
+            },
+            {
+              "name": "soportaMultiplesRequestsSimultaneosSinCruzarse",
+              "status": "PASS"
+            },
+            {
+              "name": "unaRespuestaDuplicadaSeDescartaSinAfectarALaPrimera",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.bff.PedidosPagosDisabledTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:34.277280+00:00",
+          "seconds": "1.55",
+          "reportSha256": "db90b84e0b0b70caacd31433156bc58437f3ea8e422920db50aa0dd640cbafec",
+          "counts": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "inclusoAdminQuedaBloqueadoSinHabilitacionExplicita",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.bff.security.EntraJwtTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:34.592970+00:00",
+          "seconds": "0.315",
+          "reportSha256": "7728aa7a1c2ce641bebb0b8d8ab75b17d000ee1ba90f0a6570c5d62822f12bdf",
+          "counts": {
+            "tests": 17,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "rechazaClaimsInvalidos()[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[10]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[11]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[12]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[13]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaFirmaDistinta",
+              "status": "PASS"
+            },
+            {
+              "name": "noConcedeAutoridadesPorClaimsDesconocidos",
+              "status": "PASS"
+            },
+            {
+              "name": "aceptaFirmaYClaimsValidos",
+              "status": "PASS"
+            },
+            {
+              "name": "fallaConfiguracionIncompletaOIdentidadMixta",
+              "status": "PASS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "backend/services/usuarios-service",
+      "command": "mvn -B -ntp test",
+      "counts": {
+        "tests": 79,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logSha256": "b20d1889eb846b672eac8d57004debf6d11ade62db7adc3b7591de6a8d9db58f",
+      "suites": [
+        {
+          "class": "cl.duoc.pedidos360.usuarios.JwtHttpTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:01.734644+00:00",
+          "seconds": "15.368",
+          "reportSha256": "2c7a06aee42c35a4dfffdbfc53c64c1c102ef7d68a707ac32ce07dac338ba825",
+          "counts": {
+            "tests": 4,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "audienciaDelFrontendNoSirve",
+              "status": "PASS"
+            },
+            {
+              "name": "scopeYRolSonObligatorios",
+              "status": "PASS"
+            },
+            {
+              "name": "identidadJwtPersisteYAislaPerfiles",
+              "status": "PASS"
+            },
+            {
+              "name": "sinTokenNiCabecerasFalsificadasAutentican",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:01.847704+00:00",
+          "seconds": "0.127",
+          "reportSha256": "1b846d6318e3c2cbb9004c937e4e6d01bd12dfd41796e00ce7e060babae643ca",
+          "counts": {
+            "tests": 4,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "noActivaIdentidadSinPerfilLocalOEnProduccion",
+              "status": "PASS"
+            },
+            {
+              "name": "permiteLocalCompletoYExigeHabilitacionExplicita",
+              "status": "PASS"
+            },
+            {
+              "name": "noPermiteEscucharEnTodasLasInterfacesConIdentidadFalsa",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaIdentidadIncompletaYRolesDesconocidos",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:03.000241+00:00",
+          "seconds": "1.152",
+          "reportSha256": "090a60664d1fc5c5d91dc29b1d15c9743fff02037cb5969cec57764cac9e6a78",
+          "counts": {
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "snapshotDoesNotReReadOrPromiseImmediateRevocation",
+              "status": "PASS"
+            },
+            {
+              "name": "disabledRelayAndDisabledProofDoNotLoadKeys",
+              "status": "PASS"
+            },
+            {
+              "name": "configurationFailsClosedAndUsersNeverBecomesActorIssuer",
+              "status": "PASS"
+            },
+            {
+              "name": "singlePersistentReadProducesHttpProjectionAndSignedLocalIdentity",
+              "status": "PASS"
+            },
+            {
+              "name": "expiryClipsToOriginalDeadlineAndSlowReadCannotRenewFreshness",
+              "status": "PASS"
+            },
+            {
+              "name": "noProofForMissingOrInactiveProfileAndNoRequestSuppliedIdentity",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.usuarios.security.EntraJwtTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:03.293197+00:00",
+          "seconds": "0.284",
+          "reportSha256": "60fa7d2acf8e7130041aab2ec64ff2f0103cf8952e6313c9cf59c698ad829144",
+          "counts": {
+            "tests": 17,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "rechazaClaimsInvalidos()[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[10]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[11]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[12]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[13]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaFirmaDistinta",
+              "status": "PASS"
+            },
+            {
+              "name": "noConcedeAutoridadesPorClaimsDesconocidos",
+              "status": "PASS"
+            },
+            {
+              "name": "aceptaFirmaYClaimsValidos",
+              "status": "PASS"
+            },
+            {
+              "name": "fallaConfiguracionIncompletaOIdentidadMixta",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:03.359402+00:00",
+          "seconds": "0.068",
+          "reportSha256": "b683f7904ece2f2c2218c821cbd8a0cd3054ff17aa32b3d301bc37b349cc9735",
+          "counts": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "peticionRemotaNoSeAutenticaAunqueFalsifiqueForwardedHeaders",
+              "status": "PASS"
+            },
+            {
+              "name": "localhostSoloRecibeLaIdentidadConfiguradaYNoLaDeLosHeaders",
+              "status": "PASS"
+            },
+            {
+              "name": "limpiaIdentidadInclusoSiElControladorFalla",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:08.267641+00:00",
+          "seconds": "4.907",
+          "reportSha256": "dbcba50bd183f36a7fb9eedcfa12ed311d005c0a344ab5c63742765d7def41cb",
+          "counts": {
+            "tests": 4,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "administraPerfilDelMismoDirectorioYDevuelve404SiNoExiste",
+              "status": "PASS"
+            },
+            {
+              "name": "adminDesactivadoPierdeAccesoSinImportarSuRol",
+              "status": "PASS"
+            },
+            {
+              "name": "devuelvePaginaVaciaY404SinCambiarOtrosPerfiles",
+              "status": "PASS"
+            },
+            {
+              "name": "listaSoloSuDirectorioYRespetaLaPaginacion",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:11.758920+00:00",
+          "seconds": "3.48",
+          "reportSha256": "c97c3d89c89e08c36c5610ba8ae9244adcb4c4df176838226a7d5fdd33a0cb3d",
+          "counts": {
+            "tests": 8,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "respetaLongitudesMaximasYNoPersisteUnPerfilInvalido",
+              "status": "PASS"
+            },
+            {
+              "name": "noAccedeAListaNiPerfilesAjenosAunqueFalsifiqueHeaders",
+              "status": "PASS"
+            },
+            {
+              "name": "creaConsultaActualizaYDesactivaSuPerfil",
+              "status": "PASS"
+            },
+            {
+              "name": "actualizacionRechazadaConservaPerfilEIdentidad",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaIdentificadorYParametrosInvalidos",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaJsonRotoTiposIncorrectosYCuerpoVacio",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaCamposInvalidosEIdentidadORolesEnElJson",
+              "status": "PASS"
+            },
+            {
+              "name": "conflictoNoFiltraDetallesDeLaBaseNiCreaDuplicado",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:14.291026+00:00",
+          "seconds": "2.541",
+          "reportSha256": "5fda1acc94c9bdc6a613dc6957cc9657d61a1b78581b2e2e60f89508af417567",
+          "counts": {
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "ejecutaMigracionEnEsquemaPropio",
+              "status": "PASS"
+            },
+            {
+              "name": "actualizaYDesactivaSinCambiarIdentidadNiEliminarPerfil",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaDosPerfilesParaLaMismaIdentidad",
+              "status": "PASS"
+            },
+            {
+              "name": "distingueDirectoriosAunqueCoincidanObjectIdYEmail",
+              "status": "PASS"
+            },
+            {
+              "name": "unaEdicionAntiguaNoSobrescribeUnaVersionMasReciente",
+              "status": "PASS"
+            },
+            {
+              "name": "guardaYRecuperaPerfilPorIdentidadExterna",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.usuarios.UsuariosApplicationTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:16.972691+00:00",
+          "seconds": "2.681",
+          "reportSha256": "4eade8b8be56cc65a0b13897d883d5393f7f39e1e78ef882c991cea04d9d6287",
+          "counts": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "healthRespondeUpConPostgresSinAzure",
+              "status": "PASS"
+            },
+            {
+              "name": "bloqueaUsuariosSinIdentidadLocalAunqueSeEnvieUnTokenFalso",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.usuarios.UsuariosRabbitTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:39:39.995184+00:00",
+          "seconds": "22.983",
+          "reportSha256": "19d997fab71d66a2a9192f50d246f73fad1cfe61a28cbddfdffef26aa6a9e2ab",
+          "counts": {
+            "tests": 25,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "inactiveProfileMatchesHttp403WithoutRetry",
+              "status": "PASS"
+            },
+            {
+              "name": "identityPayloadIsRejected(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "identityPayloadIsRejected(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "identityPayloadIsRejected(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "failedRetryHandoffKeepsOriginalAndRecoversWithoutTtlOrHotLoop",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedFailureExhaustsOneRetryThenDlq",
+              "status": "PASS"
+            },
+            {
+              "name": "realListenerMatchesHttpIncludingLocalIdCorrelationAndManualAck",
+              "status": "PASS"
+            },
+            {
+              "name": "missingScopeIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongTenantIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "adminResolvesOwnProfile",
+              "status": "PASS"
+            },
+            {
+              "name": "incorrectSignatureIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "sameOidInOtherTenantDoesNotExposeProfile",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongDestinationIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "transientDbFailureRetriesOnceWithRealPolicyTtl",
+              "status": "PASS"
+            },
+            {
+              "name": "expiredActorOnLiveRequestIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "malformedActorIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "requestWaitsWhileConsumerStoppedThenRecovers",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongOperationIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "businessErrorReturns409AndIsAcked",
+              "status": "PASS"
+            },
+            {
+              "name": "deadlineExpiredDoesNotExecuteOrRetry",
+              "status": "PASS"
+            },
+            {
+              "name": "disallowedRoleIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "arrayPayloadIsRejectedAtListener",
+              "status": "PASS"
+            },
+            {
+              "name": "malformedJsonGoesToDlqWithoutDomain",
+              "status": "PASS"
+            },
+            {
+              "name": "quorumQueuesHavePolicyTtlAndConsumerCannotConfigure",
+              "status": "PASS"
+            },
+            {
+              "name": "absentProfileMatchesHttp404WithoutRetry",
+              "status": "PASS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "backend/services/restaurantes-service",
+      "command": "mvn -B -ntp test",
+      "counts": {
+        "tests": 34,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logSha256": "3fa5bb1bd783dc3354b9878d2b5cabda78003635f1dba310aca723810bd98df9",
+      "suites": [
+        {
+          "class": "cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:12.977008+00:00",
+          "seconds": "1.032",
+          "reportSha256": "af7a32be8db75bb391118fc422ac8cf1add9b3f0cfda7aa2fd4a33ffabcbc937",
+          "counts": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "clienteAndAdminWithScopeAreAllowed",
+              "status": "PASS"
+            },
+            {
+              "name": "defaultDoesNotCreateAnyMessagingBeans",
+              "status": "PASS"
+            },
+            {
+              "name": "scopeAndRoleAreBothRequired",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:31.809701+00:00",
+          "seconds": "18.822",
+          "reportSha256": "db3e1e770f5ab3e8e9a4788cb2e8d83ae9184c9df6d5320f5c06ba6a42503b83",
+          "counts": {
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "crudAndSoftDeactivationKeepBehavior",
+              "status": "PASS"
+            },
+            {
+              "name": "listIncludesInactiveWithUnchangedDto",
+              "status": "PASS"
+            },
+            {
+              "name": "emptyListIsHttp200Array",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidCrudStillReturns400WithoutPersistence",
+              "status": "PASS"
+            },
+            {
+              "name": "defaultHttpAndHealthNeedNoBrokerOrSecurityFilterChain",
+              "status": "PASS"
+            },
+            {
+              "name": "missingRestaurantStillReturns404",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:41:05.901795+00:00",
+          "seconds": "34.071",
+          "reportSha256": "5d0129dd876c1b244b94ef449a364538b41ce26879c8ecf6dee4229887e173b2",
+          "counts": {
+            "tests": 25,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "failedRetryHandoffKeepsOriginalAndRecoversWithoutTtlOrHotLoop",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedFailureExhaustsOneRetryThenDlq",
+              "status": "PASS"
+            },
+            {
+              "name": "missingScopeIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongTenantIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "incorrectSignatureIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "realListenerMatchesHttpIncludingInactiveCorrelationAndManualAck",
+              "status": "PASS"
+            },
+            {
+              "name": "malformedOidIsRejectedBeforeDomain",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongDestinationIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "transientDbFailureRetriesOnceWithRealPolicyTtl",
+              "status": "PASS"
+            },
+            {
+              "name": "expiredActorOnLiveRequestIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "malformedActorIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "emptyCatalogAndAdminActorReturnEmptySuccess",
+              "status": "PASS"
+            },
+            {
+              "name": "requestWaitsWhileConsumerStoppedThenRecovers",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongOperationIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "businessErrorReturns409AndIsAcked",
+              "status": "PASS"
+            },
+            {
+              "name": "deadlineExpiredDoesNotExecuteOrRetry",
+              "status": "PASS"
+            },
+            {
+              "name": "disallowedRoleIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "arrayPayloadIsRejectedAtListener",
+              "status": "PASS"
+            },
+            {
+              "name": "malformedJsonGoesToDlqWithoutDomain",
+              "status": "PASS"
+            },
+            {
+              "name": "quorumQueuesHavePolicyTtlAndConsumerCannotConfigure",
+              "status": "PASS"
+            },
+            {
+              "name": "disallowedReplyToNeverRoutesOutsideTechnicalQueue",
+              "status": "PASS"
+            },
+            {
+              "name": "extraFieldsGoToDlqWithoutDomain(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "extraFieldsGoToDlqWithoutDomain(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "extraFieldsGoToDlqWithoutDomain(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "extraFieldsGoToDlqWithoutDomain(String)[4]",
+              "status": "PASS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "backend/services/productos-service",
+      "command": "mvn -B -ntp test",
+      "counts": {
+        "tests": 44,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logSha256": "2e37fc0c96a351cc309c5936370913ec6d61b8514b90cf263e5f19f701f27bad",
+      "suites": [
+        {
+          "class": "cl.duoc.pedidos360.productos.ProductosConfigurationTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:10.836854+00:00",
+          "seconds": "1.004",
+          "reportSha256": "7e9e18121335bab88d17345650ed42170d6f639c925b37fce00f1fa9331083ba",
+          "counts": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "clienteAndAdminWithScopeAreAllowed",
+              "status": "PASS"
+            },
+            {
+              "name": "defaultDoesNotCreateAnyMessagingBeans",
+              "status": "PASS"
+            },
+            {
+              "name": "scopeAndRoleAreBothRequired",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.productos.ProductosHttpRegressionTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:29.367218+00:00",
+          "seconds": "18.491",
+          "reportSha256": "b494603977f50eb8c514b32ef874c2d3edc2ac9c345bcfd052245e4f3a9b66b5",
+          "counts": {
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "invalidCrudRequestStillReturns400",
+              "status": "PASS"
+            },
+            {
+              "name": "crudAndAvailabilityEndpointsKeepTheirBehavior",
+              "status": "PASS"
+            },
+            {
+              "name": "nonexistentProductStillReturns404",
+              "status": "PASS"
+            },
+            {
+              "name": "httpAndHealthWorkWithoutRabbitOrActorSecretsByDefault",
+              "status": "PASS"
+            },
+            {
+              "name": "realRepositoryFiltersUnavailableAndOtherRestaurants",
+              "status": "PASS"
+            },
+            {
+              "name": "emptyRestaurantKeepsHttp200EmptyArray",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.productos.ProductosQueryProcessorTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:30.685988+00:00",
+          "seconds": "1.337",
+          "reportSha256": "4906a3eb1653ed13659cbca3dc0601a4e3ba5804c40fb3c8a7980280e55b1aa9",
+          "counts": {
+            "tests": 13,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "businessFailurePreservedForBaseHandler",
+              "status": "PASS"
+            },
+            {
+              "name": "technicalFailureRemainsTechnicalForBaseClassifier",
+              "status": "PASS"
+            },
+            {
+              "name": "restaurantWithoutProductsIsEmptySuccess",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidPayloadNeverCallsDomain(String)[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "reusesExistingMethodAndDtoWithoutChangingFields",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.productos.ProductosRabbitTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:41:02.027819+00:00",
+          "seconds": "31.271",
+          "reportSha256": "f0cc16bf5c4d0efd87b32a97f9a5800bbbda3fa356e2c1df12bf1a832d1ec104",
+          "counts": {
+            "tests": 22,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "emptyRestaurantAndAdminActorReturnEmptySuccess",
+              "status": "PASS"
+            },
+            {
+              "name": "failedRetryHandoffKeepsOriginalAndRecoversWithoutTtlOrHotLoop",
+              "status": "PASS"
+            },
+            {
+              "name": "unexpectedFailureExhaustsOneRetryThenDlq",
+              "status": "PASS"
+            },
+            {
+              "name": "missingScopeIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongTenantIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "incorrectSignatureIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "realListenerMatchesHttpIncludingFilteringCorrelationAndManualAck",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongDestinationIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "transientDbFailureRetriesOnceWithRealPolicyTtl",
+              "status": "PASS"
+            },
+            {
+              "name": "expiredActorOnLiveRequestIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidIdsGoToDlqWithoutDomain(String)[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidIdsGoToDlqWithoutDomain(String)[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidIdsGoToDlqWithoutDomain(String)[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "invalidIdsGoToDlqWithoutDomain(String)[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "malformedActorIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "requestWaitsWhileConsumerStoppedThenRecovers",
+              "status": "PASS"
+            },
+            {
+              "name": "wrongOperationIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "businessErrorReturns409AndIsAcked",
+              "status": "PASS"
+            },
+            {
+              "name": "deadlineExpiredDoesNotExecuteOrRetry",
+              "status": "PASS"
+            },
+            {
+              "name": "disallowedRoleIsDefinitive",
+              "status": "PASS"
+            },
+            {
+              "name": "malformedJsonGoesToDlqWithoutDomain",
+              "status": "PASS"
+            },
+            {
+              "name": "quorumQueuesHavePolicyTtlAndConsumerCannotConfigure",
+              "status": "PASS"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "module": "backend/services/pagos-service",
+      "command": "mvn -B -ntp test",
+      "counts": {
+        "tests": 81,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "logSha256": "b91b1b92d5d58c3eec1a628c51c8d8fec0a59c24239c7b3fd95efe9072d64756",
+      "suites": [
+        {
+          "class": "cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:11.653036+00:00",
+          "seconds": "0.021",
+          "reportSha256": "a4b1586c6f7c629e591f67bd8a17d097f83ed59dcc341d3b34273d34966b8ce9",
+          "counts": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 1
+          },
+          "cases": [
+            {
+              "name": "autenticaConProveedorReal",
+              "status": "SKIPPED"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:13.029993+00:00",
+          "seconds": "1.366",
+          "reportSha256": "0be1b7609417dbe06794b4829187ff90af3fe454508448886d92e59758163ad1",
+          "counts": {
+            "tests": 5,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "rechazaRespuestaSinVigencia",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaConfiguracionIncompleta",
+              "status": "PASS"
+            },
+            {
+              "name": "noReutilizaTokenTrasFalloDeRenovacion",
+              "status": "PASS"
+            },
+            {
+              "name": "noSigueRedirectNiFiltraRespuesta",
+              "status": "PASS"
+            },
+            {
+              "name": "cacheYRenovacion",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.DelegadoHttpTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:32.234274+00:00",
+          "seconds": "19.178",
+          "reportSha256": "aa86788675592d517bc9540fbc9c6908eec4a86224e8f964a7418a726a39d76f",
+          "counts": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "tokenValidoResuelvePerfilAntesDeConsultarPago",
+              "status": "PASS"
+            },
+            {
+              "name": "perfilInactivoNoAccede",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaSinJwtYClaimsNoDelegados",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.PagoAutorizacionTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:36.611304+00:00",
+          "seconds": "4.384",
+          "reportSha256": "cbbb7e6b6adc99c4cd79eafe615b0d255225985a788d147ece6d9fd3a902f042",
+          "counts": {
+            "tests": 8,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "registrarPedidoAjenoSeRechaza",
+              "status": "PASS"
+            },
+            {
+              "name": "aprobarConPermisoDeAdminSeAcepta",
+              "status": "PASS"
+            },
+            {
+              "name": "listarPagosDePedidoAjenoSeRechaza",
+              "status": "PASS"
+            },
+            {
+              "name": "aprobarSinPermisoSeRechaza",
+              "status": "PASS"
+            },
+            {
+              "name": "adminPuedeRegistrarPedidoDeOtro",
+              "status": "PASS"
+            },
+            {
+              "name": "aprobarConRolRepartidorSeRechaza",
+              "status": "PASS"
+            },
+            {
+              "name": "obtenerPagoAjenoSeRechaza",
+              "status": "PASS"
+            },
+            {
+              "name": "obtenerPropioPagoEsPermitido",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.PagoConcurrenciaTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:36.793409+00:00",
+          "seconds": "0.179",
+          "reportSha256": "a70a8e0fdbb8133e11ff16555c6df9a49366f10157c0ea4f21e15754264801a8",
+          "counts": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "reintentoConcurrenteConLaMismaClaveNoDuplica",
+              "status": "PASS"
+            },
+            {
+              "name": "dosRegistrosConcurrentesDejanUnSoloPagoActivo",
+              "status": "PASS"
+            },
+            {
+              "name": "dosInsercionesDirectasConcurrentesSoloPermitenUnPagoActivo",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.PagoEstadosTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:36.800055+00:00",
+          "seconds": "0.004",
+          "reportSha256": "4f09f326eecdce9220ffce920750a2d87915b766e9b08d9548bd543732a3d687",
+          "counts": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "tarjetaAprobadaEsFinalYActiva",
+              "status": "PASS"
+            },
+            {
+              "name": "efectivoPendienteEsActivoYNoFinal",
+              "status": "PASS"
+            },
+            {
+              "name": "aprobarYRechazarCambianElEstado",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.PagoIdempotenciaTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:36.945406+00:00",
+          "seconds": "0.15",
+          "reportSha256": "8919b12f2844770c3525c18dac3506bebbfeb43d0d76d57668f9dbc6d3829584",
+          "counts": {
+            "tests": 4,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "reintentoIdenticoDevuelveElMismoPago",
+              "status": "PASS"
+            },
+            {
+              "name": "otraIdentidadConLaMismaClaveNoAccedeAlPagoAjeno",
+              "status": "PASS"
+            },
+            {
+              "name": "mismaClaveConOtroMetodoEsConflicto",
+              "status": "PASS"
+            },
+            {
+              "name": "mismaClaveConOtroPedidoEsConflicto",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.PagoRecuperacionTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:37.087366+00:00",
+          "seconds": "0.14",
+          "reportSha256": "726ba3ca469a238e87652a0acaf9a6c0167891139abe5e01bc6fbc43575ab7d5",
+          "counts": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "reconciliacionEsIdempotenteYNoDuplica",
+              "status": "PASS"
+            },
+            {
+              "name": "pedidoCanceladoNoQuedaMarcadoComoConfirmado",
+              "status": "PASS"
+            },
+            {
+              "name": "confirmacionAplicadaConRespuestaPerdidaSeRecuperaSinDuplicar",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.PagosApplicationTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:40.162198+00:00",
+          "seconds": "3.072",
+          "reportSha256": "f4bf2d3dba9faf8614164d97defbab2de0a56cb0282bf335027625a667ca9430",
+          "counts": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "healthRespondeUp",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.PagoServiceTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:40.348725+00:00",
+          "seconds": "0.187",
+          "reportSha256": "25a7d390a3912c2e05edd6ec47e3847eb0aaf066b01b62b826c700aa3ad70d9c",
+          "counts": {
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "segundoPagoActivoParaElMismoPedidoDevuelveConflicto",
+              "status": "PASS"
+            },
+            {
+              "name": "efectivoQuedaPendientePeroConfirmaElPedido",
+              "status": "PASS"
+            },
+            {
+              "name": "listarPorPedidoDevuelveLosPagosDelPedido",
+              "status": "PASS"
+            },
+            {
+              "name": "aprobarCobraUnPagoPendiente",
+              "status": "PASS"
+            },
+            {
+              "name": "registraPagoTarjetaAprobadoYConfirmaElPedido",
+              "status": "PASS"
+            },
+            {
+              "name": "pedidoInexistenteDevuelveNoEncontrado",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.PedidosRestClientTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:40.617161+00:00",
+          "seconds": "0.261",
+          "reportSha256": "1e1e3b94bdb3149bb00696e90a9feb94cad994c043fa0ec289eab143d0f6a08b",
+          "counts": {
+            "tests": 15,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "internoHabilitadoSinProveedorFallaAlConstruirYNoUsaLaRutaDelegada",
+              "status": "PASS"
+            },
+            {
+              "name": "internoSinTokenDisponibleFalla",
+              "status": "PASS"
+            },
+            {
+              "name": "consultaConFalloDelServidorConserva502",
+              "status": "PASS"
+            },
+            {
+              "name": "consultaPropagaUsuarioPeroConfirmacionUsaWorker",
+              "status": "PASS"
+            },
+            {
+              "name": "http400NoSeConsideraExitoSiLaConsultaDeEstadoFalla",
+              "status": "PASS"
+            },
+            {
+              "name": "confirmacionExitosaNoLanzaError",
+              "status": "PASS"
+            },
+            {
+              "name": "consultaDePedidoAjenoConserva403SinExponerRespuestaInterna",
+              "status": "PASS"
+            },
+            {
+              "name": "http409PorPedidoCanceladoNoSeConsideraExito",
+              "status": "PASS"
+            },
+            {
+              "name": "consultaInexistenteConservaNull",
+              "status": "PASS"
+            },
+            {
+              "name": "http409SeAceptaSiElPedidoYaEstaConfirmado",
+              "status": "PASS"
+            },
+            {
+              "name": "interno409PorCanceladoSeReportaComoError",
+              "status": "PASS"
+            },
+            {
+              "name": "http500DePedidosSePropagaComoError",
+              "status": "PASS"
+            },
+            {
+              "name": "http400NoSeConsideraExitoSiElPedidoNoEstaConfirmado",
+              "status": "PASS"
+            },
+            {
+              "name": "interno404PorPedidoInexistenteSeReportaComoError",
+              "status": "PASS"
+            },
+            {
+              "name": "interno204SeConsideraConfirmadoYEnviaElToken",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.RabbitCoreTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:58.109785+00:00",
+          "seconds": "17.489",
+          "reportSha256": "4dfedf91c0072ac7282c38361468549ca064dcded5046e3881860da777867adf",
+          "counts": {
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "tarjetaCommitPublicacionRealYPayloadExacto",
+              "status": "PASS"
+            },
+            {
+              "name": "efectivoPendienteAprobarYReintentarNoDuplicaIntencion",
+              "status": "PASS"
+            },
+            {
+              "name": "confirmTimeoutPermiteRepublicarMismoMessageId",
+              "status": "PASS"
+            },
+            {
+              "name": "confirmNegativoNoMarcaPublished",
+              "status": "PASS"
+            },
+            {
+              "name": "returnSinBindingNoMarcaPublishedYRecupera",
+              "status": "PASS"
+            },
+            {
+              "name": "aceptacionSinGuardarResultadoRecuperaLeaseYPublicaIdentidadEstable",
+              "status": "PASS"
+            },
+            {
+              "name": "rollbackDespuesDeGuardarAmbosNoDejaHuerfanos",
+              "status": "PASS"
+            },
+            {
+              "name": "brokerCaidoNoBloqueaRegistroYRecuperaMismoMessageId",
+              "status": "PASS"
+            },
+            {
+              "name": "schedulerSoloReconciliacionHttpHistorica",
+              "status": "PASS"
+            },
+            {
+              "name": "dispatcherNuevoRecuperaPendienteTrasReinicio",
+              "status": "PASS"
+            },
+            {
+              "name": "dosReintentosConcurrentesCompartenPagoYComando",
+              "status": "PASS"
+            },
+            {
+              "name": "errorAlInsertarOutboxReviertePago",
+              "status": "PASS"
+            }
+          ]
+        },
+        {
+          "class": "cl.duoc.pedidos360.pagos.security.EntraJwtTests",
+          "timestamp": null,
+          "reportWrittenAtUtc": "2026-10-08T20:40:58.235692+00:00",
+          "seconds": "0.123",
+          "reportSha256": "17f9b9a926ad3b47b48bd7b2739c7296700f5095d082ef0eaf8bcb31d56da04d",
+          "counts": {
+            "tests": 17,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "name": "rechazaClaimsInvalidos()[1]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[2]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[3]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[4]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[5]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[6]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[7]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[8]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[9]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[10]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[11]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[12]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaClaimsInvalidos()[13]",
+              "status": "PASS"
+            },
+            {
+              "name": "rechazaFirmaDistinta",
+              "status": "PASS"
+            },
+            {
+              "name": "noConcedeAutoridadesPorClaimsDesconocidos",
+              "status": "PASS"
+            },
+            {
+              "name": "aceptaFirmaYClaimsValidos",
+              "status": "PASS"
+            },
+            {
+              "name": "fallaConfiguracionIncompletaOIdentidadMixta",
+              "status": "PASS"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "tests": 574,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1,
+    "executed": 573
+  },
+  "focusedRuns": [
+    {
+      "module": "backend/shared/p360-messaging-core",
+      "command": "mvn -B -ntp -Dtest=RequestPublisherBudgetCorrectionTests,SettlementPublicationTests test",
+      "counts": {
+        "tests": 49,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logSha256": "d919b8a772c8ee1b0a921b89341212e7ab18737e632d5a02a1d9e3751bba4399",
+      "note": "Executed before full suites; same cases are included in full totals, not added again."
+    },
+    {
+      "module": "backend/bff",
+      "command": "mvn -B -ntp -Dtest=BffIdentityCorrectionTests,BffIdentityProofTests test",
+      "counts": {
+        "tests": 58,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "logSha256": "67c1db8b3c65416bfd543a261ce5e9a44176452cdfefd2e7ee21d3a9c38f36f8",
+      "note": "Executed before full suites; same cases are included in full totals, not added again."
+    }
+  ],
+  "correctionRegressionSuites": {
+    "cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests": {
+      "cases": 43,
+      "scope": [
+        "projection/final-adapter timing boundaries",
+        "strict eight-field HTTP projection",
+        "irreversible effective/global expiry",
+        "concurrent terminal-state checks"
+      ]
+    },
+    "cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests": {
+      "cases": 11,
+      "scope": [
+        "zero/negative/throwing budget callback",
+        "confirm uncertainty",
+        "conclusive nack/return",
+        "pre-send deadline",
+        "live-budget transport failure"
+      ]
+    }
+  },
+  "limitations": [
+    "No live Entra provider test: RUN_ENTRA_WORKER_LIVE absent.",
+    "No AWS, operational key provisioning, relay activation, Pagos query consumer or HTTP-to-RabbitMQ cutover.",
+    "BFF broker integration uses a simulated Usuarios service; Usuarios broker suite uses actual application listener and PostgreSQL.",
+    "Transport/ACK uncertainty and database failures include unit or spy injection; no claim of a real network partition.",
+    "All six complete suites ran after installation of the corrected core artifact.",
+    "Projection/adapter delays and concurrency/clock changes are deterministic unit injection, not real runtime stalls or partitions.",
+    "Temporal guarantees stop at the last local check; no claim for subsequent runtime pauses, HTTP transport, or the unimplemented Pagos query chain."
+  ],
+  "validatedSourceSha256Lf": {
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffActorContextFactory.java": "acaa7e8437a2bdcb2aa7a5f21816cb7e3ce565f7de66e32ae7f8957a83a34114",
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffActorProperties.java": "68b078eb7b69a170805103547448341d1093df2949da8d507fdc9b26ad47f5dc",
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffIdentityProofValidator.java": "fa86e9e35475302338d7964ca5559a88d90554b622eed3254941ecc35291e77b",
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffQueryAdapter.java": "065bd349497cbf1948e9319b9d1a8937721f505bb6dfbc5b9960893e35bc10aa",
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffQueryConfiguration.java": "17053a468a3e16ec035ee713cb97229590d693a95a212b4c199405fc1126f7ac",
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/QueryOperationBudget.java": "bccc6172ef08f36c5706258e84e16c654d00a917ce9b26d8ccd20852fbfc7bc2",
+    "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/RequestFactory.java": "ac5b38cff7f8c773fa3b5d1768f1714a47daf975f5ab7edb648350239ede2553",
+    "backend/bff/src/main/resources/application.yml": "403564e9973ad4a326c7bbb2ba43bbacd32f48694fba4838b1e6a07bac1ec616",
+    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffConsultasAdapterTests.java": "f989186cbf55440ac6476f181628fb29fee63147b2ab6e6382edb70f387bc027",
+    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffIdentityCorrectionTests.java": "64825bd68ceb92d28a2780a407b32e8f169611c7ee2846de109cae21e5bf89c6",
+    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffIdentityProofTests.java": "37b37456785127ddf371da2c05671b455ccf5aa7663f34aa571704a19d7d7777",
+    "backend/bff/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureIdentityKeys.java": "ef345566fd37d4a631b8b749ec7f6fa380e2f6afd827f3f1cce92bc6c3a83e97",
+    "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuarioQueryResponse.java": "f9ccde6c380891b3030a42d6cdfa9ce04eb55f88731586abcac51cf5221a25de",
+    "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosIdentityProofConfiguration.java": "cd9fb2d2e86b74556e31ab1ca3a7942c597556420b0c867fe6f037ac3aeb255b",
+    "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosIdentityProofSigner.java": "130bd60ee83039f7c912d9c56dd227e3ecb245d9384ba78e4d28b1a11bdb4611",
+    "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosMessagingConfiguration.java": "520af65f97268502f6c6cdb06f2c4a64453c7269dff94f84bdacadd96fde5752",
+    "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosQueryProcessor.java": "2a1bf6e0c1d56b0159c7c6e6913994e017e31643e29a17b5aa377dba63056479",
+    "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/service/PerfilActualVerificado.java": "da7e1e11123d253558fc1b893d51d55c89cbd05489cc0a534106133d5f31a90a",
+    "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/service/UsuarioService.java": "99594cf36af4b2df21cb99f6cf3b97d403fe628b4feadd82e41b50940664e480",
+    "backend/services/usuarios-service/src/main/resources/application.yml": "752776b07ce23adc38130de2a6a84a61815e8edc633374fbcddd1e1d7c917882",
+    "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureIdentityKeys.java": "ef345566fd37d4a631b8b749ec7f6fa380e2f6afd827f3f1cce92bc6c3a83e97",
+    "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/UsuariosRabbitTests.java": "903cac93b1875648511776723d14f30c13fe109281ad692e5025cf077c1bdb36",
+    "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosIdentityProofTests.java": "e5563dbffd3e75e85d48439b5f39299553d509c992346ad076eb79579b249ed5",
+    "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProof.java": "c5b171adebf7f5b571f74477a41bf7c1eb51afc025d4c8e87e04d68b864b40d5",
+    "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofCodec.java": "e5f1dc21180cd5c867b9303d6201cde4a62587e3f3efe8e347439d49d86f5722",
+    "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofException.java": "353b7fc7bc4d83e45ed870360c393f0ab15bd0dbaf6c7814eb71b6e494a616b7",
+    "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofKeys.java": "78a5700f34d23d9272819b55b50f0e726d942aa8bcfe1bdf4288ec8cbaa24b2f",
+    "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofVerifier.java": "ecb602b744d4c8ac183ceee611fbee0f163bddc4d43a74919a8f723c3940e527",
+    "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/RequestPublisher.java": "6711960d8b342b8ffc3aaa5c7d121410f9a7a6c9e3c3e9167d69a72d76913838",
+    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/IdentityProofTests.java": "e235fadf71f66f6e3bded5938fbecb7ed68f5b944199c123392cf8db2d6dda7c",
+    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/RequestPublisherBudgetCorrectionTests.java": "bcbba5c85f72f44b6c48f38b6140d23eebe0dbe5c604a2657b79a49959108f9c",
+    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/SettlementPublicationTests.java": "75c716a17ceea1179fd6f209499c5d4b5d0975cd5c9d8a49afe117a5ca7aecc0",
+    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureIdentityKeys.java": "ef345566fd37d4a631b8b749ec7f6fa380e2f6afd827f3f1cce92bc6c3a83e97"
+  }
+}

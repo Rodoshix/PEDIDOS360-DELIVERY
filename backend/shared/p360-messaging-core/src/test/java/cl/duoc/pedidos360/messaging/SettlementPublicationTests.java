@@ -187,6 +187,30 @@ class SettlementPublicationTests {
         assertThat(failure).isNotNull();
         return failure instanceof HandoffFailureException h ? h : (HandoffFailureException) failure.getCause();
     }
+    @Test void monotonicBudgetExpiredBeforeSendIsExplicitlyNotSent() {
+        var rabbit=mock(RabbitTemplate.class);
+        var publisher=new RequestPublisher(rabbit,context,p,"fixture");
+        var failure=catchThrowable(()->publisher.publicarConMedicion(request(Instant.now().plusSeconds(5)),"corr",
+                ()->{ throw new QueryTimeoutException("monotonic-expired"); }));
+        assertThat(classification(failure).resultado()).isEqualTo(NO_ENVIADO);
+        verify(rabbit,never()).send(anyString(),anyString(),any(Message.class),any(CorrelationData.class));
+    }
+    @Test void monotonicExpiryDuringSendPreservesUncertainty() {
+        var rabbit=mock(RabbitTemplate.class); var remaining=new java.util.concurrent.atomic.AtomicLong(1_000_000_000);
+        doAnswer(c->{remaining.set(0);return null;}).when(rabbit).send(anyString(),anyString(),any(Message.class),any(CorrelationData.class));
+        var publisher=new RequestPublisher(rabbit,context,p,"fixture");
+        var failure=catchThrowable(()->publisher.publicarConMedicion(request(Instant.now().plusSeconds(5)),"corr",remaining::get));
+        assertThat(classification(failure).resultado()).isEqualTo(INCIERTO);
+    }
+    @Test void monotonicExpiryAfterPositiveConfirmIsExplicitlyConfirmed() {
+        var rabbit=mock(RabbitTemplate.class); var calls=new AtomicInteger();
+        doAnswer(c->{c.getArgument(3,CorrelationData.class).getFuture().complete(new CorrelationData.Confirm(true,null));return null;})
+                .when(rabbit).send(anyString(),anyString(),any(Message.class),any(CorrelationData.class));
+        var publisher=new RequestPublisher(rabbit,context,p,"fixture");
+        var failure=catchThrowable(()->publisher.publicarConMedicion(request(Instant.now().plusSeconds(5)),"corr",
+                ()->calls.incrementAndGet()<4 ? 1_000_000_000L : 0));
+        assertThat(classification(failure).resultado()).isEqualTo(CONFIRMADO);
+    }
     private void publish(String publisher, RabbitTemplate rabbit, RequestEnvelope req) {
         switch (publisher) {
             case "request" -> new RequestPublisher(rabbit, context, p, "fixture").publicar(req, "corr");

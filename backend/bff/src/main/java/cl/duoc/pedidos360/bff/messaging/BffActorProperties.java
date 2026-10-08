@@ -13,8 +13,8 @@ import jakarta.validation.constraints.NotNull;
  * <p>{@code destinos} es la lista de colas funcionales que el BFF puede atender. Un sobre dirigido a
  * un destino fuera de esa lista no se acepta en el consumidor.
  *
- * <p>{@code ttl} debe ser menor que el presupuesto de la consulta: asi el sobre no sobrevive al
- * plazo y un retry corto siempre encuentra contexto vigente.
+ * <p>{@code ttl} es una ventana máxima, recortada por el plazo efectivo y JWT.exp.
+ * Un retry no garantiza encontrar vigencia o presupuesto disponibles.
  */
 @Validated
 @ConfigurationProperties("pedidos360.bff.actor")

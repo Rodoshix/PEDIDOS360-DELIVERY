@@ -46,7 +46,7 @@ import tools.jackson.databind.json.JsonMapper;
     "usuarios.identidad-local.enabled=true", "spring.profiles.active=local",
     "usuarios.identidad-local.tenant-id=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
     "usuarios.identidad-local.object-id=bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee",
-    "pedidos360.messaging.relay-mode=ACTIVE", "pedidos360.messaging.actor.emisor=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+    "pedidos360.messaging.relay-mode=ACTIVE", "pedidos360.messaging.identity-proof.enabled=true", "pedidos360.messaging.actor.emisor=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
     "pedidos360.messaging.actor.clave-id=11111111-2222-3333-4444-555555555555",
     "pedidos360.messaging.actor.tolerancia-reloj=0s", "pedidos360.messaging.recovery-backoff=500ms"})
 class UsuariosRabbitTests {
@@ -65,6 +65,9 @@ class UsuariosRabbitTests {
 
     @DynamicPropertySource static void configure(DynamicPropertyRegistry p) throws Exception {
         p.add("pedidos360.messaging.actor.public-jwks", FixtureActorKeys::publicJwks);
+        p.add("pedidos360.messaging.identity-proof.public-jwks", cl.duoc.pedidos360.messaging.fixture.FixtureIdentityKeys::publicJwks);
+        p.add("pedidos360.messaging.identity-proof.private-jwk", () -> cl.duoc.pedidos360.messaging.fixture.FixtureIdentityKeys.KEY.toJSONString());
+        p.add("pedidos360.messaging.identity-proof.key-id", () -> cl.duoc.pedidos360.messaging.fixture.FixtureIdentityKeys.ID.toString());
         provision(); // Before the real listener starts. TEST fixture only, no application declarations.
         p.add("spring.datasource.url", postgres::getJdbcUrl);
         p.add("spring.datasource.username", postgres::getUsername);
@@ -141,7 +144,7 @@ class UsuariosRabbitTests {
 
     RequestEnvelope request(JsonNode payload, String operation, UUID tenant, Set<String> roles, Set<String> scopes,
             String audience, boolean expired) {
-        Instant now = Instant.now();
+        Instant now = cl.duoc.pedidos360.messaging.identity.IdentityProofCodec.millis(Instant.now());
         Instant created = expired ? now.minusSeconds(10) : now;
         Instant deadline = expired ? now.minusSeconds(1) : now.plusSeconds(5);
         var actor = new ActorContext(tenant, OID, roles, scopes, created,
@@ -175,7 +178,7 @@ class UsuariosRabbitTests {
         var failed = receive(DLQ);
         assertThat(failed.getProps().getMessageId()).isEqualTo(request.messageId().toString());
         assertThat(((Number)failed.getProps().getHeaders().getOrDefault("retry-count",0)).intValue()).isZero();
-        verify(service,never()).obtenerActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
+        verify(service,never()).resolverActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
     }
 
     @Test void realListenerMatchesHttpIncludingLocalIdCorrelationAndManualAck() throws Exception {
@@ -185,7 +188,16 @@ class UsuariosRabbitTests {
         var http = HttpClient.newHttpClient().send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port
                 + "/usuarios/me")).GET().build(),HttpResponse.BodyHandlers.ofString());
         assertThat(http.statusCode()).isEqualTo(200);
-        assertThat(result.path("payload")).isEqualTo(JSON.readTree(http.body()));
+        var payload=(tools.jackson.databind.node.ObjectNode) result.path("payload").deepCopy();
+        String proof=payload.remove("pruebaIdentidad").stringValue();
+        var verified=new cl.duoc.pedidos360.messaging.identity.IdentityProofVerifier(
+                cl.duoc.pedidos360.messaging.fixture.FixtureIdentityKeys.keys(),Clock.systemUTC(),Duration.ofMillis(250))
+                .verify(proof,TENANT,OID,request.messageId(),request.expiresAt());
+        assertThat(verified.usuarioId()).isEqualTo(profile.getId());
+        assertThat(verified.deadlineOriginal()).isEqualTo(request.expiresAt());
+        assertThat(verified.expiraEn()).isBeforeOrEqualTo(request.expiresAt());
+        assertThat(payload).isEqualTo(JSON.readTree(http.body()));
+        assertThat(JSON.readTree(http.body()).has("pruebaIdentidad")).isFalse();
         assertThat(result.path("payload").path("id").asLong()).isEqualTo(profile.getId());
         assertThat(result.path("status").asInt()).isEqualTo(200);
         assertThat(response.getProps().getCorrelationId()).isEqualTo(correlation);
@@ -266,7 +278,7 @@ class UsuariosRabbitTests {
         assertThat(channel.queueDeclarePassive(REPLIES).getMessageCount()).isZero(); // No respuesta funcional fuera de plazo.
     }
     @Test void businessErrorReturns409AndIsAcked() throws Exception {
-        doThrow(QueryBusinessException.conflicto("fixture-conflict")).when(service).obtenerActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
+        doThrow(QueryBusinessException.conflicto("fixture-conflict")).when(service).resolverActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
         send(valid()); assertThat(JSON.readTree(receive(REPLIES).getBody()).path("status").asInt()).isEqualTo(409);
         assertThat(channel.queueDeclarePassive(DLQ).getMessageCount()).isZero();
         assertThat(channel.queueDeclarePassive(RETRY).getMessageCount()).isZero();
@@ -285,7 +297,7 @@ class UsuariosRabbitTests {
         try {
             var r=valid(); String correlation=send(r);
             assertThat(channel.queueDeclarePassive(MAIN).getMessageCount()).isEqualTo(1);
-            verify(service,never()).obtenerActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
+            verify(service,never()).resolverActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
             listener.start();
             assertThat(receive(REPLIES).getProps().getCorrelationId()).isEqualTo(correlation);
         } finally { if(!listener.isRunning()) listener.start(); }
@@ -293,20 +305,20 @@ class UsuariosRabbitTests {
     @Test void transientDbFailureRetriesOnceWithRealPolicyTtl() throws Exception {
         repository.saveAndFlush(new Usuario(TENANT,OID,"Ana","Perez","ana@example.test",null));
         doThrow(new org.springframework.dao.DataAccessResourceFailureException("fixture-db-offline"))
-                .doCallRealMethod().when(service).obtenerActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
+                .doCallRealMethod().when(service).resolverActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
         var r=valid(); Instant start=Instant.now(); String correlation=send(r);
         var response=receive(REPLIES);
         assertThat(Duration.between(start,Instant.now()).toMillis()).isGreaterThanOrEqualTo(900);
         assertThat(response.getProps().getCorrelationId()).isEqualTo(correlation);
         assertThat(response.getProps().getMessageId()).isEqualTo(r.messageId().toString());
-        verify(service,times(2)).obtenerActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
+        verify(service,times(2)).resolverActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
     }
     @Test void unexpectedFailureExhaustsOneRetryThenDlq() throws Exception {
-        doThrow(new IllegalStateException("fixture-unexpected")).when(service).obtenerActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
+        doThrow(new IllegalStateException("fixture-unexpected")).when(service).resolverActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
         var r=valid(); send(r); var failed=receive(DLQ);
         assertThat(failed.getProps().getMessageId()).isEqualTo(r.messageId().toString());
         assertThat(((Number)failed.getProps().getHeaders().get("retry-count")).intValue()).isEqualTo(1);
-        verify(service,times(2)).obtenerActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
+        verify(service,times(2)).resolverActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
     }
     @Test void failedRetryHandoffKeepsOriginalAndRecoversWithoutTtlOrHotLoop() throws Exception {
         repository.saveAndFlush(new Usuario(TENANT,OID,"Ana","Perez","ana@example.test",null));
@@ -315,7 +327,7 @@ class UsuariosRabbitTests {
             var calls=new AtomicInteger(); var times=new ArrayList<Instant>();
             doAnswer(invocation -> { times.add(Instant.now()); if(calls.incrementAndGet()==1)
                 throw new org.springframework.dao.DataAccessResourceFailureException("fixture-handoff");
-                return invocation.callRealMethod(); }).when(service).obtenerActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
+                return invocation.callRealMethod(); }).when(service).resolverActual(any(cl.duoc.pedidos360.usuarios.security.IdentidadUsuario.class));
             var r=valid(); String correlation=send(r); var recovered=receive(REPLIES);
             assertThat(recovered.getProps().getCorrelationId()).isEqualTo(correlation);
             assertThat(recovered.getProps().getMessageId()).isEqualTo(r.messageId().toString());

@@ -154,6 +154,8 @@ class BffConsultasAdapterTests {
         private volatile boolean responder404;
         private volatile int respuestasEnviadas;
         private volatile boolean actorVerificado;
+        private volatile boolean emitirPrueba;
+        private volatile boolean alterarId;
 
         ServicioDePrueba(RequestEnvelopeContext contexto, ActorContextSigner firmante, RabbitTemplate rabbit,
                 String emisorEsperado, String colaDestino) {
@@ -194,8 +196,19 @@ class BffConsultasAdapterTests {
                 respuesta = QueryResponse.error(envelope, correlationId,
                         QueryBusinessException.noEncontrado("No existe.").aError(), Instant.now());
             } else {
+                var payload = json.createObjectNode().put("id", actor.sujetoId().toString());
+                if (emitirPrueba) {
+                    Instant now = cl.duoc.pedidos360.messaging.identity.IdentityProofCodec.millis(Instant.now());
+                    Instant expiry = now.plusSeconds(4).isBefore(envelope.expiresAt()) ? now.plusSeconds(4) : envelope.expiresAt();
+                    var proof = new cl.duoc.pedidos360.messaging.identity.IdentityProof(actor.tenantId(), actor.sujetoId(),42L,
+                            now, now, expiry,envelope.expiresAt(),envelope.messageId(),java.util.UUID.randomUUID());
+                    payload.put("nombre","Ana").put("apellido","Perez").put("email","ana@example.test").putNull("telefono")
+                            .put("creadoEn",now.toString()).put("actualizadoEn",now.toString())
+                            .put("id",alterarId ? 999L : 42L).put("activo",true).put("pruebaIdentidad",
+                            cl.duoc.pedidos360.messaging.fixture.FixtureIdentityKeys.sign(proof));
+                }
                 respuesta = QueryResponse.exito(envelope, correlationId,
-                        json.createObjectNode().put("id", actor.sujetoId().toString()), Instant.now());
+                        payload, Instant.now());
             }
             var metadatos = new org.springframework.amqp.core.MessageProperties();
             metadatos.setCorrelationId(correlationId);
@@ -279,6 +292,37 @@ class BffConsultasAdapterTests {
                 throw new AssertionError("el adaptador no debe invocar el dominio: la operacion viaja por el broker");
             }
         });
+    }
+
+    @Test
+    void proofTravelsOnRealBrokerAndBffReturnsOnlyHttpProjection() {
+        var service = servicio(COLA_USUARIOS); service.emitirPrueba = true;
+        var adapter = adaptadorUsuarios();
+        adapter.configurarPruebas(new BffIdentityProofValidator(new cl.duoc.pedidos360.messaging.identity.IdentityProofVerifier(
+                cl.duoc.pedidos360.messaging.fixture.FixtureIdentityKeys.keys(), java.time.Clock.systemUTC(),Duration.ofMillis(250))));
+        try {
+            var result=adapter.ejecutar(Domain.USUARIOS,JsonMapper.builder().build().createObjectNode(),token());
+            assertThat(result.payload().path("id").longValue()).isEqualTo(42L);
+            assertThat(result.payload().has("pruebaIdentidad")).isFalse();
+            service.alterarId=true;
+            assertThatThrownBy(()->adapter.ejecutar(Domain.USUARIOS,JsonMapper.builder().build().createObjectNode(),token()))
+                    .isInstanceOf(QueryUnavailableException.class);
+            assertThat(correlaciones.enVuelo()).isZero();
+        } finally { detenerServicios(); }
+    }
+
+    @Test
+    void preparesSecondEnvelopeWithSameRootAndShorterExpiryWithoutCallingPagos() {
+        var factory=new RequestFactory(properties,actores); var jwt=token(); var budget=factory.iniciarOperacion(jwt);
+        var first=factory.planificar(Domain.USUARIOS,"usuario.consultar-actual.v1",JsonMapper.builder().build().createObjectNode(),jwt,budget,budget.originalDeadline());
+        var effective=budget.originalDeadline().minusMillis(500);
+        var second=factory.planificar(Domain.PAGOS,"pago.consultar.v1",JsonMapper.builder().build().createObjectNode(),jwt,budget,effective);
+        assertThat(first.envelope().expiresAt()).isEqualTo(budget.originalDeadline());
+        assertThat(second.envelope().expiresAt()).isEqualTo(effective);
+        assertThat(second.envelope().messageId()).isNotEqualTo(first.envelope().messageId());
+        assertThat(firmante.verificar(second.envelope().actor(),EntraTestTokens.TENANT,List.of(COLA_PAGOS),effective).expiraEn()).isBeforeOrEqualTo(effective);
+        assertThatThrownBy(()->factory.planificar(Domain.PAGOS,"pago.consultar.v1",JsonMapper.builder().build().createObjectNode(),jwt,budget,budget.originalDeadline().plusMillis(1)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

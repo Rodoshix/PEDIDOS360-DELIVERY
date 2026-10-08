@@ -17,8 +17,8 @@ import tools.jackson.databind.JsonNode;
  * <p>Responsabilidades:
  * <ul>
  *   <li>fijar el plazo absoluto ({@code expiresAt}) del presupuesto configurado;</li>
- *   <li>exigir que la vigencia del actor sea menor que ese plazo, para que un retry corto siempre
- *       encuentre contexto vigente;</li>
+ *   <li>limitar la vigencia del actor al plazo efectivo y a la expiración del JWT; un retry no
+ *       garantiza encontrar presupuesto o autorización vigentes;</li>
  *   <li>dirigir el sobre firmado a la cola funcional del dominio consultado.</li>
  * </ul>
  *
@@ -38,15 +38,28 @@ public final class RequestFactory {
     /** Prepara el plan de una consulta para el dominio indicado. */
     public RequestPlan planificar(Domain domain, String operacion, JsonNode payload, JwtAuthenticationToken token,
             Instant ahora) {
+        var budget = QueryOperationBudget.start(token, properties.deadline(), java.time.Clock.fixed(ahora, java.time.ZoneOffset.UTC), System::nanoTime);
+        return planificar(domain, operacion, payload, token, budget, budget.originalDeadline());
+    }
+
+    public QueryOperationBudget iniciarOperacion(JwtAuthenticationToken token) {
+        return QueryOperationBudget.start(token, properties.deadline(), java.time.Clock.systemUTC(), System::nanoTime);
+    }
+
+    /** Preparación de pasos con un presupuesto existente; no implementa llamada funcional a Pagos. */
+    public RequestPlan planificar(Domain domain, String operacion, JsonNode payload, JwtAuthenticationToken token,
+            QueryOperationBudget budget, Instant plazo) {
+        budget.requireIdentity(token);
+        budget.requireRemaining(plazo);
+        Instant ahora = cl.duoc.pedidos360.messaging.identity.IdentityProofCodec.millis(budget.now());
         if (domain == null) throw new IllegalArgumentException("dominio requerido");
         if (operacion == null || operacion.isBlank()) throw new IllegalArgumentException("operacion requerida");
         if (payload == null || !payload.isObject()) throw new IllegalArgumentException("payload debe ser un objeto JSON");
         if (ahora == null) throw new IllegalArgumentException("instante de emision requerido");
         if (properties.actorTtl().compareTo(properties.deadline()) >= 0)
             throw new IllegalStateException("pedidos360.messaging.actor-ttl debe ser menor que el deadline: "
-                    + "un sobre que sobrevive al plazo impide reintentar con autorizacion vigente.");
+                    + "la ventana configurada del actor debe ser menor al presupuesto máximo.");
         String colaDestino = QueryTopology.of(properties, domain).queue();
-        Instant plazo = ahora.plus(properties.deadline());
         String sobre = actores.emitir(token, colaDestino, ahora, plazo);
         UUID messageId = UUID.randomUUID();
         return new RequestPlan(RequestEnvelope.crear(messageId, operacion, payload, sobre, ahora, plazo),
