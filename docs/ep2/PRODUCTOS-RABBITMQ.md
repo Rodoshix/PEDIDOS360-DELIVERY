@@ -1,7 +1,7 @@
 # Productos request/reply - issue #80
 
 Esta pieza agrega la consulta interna y sus pruebas. **HTTP sigue siendo oficial**,
-relay DISABLED por defecto y #70 pendiente. No cambia BFF, frontend, Entra, RDS ni AWS.
+relay DISABLED por defecto y #70 pendiente. No cambia BFF, frontend, Entra, RDS ni runtime AWS.
 #80 permanece abierto para auditoria del PR. Base develop d26726c (PR #87 integrado).
 
 ## Auditoria y reutilizacion
@@ -126,8 +126,26 @@ docker build --build-context messaging-core=backend/shared/p360-messaging-core \
 ```
 
 Dockerfile instala core en el build desde contexto publico adicional, sin depender
-de un artefacto privado en el host. Runtime intacto. Los callers del build deben
-pasar messaging-core al integrar #70; este PR no cambia Compose AWS/Entrega 1.
+de un artefacto privado en el host. El caller versionado
+infrastructure/aws/compose.build.yml ahora pasa additional_contexts:
+messaging-core: ../../backend/shared/p360-messaging-core solamente para Productos.
+Es un ajuste de BUILD autorizado en la correccion del mismo PR, no un despliegue.
+Compose operativo, runtime de Entrega 1 y builds de otros servicios intactos.
+additional_contexts requiere Compose 2.17+ y soporte del builder; referencia:
+[Compose Build Specification](https://docs.docker.com/reference/compose-file/build/#additional_contexts).
+
+Build real sin cache probado con los dos archivos versionados, .env.example e
+identificadores publicos ficticios en el entorno (sin secretos, up ni push):
+
+```sh
+docker compose --env-file infrastructure/aws/.env.example \
+  -f infrastructure/aws/compose.yml -f infrastructure/aws/compose.build.yml \
+  build --no-cache productos
+```
+
+La comparacion de modelos resueltos antes/despues verifica que la unica diferencia
+es additional_contexts de Productos. Las seis pruebas existentes compose.test.mjs
+pasan, incluyendo runtime, TLS/RDS, Entra/worker y argumentos de build.
 
 ## Pruebas y limites
 
@@ -140,7 +158,8 @@ No existian tests propios de Productos; se agregan:
 | ProductosHttpRegressionTests | 6 | PostgreSQL real, Flyway, filtro, CRUD, 400/404, health sin broker |
 | ProductosRabbitTests | 22 | Aplicacion/listener, RabbitMQ 4.1.8 quorum, PostgreSQL real |
 
-Verify: **44 tests**, sin failures/errors/skipped; Docker build PASS.
+Verify repetido: **44 tests**, sin failures/errors/skipped; build real mediante
+caller Compose corregido, sin cache, PASS.
 Rabbit real: equivalencia HTTP, correlacion/reply, ACK y barrera posterior, admin,
 vacio, JSON/IDs/operacion invalidos, actor/firma/tenant/destino/rol/scope/vigencia,
 deadline, 409, retry TTL real, agotamiento DLQ, handoff sin binding conserva
@@ -153,7 +172,18 @@ No se prueba AWS/Entra E2E ni caida real broker en #80. Reportes Surefire ignora
 no secretos/logs privados versionados. Inventario/policies #69 comparados al base,
 solo cambia permiso autorizado de Productos.
 
-#70 pendiente: corte/adapter BFF, build context, TLS/cuentas, rollback y E2E. #71/#72:
+Regresion completa #69 repetida sobre broker local dedicado: **13 tests PASS**.
+Verificados 21 queues quorum, 7 exchanges direct, 20 bindings custom y 21 policies;
+usuarios/permisos de todas las cuentas, ocho retries con TTL real (incluye
+5/30/120s), NACK/DLQ, delivery-limit=5, retencion DLQ tras 25 redeliveries,
+mandatory/returns, aislamiento sandbox y persistencia tras stop/start del broker.
+Backlog controlado drenado; las 21 queues funcionales/tecnicas quedaron vacias.
+Se reconcilio solamente write DLX de Productos en ese broker local, sin rotar
+credenciales ni ampliar permisos de otras cuentas. Comparacion fuente/live contra
+develop mantiene inventario/policies y confirma la unica diferencia autorizada.
+Reportes de plataforma/resources locales ignorados; sin acceso AWS.
+
+#70 pendiente: corte/adapter BFF, TLS/cuentas, rollback y E2E. #71/#72:
 E2E AWS/capacidad. HMAC distribuido y correlaciones BFF compartidas conservan limites
 previos #77. Redelivery puede repetir lectura/respuesta, sin cambiar datos; BFF
 descarta duplicadas. #78/#79/#81/#82 no se implementan, sin merge ni cierre de #80.
