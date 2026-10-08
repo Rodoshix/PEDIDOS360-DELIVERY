@@ -1,5 +1,7 @@
 package cl.duoc.pedidos360.messaging.relay;
 
+import static cl.duoc.pedidos360.messaging.relay.HandoffFailureException.ResultadoPublicacion.*;
+
 import java.time.Instant;
 
 import org.springframework.amqp.core.Message;
@@ -58,7 +60,11 @@ public final class QueryReplyPublisher {
             throw new HandoffFailureException("el replyTo no corresponde a la cola tecnica autorizada");
         if (respuesta == null) throw new HandoffFailureException("no hay respuesta que publicar");
         remainingNanos(request);
-        byte[] cuerpo = contexto.escribirRespuesta(respuesta);
+        byte[] cuerpo;
+        try { cuerpo = contexto.escribirRespuesta(respuesta); }
+        catch (RuntimeException invalid) {
+            throw new HandoffFailureException("no fue posible serializar respuesta", NO_ENVIADO, invalid);
+        }
         MessageProperties metadatos = new MessageProperties();
         metadatos.setCorrelationId(correlationId);
         metadatos.setMessageId(respuesta.messageId().toString());
@@ -73,16 +79,16 @@ public final class QueryReplyPublisher {
             rabbit.send("", replyTo, new Message(cuerpo, metadatos), correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
                     .get(confirmWaitNanos(request), java.util.concurrent.TimeUnit.NANOSECONDS);
-            if (!confirmacion.ack()) throw new HandoffFailureException("el broker rechazo la respuesta");
+            if (!confirmacion.ack()) throw new HandoffFailureException("el broker rechazo la respuesta", RECHAZADO_CONFIRMADO);
             if (correlacion.getReturned() != null)
-                throw new HandoffFailureException("la respuesta volvio sin destino disponible");
+                throw new HandoffFailureException("la respuesta volvio sin destino disponible", RECHAZADO_CONFIRMADO);
         } catch (HandoffFailureException yaClasificado) {
             throw yaClasificado;
         } catch (InterruptedException interrumpido) {
             Thread.currentThread().interrupt();
-            throw new HandoffFailureException("publicacion de la respuesta interrumpida", interrumpido);
+            throw new HandoffFailureException("publicacion de la respuesta interrumpida", INCIERTO, interrumpido);
         } catch (Exception fallo) {
-            throw new HandoffFailureException("no fue posible confirmar la respuesta", fallo);
+            throw new HandoffFailureException("no fue posible confirmar la respuesta", INCIERTO, fallo);
         }
         return cuerpo;
     }
@@ -90,7 +96,7 @@ public final class QueryReplyPublisher {
     private long confirmWaitNanos(RequestEnvelope request) {
         try { return remainingNanos(request); }
         catch (HandoffFailureException exhausted) {
-            throw new HandoffFailureException("plazo agotado tras enviar respuesta; confirm incierto", exhausted);
+            throw new HandoffFailureException("plazo agotado tras enviar respuesta; confirm incierto", INCIERTO, exhausted);
         }
     }
 

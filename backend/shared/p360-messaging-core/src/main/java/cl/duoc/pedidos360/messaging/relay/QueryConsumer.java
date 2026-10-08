@@ -132,10 +132,12 @@ public class QueryConsumer {
                 throw new PlazoVencidoException("consulta vencida durante el procesamiento");
             respuestas.publicar(envelope, metadatos.getReplyTo(), correlationId,
                     QueryResponse.exito(envelope, correlationId, payload, respuestas.ahora()));
-            confirmar(channel, metadatos.getDeliveryTag(), messageId, correlationId, intentos, "RESPONDIDA");
         } catch (Exception fallo) {
             gestionarFallo(message, channel, envelope, fallo, correlationId, intentos, messageId);
+            return;
         }
+        // Settlement fuera del tratamiento de negocio: nunca origina otra publicación.
+        confirmar(channel, metadatos.getDeliveryTag(), messageId, correlationId, intentos, "RESPONDIDA");
     }
 
     private void gestionarFallo(Message message, Channel channel, RequestEnvelope envelope, Exception fallo,
@@ -173,11 +175,12 @@ public class QueryConsumer {
             String resultado) {
         try {
             channel.basicAck(deliveryTag, false);
-        } catch (IOException ackIncierto) {
-            // El ACK no quedo confirmado: el broker reentregara. No se vuelve a transferir el mensaje
-            // para no duplicar la respuesta ni la entrada en retry/DLQ.
+        } catch (IOException | com.rabbitmq.client.ShutdownSignalException ackIncierto) {
+            // Settlement incierto: conservar el original y recuperar con backoff.
+            // La redelivery puede repetir una lectura; no se publica otra copia aquí.
             log.error("Consulta messageId={} correlationId={} ACK no confirmado; se espera redelivery: {}",
-                    messageId, correlationId, ackIncierto.getMessage());
+                    messageId, correlationId, ackIncierto.getClass().getSimpleName());
+            recuperacion.sinConfirmar(messageId, correlationId, "settlement", ackIncierto);
             return;
         }
         log.info("Consulta messageId={} correlationId={} retryCount={} {} ACK", messageId, correlationId, intentos,

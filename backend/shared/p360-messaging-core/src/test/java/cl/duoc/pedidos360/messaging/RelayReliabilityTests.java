@@ -72,7 +72,7 @@ class RelayReliabilityTests {
     @Test void uncertainPublicationPreservesOriginalWithoutAnotherHandoff() {
         var req=request(Instant.now().plusSeconds(5)); var handoff=mock(HandoffPublisher.class);
         var replies=mock(QueryReplyPublisher.class); var handler=handler(handoff,replies);
-        var uncertain=new HandoffFailureException("confirm incierto",new TimeoutException());
+        var uncertain=new HandoffFailureException("confirm incierto",HandoffFailureException.ResultadoPublicacion.INCIERTO,new TimeoutException());
         when(replies.publicar(any(),any(),any(),any())).thenThrow(uncertain);
         assertThat(handler.gestionar(req,0,QueryBusinessException.prohibido("fixture"),"corr",p.queues().responses(),false))
                 .isEqualTo(QueryFailureHandler.Resultado.SIN_CONFIRMAR);
@@ -153,7 +153,7 @@ class RelayReliabilityTests {
     void failedDiagnosticHandoffNeverAcksAndInvokesExistingRecovery(String kind) throws Exception {
         var req=request(Instant.now().minusSeconds(1)); var replies=mock(QueryReplyPublisher.class);
         var handoff=mock(HandoffPublisher.class); var channel=mock(Channel.class); var recovery=mock(HandoffRecovery.class);
-        var exception=kind.equals("uncertain")?new HandoffFailureException(kind,new TimeoutException()):new HandoffFailureException(kind);
+        var exception=kind.equals("uncertain")?new HandoffFailureException(kind,HandoffFailureException.ResultadoPublicacion.INCIERTO,new TimeoutException()):new HandoffFailureException(kind);
         doThrow(exception).when(handoff).aDlq(any(),anyInt(),any(),any());
         var processor=mock(QueryProcessor.class);
         var consumer=new QueryConsumer(context,mock(ActorContextSigner.class),processor,replies,handler(handoff,replies),

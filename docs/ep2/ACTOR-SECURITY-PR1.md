@@ -92,6 +92,46 @@ resultado de publicar una respuesta es incierto, no se publica otra copia a retr
 el original y la redelivery comprueba de nuevo el deadline antes de ejecutar. Se preservan mandatory,
 publisher returns y confirms correlacionados. No se aumentan timeouts ni se cambian policies/topología.
 
+## Corrección de auditoría P1/P2
+
+HEAD auditado: 29f20ff21d32668cb623643163569a2d75757bef. La auditoría anterior concluyó CHANGES REQUIRED.
+Estas correcciones quedan READY FOR AUDIT; no implican aprobación del merge.
+
+P1: el ACK de respuesta queda fuera del catch de procesamiento/publicación. El settlement común
+captura IOException y ShutdownSignalException (incluido AlreadyClosedException) y solicita la
+recuperación existente con backoff. Ese mecanismo es seguro desde el listener: registra el ciclo
+y ejecuta stop/restart en su executor, sin esperas en el hilo del consumer. Ningún fallo de ACK
+invoca otra vez QueryFailureHandler ni publica respuesta, retry o DLQ. Las RuntimeException de
+programación ajenas al cierre del canal siguen propagándose. La redelivery puede repetir una lectura;
+no se promete exactly-once ni se utiliza basicNack/requeue=true.
+
+P2: ResultadoPublicacion es explícito: NO_ENVIADO antes de invocar el transporte,
+RECHAZADO_CONFIRMADO ante nack/return concluyente e INCIERTO una vez iniciado el envío sin
+confirmación concluyente. No depende de getCause(). El agotamiento tras send de retry ahora es
+INCIERTO. RequestPublisher conserva las excepciones HTTP existentes y adjunta el estado como causa
+interna; CONFIRMADO distingue un confirm positivo ya observado si el plazo se agota posteriormente.
+No hay nuevos campos en el envelope ni en las propiedades RabbitMQ. La DLQ conserva exclusivamente
+su timeout diagnóstico independiente y el plazo original.
+
+SettlementPublicationTests contiene 35 regresiones unitarias: nueve combinaciones de respuesta/retry/DLQ
+con ACK exitoso, IOException o AlreadyClosedException; propagación de error de programación; estado
+independiente de la causa; vencimiento durante send, antes del envío, timeout de confirm y fallo de
+serialización en los tres publishers; nack, return, transporte e interrupción en los tres publishers.
+Tras ACK fallido comprueba una única ejecución de negocio, recuperación posterior al intento de ACK,
+cero transferencias alternativas y ninguna segunda llamada a la política de fallos. Tras vencimiento
+durante send de retry comprueba un envío, INCIERTO y SIN_CONFIRMAR sin otro handoff.
+Son fallos inyectados, no fallos reales de red. Se conserva la evidencia RabbitMQ/Testcontainers y
+PostgreSQL de las suites completas, incluidos retry máximo, returns, DLQ y recuperación real.
+
+Graphify ejecutado desde la raíz: graphify . --code-only, exit 0; 4764 nodos, 13601 aristas,
+9 archivos de código reextraídos y 606 en caché; cero tokens LLM. Se usó como apoyo para localizar
+las relaciones del relay y recuperación, sin sustituir la revisión de código. No hay nuevas dependencias
+externas ni modificaciones fuera de relay, pruebas y evidencia. graphify-out está ignorado y no se versiona.
+El scanner omitió tokens.css por su heurística de sensibilidad; no pertenece a esta corrección backend.
+
+El JSON se regeneró desde los XML actuales, con fecha de modificación por suite y SHA-256 de los
+archivos Java corregidos, para vincular la ejecución al contenido probado. No se copian logs sensibles.
+
 ## Pruebas y evidencias
 
 Los resultados finales por suite y caso se guardan en [PR1-tests.json](evidencias/PR1-tests.json),
@@ -99,16 +139,17 @@ extraídos de los XML Surefire locales sin copiar logs sensibles ni contar repet
 
 | Módulo | Casos de regresión completos | Fallos / errores / omitidos |
 |---|---:|---|
-| p360-messaging-core | 100 | 0 / 0 / 0 |
+| p360-messaging-core | 135 | 0 / 0 / 0 |
 | BFF | 79 | 0 / 0 / 0 |
 | Usuarios | 73 | 0 / 0 / 0 |
 | Restaurantes | 34 | 0 / 0 / 0 |
 | Productos | 44 | 0 / 0 / 0 |
-| Total, sin duplicar reejecuciones | 330 | 0 / 0 / 0 |
+| Total, sin duplicar reejecuciones | 365 | 0 / 0 / 0 |
 
 Comandos reproducibles, desde la raíz:
 
 ```powershell
+mvn -f backend/shared/p360-messaging-core/pom.xml -Dtest=SettlementPublicationTests test
 mvn -f backend/shared/p360-messaging-core/pom.xml install
 mvn -f backend/bff/pom.xml test
 mvn -f backend/services/usuarios-service/pom.xml test
@@ -117,14 +158,15 @@ mvn -f backend/services/productos-service/pom.xml test
 git diff --check
 ```
 
-El core final pasó sus 100 casos. Después de las últimas comprobaciones de deadline, se revalidaron
-con ese artefacto BffConsultasAdapterTests (11), UsuariosRabbitTests (25), RestaurantesRabbitTests (25)
-y ProductosRabbitTests (22): todas sin fallos, errores u omisiones.
+Después de las correcciones P1/P2 se ejecutaron primero los 35 casos nuevos de
+SettlementPublicationTests. Luego se ejecutó install del core (135 casos) y las suites completas
+de BFF (79), Usuarios (73), Restaurantes (34) y Productos (44) contra ese artefacto: 365 casos
+sin fallos, errores u omisiones. Las integraciones RabbitMQ reales están incluidas en esas suites.
 
 Separación de evidencias:
 
-- Core sin broker: ActorSecurityTests 29, RelayReliabilityTests 17, contrato 17, clasificación 3 y
-  recuperación 7. Cubren límites, firmas, configuración, retry, deadline, TTL y decisiones ante
+- Core sin broker: ActorSecurityTests 29, RelayReliabilityTests 17, contrato 17, clasificación 3,
+  recuperación 7 y SettlementPublicationTests 35 (108 casos). Cubren límites, firmas, configuración, retry, deadline, TTL y decisiones ante
   confirms inciertos/negativos y returns inyectados. Los mocks no acreditan comportamiento del broker.
 - Core con RabbitMQ real Testcontainers: PlatformCompatibilityTests 4, QueryMessagingFlowTests 22,
   RecoveryRealTests 1. Cubren confirms y returns reales, retry/DLQ, redelivery con recuperación y
@@ -184,6 +226,10 @@ La lista completa se incluye a continuación; target/ y logs locales no se versi
 
 <!-- files -->
 
+La corrección P1/P2 modifica seis clases de relay, RelayReliabilityTests y estas dos evidencias;
+agrega SettlementPublicationTests. QueryTimeoutException se suma a los archivos de producción del PR.
+
+
 - `backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffQueryAdapter.java`
 - `backend/bff/src/main/resources/application.yml`
 - `backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffConsultasAdapterTests.java`
@@ -209,12 +255,14 @@ La lista completa se incluye a continuación; target/ y logs locales no se versi
 - `backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryFailureHandler.java`
 - `backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryReplyPublisher.java`
 - `backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/RequestPublisher.java`
+- `backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryTimeoutException.java`
 - `backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/ActorSecurityTests.java`
 - `backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/MessagingContractTests.java`
 - `backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/PlatformCompatibilityTests.java`
 - `backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/QueryMessagingFlowTests.java`
 - `backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/RecoveryRealTests.java`
 - `backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/RelayReliabilityTests.java`
+- `backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/SettlementPublicationTests.java`
 - `backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureActorKeys.java`
 - `docs/ep2/ACTOR-SECURITY-PR1.md`
 - `docs/ep2/REQUEST-REPLY-RABBITMQ.md`

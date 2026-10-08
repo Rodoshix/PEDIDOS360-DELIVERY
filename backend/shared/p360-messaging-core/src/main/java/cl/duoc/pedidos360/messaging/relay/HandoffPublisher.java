@@ -1,5 +1,7 @@
 package cl.duoc.pedidos360.messaging.relay;
 
+import static cl.duoc.pedidos360.messaging.relay.HandoffFailureException.ResultadoPublicacion.*;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -70,7 +72,7 @@ public final class HandoffPublisher {
         MessageProperties metadatos = clonarConDiagnostico(original, envelope, retryCountActual + 1, claseDeFallo,
                 "retry", topology.queue());
         confirmar(properties.exchanges().retry(), topology.retryRoutingKey(),
-                new Message(contexto.escribir(envelope), metadatos), "retry corto", envelope);
+                new Message(serializar(envelope), metadatos), "retry corto", envelope);
     }
 
     /** Envia a la DLQ del dominio sin replay automatico. */
@@ -79,7 +81,7 @@ public final class HandoffPublisher {
                 topology.queue());
         metadatos.setHeader("plazo-vencido", envelope.vencido(java.time.Instant.now()));
         confirmar(properties.exchanges().dlx(), topology.failedRoutingKey(),
-                new Message(contexto.escribir(envelope), metadatos), "DLQ", null);
+                new Message(serializar(envelope), metadatos), "DLQ", null);
     }
 
     /**
@@ -143,18 +145,32 @@ public final class HandoffPublisher {
             confirmBudget(request);
             rabbit.send(exchange, routingKey, mensaje, correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
-                    .get(confirmBudget(request), java.util.concurrent.TimeUnit.NANOSECONDS);
+                    .get(confirmBudgetTrasEnvio(request), java.util.concurrent.TimeUnit.NANOSECONDS);
             if (!confirmacion.ack())
-                throw new HandoffFailureException("el broker rechazo la transferencia a " + destino);
+                throw new HandoffFailureException("el broker rechazo la transferencia a " + destino, RECHAZADO_CONFIRMADO);
             if (correlacion.getReturned() != null)
-                throw new HandoffFailureException("la transferencia a " + destino + " volvio sin ruta");
+                throw new HandoffFailureException("la transferencia a " + destino + " volvio sin ruta", RECHAZADO_CONFIRMADO);
         } catch (HandoffFailureException yaClasificado) {
             throw yaClasificado;
         } catch (InterruptedException interrumpido) {
             Thread.currentThread().interrupt();
-            throw new HandoffFailureException("transferencia a " + destino + " interrumpida", interrumpido);
+            throw new HandoffFailureException("transferencia a " + destino + " interrumpida", INCIERTO, interrumpido);
         } catch (Exception fallo) {
-            throw new HandoffFailureException("no fue posible transferir a " + destino, fallo);
+            throw new HandoffFailureException("no fue posible transferir a " + destino, INCIERTO, fallo);
+        }
+    }
+
+    private byte[] serializar(RequestEnvelope envelope) {
+        try { return contexto.escribir(envelope); }
+        catch (RuntimeException invalid) {
+            throw new HandoffFailureException("no fue posible serializar transferencia", NO_ENVIADO, invalid);
+        }
+    }
+
+    private long confirmBudgetTrasEnvio(RequestEnvelope request) {
+        try { return confirmBudget(request); }
+        catch (HandoffFailureException exhausted) {
+            throw new HandoffFailureException("plazo agotado tras enviar retry; confirm incierto", INCIERTO, exhausted);
         }
     }
 
