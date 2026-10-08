@@ -21,7 +21,7 @@ Los controles funcionales siguen siendo necesarios: aprobar cobros y gestionar e
 
 ## Proyección interna: contrato definitivo
 
-GET /internal/pedidos/{id}/resumen-pago, Bearer delegado original, Cache-Control: no-store.
+GET /internal/pedidos/{id}/resumen-pago, Bearer delegado original en producción, Cache-Control: no-store. En desarrollo exclusivamente local/loopback, identidad interna autenticada y configurada con tenant explícito, sin fabricar JWT.
 
 Respuesta 200 con exactamente siete campos:
 
@@ -63,11 +63,49 @@ Recuperación HTTP selecciona solo AUTHENTICATED_NEW del tenant configurado y re
 
 Claim outbox une Pago para filtrar tenant y AUTHENTICATED_NEW, conservando FOR UPDATE OF o SKIP LOCKED: bloquea outbox, no Pago padre. Leases, fencing, recuperación de leases vencidos, publisher confirms, returns, atomicidad Pago-outbox, UUID, payload y estados permanecen. Histórico pendiente queda retenido incluso después de reconciliar tenant; no se recrea/republica ni se marca artificialmente PUBLISHED.
 
+## Correcciones autorizadas de la auditoría de PR #94
+
+HEAD previo auditado: 51a15a4bf65e453f52c3f0e686dd73658fa13fb3. Correcciones limitadas a P1 (settlement outbox) y P2 (HTTP local). El HEAD final se identifica en GitHub y los hashes normalizados del JSON vinculan las fuentes probadas sin incluir un hash circular del propio commit.
+
+**P1.** Claim conserva messageId, pagoId, tenantId autorizado, lease token y payload original. finish y block comparten un único UPDATE condicional: UUID, estado IN_FLIGHT, mismo Pago/payload, token, lease vigente por reloj de PostgreSQL, igualdad entre tenant reclamado y tenant del worker, y Pago asociado del mismo tenant con AUTHENTICATED_NEW. Un claim construido para un Pago externo no concede autorización. Los atributos de tenant/origen del Pago siguen protegidos por su trigger previo.
+
+V4 añade guard_outbox_identity: SQL directo no puede cambiar message_id, pago_id o payload. Conserva actualizaciones legítimas de estado, intentos y leases de trabajo nuevo; retiene mutaciones/borrado de outbox histórico. No modifica V1–V3. El trigger comprueba además el vencimiento después de obtener el lock: si un settlement esperó hasta agotar el lease, omite el UPDATE y produce cero filas, incluso si no cambió la versión de la fila bloqueada.
+
+finish/block devuelven éxito solo con una fila actualizada. Ante cero filas el dispatcher informa NOT_SETTLED o BLOCK_NOT_SETTLED y termina esa pasada; nunca informa PUBLISHED/BLOCKED como si hubiera finalizado. Si RabbitMQ confirmó, registra BROKER_CONFIRMED separado de la finalización en base y no publica de nuevo inmediatamente. Mantiene recuperación durable del lease con el mismo UUID/payload, fencing frente a un lease nuevo y retención histórica. Se conserva la semántica al menos una vez: una recuperación posterior a una confirmación sin settlement puede repetir entrega; la idempotencia existente es necesaria. No se promete exactly-once.
+
+**P2.** PedidosRestClient conserva JwtAuthenticationToken autenticado en producción. La alternativa local requiere el bean IdentidadUsuario configurado, perfil únicamente local, server.address loopback, tenant explícito coincidente y Entra deshabilitado; acepta solo el principal autenticado igual a esa identidad. No toma identidad de headers ni usa fallback ante JWT inválido/ausente. El tenant de los siete campos sigue obligado a coincidir con el del actor.
+
+### Regresiones permanentes y reproducciones corregidas
+
+Los nombres siguientes pertenecen a clases de Pagos; el JSON conserva los casos y hashes de los reportes de la ejecución específica.
+
+| Requisito | Evidencia |
+|---|---|
+| A, claim válido | OutboxIsolationTests.validClaimAndFinalizationPreserveAssociation |
+| B/D, claim y settlement externos | foreignClaimExcludedAndFinishBlockDenied; incluye claim con tenant falsificado |
+| C, lease distinto | staleLeaseCannotFinishOrBlockNewLease |
+| E/F, histórico | unknownCannotFinishOrBlock; reconciledCannotFinishOrBlock |
+| G/I, reasociación SQL antes de finalizar | runtimeCannotChangePaymentAssociationBeforeFinish; SQLState 23514 y asociación original |
+| H, reasociación mientras finish espera | associationCannotChangeWhileFinishWaitsForConcurrentWriter; lock observado en pg_stat_activity |
+| J/K, UUID/payload | runtimeCannotChangeMessageUuid; runtimeCannotChangeOriginalPayloadButCanUpdateMetadata |
+| L, block con idénticas garantías | Casos externos/históricos/lease incorrecto/claim incorrecto prueban block y finish; block legítimo queda BLOCKED |
+| M, cero filas y efectos | incorrectAssociationPayloadOrClaimTenantAffectsZeroRows; RabbitCoreTests.brokerConfirmWithFencedCompletionReportsUnsettledWithoutSecondSend; blockAffectingZeroRowsReportsUnsettledAndDoesNotPublish |
+| N, concurrencia/fencing | competingPublishersOnlyOneCanSettleSameLease; simultaneousClaimsUseSkipLockedAndDifferentLeases |
+| O, histórico junto a altas nuevas | RabbitCoreTests.retainedOldOutboxAndNewPaymentPublishOnlyNewCommand; replay no añade intención ni entrega |
+| Lease vencido y recuperación | expiredLeaseRetainsWorkUntilRecoveryWithStableIdentity; leaseExpiringWhileFinishWaitsCannotBeSettled |
+| Upgrade y privilegios | TenantMigrationTests.outboxUpgradeRetainsOriginalCommandAndGuardsRuntimeWithSeparatedMigrationOwner |
+
+OutboxIsolationTests usa PostgreSQL 17 real para CAS, SQL runtime y locks. La prueba de migración ejecuta V1–V3, inserta Pago/comando histórico y aplica V4 con un login migrador no superusuario; otro login runtime mínimo no puede reconciliar, escribir auditoría ni deshabilitar el trigger, y sí puede procesar trabajo nuevo. Los fixtures/roles pertenecen exclusivamente a contenedores desechables. La limpieza después de cada caso evita contaminar otras suites que comparten el contenedor.
+
+RabbitCoreTests usa RabbitMQ real para confirm/routing y comprueba una entrega sin envío inmediato alternativo cuando el settlement fue fenced. La sustitución de lease y la rama de payload inválido son inyecciones controladas, no particiones reales de red. La prueba de dos publishers verifica la competición real de settlement en PostgreSQL; no acredita despliegues simultáneos de servicios operativos.
+
+TenantLocalHttpEndToEndTests arranca las dos aplicaciones HTTP de producción y PostgreSQL desechable. Compila las fuentes reales de Pedidos desde el repositorio con JDK 21 y -parameters, sin añadir dependencia entre servicios ni un stub de Pedidos. Sus siete casos verifican: proyección local exacta y POST 201; intención Pago+outbox en coordinación RabbitMQ sin enviar al broker; tenant discordante sin escritura; UNKNOWN/externo/inexistente 404; configuración local ausente 401 pese a headers falsificados; rechazo de no-loopback y local+Entra; JWT válido en modo producción y rechazo de JWT inválido, tenant incorrecto o ausencia de token. Los flujos locales no instalan JWT. Solo el caso JWT usa claves RSA firmadas de fixture y un stub HTTP de Usuarios; no ejecuta Entra live.
+
 ConfirmarPedidoPorPago V1 conserva seis campos sin tenant. Worker sigue siendo de un único tenant, no un bus multitenant general. No se implementa consumer Pagos #81 ni BFF #70. No cambian contratos, deadlines o handoff diagnóstico de PR #92/#93.
 
 ## Evidencia de pruebas
 
-TENANT-ISOLATION-tests.json contiene evidencia nueva: resultados Surefire y hashes de fuentes/reportes/logs. No se reutilizan las 573 pruebas del PR #93 como ejecuciones nuevas.
+TENANT-ISOLATION-tests.json contiene evidencia nueva posterior a las correcciones P1/P2: resultados Surefire y hashes de fuentes/reportes/logs. No se reutilizan las 573 pruebas del PR #93 ni las 719 exitosas anteriores de PR #94 como ejecuciones del estado corregido. Las siete suites se ejecutaron nuevamente.
 
 Migraciones: PostgreSQL 17 desechable, ejecutar versión anterior, insertar histórico, actualizar, verificar UNKNOWN, escritores antiguos, inmutabilidad, reconciliación idempotente y denegación runtime. Otras pruebas usan fixtures históricos explícitos en contenedores. Locks, unicidad y leases se prueban con PostgreSQL real. Suites outbox/consumer usan RabbitMQ real para payload, confirms, returns y procesamiento. Fallos inyectados no demuestran particiones reales de red. Entra live no se considera ejecutada cuando está omitida.
 
@@ -86,12 +124,12 @@ HTTP oficial; relay/prueba DISABLED por defecto. Sin cambios de topología 21/7/
 
 ## Resultado de la ejecución final
 
-721 pruebas registradas: 719 exitosas, 2 omitidas, 0 fallos y 0 errores. Siete suites completas, ejecutadas en esta rama.
+746 pruebas registradas: 744 exitosas, 2 omitidas, 0 fallos y 0 errores. Siete suites completas ejecutadas de nuevo tras las correcciones en esta rama, cada comando con exit code 0. Hay 25 casos nuevos frente al HEAD auditado. Antes se ejecutaron las 59 regresiones específicas (0 fallos/errores/omisiones); están incluidas en el total de las suites y no se suman dos veces. El JSON conserva también sus reportes separados y hashes.
 
 | Suite | Total | Exitosas | Omitidas |
 |---|---:|---:|---:|
 | backend/services/pedidos-service | 131 | 130 | 1 |
-| backend/services/pagos-service | 96 | 95 | 1 |
+| backend/services/pagos-service | 121 | 120 | 1 |
 | backend/bff | 140 | 140 | 0 |
 | backend/services/usuarios-service | 79 | 79 | 0 |
 | backend/shared/p360-messaging-core | 197 | 197 | 0 |
@@ -102,7 +140,7 @@ Omitida: cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests.workerConfirmaIdempoten
 
 Omitida: cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests.autenticaConProveedorReal (Entra live condicionado por entorno).
 
-Los fallos encontrados durante preparación (referencia de fixture, search_path de trigger y comentario Java) se corrigieron antes de estas ejecuciones finales; no se relajaron expectativas de negocio para hacer pasar pruebas.
+Las ejecuciones de preparación detectaron problemas del harness: SET ROLE sobre conexión pooled, compilación del servicio hermano sin -parameters y fixtures de outbox sin limpieza final. Se corrigió el aislamiento/compilación del harness, sin relajar expectativas funcionales. Los hashes/resultados corresponden a las ejecuciones finales posteriores; los logs fallidos de preparación no se presentan como evidencia exitosa.
 
 ## Archivos del PR
 
@@ -112,6 +150,7 @@ Los fallos encontrados durante preparación (referencia de fixture, search_path 
 - backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/entity/Pago.java
 - backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/entity/TenantOrigin.java
 - backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/exception/PagoExceptionHandler.java
+- backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxDispatcher.java
 - backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxRepository.java
 - backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxStore.java
 - backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/repository/PagoRepository.java
@@ -124,6 +163,7 @@ Los fallos encontrados durante preparación (referencia de fixture, search_path 
 - backend/services/pagos-service/src/main/resources/application.yml
 - backend/services/pagos-service/src/main/resources/db/migration/V4__aislamiento_tenant.sql
 - backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoAutorizacionTests.java
+- backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/OutboxIsolationTests.java
 - backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoConcurrenciaTests.java
 - backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoEstadosTests.java
 - backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoIdempotenciaTests.java
@@ -135,6 +175,7 @@ Los fallos encontrados durante preparación (referencia de fixture, search_path 
 - backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PedidosRestClientTests.java
 - backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/RabbitCoreTests.java
 - backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/TenantMigrationTests.java
+- backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/TenantLocalHttpEndToEndTests.java
 - backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/security/TenantIdentityTests.java
 - backend/services/pagos-service/src/test/resources/application.properties
 - backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/controller/PedidoInternoController.java

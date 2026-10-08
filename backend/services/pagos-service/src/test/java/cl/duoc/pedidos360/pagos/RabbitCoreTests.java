@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.*;
     "pedidos360.messaging.dispatch-interval-ms=3600000",
     "pedidos360.messaging.confirm-timeout=1s", "spring.rabbitmq.virtual-host=/"})
 @Import({PostgresTestConfiguration.class,PedidosStubConfiguration.class,RabbitCoreTests.Broker.class})
+@org.junit.jupiter.api.extension.ExtendWith(org.springframework.boot.test.system.OutputCaptureExtension.class)
 class RabbitCoreTests {
     @TestConfiguration(proxyBeanMethods=false)
     static class Broker {
@@ -162,7 +163,7 @@ class RabbitCoreTests {
         var recovered=store.claim().getFirst();
         assertThat(recovered.messageId()).isEqualTo(abandoned.messageId());
         assertThat(recovered.payload()).isEqualTo(abandoned.payload());
-        store.finish(abandoned,null); // stale completion cannot steal the new lease
+        assertThat(store.finish(abandoned,null)).isFalse(); // stale completion cannot steal the new lease
         assertThat(outbox.findAll().getFirst().getEstado()).isEqualTo(OutboxMessage.State.IN_FLIGHT);
         publisher.publish(recovered); store.finish(recovered,null);
         var first=rabbit.receive(properties.queues().confirmacion(),3000);
@@ -220,13 +221,14 @@ class RabbitCoreTests {
         registrar(MetodoPago.TARJETA);
         var before=outbox.findAll().getFirst();
         UUID id=before.getMessageId(); String payload=before.getPayload();
+        jdbc.execute("UPDATE pagos.confirmacion_outbox SET estado='IN_FLIGHT',lease_until=now()-interval '1 second',lease_token=gen_random_uuid()");
         try {
             for(String origin:java.util.List.of("UNKNOWN","RECONCILED_LEGACY")) {
                 // Historical-state fixture in this disposable container, not operational reconciliation.
                 jdbc.execute("ALTER TABLE pagos.pagos DISABLE TRIGGER guard_tenant_origin");
                 try { jdbc.update("UPDATE pagos.pagos SET tenant_id=?::uuid,tenant_origin=?",origin.equals("UNKNOWN")?null:CLIENTE.tenantId().toString(),origin); }
                 finally { jdbc.execute("ALTER TABLE pagos.pagos ENABLE TRIGGER guard_tenant_origin"); }
-                jdbc.execute("UPDATE pagos.confirmacion_outbox SET estado='IN_FLIGHT',lease_until=now()-interval '1 second',lease_token=gen_random_uuid()");
+                // Historical work keeps its original metadata; it is never updated to release it.
                 assertThat(store.claim()).isEmpty();
                 dispatcher.dispatch();
                 assertThat(rabbit.receive(properties.queues().confirmacion(),100)).isNull();
@@ -254,6 +256,69 @@ class RabbitCoreTests {
                 assertThat(executor.submit(()->store.claim()).get(3,TimeUnit.SECONDS)).hasSize(1);
             } finally { release.countDown(); }
             holder.get(5,TimeUnit.SECONDS);
+        }
+    }
+    @Test void brokerConfirmWithFencedCompletionReportsUnsettledWithoutSecondSend(org.springframework.boot.test.system.CapturedOutput output) {
+        registrar(MetodoPago.TARJETA);
+        UUID id=outbox.findAll().getFirst().getMessageId();
+        var fenceAfterConfirm=new PagoConfirmacionPublisher(rabbit,properties) {
+            @Override public void publish(OutboxStore.Claim claim) throws Exception {
+                super.publish(claim); // Positive confirm and routing against real RabbitMQ.
+                jdbc.update("UPDATE pagos.confirmacion_outbox SET lease_token=?,lease_until=now()+interval '1 hour' WHERE message_id=?",UUID.randomUUID(),claim.messageId());
+            }
+        };
+        new OutboxDispatcher(store,fenceAfterConfirm,json,properties).dispatch();
+        assertThat(outbox.findById(id).orElseThrow().getEstado()).isEqualTo(OutboxMessage.State.IN_FLIGHT);
+        assertThat(output).contains("result=BROKER_CONFIRMED completion=NOT_SETTLED");
+        assertThat(output).doesNotContain("result=PUBLISHED");
+        assertThat(rabbit.receive(properties.queues().confirmacion(),3000)).isNotNull();
+        assertThat(rabbit.receive(properties.queues().confirmacion(),100)).isNull();
+        dispatcher.dispatch(); // Another live lease remains fenced, with no duplicate send.
+        assertThat(rabbit.receive(properties.queues().confirmacion(),100)).isNull();
+    }
+    @Test void blockAffectingZeroRowsReportsUnsettledAndDoesNotPublish(org.springframework.boot.test.system.CapturedOutput output) {
+        registrar(MetodoPago.TARJETA);
+        var delegating=org.mockito.Mockito.mock(OutboxStore.class);
+        org.mockito.Mockito.when(delegating.claim()).thenAnswer(inv->store.claim());
+        // Injection only selects the invalid-payload branch; CAS/lease fencing uses real SQL.
+        org.mockito.Mockito.when(delegating.block(org.mockito.ArgumentMatchers.any())).thenAnswer(inv->{
+            OutboxStore.Claim claim=inv.getArgument(0);
+            jdbc.update("UPDATE pagos.confirmacion_outbox SET lease_token=? WHERE message_id=?",UUID.randomUUID(),claim.messageId());
+            return store.block(claim);
+        });
+        var parser=org.mockito.Mockito.mock(JsonMapper.class);
+        org.mockito.Mockito.when(parser.readValue(org.mockito.ArgumentMatchers.anyString(),org.mockito.ArgumentMatchers.eq(ConfirmarPedidoPorPago.class)))
+            .thenThrow(new IllegalArgumentException("Injected invalid payload"));
+        new OutboxDispatcher(delegating,publisher,parser,properties).dispatch();
+        assertThat(outbox.findAll().getFirst().getEstado()).isEqualTo(OutboxMessage.State.IN_FLIGHT);
+        assertThat(output).contains("result=BLOCK_NOT_SETTLED");
+        assertThat(output).doesNotContain("BLOCKED INVALID_PAYLOAD");
+        assertThat(rabbit.receive(properties.queues().confirmacion(),100)).isNull();
+    }
+    @Test void retainedOldOutboxAndNewPaymentPublishOnlyNewCommand() {
+        registrar(MetodoPago.TARJETA);
+        var old=outbox.findAll().getFirst();
+        // Disposable historical fixture. UUID and payload are never changed.
+        jdbc.execute("ALTER TABLE pagos.pagos DISABLE TRIGGER guard_tenant_origin");
+        try {jdbc.execute("UPDATE pagos.pagos SET tenant_id=NULL,tenant_origin='UNKNOWN'");}
+        finally {jdbc.execute("ALTER TABLE pagos.pagos ENABLE TRIGGER guard_tenant_origin");}
+        try {
+            pedidos.registrarPedido(600,10,"CREADO",13980,"CLP");
+            var request=new CrearPagoRequest(600L,MetodoPago.TARJETA);
+            service.registrar(CLIENTE,"new-payment",request);
+            service.registrar(CLIENTE,"new-payment",request);
+            dispatcher.dispatch();dispatcher.dispatch();
+            var delivered=rabbit.receive(properties.queues().confirmacion(),3000);
+            assertThat(delivered).isNotNull();
+            assertThat(delivered.getMessageProperties().getMessageId()).isNotEqualTo(old.getMessageId().toString());
+            assertThat(json.readTree(delivered.getBody()).path("pedidoId").longValue()).isEqualTo(600);
+            assertThat(rabbit.receive(properties.queues().confirmacion(),100)).isNull();
+            assertThat(outbox.findById(old.getMessageId()).orElseThrow().getEstado()).isEqualTo(OutboxMessage.State.PENDING);
+            assertThat(outbox.findById(old.getMessageId()).orElseThrow().getPayload()).isEqualTo(old.getPayload());
+        } finally {
+            jdbc.execute("ALTER TABLE pagos.pagos DISABLE TRIGGER guard_tenant_origin");
+            try {jdbc.update("UPDATE pagos.pagos SET tenant_id=?::uuid,tenant_origin='AUTHENTICATED_NEW' WHERE tenant_origin='UNKNOWN'",CLIENTE.tenantId().toString());}
+            finally {jdbc.execute("ALTER TABLE pagos.pagos ENABLE TRIGGER guard_tenant_origin");}
         }
     }
 }

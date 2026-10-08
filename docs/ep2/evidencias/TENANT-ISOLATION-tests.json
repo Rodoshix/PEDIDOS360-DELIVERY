@@ -1,9 +1,10 @@
 {
   "base_commit": "4c061d059d95102d1a10d3660c0182e58b20bcf8",
+  "audited_head_before_corrections": "51a15a4bf65e453f52c3f0e686dd73658fa13fb3",
   "branch": "feature/81-tenant-isolation-pedidos-pagos",
-  "generated_utc": "2026-10-08T22:24:06.638337+00:00",
+  "generated_utc": "2026-10-08T23:28:24.317822+00:00",
   "hash_convention": "Sources: UTF-8 normalized LF without BOM; reports/logs: raw bytes. Final commit is identified by PR HEAD; source hashes bind tested state without a circular commit hash.",
-  "tests": 721,
+  "tests": 746,
   "failures": 0,
   "errors": 0,
   "skipped": 2,
@@ -19,88 +20,105 @@
       "reports": [
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CatalogoPedidosHttpTests.xml",
-          "sha256": "588435b6653be23ffb1a3efdd9cf6a5b1baffcb74eaa8a19d875e80bb93a01ac",
-          "timestamp": null
+          "sha256": "77b3f42d01057748924a13cacfc7bbd773623c2f419a6c6f37dd47882f4a75f4",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:22.635390+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.DelegadoHttpTests.xml",
-          "sha256": "b76b773244b3691c5c613a4d51e8090b5253a1ae5908f296bc2a7ba350c602b9",
-          "timestamp": null
+          "sha256": "4f69c980b728b46196649ea46cbc11054081bc52e9f7d1185e8e679848e72979",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:00.915780+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.EstadoPedidoTests.xml",
-          "sha256": "86823e14b1316b7027089076c1967515633c7c38075b4758ec79136189ccb874",
-          "timestamp": null
+          "sha256": "00b296de6100c1a6440ac7b69aaa891469f5f4e1f220874346c2c4a00b3d8f1b",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:00.958007+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.messaging.ConfirmacionConsumerRecoveryTests.xml",
-          "sha256": "cf9c34b3718a90f13f5cc1508e4f41c8fb3bac8b26804196d4957b2dbe450e12",
-          "timestamp": null
+          "sha256": "db83cc45345716bf7918ef89b0f5dc0bea5c9e0f282d4a765f49af6e100fa6cc",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:04.185568+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoAutorizacionTests.xml",
-          "sha256": "808697ca02eed240496bb7f129023dc2142c17e91462bb48e2f69ce0e6424210",
-          "timestamp": null
+          "sha256": "91144c97895aedbf6b2151c3709fc8d9d59a0ab6fbc5ee7cd868341c575fb49e",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:15.546583+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoConfirmacionPagoTests.xml",
-          "sha256": "b501a203bb2f436f57a562033a39a169352f31340d7595b8503a152c50ed4766",
-          "timestamp": null
+          "sha256": "c7a87a86edb3fe4e77954ab60de71d36ff36ab07ce03ffe3e5e1345e7065b2ab",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:15.909128+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoInternoSeguridadHttpTests.xml",
-          "sha256": "ef08fa565f7dab53c84d36b4e9d34b392ec83e2bb590711e42cbfd659e572245",
-          "timestamp": null
+          "sha256": "6e523daae7ce77e74e4dd28afb25ff8f317eb1f20c28b11063a053e923b2497f",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:22.922036+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoRepositoryTests.xml",
-          "sha256": "89dcbb9e871f9552efba8d51fe36dcc6788ad17bff5ba9f455cbb17657e61c8a",
-          "timestamp": null
+          "sha256": "1b90c35f6250dba1153ff10623d84e55031dfb14a4f63168749ffaa50a141cd2",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:23.052876+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidosApplicationTests.xml",
-          "sha256": "95f58f788f21ffebb2cef6b1e2d304197aca470d263e12fcd4ab8f670eaf2bbc",
-          "timestamp": null
+          "sha256": "abb7c9d9053c2f979e3a1955479e3c9271f0872073d88597ddbfea60d57d17c3",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:32.263644+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoTenantIsolationTests.xml",
-          "sha256": "b0f2e1176a3e5d8890c713c8a87dfe290f2b3195a0f839c99a6ec1e07a08d264",
-          "timestamp": null
+          "sha256": "e02517c7e4caacdb33807d8a7d04134f0def147f0c493141da26ecffee15643a",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:33.845830+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.RabbitConsumerTests.xml",
-          "sha256": "46096170531311668d5d4f448607480635ed67fb67b7d1950137ae265a4105a5",
-          "timestamp": null
+          "sha256": "44ef10a6e0c1f70d97bb56183ec3c90051a50e3a3cf20f368d9c083ad13a3c75",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:28:12.569345+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.ReliabilityPolicyTests.xml",
-          "sha256": "28dc7e9aed92146c19acad7afabd4df0552fbaf67c69293e1728e8002abd79a5",
-          "timestamp": null
+          "sha256": "7c861e989b851231a8712ebd2252f5eb80344721caa3313ab3ba329b19aeffe9",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:28:12.833798+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.EntraJwtTests.xml",
-          "sha256": "bd44fe821230ed48529f4e3cd04d5462c15c7378faf470cf4ac4fc23b41188bc",
-          "timestamp": null
+          "sha256": "17d3d8464349a6fd64f9bdc2e013b02fd76d1fd31b326103debe7ad63fe53258",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:28:12.940957+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.SeguridadInternaTests.xml",
-          "sha256": "6f443a47708e34301806f054f4f136f8265dcfd505f2dc4f8b9e9733935b07d8",
-          "timestamp": null
+          "sha256": "7de5dee9250f6e92f1ee9141b85f7a45a1e406600250262f650e91b34b5a0d65",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:28:12.950039+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.TenantIdentityTests.xml",
-          "sha256": "3bed0021dec19bf69cdb2d7b521c4686919214cac42ed73c8c3d7286fa439705",
-          "timestamp": null
+          "sha256": "b02d2d2dedfd1e6b4804d1ec62f32836756b23b07647bd7260041ec13b063abc",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:28:12.964953+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.TenantMigrationTests.xml",
-          "sha256": "db3f2d8680b46fd3eccfaf398938dba3f850909eea11e458c568eb46d2bef026",
-          "timestamp": null
+          "sha256": "a8edc7d594095efa519db365fec45739553a596c8983dc4e4e99bc08f52fa953",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:28:15.156762+00:00"
         },
         {
           "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests.xml",
-          "sha256": "28f6e8838ab7749ebe7ce268c07e281d8c6545a811c9cd180cb04effc802c6e2",
-          "timestamp": null
+          "sha256": "4a30e35a3562132163130dfc82cb1e2ab85970bfc7eaff0f7ea1006535407cd5",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:28:15.164119+00:00"
         }
       ],
       "skipped_cases": [
@@ -188,98 +206,126 @@
       },
       "passed": 130,
       "log": {
-        "file": "backend/services/pedidos-service/target/tenant-final-suite.log",
-        "sha256": "e0b22f9c0c3231f9d0b3a4f0c1db2d8ecbb20eeec582f11086f8f719998c6b2f"
+        "file": "backend/services/pedidos-service/target/tenant-corrections-full.log",
+        "sha256": "0fd43ed6cf2a73c911a7aa936ba65e67d7633d9e4e2bab9f27e0386f077673f8"
       }
     },
     {
       "module": "backend/services/pagos-service",
       "command": "mvn -q -f backend/services/pagos-service/pom.xml test",
       "exit_code": 0,
-      "tests": 96,
+      "tests": 121,
       "failures": 0,
       "errors": 0,
       "skipped": 1,
       "reports": [
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests.xml",
-          "sha256": "450b5c5e4f4455cb2d316c288ec715dd5be55e48ed64e90c0037e0bcfda4d33e",
-          "timestamp": null
+          "sha256": "558485d23edbaf785aeb87a2e03364ee663412215b918c29469fb6f6ac736649",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:29.410910+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests.xml",
-          "sha256": "389eba659245a37fe08ac190c658939451758b98ab72e26986cdf1dd889eb24b",
-          "timestamp": null
+          "sha256": "38082ffe693459df20758709c30958ac1d4325dfeaea4c9d283079b7722a7d0b",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:30.089906+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.DelegadoHttpTests.xml",
-          "sha256": "22cf2975ced27e9591fce657563a9c7a081322ac349072be8336f6b61ff732d5",
-          "timestamp": null
+          "sha256": "cc3204233924a231805ab986d3682836064a26dbc1fd0b870e822402332bfc40",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:41.990291+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.OutboxIsolationTests.xml",
+          "sha256": "c7d31724ad4d99615bbba42f1815592ea120a41529d8b6ee6a31c7945fac6cdd",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:47.422137+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoAutorizacionTests.xml",
-          "sha256": "c855ca3bffb02ba024953582c084043ea9de2a2d2509c354b8d5dd334b43a58d",
-          "timestamp": null
+          "sha256": "9b03533dfd99692d0d18352decceb8cd8c29b51b90dcdd705fce770cf2ad2729",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:47.737748+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoConcurrenciaTests.xml",
-          "sha256": "3b9772ec5d460e07ee432241f725f35c864e0398fecf0c67af0056568044024f",
-          "timestamp": null
+          "sha256": "2ae56f3b63b1c017dce820b880b2d1d290813d2cd65c92265ab7b9f7d3dd193e",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:47.877748+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoEstadosTests.xml",
-          "sha256": "d6708ce5db88cb411c176a572f4f922105cdee00bd024623033483a0ea0f0842",
-          "timestamp": null
+          "sha256": "01671dd0e06aafb1dd800cd6848ef42037800aeec41a1df50893db4adeee717f",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:47.883257+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoIdempotenciaTests.xml",
-          "sha256": "fa8b91ba471197446635eb194c8f7d9f4431974fdbf19ccd52c0921c15fab1ae",
-          "timestamp": null
+          "sha256": "6031024bb13763a56199d231126309cc9a5495a383ae39452d2722eeb2442723",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:48.025822+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoRecuperacionTests.xml",
-          "sha256": "377033afc0149ead941017e28aa1611d578c44ed0e57bb77f04e44d90e9326d2",
-          "timestamp": null
+          "sha256": "12e5abd01bd96d2b5a7fb061e623b84acd758d581639c000640f50ac42520fc5",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:48.151053+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosApplicationTests.xml",
-          "sha256": "7524de661deb73e7b83962f4d5dceb5d2cccd680ba89f40cae7544e0bcf55a42",
-          "timestamp": null
+          "sha256": "892b13dead7ce45485884178e830a35f4792dade75bbd57bd649234f9d7387f3",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:50.799127+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoServiceTests.xml",
-          "sha256": "d520c5dd01444665a461461d04c362f6f83182debc2c39d6d095c188c004fc5d",
-          "timestamp": null
+          "sha256": "56b7cb0833fc49342a98bece78dc5b73b45774aa3158880787f133fe9a97f90c",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:50.972310+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoTenantIsolationTests.xml",
-          "sha256": "7945c04f6f7258c030898c8e8947f72d9bf05229f22abc0bd20f56b11bb58e92",
-          "timestamp": null
+          "sha256": "2a06c5562a2d560813cc378de4bec472d3a8caa27bd2d0f30ad5d6331ad42640",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:51.168103+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PedidosRestClientTests.xml",
-          "sha256": "f4a1051ff1d84667431e72402ebf7fce65204e92e524cb1706deb86d5dd060bc",
-          "timestamp": null
+          "sha256": "5e7989b784e42a74d0e5e28a90ac01730d6908ecb05fe281d04d8d1de7fb077a",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:26:51.465698+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.RabbitCoreTests.xml",
-          "sha256": "ea8f229349e291bc1f926610b2530b573470dc5d433fa44a1a757099ae6aa9d9",
-          "timestamp": null
+          "sha256": "5bde80069d79bdcb1689a96cde9aa4f9364082bae241a600f1bc923efc906f8b",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:27:06.382504+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.EntraJwtTests.xml",
-          "sha256": "3dbf6d30d27929827bc1dfe9863c965398ca191331a6882f9c211cf6110b4538",
-          "timestamp": null
+          "sha256": "ac6bd82b53e8eca9e085a4851eeee8892eb31e9b1a44e9d98733d474193243ff",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:27:06.855769+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.TenantIdentityTests.xml",
-          "sha256": "dcd48709c16f1a9630f05e3c8dfffaec3bb15484b0ed0022d93da64e64c5144b",
-          "timestamp": null
+          "sha256": "d0ff573d6a613f693af667cb796abeb2db5d737b06d73d4f8cb75227ec5c7ad6",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:27:06.867678+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests.xml",
+          "sha256": "c729854cdea46dcc577821fa9fe78af4b5eb00e1e8f7360e9b64c7322b4bb1fd",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:27:24.105274+00:00"
         },
         {
           "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantMigrationTests.xml",
-          "sha256": "4e9502fe8f2b989fa1b3046d71a5482db673710ff360f2c01f9673a521688870",
-          "timestamp": null
+          "sha256": "cd80a0dc9543048f856cfb39ead842cabc72b8ee103a4c5a8c539aa6f8690693",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:27:28.489349+00:00"
         }
       ],
       "skipped_cases": [
@@ -292,7 +338,7 @@
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/PedidoResumen.java": "b39d15a1ccad8c33bd7cd790e56078332189b7a999291b84ca08477cafa9e792",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/PedidosClient.java": "aad1adf089113c28ff90fa302d3c36f2357feffc08847944ec985f88ed3cd2cc",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/PedidosClientProperties.java": "290ebb46d44bf7575b734c04e96ef988f96850f0dd68490f4fce7226834872da",
-        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/PedidosRestClient.java": "f1f6357dce15eab22ce8f138d74e4bcea763333027b9120eac259cb2d1176337",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/PedidosRestClient.java": "3f4a091ad9c0a01f322cc3afdc0f048cbabd7b78c15af64820db7e36cb3eec51",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/TokenAplicacionProvider.java": "623a203249917f437c32b32f410f4aa63b21971719bf2fb606172087f4cbb5ec",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/controller/PagoController.java": "96d666a62ea6f87baafb530f425f428c8769e2011a70b85fe69a3cb92f6854ff",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/dto/CrearPagoRequest.java": "3d477e3321fb25f73378f719c8d1937f0d677a9ee6ae37dc901e31321daef723",
@@ -306,10 +352,10 @@
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/exception/PagoNoEncontradoException.java": "80503bc7007c017a2ed1c43f0d468083ba7d3025d242e6260c035a8346eda166",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/ConfirmarPedidoPorPago.java": "19be3084d025f3ca375718bf9e33954f7060cd8f9f18329f0c4c9402b61d2dfb",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/MessagingPropertiesConfiguration.java": "becb986a9e961becc65428f2a56e89d1beb7fb33f892eeb86b947a0ba0cd6098",
-        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxDispatcher.java": "fedff4b53f417969de6148e82653ea69a2563df2506eb829862ae6f533e634ab",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxDispatcher.java": "28248b16f1ac196ef5e5c02397beaf92a0146c4afcc08909f6cc69c418ddaaeb",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxMessage.java": "f5d5dd170f32d116c414fc4971e3b96c00a1c9c151b711943dcc6b80309d3ea5",
-        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxRepository.java": "94db2d449d50e05fbda7f1c60d6d8583bf174f19a392e98a64e02b27e3522fa3",
-        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxStore.java": "2ae5e5cabb853b6ac45ef87a7510d690c2eb575bbc66169879391a6740c3b770",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxRepository.java": "ba5667ec10f131649da39e2ee75867480429936f7d35c3f7fec73baf88e80b69",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxStore.java": "43b4ce3e6fccd2365b76d56085b5b6c0480fe429ad9c7012d43d9d3905049427",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/PagoConfirmacionPublisher.java": "d9ec4c1c5fc02e83ce277b0a0d639ba027236f65abfaee101b0e361be5293ce2",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/PublicationRejectedException.java": "54db229b2736c9db6329bf4310370e30e5d583f691ad9939606e4e22d956425b",
         "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/RabbitProperties.java": "b26f9b6ec0cd23584c669ced57715e56a048fbc8ced33f7aaf37d1cb31053d57",
@@ -330,10 +376,11 @@
         "backend/services/pagos-service/src/main/resources/db/migration/V1__crear_pagos.sql": "aff9c8fbf971886f01076a0da736c552a3d179f47eae34dc9bc2dde466130ea2",
         "backend/services/pagos-service/src/main/resources/db/migration/V2__unicidad_y_confirmacion.sql": "69b7deb9c6ba16982b68fa11ca0150b62d57e798b3df74d9c90958b84ef20e06",
         "backend/services/pagos-service/src/main/resources/db/migration/V3__confirmacion_outbox.sql": "407c8fb9f1791a32e0f28a070bc80a4c6166a4a0a45e87153b087f272511f741",
-        "backend/services/pagos-service/src/main/resources/db/migration/V4__aislamiento_tenant.sql": "911008762082672e64c5cc1be1250262bba5b2d06a3c4cb60518b36e9542cce8",
+        "backend/services/pagos-service/src/main/resources/db/migration/V4__aislamiento_tenant.sql": "9249a2c371387da532d391a83282c01e7f276d74a84b9c8e51aa2ca8538ca167",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/client/EntraWorkerLiveTests.java": "32497b9fc1d19101244c46e91885a761277b55983d0514b959981f62604f4a7d",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/client/EntraWorkerTokenProviderTests.java": "2b515ecf642f02923e3181ef478018fe9c64c50621dcb7d0e78173d559b5053a",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/DelegadoHttpTests.java": "a48e19081e8fc6b6fef07b41ea5c4f0d0843a00af3c3a1add3105eb35c4e24e0",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/OutboxIsolationTests.java": "44f8a13c8133324e4bda7db6c930e9ca75c398f1124b4d99d86e4c83734c2d13",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoAutorizacionTests.java": "14269b458dfaf562e2aa0e533c7526f579ee93e79fd3a1acb965887301ce317a",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoConcurrenciaTests.java": "5a105d36cfe69cae2b4b863e475896d774563078649e720c63775962e1723100",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoEstadosTests.java": "f66ba3d74cffaae3142c8bb39a1d0081e09b13caf9a7202e90b6aff096127879",
@@ -347,17 +394,18 @@
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PedidosRestClientTests.java": "50c251e7b413749dbeb8fa9a6035e4a4b4c65141aa1c0a755e531a4367ac7eb1",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PedidosStubConfiguration.java": "d23968129b92068484a20febbc9b0d6d4dba6950537e4b64efed0a60c7c24f19",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PostgresTestConfiguration.java": "fbf10b54b4e534c82649f8de157db7a6f7d8622fdfdd66b812fed0fe687941c4",
-        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/RabbitCoreTests.java": "74d03ce67879fd3bbb13164ea5fecd767f1363ef6cdcf965b99a0157d6e35642",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/RabbitCoreTests.java": "97d269f9e117db2814cd1660c6959c19f7dd775a371fbea207ae9a507daf15bb",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/security/EntraJwtTests.java": "ac9fd61ad30da275c84dc5c5bd360b2c80ffd36164c28687f9c989a1b79a60ca",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/security/EntraTestTokens.java": "0850d10a6174eb4b846d261f1b35f597a7dbd7d69ecf65dc6a6835e83507eb0b",
         "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/security/TenantIdentityTests.java": "a593f59243d10c9f4e8c3316d65efc8950e8f251fd6f200c10de7e2a8e1cb108",
-        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/TenantMigrationTests.java": "b2da3762ef93a22a73dda2732e0ae9d9c3e648994de54d7ae49f3f80001d837f",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/TenantLocalHttpEndToEndTests.java": "beeb8a8284f84d5b210afc0d49036867379c537eb47e8a099fc5832da0baa9c1",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/TenantMigrationTests.java": "482d8f2f17ee6168f01b8ef14b18216d2736f6436ca250d17e5163acf6cc477c",
         "backend/services/pagos-service/src/test/resources/application.properties": "daa1a6f40102d8784852e9d1d0dbaa6fde7235f956d7e3c555e97ccc8540f08d"
       },
-      "passed": 95,
+      "passed": 120,
       "log": {
-        "file": "backend/services/pagos-service/target/tenant-suite.log",
-        "sha256": "914073947d604f41067305e189734dbc0d871e53ce3b3909226a37d4a942228a"
+        "file": "backend/services/pagos-service/target/tenant-corrections-full.log",
+        "sha256": "60bb56d6de61a28762a70a0c51f2c65ef6ad415a12518db6b3d9d7865cf8955f"
       }
     },
     {
@@ -371,53 +419,63 @@
       "reports": [
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.BffSecurityTests.xml",
-          "sha256": "68596395687841bbd0c0ffa442357f808a533c92624a40ce5e257c483ba988b3",
-          "timestamp": null
+          "sha256": "9604c6637e8e0cff1800d93190c057c60a25f8177c0b353d417496af60740f8c",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:36.231136+00:00"
         },
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.client.ComercioInternalIsolationTests.xml",
-          "sha256": "a159fe2ee83286fc38046efca847e5c76895367e3fa656b326f58cc0f84367cd",
-          "timestamp": null
+          "sha256": "407a8cb634fa0b5e6d0f7ee64cc6fcae6b562920c47143abb54225aa04db825b",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:36.275457+00:00"
         },
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.ConnectionConfigurationTests.xml",
-          "sha256": "cab1b33492cd3988dbfe5882728632fb69facd3d0decaf768e289ab0293d691e",
-          "timestamp": null
+          "sha256": "7d34e4bc858f647c60029e6e5e470a1abd0d96845021c89285b842bb1f857bd4",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:36.390802+00:00"
         },
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.JwtHttpTests.xml",
-          "sha256": "85078b6d8a1c6df82343585d08fea191913d70c6e43a091db5a8e4473a4e9c28",
-          "timestamp": null
+          "sha256": "79c030ffd99bd5a8e7c2578b89c67d3ac95d0dceecde4f8a868a2a42ad3b4126",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:46.198426+00:00"
         },
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests.xml",
-          "sha256": "fb5d944a9dcff3113bf7ff1cae81c3812cc7bfbc0a6612ad4fe66c5b1616e336",
-          "timestamp": null
+          "sha256": "91ff857dba098e390d02c99d952e95580ff7a0bdd479190acccfa723fc259166",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:40.492923+00:00"
         },
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests.xml",
-          "sha256": "50b591f5110350db329c47b20930e11fe30133312e19cad417db764342a105de",
-          "timestamp": null
+          "sha256": "c5ed81efb1d3a5251e23aacad33137873a3dda0876f6cb199d6709774795a11f",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:41.933004+00:00"
         },
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests.xml",
-          "sha256": "2da88e15c8ddf6f53ccc6d3dcadc017ab928f2b8867b09c5279ac0333c17988f",
-          "timestamp": null
+          "sha256": "8b635a529ac96a6a475440b0330fd59981115f9de7f92521af26f3600c2bf1cc",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:42.329376+00:00"
         },
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests.xml",
-          "sha256": "063984e57444640efa497447328739e684765b5e2effd29c19944f9d9ff2f0ab",
-          "timestamp": null
+          "sha256": "ed7d0975ab22863738c97d700020d9064eb5d299e65fe780de700be6050a8fe5",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:42.411421+00:00"
         },
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.PedidosPagosDisabledTests.xml",
-          "sha256": "bc7bf1e92bdc058fc4492cc144c96260007c3772d2c1f7f9eacd67a577ccce2d",
-          "timestamp": null
+          "sha256": "7c71091caee31c9820115c1c3e91793e24a1888fd45ce0e4fc470c7f1b585d57",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:46.497666+00:00"
         },
         {
           "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.security.EntraJwtTests.xml",
-          "sha256": "cdb9df690f4eb70bf1ce023b99c449f0f1f52636d8c6cf2ab3a6275475ce136c",
-          "timestamp": null
+          "sha256": "53db68f72a512cb9f3cbe30d8dc5872ab2671fc0044ef61d205b9127158340c2",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:46.931672+00:00"
         }
       ],
       "skipped_cases": [],
@@ -459,8 +517,8 @@
       },
       "passed": 140,
       "log": {
-        "file": "backend/bff/target/tenant-suite.log",
-        "sha256": "dc7d7187f7762d4156bc81349c218b4aee3e46eba68540a68f1fd337fc5cd3d4"
+        "file": "backend/bff/target/tenant-corrections-full.log",
+        "sha256": "514391e08301058c7979dc767a7712828a0da4ed25ff8d8efcc140bbb0e113e3"
       }
     },
     {
@@ -474,53 +532,63 @@
       "reports": [
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.JwtHttpTests.xml",
-          "sha256": "179c68216521a2d9b2242696045a76aded8a0dacfd1a824c28d0f2e7ab746930",
-          "timestamp": null
+          "sha256": "cb128289507c4a06b09406ad1779270563f3aec82114e3112bbbb25c48584b83",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:59.593346+00:00"
         },
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests.xml",
-          "sha256": "641a96f394bbe52411ec827b8c37e7979ec3a8008e8c0e983125afe1bc56725d",
-          "timestamp": null
+          "sha256": "c74e0b1d32363687a29913340288766182808999d24c954f89f9e797f906bd3e",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:00.214714+00:00"
         },
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests.xml",
-          "sha256": "1f1846d4116ac122c280b33d2c339c3ae30a8ff72f40720b84300f4f5214cfc3",
-          "timestamp": null
+          "sha256": "3e9d8aa64498e68243eed717e4e1121bcfebc0cde005f8d370f27fa710f94728",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:03.411930+00:00"
         },
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.EntraJwtTests.xml",
-          "sha256": "1cfe191cc11a6844e478cd8e5867e9bbe6c1dc7cd88f5cbba37964af8e885bf8",
-          "timestamp": null
+          "sha256": "e548b117b90851b462091b3934c53121c68be4130d2c82fe773c5bb4e3cb0568",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:04.481965+00:00"
         },
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests.xml",
-          "sha256": "69cfce760e2c9b5053ab178f624841ca22324dce1cfcdb23899f324aa2bb70f4",
-          "timestamp": null
+          "sha256": "cb6551af243d3985d07296c363c5b39173bc583e0a87d46e24518e4b50a82b9e",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:04.700257+00:00"
         },
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests.xml",
-          "sha256": "f90dfdf0b9031d1c031bfd5d5d27258f5d340cca61e8ffc61c2df06217e04d43",
-          "timestamp": null
+          "sha256": "321954826d0e3ba4df4f78d7b3f8a507e7052818e21eec8ee63f50f991ad351d",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:15.774523+00:00"
         },
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests.xml",
-          "sha256": "93e0e554c7c9467115897539a6a1168da101157b7a5da0acaf44f11641224634",
-          "timestamp": null
+          "sha256": "34e70e2d3786469fc7aa59578740db0f653af68785d3bd643ccf599dd1022a06",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:22.818338+00:00"
         },
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml",
-          "sha256": "a64a51470661bcba1986ece6032fd26b9021f29fd95f7eba5af8e013fea408b4",
-          "timestamp": null
+          "sha256": "9dd14cd228ba51b7db4ad997481b2eb118ffa9e610ac3bfc03200156edaa46ee",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:28.378289+00:00"
         },
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml",
-          "sha256": "80f9839e5cf1c9811425880c3fd2fbc5a3de2e58d3c72ba6ce7abd486938610a",
-          "timestamp": null
+          "sha256": "bc862589f14c203aa98ac5e1a84af901d4453a1eac568ea6903815863212657a",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:38.652039+00:00"
         },
         {
           "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml",
-          "sha256": "ef11c1b1e86b53db8c198dc3d298616fec21de17efca5ae784f808b032aa813d",
-          "timestamp": null
+          "sha256": "abb89aebf740d83bb7f40b999d529f50ee67deb6c1af3715c098adf7b45d8c79",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:24:19.403350+00:00"
         }
       ],
       "skipped_cases": [],
@@ -570,8 +638,8 @@
       },
       "passed": 79,
       "log": {
-        "file": "backend/services/usuarios-service/target/tenant-suite.log",
-        "sha256": "69972d5bc6c3a9964dbbb6887ce1721abcc14ce84b154f8761ca1a55de1b106a"
+        "file": "backend/services/usuarios-service/target/tenant-corrections-full.log",
+        "sha256": "6b43d4627b1b4a184e392d2c905c06c0facc82ff9ff8d196f827c5de4e7ffceb"
       }
     },
     {
@@ -585,58 +653,69 @@
       "reports": [
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml",
-          "sha256": "c5eda0d51a62cef48b56291dee8072ae7fd2a3ccb7eef482af29299ec3f27ab3",
-          "timestamp": null
+          "sha256": "0c9885c34ea9ad3ff4874c29e9e7e9183a92bf14f2d43c99953548af7247ec3c",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:28.094493+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml",
-          "sha256": "f3818264504042d8cccffc1da176291e76e0c8df890c716a1239d9cf7022f0ee",
-          "timestamp": null
+          "sha256": "4d80a505b9331544ef6dbfc7dafcf59ffbb287a4cda0a63d133cf632f292909b",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:28.811787+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml",
-          "sha256": "8e188f7d60adfa733b9901daa3552a65042ef5dcae905d815c681a0e8e3fb1d4",
-          "timestamp": null
+          "sha256": "4f06d1c3adb5d3f631136c2e8cf7ccbee0dc78cd457242c36b6efbda096d768c",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:30.999339+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml",
-          "sha256": "2619b0da5e4d6c8ee465348039d08b0ce76e7872c9bccca3ffbc836c26be3acb",
-          "timestamp": null
+          "sha256": "703bf62528cb01e525ec13346b614cccb8f9680d8637dec1f82297dee45e6596",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:31.663088+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml",
-          "sha256": "3950bb845ceff4a40c6a16e616475200cd64f54498dd4baa0e64ea239898c240",
-          "timestamp": null
+          "sha256": "081bb3e46d7596fece3f22fc754bb616d52e9c8d7ef57dca20e73c95500b5636",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:19.469902+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml",
-          "sha256": "0e7e636e881464ae810cd515e659d3fb9630c50a9e38acee108fe29a44a3ee95",
-          "timestamp": null
+          "sha256": "055b225439f67da07656bffb88a1c839cbda4bf40728d20f26a90e07e5b89178",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:47.647870+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml",
-          "sha256": "e3b8d7c08cd1a8ec91ce3616d2134df7bd1789856c31e7921e18efb6eabcde7c",
-          "timestamp": null
+          "sha256": "7a45f8817b304c7178e53e215a01372520e6862146d9a448903e93220e8412dd",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:24:03.835247+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml",
-          "sha256": "420edd8110df0c09917ab576bda216ac3f504370e7c7a9d21f4ae5d763a1dc20",
-          "timestamp": null
+          "sha256": "b9c1455e0a5633661af9850404277f4cef6f31659c0fd4828085b18f19e653a9",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:24:05.271019+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml",
-          "sha256": "a8a6ae93ab46162f6a2357036bc26eba6570765d96e304e8aa6f5c0a075feb16",
-          "timestamp": null
+          "sha256": "8069f7ecdfc91e6959e7f8a5e34b542dbb181d024e4b2da4ebc6374728c3f90d",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:24:07.398562+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml",
-          "sha256": "d8c10f71870c6245a70a4740c57e827adcff250da96127741c4fd52d6774d210",
-          "timestamp": null
+          "sha256": "d962658042d0754edc4ef0ae6138c6d60df80deda69d1f6798ed55aecb57ad3e",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:24:07.578167+00:00"
         },
         {
           "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml",
-          "sha256": "845145f9597e1e98c7ffb3ddddac6debc346cd4cc92ccce540832ec3a17ad8d3",
-          "timestamp": null
+          "sha256": "dc7f74f55f4e7acdf90a7dfa3b0dfae4da4aeb74e60e5dda65f43ba36567a216",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:24:09.489923+00:00"
         }
       ],
       "skipped_cases": [],
@@ -698,8 +777,8 @@
       },
       "passed": 197,
       "log": {
-        "file": "backend/shared/p360-messaging-core/target/tenant-suite.log",
-        "sha256": "cbb47e0ba986e8036df55b66102aea14aeb18e96f2ba4bd81fe50a7b6f5f6c37"
+        "file": "backend/shared/p360-messaging-core/target/tenant-corrections-full.log",
+        "sha256": "6f6e3d4cedaa9ecda493a70852f754157ea409c379739657b7290d41aab9faff"
       }
     },
     {
@@ -713,18 +792,21 @@
       "reports": [
         {
           "file": "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests.xml",
-          "sha256": "53318ebb9dc720b1176fb717b153e0757ae27888feea9a1f4cae00e53638c786",
-          "timestamp": null
+          "sha256": "4233a7dacfb73f8c38ba2e1c9f3fb596316b979010f75e2734e8bc11f769e312",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:24.082257+00:00"
         },
         {
           "file": "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests.xml",
-          "sha256": "d944564db6eabb8ab4af6f3b0af15c03de98852a72b1aee66200ccbed9ca5193",
-          "timestamp": null
+          "sha256": "14cd7231186ea7db3458294014d05fd438fa15671a5f8f894d061c83c82c0d56",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:57.408015+00:00"
         },
         {
           "file": "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests.xml",
-          "sha256": "41c3c82596c4e6aa0a0d4999ca20c4b9501b870b3f82936ffec0a362e209c53b",
-          "timestamp": null
+          "sha256": "06eb78144b723d2dcdf1be77af0a4f24f5de00005633ab2754b947ca09d8a3bf",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:54.433795+00:00"
         }
       ],
       "skipped_cases": [],
@@ -753,8 +835,8 @@
       },
       "passed": 34,
       "log": {
-        "file": "backend/services/restaurantes-service/target/tenant-suite.log",
-        "sha256": "0dcba361d96f8afd9bfbc3275cc4e6843b61bdcd9679f6e435e5ea23da34e0e2"
+        "file": "backend/services/restaurantes-service/target/tenant-corrections-full.log",
+        "sha256": "247946f8da811d6cc4c3a09c5c793079bae201567661a9362b9f6954b6d930a1"
       }
     },
     {
@@ -768,23 +850,27 @@
       "reports": [
         {
           "file": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosConfigurationTests.xml",
-          "sha256": "e32e3c4737874a71e55a79e8e4001d8587337b8a76ba987b10f61babd7fb6764",
-          "timestamp": null
+          "sha256": "4f64922a4abbacb3b8a8eede70b12b4a29cda62ec0f66678e934b79651757242",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:24.671317+00:00"
         },
         {
           "file": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosHttpRegressionTests.xml",
-          "sha256": "0650fd2181821bd89cfb287048f052f15882142379ee1828c3bc771d4a7f1052",
-          "timestamp": null
+          "sha256": "37997c4f60ed2e8e6dacdae6a0464cef9587c4354e51f5478c632d463c6dbe09",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:57.692636+00:00"
         },
         {
           "file": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosQueryProcessorTests.xml",
-          "sha256": "c43cb24004c01f3fffca2d270cfc6d7110455c4aa722c9a7d3532c7e494e87cd",
-          "timestamp": null
+          "sha256": "d83bac39a31d587e70a6fdf682dd58542480f157b8d573a3cd2ed84bdad68e86",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:22:59.655043+00:00"
         },
         {
           "file": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosRabbitTests.xml",
-          "sha256": "226f8284469884a959500cbd3eb9210511d0b524b118fe0382798bdd6a9cd786",
-          "timestamp": null
+          "sha256": "9a98e392b5cd758d506696a6da94ec0bc05f85751d00763cea2b6a56c172846f",
+          "timestamp": null,
+          "report_written_utc": "2026-10-08T23:23:54.902412+00:00"
         }
       ],
       "skipped_cases": [],
@@ -814,16 +900,120 @@
       },
       "passed": 44,
       "log": {
-        "file": "backend/services/productos-service/target/tenant-suite.log",
-        "sha256": "b2a7aaa5dfee0960af7179bf5e4fff29b378350d2098355a9aae42e3c9548134"
+        "file": "backend/services/productos-service/target/tenant-corrections-full.log",
+        "sha256": "fd1345401699be56c46d8295b14402b0a965b3720bd4c8dd713810dd69076e71"
       }
     }
   ],
   "evidence_limits": [
     "PostgreSQL 17 and RabbitMQ Testcontainers are disposable, not operational databases/brokers.",
     "Injected exceptions, negative template futures and silent confirms do not prove real network partitions.",
-    "Local HTTP stubs/JWKS exercise real HTTP/JWT paths without live Entra.",
-    "Operational network/DB role guarantees and deployment were not verified or changed."
+    "The two-service local E2E starts real Pedidos/Pagos HTTP applications without JWT or a Pedidos stub. Production-mode E2E uses signed RSA fixtures and a Usuarios HTTP stub, not live Entra.",
+    "Migration owner and runtime are separate non-superuser logins in disposable PostgreSQL only. Operational network/DB role guarantees and deployment were not verified or changed."
   ],
-  "passed": 719
+  "passed": 744,
+  "specific_regressions": {
+    "command": "mvn -q -f backend/services/pagos-service/pom.xml -Dtest=TenantLocalHttpEndToEndTests,OutboxIsolationTests,TenantMigrationTests,PedidosRestClientTests,RabbitCoreTests test",
+    "exit_code": 0,
+    "tests": 59,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "reports": [
+      {
+        "file": "backend/services/pagos-service/target/tenant-corrections-specific-reports/TEST-cl.duoc.pedidos360.pagos.OutboxIsolationTests.xml",
+        "sha256": "b42d2f188e60c0910963374f8279e5d9488ad68ad6c1ab1bf5d8f21abe60be16",
+        "cases": [
+          "runtimeCannotChangePaymentAssociationBeforeFinish",
+          "runtimeCannotChangeMessageUuid",
+          "leaseExpiringWhileFinishWaitsCannotBeSettled",
+          "associationCannotChangeWhileFinishWaitsForConcurrentWriter",
+          "competingPublishersOnlyOneCanSettleSameLease",
+          "runtimeCannotChangeOriginalPayloadButCanUpdateMetadata",
+          "reconciledCannotFinishOrBlock",
+          "staleLeaseCannotFinishOrBlockNewLease",
+          "unknownCannotFinishOrBlock",
+          "simultaneousClaimsUseSkipLockedAndDifferentLeases",
+          "expiredLeaseRetainsWorkUntilRecoveryWithStableIdentity",
+          "foreignClaimExcludedAndFinishBlockDenied",
+          "incorrectAssociationPayloadOrClaimTenantAffectsZeroRows",
+          "validClaimAndFinalizationPreserveAssociation"
+        ]
+      },
+      {
+        "file": "backend/services/pagos-service/target/tenant-corrections-specific-reports/TEST-cl.duoc.pedidos360.pagos.PedidosRestClientTests.xml",
+        "sha256": "1223ba581d38f2e650c27199f44bb642326ac472bf0b9e05bd1747bf12978964",
+        "cases": [
+          "internoHabilitadoSinProveedorFallaAlConstruirYNoUsaLaRutaDelegada",
+          "internoSinTokenDisponibleFalla",
+          "consultaConFalloDelServidorConserva502",
+          "consultaPropagaUsuarioPeroConfirmacionUsaWorker",
+          "http400NoSeConsideraExitoSiLaConsultaDeEstadoFalla",
+          "confirmacionExitosaNoLanzaError",
+          "consultaDePedidoAjenoConserva403SinExponerRespuestaInterna",
+          "http409PorPedidoCanceladoNoSeConsideraExito",
+          "aceptaSoloLosDosOrigenesAcreditadosEnLaRutaInterna",
+          "consultaInexistenteConservaNull",
+          "http409SeAceptaSiElPedidoYaEstaConfirmado",
+          "interno409PorCanceladoSeReportaComoError",
+          "origenAusenteNuloDesconocidoOExtraNuncaConcedeAutorizacion",
+          "http500DePedidosSePropagaComoError",
+          "tenantDiscordanteDevuelve404SinFallback",
+          "http400NoSeConsideraExitoSiElPedidoNoEstaConfirmado",
+          "interno404PorPedidoInexistenteSeReportaComoError",
+          "interno204SeConsideraConfirmadoYEnviaElToken"
+        ]
+      },
+      {
+        "file": "backend/services/pagos-service/target/tenant-corrections-specific-reports/TEST-cl.duoc.pedidos360.pagos.RabbitCoreTests.xml",
+        "sha256": "daaabf7445617251379804c2474397bbea357baf060e962723641c75e6834fc1",
+        "cases": [
+          "legacyPedidoRejectedBeforeAtomicPaymentOutboxOrBrokerEffect",
+          "brokerConfirmWithFencedCompletionReportsUnsettledWithoutSecondSend(CapturedOutput)",
+          "tarjetaCommitPublicacionRealYPayloadExacto",
+          "efectivoPendienteAprobarYReintentarNoDuplicaIntencion",
+          "confirmTimeoutPermiteRepublicarMismoMessageId",
+          "confirmNegativoNoMarcaPublished",
+          "retainedOldOutboxAndNewPaymentPublishOnlyNewCommand",
+          "returnSinBindingNoMarcaPublishedYRecupera",
+          "aceptacionSinGuardarResultadoRecuperaLeaseYPublicaIdentidadEstable",
+          "claimJoinDoesNotLockPaymentParent",
+          "rollbackDespuesDeGuardarAmbosNoDejaHuerfanos",
+          "brokerCaidoNoBloqueaRegistroYRecuperaMismoMessageId",
+          "schedulerSoloReconciliacionHttpHistorica",
+          "dispatcherNuevoRecuperaPendienteTrasReinicio",
+          "blockAffectingZeroRowsReportsUnsettledAndDoesNotPublish(CapturedOutput)",
+          "dosReintentosConcurrentesCompartenPagoYComando",
+          "errorAlInsertarOutboxReviertePago",
+          "unknownAndReconciledOutboxNeverClaimedEvenAfterLeaseExpiration"
+        ]
+      },
+      {
+        "file": "backend/services/pagos-service/target/tenant-corrections-specific-reports/TEST-cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests.xml",
+        "sha256": "01c633783cbdf0e827f9f7575e8aa2208ae9afe06c0ab60c89a6c69a632c1e77",
+        "cases": [
+          "absentLocalConfigurationCannotAuthenticateSpoofedHeaders",
+          "localOutsideLoopbackAndLocalWithEntraFailAtStartup",
+          "productionValidJwtWorksAndInvalidJwtHasNoLocalFallback",
+          "localHttpRegistersPaymentWithExactProjection",
+          "localRabbitCoordinationPersistsAtomicIntentWithoutBrokerActivation",
+          "unknownAndForeignResourcesNotExposedOrPaid",
+          "discordantLocalTenantRejectedBeforePersistence"
+        ]
+      },
+      {
+        "file": "backend/services/pagos-service/target/tenant-corrections-specific-reports/TEST-cl.duoc.pedidos360.pagos.TenantMigrationTests.xml",
+        "sha256": "91cc996017b956d3bdcada65e5c5df947656f15a2be8c994c70e176c440e6631",
+        "cases": [
+          "upgradeRetainsUnknownGuardsWritersAndAllowsOnlyAuditedReconciliation",
+          "outboxUpgradeRetainsOriginalCommandAndGuardsRuntimeWithSeparatedMigrationOwner"
+        ]
+      }
+    ],
+    "log": {
+      "file": "backend/services/pagos-service/target/tenant-corrections-specific.log",
+      "sha256": "3e8cb00db58142d74cee2578ca643e76184908606845a757843aaf65596f2aa0"
+    },
+    "counting_note": "Run before complete suites; its 59 cases are also included in full-suite totals, not added twice."
+  }
 }

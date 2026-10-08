@@ -16,12 +16,18 @@ public interface OutboxRepository extends JpaRepository<OutboxMessage,UUID> {
 
     @Modifying
     @Query(value="""
-        UPDATE pagos.confirmacion_outbox
+        UPDATE pagos.confirmacion_outbox o
         SET estado=:state, published_at=:published, next_attempt_at=:next,
             lease_until=NULL, lease_token=NULL, last_error=:error
-        WHERE message_id=:id AND lease_token=:token AND estado='IN_FLIGHT'
+        WHERE o.message_id=:id AND o.lease_token=:token AND o.estado='IN_FLIGHT'
+          AND o.lease_until > clock_timestamp() AND o.pago_id=:pagoId AND o.payload=:payload
+          AND :claimTenant=:tenant
+          AND EXISTS (SELECT 1 FROM pagos.pagos p WHERE p.id=o.pago_id
+              AND p.tenant_id=:tenant AND p.tenant_origin='AUTHENTICATED_NEW')
         """,nativeQuery=true)
     int complete(@Param("id") UUID id, @Param("token") UUID token,
+        @Param("pagoId") Long pagoId, @Param("payload") String payload,
+        @Param("claimTenant") UUID claimTenant, @Param("tenant") UUID tenant,
         @Param("state") String state, @Param("published") Instant published,
         @Param("next") Instant next, @Param("error") String error);
 }

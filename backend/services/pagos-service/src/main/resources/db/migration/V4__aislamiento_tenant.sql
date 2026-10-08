@@ -71,3 +71,32 @@ BEGIN
  UPDATE pagos SET tenant_id=target,tenant_origin='RECONCILED_LEGACY',version=version+1 WHERE id=resource;
 END $$;
 REVOKE ALL ON FUNCTION reconcile_tenant(BIGINT,BIGINT,UUID,TEXT) FROM PUBLIC;
+
+-- Identity must survive native SQL writers as well as ORM updates. Existing
+-- historical commands are retained; normal new work can update states/leases.
+CREATE FUNCTION guard_outbox_identity() RETURNS trigger LANGUAGE plpgsql SET search_path=pagos,pg_temp AS $$
+BEGIN
+ IF TG_OP='UPDATE' AND (NEW.message_id IS DISTINCT FROM OLD.message_id
+    OR NEW.pago_id IS DISTINCT FROM OLD.pago_id OR NEW.payload IS DISTINCT FROM OLD.payload) THEN
+  RAISE EXCEPTION 'Outbox identity immutable' USING ERRCODE='23514';
+ END IF;
+ IF TG_OP='DELETE' THEN
+  IF NOT EXISTS(SELECT 1 FROM pagos WHERE id=OLD.pago_id AND tenant_origin='AUTHENTICATED_NEW') THEN
+   RAISE EXCEPTION 'Historical outbox retained' USING ERRCODE='23514';
+  END IF;
+  RETURN OLD;
+ END IF;
+ IF NOT EXISTS(SELECT 1 FROM pagos WHERE id=NEW.pago_id AND tenant_origin='AUTHENTICATED_NEW') THEN
+  RAISE EXCEPTION 'Authenticated outbox parent required' USING ERRCODE='23514';
+ END IF;
+ -- Recheck real time after acquiring the row lock, including an unchanged row
+ -- whose writer held the lock beyond lease expiry. Returning NULL yields zero
+ -- affected rows: the store reports NOT_SETTLED and leaves durable recovery intact.
+ IF TG_OP='UPDATE' AND OLD.estado='IN_FLIGHT' AND NEW.estado<>'IN_FLIGHT'
+    AND (OLD.lease_until IS NULL OR OLD.lease_until<=clock_timestamp()) THEN
+  RETURN NULL;
+ END IF;
+ RETURN NEW;
+END $$;
+CREATE TRIGGER guard_outbox_identity BEFORE INSERT OR UPDATE OR DELETE ON confirmacion_outbox
+ FOR EACH ROW EXECUTE FUNCTION guard_outbox_identity();

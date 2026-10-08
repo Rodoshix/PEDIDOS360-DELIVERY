@@ -36,6 +36,7 @@ public class PedidosRestClient implements PedidosClient, AutoCloseable {
     private final RestClient restClient;
     private final boolean internoHabilitado;
     private final Supplier<String> tokenAplicacion;
+    private final cl.duoc.pedidos360.pagos.security.IdentidadUsuario identidadLocal;
 
     /**
      * Si el modo interno está habilitado, exige el proveedor de token de aplicación:
@@ -44,6 +45,21 @@ public class PedidosRestClient implements PedidosClient, AutoCloseable {
      */
     public PedidosRestClient(RestClient.Builder builder, PedidosClientProperties properties,
             ObjectProvider<TokenAplicacionProvider> tokenAplicacionProvider) {
+        this(builder, properties, tokenAplicacionProvider, null, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public PedidosRestClient(RestClient.Builder builder, PedidosClientProperties properties,
+            ObjectProvider<TokenAplicacionProvider> tokenAplicacionProvider,
+            ObjectProvider<cl.duoc.pedidos360.pagos.security.IdentidadUsuario> local,
+            org.springframework.core.env.Environment env) {
+        this.identidadLocal=local==null?null:local.getIfAvailable();
+        if (identidadLocal!=null && (env==null || env.getProperty("entra.enabled",Boolean.class,false)
+            || !env.getProperty("pagos.identidad-local.enabled",Boolean.class,false)
+            || env.getActiveProfiles().length!=1 || !"local".equals(env.getActiveProfiles()[0])
+            || !Set.of("127.0.0.1","::1").contains(env.getProperty("server.address",""))
+            || !identidadLocal.tenantId().equals(env.getProperty("pagos.identidad-local.tenant-id",java.util.UUID.class))))
+            throw new IllegalStateException("Identidad local fuera de la configuración permitida.");
         var origin = cl.duoc.pedidos360.pagos.security.UpstreamSeguro.origen(properties.baseUrl());
         this.http = java.net.http.HttpClient.newBuilder()
             .connectTimeout(java.time.Duration.ofSeconds(3))
@@ -108,9 +124,15 @@ public class PedidosRestClient implements PedidosClient, AutoCloseable {
                 || !Set.of("CREADO","CONFIRMADO","PREPARANDO","LISTO","EN_REPARTO","ENTREGADO","CANCELADO").contains(estado))
                 throw new IllegalArgumentException();
             var auth=org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-            if (!(auth instanceof org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken jwt)
-                || !jwt.isAuthenticated()) throw new IllegalArgumentException();
-            if (!tenantId.equals(java.util.UUID.fromString(jwt.getToken().getClaimAsString("tid"))))
+            java.util.UUID actorTenant;
+            if (auth instanceof org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken jwt
+                && jwt.isAuthenticated()) {
+                actorTenant=java.util.UUID.fromString(jwt.getToken().getClaimAsString("tid"));
+            } else if (identidadLocal!=null && auth instanceof org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+                && auth.isAuthenticated() && identidadLocal.equals(auth.getPrincipal())) {
+                actorTenant=identidadLocal.tenantId();
+            } else throw new IllegalArgumentException();
+            if (!tenantId.equals(actorTenant))
                 throw new PagoException(HttpStatus.NOT_FOUND,"Recurso no encontrado.");
             return new PedidoResumen(pedidoId,tenantId,tree.path("usuarioId").longValue(),estado,
                 tree.path("total").longValue(),tree.path("moneda").stringValue(),tree.path("tenantOrigin").stringValue());
