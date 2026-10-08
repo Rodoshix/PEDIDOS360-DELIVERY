@@ -2,7 +2,14 @@
 
 Esta pieza agrega la consulta interna y sus pruebas. **HTTP sigue siendo oficial**,
 relay DISABLED por defecto y #70 pendiente. No cambia BFF, frontend, Entra, RDS ni runtime AWS.
-#80 permanece abierto para auditoria del PR. Base develop d26726c (PR #87 integrado).
+#80 permanece OPEN hasta autorizar y mergear el PR documental de cierre.
+Implementación integrada por [PR #88](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/pull/88),
+merge SHA `0303a17d176ffd2ae61c73dd37bdce45189b05af`. Base histórica de implementación:
+`d26726c` (PR #87 integrado). Auditoría de cierre sobre develop
+`cd35d310731367d08bd31a324f053dfc32b617c6`, sin blockers funcionales.
+La decisión del responsable sustituye las revisiones/coordinaciones internas por
+la auditoría técnica de Codex; no atribuye aprobaciones a otros integrantes.
+Véase [CIERRE-78-80.md](CIERRE-78-80.md).
 
 ## Auditoria y reutilizacion
 
@@ -128,9 +135,10 @@ docker build --build-context messaging-core=backend/shared/p360-messaging-core \
 Dockerfile instala core en el build desde contexto publico adicional, sin depender
 de un artefacto privado en el host. El caller versionado
 infrastructure/aws/compose.build.yml ahora pasa additional_contexts:
-messaging-core: ../../backend/shared/p360-messaging-core solamente para Productos.
+messaging-core: ../../backend/shared/p360-messaging-core para Productos.
+El PR #89 incorporó después el mismo contexto al build de Usuarios.
 Es un ajuste de BUILD autorizado en la correccion del mismo PR, no un despliegue.
-Compose operativo, runtime de Entrega 1 y builds de otros servicios intactos.
+En #80, Compose operativo, runtime de Entrega 1 y builds de otros servicios quedaron intactos.
 additional_contexts requiere Compose 2.17+ y soporte del builder; referencia:
 [Compose Build Specification](https://docs.docker.com/reference/compose-file/build/#additional_contexts).
 
@@ -183,7 +191,9 @@ credenciales ni ampliar permisos de otras cuentas. Comparacion fuente/live contr
 develop mantiene inventario/policies y confirma la unica diferencia autorizada.
 Reportes de plataforma/resources locales ignorados; sin acceso AWS.
 
-#70 pendiente: corte/adapter BFF, TLS/cuentas, rollback y E2E. #71/#72:
-E2E AWS/capacidad. HMAC distribuido y correlaciones BFF compartidas conservan limites
+#70 pendiente: operaciones concretas/adapter BFF, corte por flujo, activación,
+orquestación y rollback. #71: AWS, TLS/secretos, cuentas/permisos del broker AWS
+y despliegue. #72: E2E integrales, fallos integrados y regresión de entrega completa. HMAC distribuido y correlaciones BFF compartidas conservan limites
 previos #77. Redelivery puede repetir lectura/respuesta, sin cambiar datos; BFF
-descarta duplicadas. #78/#79/#81/#82 no se implementan, sin merge ni cierre de #80.
+descarta duplicadas. #80 no implementó otros consumers; #78 se integró después
+por PR #89. #79/#81/#82 quedan fuera de este cierre. #80 está integrado y sigue OPEN.
