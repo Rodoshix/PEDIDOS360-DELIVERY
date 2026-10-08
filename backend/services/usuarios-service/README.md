@@ -358,10 +358,24 @@ Pop-Location
 docker build --build-context messaging-core=backend/shared/p360-messaging-core -t pedidos360-usuarios:ep2-13 backend/services/usuarios-service
 ```
 
-El build Docker ahora necesita el contexto adicional `messaging-core`. Los compose
-compartidos de infraestructura todavía no lo pasan para Usuarios; su adaptación
-queda pendiente de coordinación de plataforma, fuera de este cambio. No ejecutar
-ese build de compose sin proporcionar el contexto adicional.
+El build Docker necesita el contexto adicional `messaging-core`.
+`infrastructure/aws/compose.build.yml` lo proporciona para Usuarios. Para validar
+el caller real sin iniciar servicios ni desplegar:
+
+```powershell
+docker compose -p pedidos360-pr89-build -f infrastructure/aws/compose.yml -f infrastructure/aws/compose.build.yml build --no-cache usuarios
+```
+
+La interpolación exige las variables del compose (registro/tag, Entra, frontend,
+RDS y worker). En la prueba local se usan UUID y dominios `.invalid` de fixture;
+no se conectan servicios AWS. El runtime de `infrastructure/aws/compose.yml`
+permanece intacto.
+
+La fuente de plataforma #69 concede a `p360-usuarios-consumer` write sobre
+`p360.retry`, `amq.default` y `p360.dlx`; configure sigue `^$`. Productos conserva
+su permiso DLX ya integrado. Restaurantes, Pagos y Carrito no lo reciben.
+La suite completa `infrastructure/rabbitmq/test_platform.py` valida el publish
+DLX de Usuarios y su llegada a `p360.usuarios.consultas.dlq`.
 
 Evidencia y matriz: [EP2-13-EVIDENCIAS.md](EP2-13-EVIDENCIAS.md).
 #81 continúa bloqueado por resolución de identidad; esta consulta no agrega

@@ -162,9 +162,17 @@ class PlatformTests(unittest.TestCase):
                 if domain != 'carrito':
                     identity = publish('', 'p360.bff.consultas.respuestas.q', user=user)
                     receive('p360.bff.consultas.respuestas.q', identity, user='p360-bff')
-                if domain == 'productos':
+                if domain in ('usuarios', 'productos'):
                     identity = publish('p360.dlx', key + '.failed', user=user)
-                    receive('p360.productos.consultas.dlq', identity)
+                    receive(f'p360.{domain}.{operation}.dlq', identity)
+                    with connection(user) as conn:
+                        with self.assertRaises(pika.exceptions.ChannelClosedByBroker) as denied:
+                            conn.channel().queue_declare('p360.forbidden', durable=True)
+                        self.assertEqual(403, denied.exception.reply_code)
+                else:
+                    with self.assertRaises(pika.exceptions.ChannelClosedByBroker) as denied:
+                        publish('p360.dlx', key + '.failed', user=user)
+                    self.assertEqual(403, denied.exception.reply_code)
 
     def test_08_bff_query_and_response_permissions(self):
         identity = publish('p360.queries', 'usuario.consultar-actual.v1', user='p360-bff')
