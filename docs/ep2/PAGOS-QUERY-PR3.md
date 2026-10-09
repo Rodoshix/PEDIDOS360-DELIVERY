@@ -20,6 +20,14 @@ coincide con messageId, correlation_id es UUID canónico y reply_to exclusivamen
 p360.bff.consultas.respuestas.q. Un retry conserva identificadores, propiedades,
 actor, prueba y plazo absolutos.
 
+La ruta opt-in exige content_type exactamente `application/json` y receivedRoutingKey
+igual a `pago.consultar.v1`. La policy de retry devuelve esa routing key funcional;
+no se permite una excepción basada en x-death u otros headers. Las rutas anteriores
+de Usuarios, Restaurantes y Productos conservan su validación de transporte existente.
+Errores de construcción de RequestEnvelope se normalizan a EnvelopeException
+exclusivamente en el parser: type/version inválidos van directamente a DLQ. Una
+IllegalArgumentException ajena a la construcción no se reclasifica como protocolo.
+
 QueryConsumer verifica ActorContext ES256 con públicas de BFF y tenant/audiencia
 esperados. Pagos exige role SERVICE y rechaza material privado de actor. La prueba
 solo admite públicas locales de Usuarios, distintas de las de ActorContext, con
@@ -76,6 +84,36 @@ Margen 250ms..1s, sin gracia posterior. El futuro BFF debe generar R <= E−marg
 utilizando el mismo QueryOperationBudget inicial (máximo 5s y recortado por JWT).
 Este PR no implementa ese productor ni obtiene un JWT desde RabbitMQ.
 
+### Barrera de aceptación del BFF y alcance académico acordado
+
+El adaptador admite un R explícito con el QueryOperationBudget original. Verifica
+el ActorContext local mediante el mismo firmante y sus públicas confiables; para
+Pagos verifica la prueba JWS del request, tenant/OID, D original y R <= E−margen.
+Publicación, espera, resolución y retorno se limitan a min(D,R,actor.expiraEn,E−margen
+cuando aplica). Usuarios conserva su verificación independiente de prueba contra
+messageId de Usuarios y D, y añade el límite E−margen verificado antes del retorno.
+Ningún timestamp remoto, payload de respuesta o header amplía el presupuesto.
+Las respuestas 403/404 también comprueban el límite antes de lanzar el error de
+negocio; un vencimiento invalida el presupuesto y retira la correlación pendiente.
+El registro resuelve cada correlación una sola vez y descarta huérfanas/duplicadas;
+el adaptador sigue contrastando messageId del cuerpo, correlación y operación.
+
+RequestFactory y BffActorContextFactory solo añaden acceso al verificador existente
+del JWS emitido. BffIdentityProofValidator añade la validación del request explícito
+de Pagos; no debilita ni sustituye la de Usuarios. Estos cambios permiten verificar
+límites autenticados sin decodificar claims no verificados ni modificar RequestPlan,
+DTO públicos, endpoints o implementar la cadena Usuarios→Pagos del issue #70.
+
+Se acepta explícitamente una garantía temporal **acotada**, distinta de la garantía
+estricta anteriormente evaluada. No existe ledger, terminalidad durable global ni
+fencing físico que impida publish() de un propietario obsoleto. El guard monotónico
+solo conserva agotamiento irreversible dentro de su entrega; entre redeliveries,
+reinicios e instancias se depende de relojes operativamente sincronizados. Un
+retroceso arbitrario no detectado en otro proceso puede producir nueva ejecución.
+No se afirma impedir físicamente toda ejecución/publicación tardía. La barrera
+independiente del BFF rechaza la aceptación funcional fuera de sus límites verificados,
+con su presupuesto monotónico original, bajo esas condiciones operativas.
+
 QueryDeadlineGuard es opt-in para Pagos. Captura reloj/ticks al recibir, antes de
 parsear, y mide el menor restante entre reloj absoluto y elapsed monotónico. Solo
 permite recortar L; agotamiento terminal sincronizado no se reactiva al retroceder
@@ -105,6 +143,10 @@ Vencimiento impide respuesta/retry nuevos. DLQ diagnóstica conserva únicamente
 confirm-timeout independiente; no renueva negocio. Nack/return son rechazo conocido;
 transporte/interrupción/timeout después de send son INCIERTO, incluso si se agota L.
 INCIERTO impide una alternativa inmediata y conserva el original con recovery/backoff.
+Un confirm positivo sin return observado después de R conserva ACK seguro: ya existe
+handoff de respuesta confirmado, no se publica una alternativa ni un retry. El BFF
+debe descartarla funcionalmente si su límite efectivo ya venció. La regresión de
+confirm tardío inyecta reloj/future; no simula una partición real del broker.
 ACK fallido no vuelve al tratamiento de negocio. No se promete exactly-once: una
 redelivery puede repetir una lectura y la respuesta puede duplicarse.
 
@@ -156,22 +198,48 @@ no se presentan como caída/partición real de red. GuardedQueryReliabilityTests
 PagosQueryProcessorTests inyectan tiempo/transporte/ACK/proyección; no usan broker.
 Las suites existentes conservan sus integraciones reales y sus omisiones Entra live.
 
-Ejecución final completa del 8 de octubre de 2026 (hora local):
+BffConsultasAdapterTests ejercita publisher del BFF, listener de respuestas y
+adaptador con RabbitMQ real. Los servicios remotos son fixtures deliberadamente
+rápidas/tardías; no es una cadena HTTP productiva Usuarios→Pagos→BFF. Incluye
+200/403/404 enviados después de actor.expiraEn pero antes de D, duplicado real,
+referencias discordantes y requests explícitos de Pagos con prueba ES256 válida:
+aceptación previa, vencimiento del actor antes de R y vencimiento de R antes de D.
+BffTemporalBarrierTests inyecta reloj/publicador/resolución y verifica límites,
+expiración durante resolución/proyección, errores, proof inválida y presupuesto
+irreversible. BffIdentityCorrectionTests completa el mock del nuevo verificador
+manteniendo sus aserciones previas; no se modifican resultados esperados.
+
+Antes del cambio, el probe externo sobre a6c50c4 usó el adaptador/listener reales y
+RabbitMQ desechable con servicio remoto fixture: actor venció a
+2026-10-09T03:44:13.116Z, hubo aceptación 200 a 03:44:13.323470200Z y R era
+03:44:14.103Z. SHA-256 de ese log externo:
+`8cdd25a59b7893cc417524a3980268f3f3d8804bfb101ec09d3fe37145068d83`.
+No verificó el consumer real de Pagos ni PostgreSQL/IdentityProof. Después, las
+regresiones permanentes de broker reproducen la ventana de aproximadamente 207 ms
+tras el actor y exigen QueryTimeoutException, presupuesto invalidado y correlación
+retirada; las respuestas tardías se descartan. En Pagos se comprueba además con JWS
+válido y actor vencido antes de R. Esta evidencia demuestra la barrera del BFF,
+sin atribuir ejecución a la futura orquestación #70 ni garantía durable global.
+
+Ejecución final completa del 9 de octubre de 2026 (hora local):
 
 | Módulo | Casos | Exitosos | Omitidos | Fallos / errores |
 |---|---:|---:|---:|---:|
-| Core | 226 | 226 | 0 | 0 / 0 |
-| BFF | 140 | 140 | 0 | 0 / 0 |
+| Core | 232 | 232 | 0 | 0 / 0 |
+| BFF | 170 | 170 | 0 | 0 / 0 |
 | Usuarios | 79 | 79 | 0 | 0 / 0 |
 | Restaurantes | 34 | 34 | 0 | 0 / 0 |
 | Productos | 44 | 44 | 0 | 0 / 0 |
 | Pedidos | 131 | 130 | 1 | 0 / 0 |
-| Pagos | 175 | 174 | 1 | 0 / 0 |
-| Total | 829 | 827 | 2 | 0 / 0 |
+| Pagos | 179 | 178 | 1 | 0 / 0 |
+| Total | 869 | 867 | 2 | 0 / 0 |
 
-Son 77 regresiones nuevas incluidas en el total: 29 core y 48 Pagos. Una ejecución
-focalizada adicional del caso de permisos verificó la denegación de basicPublish
-al exchange de comandos y conexiones registradas simultáneamente; no se suma al total.
+Son 117 regresiones del PR incluidas en el total: 35 core, 52 Pagos y 30 BFF.
+Este cierre añade 40 casos a los 829 anteriores: seis core, cuatro Pagos y 30 BFF.
+Las pruebas focalizadas no se suman a los totales completos. El caso de conexiones
+y permisos vuelve a ejecutarse dentro de la suite completa de Pagos; no se atribuye
+vigencia nueva al antiguo log focalizado de permisos. Las dos omisiones son
+WorkerEntraLiveTests y EntraWorkerLiveTests por ausencia de RUN_ENTRA_WORKER_LIVE.
 El core se instaló antes de las seis suites dependientes/vecinas. El JSON verifica
 su hash instalado y classpath donde es una dependencia. Pedidos usa su consumer V1
 independiente y no incorpora ese artefacto. No se ejecutaron las pruebas Entra live.
@@ -186,8 +254,8 @@ binarios anteriores a PR #94 ni aceptar identidad sin prueba en RabbitMQ.
 Entrega en feature/81-pagos-query-consumer, PR DRAFT hacia develop con Refs #81.
 READY FOR AUDIT no autoriza merge, activación, despliegue ni cierre del issue.
 
-Código probado: `40b01c72594994065def33b4180c0b426b974baa`. El commit posterior
+Código probado: `24469843a97f906b625b9b4893e0be291bd22878`. El commit posterior
 contiene únicamente este registro documental y `evidencias/PR3-tests.json`.
-SHA-256 del JSON: `c96f28220c0de71ef6456fe82ec17f8ad1d6e651ef3724b0c20967b34ff51ca8`.
-Sus 332 fuentes se comparan con contenido normalizado a LF; logs, reportes y JAR
+SHA-256 del JSON: `9457e90a313a36e775f130431cf6351ddeca1d2b4e56efb21f6251d548e02b94`.
+Sus 333 fuentes se comparan con contenido normalizado a LF; logs, reportes y JAR
 se identifican con hashes de sus bytes originales.
