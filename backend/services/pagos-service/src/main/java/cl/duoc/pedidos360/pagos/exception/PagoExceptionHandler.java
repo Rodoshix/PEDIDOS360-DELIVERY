@@ -65,7 +65,7 @@ public class PagoExceptionHandler {
     }
 
     private ProblemDetail problema(HttpStatus status, String detalle, HttpServletRequest request) {
-        var problem = ProblemDetail.forStatusAndDetail(status, detalle);
+        var problem = ProblemDetail.forStatusAndDetail(status, status == HttpStatus.NOT_FOUND ? "Recurso no encontrado." : detalle);
         problem.setInstance(URI.create(request.getRequestURI()));
         return problem;
     }

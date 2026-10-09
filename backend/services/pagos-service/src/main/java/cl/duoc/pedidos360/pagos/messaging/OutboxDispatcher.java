@@ -27,10 +27,14 @@ public class OutboxDispatcher {
             try {
                 var command=json.readValue(claim.payload(),ConfirmarPedidoPorPago.class);
                 if (!claim.messageId().equals(command.messageId()) || command.version()!=1
+                    || command.pagoId()!=claim.pagoId() || command.pedidoId()!=claim.pedidoId()
                     || !"ConfirmarPedidoPorPago".equals(command.type()) || command.occurredAt()==null
                     || command.pedidoId()<1 || command.pagoId()<1) throw new IllegalArgumentException();
             } catch (RuntimeException invalid) {
-                store.block(claim);
+                if (!store.block(claim)) {
+                    log.warn("Outbox messageId={} result=BLOCK_NOT_SETTLED",claim.messageId());
+                    return; // Durable lease/state retains work; never claim it again in this dispatch.
+                }
                 log.error("Outbox messageId={} BLOCKED INVALID_PAYLOAD",claim.messageId());
                 continue;
             }
@@ -42,7 +46,13 @@ public class OutboxDispatcher {
                 if (failure instanceof InterruptedException) Thread.currentThread().interrupt();
             }
             // If completion fails, expired lease enables safe republication with the same messageId.
-            store.finish(claim,error);
+            if (!store.finish(claim,error)) {
+                log.warn("Outbox messageId={} result={} completion=NOT_SETTLED",claim.messageId(),
+                    error==null?"BROKER_CONFIRMED":"PUBLICATION_FAILED");
+                // Do not send again after broker acceptance. Existing lease recovery retains
+                // the same messageId/payload; a newer lease is fenced and historical work retained.
+                return;
+            }
             log.info("Outbox messageId={} result={}",claim.messageId(),error==null?"PUBLISHED":error);
         }
     }

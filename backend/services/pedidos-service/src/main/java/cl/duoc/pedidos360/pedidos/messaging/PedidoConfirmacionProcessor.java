@@ -14,10 +14,11 @@ import static cl.duoc.pedidos360.pedidos.messaging.ConfirmacionDefinitivaExcepti
 public class PedidoConfirmacionProcessor {
     private final JsonMapper json;
     private final PedidoService pedidos;
-    public PedidoConfirmacionProcessor(JsonMapper json,PedidoService pedidos) {
+    private final cl.duoc.pedidos360.pedidos.security.TenantSistema tenant;
+    public PedidoConfirmacionProcessor(JsonMapper json,PedidoService pedidos, cl.duoc.pedidos360.pedidos.security.TenantSistema tenant) {
         this.json=json.rebuild()
             .enable(tools.jackson.core.StreamReadFeature.STRICT_DUPLICATE_DETECTION)
-            .enable(tools.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS).build(); this.pedidos=pedidos;
+            .enable(tools.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS).build(); this.pedidos=pedidos; this.tenant=tenant;
     }
     public UUID process(Message message) {
         ConfirmarPedidoPorPago command;
@@ -43,9 +44,11 @@ public class PedidoConfirmacionProcessor {
         } catch (RuntimeException invalid) { throw new ConfirmacionDefinitivaException(INVALID_MESSAGE,invalid); }
         try {
             // Proxied local service commits before returning; no remote lookup or transport here.
-            pedidos.confirmarPorPago(command.pedidoId());
+            pedidos.confirmarPorPago(tenant.obtener(), command.pedidoId());
         } catch (PedidoNoEncontradoException missing) {
             throw new ConfirmacionDefinitivaException(PEDIDO_INEXISTENTE,missing);
+        } catch (PedidoHistoricoRetenidoException retained) {
+            throw new ConfirmacionDefinitivaException(HISTORICO_RETENIDO,retained);
         } catch (PedidoException domain) {
             if (domain.getStatus()==HttpStatus.CONFLICT)
                 throw new ConfirmacionDefinitivaException(PEDIDO_CANCELADO,domain);

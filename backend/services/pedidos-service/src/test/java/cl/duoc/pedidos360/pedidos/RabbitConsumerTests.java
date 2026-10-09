@@ -59,7 +59,7 @@ class RabbitConsumerTests {
         repository.deleteAll(); registry.start();
     }
     Pedido pedido(EstadoPedido state) {
-        var pedido=new Pedido(10L,20L,"Test 123","CLP"); pedido.setEstado(state);
+        var pedido=new Pedido(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 10L,20L,"Test 123","CLP"); pedido.setEstado(state);
         return repository.saveAndFlush(pedido);
     }
     Message message(long id) {
@@ -103,7 +103,7 @@ class RabbitConsumerTests {
                 assertThat(((ConfirmacionDefinitivaException)e).reason()).isEqualTo(ConfirmacionDefinitivaException.Reason.PEDIDO_INEXISTENTE));
     }
     @Test void invalidoNoInvocaServicioLocal() {
-        var local=mock(PedidoService.class); var processor=new PedidoConfirmacionProcessor(json,local);
+        var local=mock(PedidoService.class); var processor=new PedidoConfirmacionProcessor(json,local,new cl.duoc.pedidos360.pedidos.security.TenantSistema(new org.springframework.mock.env.MockEnvironment().withProperty("entra.tenant-id","11111111-1111-1111-1111-111111111111")));
         var valid=json.writeValueAsString(ConfirmarPedidoPorPago.crear(500,100));
         for (var invalid:java.util.List.of(valid.replace("ConfirmarPedidoPorPago","Otro"),
             valid.replace("\"version\":1","\"version\":2"),
@@ -125,10 +125,10 @@ class RabbitConsumerTests {
     }
     @Test void consumerReutilizaServicioLocalYEntregaErroresAlPuntoDeExtension() throws Exception {
         var local=mock(PedidoService.class); var failures=mock(PedidoConfirmacionFailureHandler.class);
-        var consumer=new PedidoConfirmacionConsumer(new PedidoConfirmacionProcessor(json,local),failures);
+        var consumer=new PedidoConfirmacionConsumer(new PedidoConfirmacionProcessor(json,local,new cl.duoc.pedidos360.pedidos.security.TenantSistema(new org.springframework.mock.env.MockEnvironment().withProperty("entra.tenant-id","11111111-1111-1111-1111-111111111111"))),failures);
         var channel=mock(Channel.class); var msg=message(500);
-        consumer.consume(msg,channel); verify(local).confirmarPorPago(500L); verify(channel).basicAck(7,false);
-        doThrow(new IllegalStateException("DB temporarily down")).when(local).confirmarPorPago(500L);
+        consumer.consume(msg,channel); verify(local).confirmarPorPago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 500L); verify(channel).basicAck(7,false);
+        doThrow(new IllegalStateException("DB temporarily down")).when(local).confirmarPorPago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 500L);
         consumer.consume(msg,channel);
         verify(failures).handle(eq(msg),eq(channel),isA(IllegalStateException.class));
         verify(channel,times(1)).basicAck(7,false);
@@ -276,10 +276,10 @@ class RabbitConsumerTests {
     @Test void handoffFallidoRecuperaListenerConBackoffSinLoop() throws Exception {
         var container=registry.getListenerContainer(ConfirmacionConsumerRecovery.LISTENER_ID);
         var recovery=context.getBean(ConfirmacionConsumerRecovery.class);
-        var local=mock(PedidoService.class);doThrow(new IllegalStateException()).when(local).confirmarPorPago(anyLong());
+        var local=mock(PedidoService.class);doThrow(new IllegalStateException()).when(local).confirmarPorPago(eq(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111")), anyLong());
         var publish=mock(ConfirmacionRetryPublisher.class);doThrow(new RetryPublicationException(RetryPublicationException.Reason.RETURNED)).when(publish).publish(any(),anyInt());
         var realHandler=new DefaultPedidoConfirmacionFailureHandler(new ConfirmacionErrorClassifier(),publish,recovery,new ConfirmacionFailureReporter(json),reliability);
-        var instrumented=new PedidoConfirmacionConsumer(new PedidoConfirmacionProcessor(json,local),realHandler);
+        var instrumented=new PedidoConfirmacionConsumer(new PedidoConfirmacionProcessor(json,local,new cl.duoc.pedidos360.pedidos.security.TenantSistema(new org.springframework.mock.env.MockEnvironment().withProperty("entra.tenant-id","11111111-1111-1111-1111-111111111111"))),realHandler);
         // Temporarily replace listener adapter with same domain consumer, injected publication failure.
         var simple=(org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer)container;
         registry.stop();var previous=simple.getMessageListener();
@@ -417,9 +417,9 @@ class RabbitConsumerTests {
         var invocations=new java.util.concurrent.atomic.AtomicInteger();
         doAnswer(inv->{
             if(invocations.incrementAndGet()<=2) throw new IllegalStateException("Injected handoff prerequisite failure");
-            context.getBean(PedidoService.class).confirmarPorPago(inv.getArgument(0)); return null;
-        }).when(local).confirmarPorPago(anyLong());
-        var instrumented=new PedidoConfirmacionConsumer(new PedidoConfirmacionProcessor(json,local),handler);
+            context.getBean(PedidoService.class).confirmarPorPago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), inv.getArgument(1)); return null;
+        }).when(local).confirmarPorPago(eq(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111")), anyLong());
+        var instrumented=new PedidoConfirmacionConsumer(new PedidoConfirmacionProcessor(json,local,new cl.duoc.pedidos360.pedidos.security.TenantSistema(new org.springframework.mock.env.MockEnvironment().withProperty("entra.tenant-id","11111111-1111-1111-1111-111111111111"))),handler);
         var original=pedido(EstadoPedido.CREADO);var msg=message(original.getId());
         var deliveries=new java.util.concurrent.CopyOnWriteArrayList<String>();
         simple.setMessageListener((org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener)(delivery,ch)->{

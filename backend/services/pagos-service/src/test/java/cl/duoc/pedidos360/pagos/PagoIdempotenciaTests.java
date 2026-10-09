@@ -26,8 +26,8 @@ class PagoIdempotenciaTests {
     private static final long OTRO_PEDIDO = 501L;
     private static final long PEDIDO_DE_OTRO_USUARIO = 600L;
 
-    private static final IdentidadUsuario USUARIO = new IdentidadUsuario(10L, Set.of(Rol.CLIENTE));
-    private static final IdentidadUsuario OTRO_USUARIO = new IdentidadUsuario(20L, Set.of(Rol.CLIENTE));
+    private static final IdentidadUsuario USUARIO = new IdentidadUsuario(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 10L, Set.of(Rol.CLIENTE));
+    private static final IdentidadUsuario OTRO_USUARIO = new IdentidadUsuario(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 20L, Set.of(Rol.CLIENTE));
 
     @Autowired
     private PagoService pagos;

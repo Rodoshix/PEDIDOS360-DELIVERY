@@ -25,8 +25,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Import({PostgresTestConfiguration.class, PedidosStubConfiguration.class})
 class PagoServiceTests {
 
-    private static final IdentidadUsuario CLIENTE = new IdentidadUsuario(10L, Set.of(Rol.CLIENTE));
-    private static final IdentidadUsuario ADMIN = new IdentidadUsuario(1L, Set.of(Rol.ADMIN));
+    private static final IdentidadUsuario CLIENTE = new IdentidadUsuario(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 10L, Set.of(Rol.CLIENTE));
+    private static final IdentidadUsuario ADMIN = new IdentidadUsuario(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 1L, Set.of(Rol.ADMIN));
 
     @Autowired
     private PagoService pagos;

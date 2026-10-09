@@ -20,6 +20,15 @@ import jakarta.persistence.Version;
 @Table(name = "pagos", schema = "pagos", uniqueConstraints =
         @UniqueConstraint(name = "uk_pagos_idempotencia_usuario", columnNames = {"usuario_id", "clave_idempotencia"}))
 public class Pago {
+    @Column(name="tenant_id", updatable=false)
+    private java.util.UUID tenantId;
+    @Enumerated(EnumType.STRING)
+    @Column(name="tenant_origin", nullable=false, updatable=false, length=24)
+    private TenantOrigin tenantOrigin = TenantOrigin.UNKNOWN;
+    public java.util.UUID getTenantId() { return tenantId; }
+    public TenantOrigin getTenantOrigin() { return tenantOrigin; }
+    public boolean esNuevoAutenticado() { return tenantId != null && tenantOrigin == TenantOrigin.AUTHENTICATED_NEW; }
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10, updatable = false)
@@ -75,9 +84,11 @@ public class Pago {
     protected Pago() {
     }
 
-    public Pago(Long pedidoId, Long usuarioId, Long monto, String moneda,
+    public Pago(java.util.UUID tenantId, Long pedidoId, Long usuarioId, Long monto, String moneda,
                 MetodoPago metodo, EstadoPago estado, String claveIdempotencia) {
         this.pedidoId = pedidoId;
+        this.tenantId = java.util.Objects.requireNonNull(tenantId, "tenant");
+        this.tenantOrigin = TenantOrigin.AUTHENTICATED_NEW;
         this.usuarioId = usuarioId;
         this.monto = monto;
         this.moneda = moneda;

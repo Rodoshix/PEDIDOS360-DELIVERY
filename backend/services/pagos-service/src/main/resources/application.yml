@@ -47,6 +47,7 @@ pagos:
     client-id: ${PAGOS_WORKER_CLIENT_ID:}
     client-secret: ${PAGOS_WORKER_CLIENT_SECRET:}
   identidad-local:
+    tenant-id: ${LOCAL_TENANT_ID:}
     enabled: ${LOCAL_IDENTITY_ENABLED:false}
     usuario-id: ${LOCAL_USER_ID:}
     roles: ${LOCAL_ROLES:CLIENTE}

@@ -1,0 +1,1033 @@
+{
+  "base_commit": "4c061d059d95102d1a10d3660c0182e58b20bcf8",
+  "audited_head_before_corrections": "2e5fd9e6dc21b24361150624b83c9f650bc4c80d",
+  "branch": "feature/81-tenant-isolation-pedidos-pagos",
+  "generated_utc": "2026-10-09T00:08:07.524479+00:00",
+  "hash_convention": "Sources: UTF-8 normalized LF without BOM; reports/logs: raw bytes. Final commit is identified by PR HEAD; source hashes bind tested state without a circular commit hash.",
+  "tests": 752,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 2,
+  "modules": [
+    {
+      "module": "backend/services/pedidos-service",
+      "command": "mvn -q -f backend/services/pedidos-service/pom.xml test",
+      "exit_code": 0,
+      "tests": 131,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "reports": [
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CatalogoPedidosHttpTests.xml",
+          "sha256": "90f27728e063405d28c06ee6051919bb5b222f5e9c6ad8f7a14804b73ceb86e6",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:22.526064+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.DelegadoHttpTests.xml",
+          "sha256": "553a14efa11f9bfb13839549f368a6fd7f2baa24b2ab69ae52c50f25ff4b2930",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:52.443938+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.EstadoPedidoTests.xml",
+          "sha256": "9854783b9f6cad8aeb7bd0ed5de0f17a2ebcca67d973acb6a697eaacd43bb7fb",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:52.453192+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.messaging.ConfirmacionConsumerRecoveryTests.xml",
+          "sha256": "ac8a2eb675b41b089f78947bcccfcfb83d4bc75d541404bb5a1f25236ae049d9",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:54.860836+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoAutorizacionTests.xml",
+          "sha256": "28ad78d9bf981d0ba58af7255895795805194f8f316e282a828c57aaf60bf438",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:06.683898+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoConfirmacionPagoTests.xml",
+          "sha256": "0d74766b2f3eae886e539791a8a840c8f81a8b209744fa0d61995b7f403d0086",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:06.877974+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoInternoSeguridadHttpTests.xml",
+          "sha256": "639b68bcfc01ea34e2a40187f3ed2f5b3a57917fde5c543d3ef576e9db435649",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:12.536143+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoRepositoryTests.xml",
+          "sha256": "6bfdceaf06c6caa598a9e8060c165a023203f5f438856573fc9b7e37bf99a234",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:12.619620+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidosApplicationTests.xml",
+          "sha256": "718b5a50128f4b80c83a3dc6ff7e28ae29bffa9544766cfe3de166964783cdb6",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:19.177066+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoTenantIsolationTests.xml",
+          "sha256": "c6fb261985b7e41288596f547635aae91f0d4051e6ea049177ddf1925c5330ed",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:19.459696+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.RabbitConsumerTests.xml",
+          "sha256": "18bbd1eacaff39a95e16e4304f63cd53149afa9723dd0905c601d2b2da362721",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:07:53.064131+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.ReliabilityPolicyTests.xml",
+          "sha256": "8881b8bbb1e4f246a411671978ea422a97ae1cc1626042ea264d330ec744fddf",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:07:53.325818+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.EntraJwtTests.xml",
+          "sha256": "424bbbd918fdf5ececc7e0bf4bcea7cd6374c5e4d6d67056e8d2041aa8ae43f5",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:07:53.441157+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.SeguridadInternaTests.xml",
+          "sha256": "642fba99b7a98be955b3be4abb7eb4fb5a1dfc91944b5ff9be0b0e6216d5dc61",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:07:53.446409+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.TenantIdentityTests.xml",
+          "sha256": "3153b0eb892a90347e7baa7d75f087137109b0c4b5a160da447836074b3b6705",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:07:53.456485+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.TenantMigrationTests.xml",
+          "sha256": "ee60543dffd5f72ac2a1eb3fc09f93ba88cb2b323ff124824e6db1a61786e3bf",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:07:55.744354+00:00"
+        },
+        {
+          "file": "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests.xml",
+          "sha256": "6f7bd194c1b0aedcc929b74d2c39200dc2859b2aaf9e095e4a7a3d8c5250ffb7",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:07:55.751480+00:00"
+        }
+      ],
+      "skipped_cases": [
+        "cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests.workerConfirmaIdempotentementePeroNoAccedeComoUsuario"
+      ],
+      "source_hashes": {
+        "backend/services/pedidos-service/pom.xml": "bdd597243f88fc507e9d915a8f6e46f9b431a1c46dcd4dbef403c11d83ce90e8",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/controller/PedidoController.java": "721fdf76ce020753b54cd1e838fc74a6d023d6edac0bfd0cf87ff1ef735c8ff0",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/controller/PedidoInternoController.java": "56a21a35187c72af091891a5e012d0fdb969f078d58a51cd70eb67d69fe92658",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/controller/PedidoResumenPagoController.java": "1d15554099eebcf284c4208e12f8f5a0c495a8828abf82a7c90f0151383399d7",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/dto/CambiarEstadoRequest.java": "80ad312c20c3dbeeeb4b0a41ac4889c4f7c32459b9ed9efa736f2ef635bda2f9",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/dto/CrearPedidoRequest.java": "38cf092f9e9c43f30507e4e5efff7abb71c6408cc55c2eb54d13a0a1b4926a5c",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/dto/LineaPedidoRequest.java": "9bf1d4afd086681987082a9a5ef4e5d8dd700c92f28056110675b7fba93683fb",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/dto/LineaPedidoResponse.java": "a642568d12335a8372caa20e89a49036343444801e914f1d99d099ba94ed62c6",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/dto/PedidoResponse.java": "bcb3e674756b661152d34a57c14926630ddeb561ae2d230fb92b6d5524b5f90a",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/dto/PedidoResumenPagoResponse.java": "cbf0f0c5946198781015b13c7f7114ccf02c9c76594e7424a3373b630f4d0930",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/entity/EstadoPedido.java": "4cbe9e283020062e4b1e02e294b3adbb3aa6b86d2fd744c733ef392ad1e1cbbe",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/entity/LineaPedido.java": "5342a8e0203901300d5b0508d9a2ba5972afd1d8b187f69f7ed46cd638fcc027",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/entity/Pedido.java": "97726b5e2ca87b635b0f10d5feab91e0f22308927efaab6f74c90ded805939ae",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/entity/TenantOrigin.java": "d11e4386015543e542b64f3ac9e1d99b100ceb2fe69250d61f50401636921a3e",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/exception/ApiExceptionHandler.java": "0b7e72a6df83ee3315a00d39c95a1ce5e175c2a37156bdcaff3d06c107aea7f5",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/exception/PedidoException.java": "7dec7b0b3e05c083d96e86939fc7b57c1147b9cc893ff55e35d033f1c7efa695",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/exception/PedidoHistoricoRetenidoException.java": "d444886984aaa595b76c0a6a2b56985bef4f46b641e4c078a8076684b724e7fd",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/exception/PedidoNoEncontradoException.java": "d0168d51ffe30a8c24c2441b85a697a19beda8650b553924d2cc2b7e1bc86885",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/exception/TransicionInvalidaException.java": "76d6e07b3890a62eef2c8a0aeedca080112b0656bf3a496bed7814c90b31e296",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmacionConsumerRecovery.java": "f82cda81a3dbb1c1a761ebac24bb620798f4e4431be5a3c823a50e56ce3686c6",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmacionDefinitivaException.java": "a4eee8a9532325a6d687a733da6e38df1ba9b84057e9b4fcda1b55acf68e2116",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmacionDlqReplay.java": "d28e6269ba6c5f241e8be8d4b37d8af810c34c6315f09e4dc8ace3162a4d022e",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmacionErrorClassifier.java": "608a09d1686e844b0ff3b4fca92114cabf5735e5f76348bcbaf07fa9ab58f851",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmacionFailureReporter.java": "7e85e2c2c4b06991e63912e19bd3d23033740299f1a1d36b516c667e00532260",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmacionMessagePropertiesConverter.java": "ae4a227fe205398678fc45ffb26397cefe92d13415387d516a6c98baeb2c2c95",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmacionReliabilityProperties.java": "6d6ef5e1684b098924bd075898514bef4b798a273d257d5eb331e389f5340399",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmacionRetryPublisher.java": "39f8edc0f5f5fdb113de13d865037ff3dbbf12a1985bd23923786ea5683a671e",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmarPedidoPorPago.java": "4265af75911186622782be683afe0ccb6f60f1f80dccf306103c2ca8b4f569ca",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/DefaultPedidoConfirmacionFailureHandler.java": "a49e734c33881b2bd31aaa68aae92023311b70437151cc1ea1da0f4af4506934",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/InvalidRetryMetadataException.java": "5494833a13d81c1b44fdc09bfd2bb5e6a77df6c7db3ba94fbced80f69772b5c7",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/MessagingPropertiesConfiguration.java": "36860e1ad857464c1f07d1b7f7c15110a75062c2297d1e2df6dcdc70b0d148c5",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/PedidoConfirmacionConsumer.java": "6e513fb357752d8f446372d6827bbce50e6e22a01186eb5da289c437983e4e37",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/PedidoConfirmacionFailureHandler.java": "50086e1649db5b450dedd135bcad635e0e2af71eca814653fa3fbf3cca93d103",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/PedidoConfirmacionProcessor.java": "32f10eebaff9fa1e96d9e9ea263180b65a60ee5326664959265bb8a07f138a1e",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/RabbitMqConfiguration.java": "20e8db5e9296891f7a2fa5c3949da0d84a2de9b3d4a3fce663e741a8989002cc",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/RabbitProperties.java": "0b5bce098c3899b9bb645c324075c23420aa2561a3a429db0475a659815f3f4e",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/messaging/RetryPublicationException.java": "d5db6ff099efef481b6acdf7b245fc4d08e007caff2bc42e07edb38559d8ef23",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/PedidosApplication.java": "66d32f674c3fe29933b189caa83401566cba1ab89a95c00eb97d8088bba6b523",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/repository/LineaPedidoRepository.java": "de24166266e9a864c4b0ff287fa0a97ca0c67d20d76c3595af76112710fa6bcf",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/repository/PedidoRepository.java": "342f113797f41360d4fb7ec6f0f34743739a8cc62cf218f3da633162a5d80530",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/EntraConfiguration.java": "7e6861a69d01703bdc49f68c2a0a02ff3c50ec3172dff61fce8d4e0e05de36cf",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/IdentidadActual.java": "5d4ee41ee8f8afb208a7d768bacc5d70612da9a92d679c4412dc403515d84b8f",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/IdentidadUsuario.java": "24530ea522629921b06a997330402af4d59e00bbbea72fd0f234079d0e2a313a",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/LocalIdentityConfiguration.java": "c03bb9a78ba250abe89920f912328e368039bd20bdcf172eb4370acd0dc8d8f5",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/LocalIdentityFilter.java": "49099be55ccd01b8a46e17847517736e2f1c5126f2d0d5de9cf5be68d7338fcc",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/LocalIdentityProperties.java": "a702b35646cb54a1c9ab2dba9eb1f0a6691943ba1e4378a1548c3b67cfacd2a9",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/SecurityConfiguration.java": "ccca7b39fbdf283020e949121ce11a67e721b7580e5e09433d7c37ec8df74d3e",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/SeguridadInternaConfiguration.java": "179488d529631a689a94b9180cbaff5ab406e68115c26ac4f5627f2e639244e7",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/SeguridadInternaProperties.java": "7e3dd611712884879a6ceafdd32af6602e91cecac0985dbb0e19a33529004f89",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/TenantSistema.java": "bb516ce5b09604373b92a729653da04bca91919ecc682b22a517acc558bb51d9",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/security/UpstreamSeguro.java": "784232e5d285cb5145f3f320cc834ff70df553edfe4297bfd6c938123f552c3f",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/service/CatalogoPedidos.java": "fa37fdf3feb0ce9808cc6422c563150890612e73ed8de60130f5abcf4f61f2dd",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/service/CatalogoPedidosHttp.java": "45ee1baff63eaa9b09f7f173fdb172482628930aafe07d0606d3b7fc419a975e",
+        "backend/services/pedidos-service/src/main/java/cl/duoc/pedidos360/pedidos/service/PedidoService.java": "2bff058f1efa2d7c615a8eb63c670b1e44410d9c88a03b5b0a63f1b9d961dcf4",
+        "backend/services/pedidos-service/src/main/resources/application.yml": "ab4dd962c14496f208ae93d8988005f1370cd04c32913bd5c3d405e90c7eb64b",
+        "backend/services/pedidos-service/src/main/resources/db/migration/V1__crear_pedidos.sql": "83f2cbc3198118b4c29435bad8305883d9e101ec9a72e70da699d723c7332085",
+        "backend/services/pedidos-service/src/main/resources/db/migration/V2__aislamiento_tenant.sql": "73bd365dfd58fcccc2434aceb760c156c89613f50b0a1be148eb81612a7ec26f",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/CatalogoPedidosHttpTests.java": "53f2376371d87122213a3643b69112e90421e16cf2b5fe9a255dff3eddbc6522",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/DelegadoHttpTests.java": "38c609db20bbda820158e928080928a53514af29a49dc4a59a3e436cd18da3a4",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/EstadoPedidoTests.java": "d03444d26ad9081e3e89bd1aa8d031f29140925033ac84219e311ce4d6699a9f",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/JwksTestServer.java": "64a2e9e3851d45132bd4acdd1680ebbfda34261fc604b53f0f7b4f3de415d1b3",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/messaging/ConfirmacionConsumerRecoveryTests.java": "cdcb944c071d15a9f69ea8ed87513eb98a4c7fe9abe63311291e0f18780dc97e",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/PedidoAutorizacionTests.java": "29b3d61b7521dbc7e5964195582c25d10a8584a861f9e1e057949d6f68016ad1",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/PedidoConfirmacionPagoTests.java": "2e122388e7a3734cb77e2b155790922ccf7ddec1885b7f6558b8da10818a77dd",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/PedidoInternoSeguridadHttpTests.java": "6412350897654461300bdafb81c580a14dfda3093a831d8e562197d49b983194",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/PedidoRepositoryTests.java": "8115f757c1212b90b038491d10c913ccb59252fd69fce3a67e86ce62df37f9b4",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/PedidosApplicationTests.java": "4212362a57f4642f242815e6ecc90a1378bbea028417076317920a490747c2fd",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/PedidoTenantIsolationTests.java": "b870f2bb319cca672e5bf715f049b48465e8b0f98621f7e5a30ae6ce543f8425",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/PostgresTestConfiguration.java": "62fe8036395985d2fba20b56a170023a881aaa6e7fe1410122d801d9fb4183e1",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/RabbitConsumerTests.java": "811ff6b66fa52222105615a28e18984b78c38db40cf623fe30d97725436a507b",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/ReliabilityPolicyTests.java": "d81030c2bcbbd74188e8013c6b7e0b734a2bfb3b50e53e1efcc21156b5f64d07",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/security/EntraJwtTests.java": "228a25aefab33b5678cf00f8eeeef8858ca4bd6e3cf5244d7b803a8c1b78ac54",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/security/EntraTestTokens.java": "93d376467ca3e1086a9907ec38d471f565ea713c1c65e008cab482c00d86a9c0",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/security/SeguridadInternaTests.java": "17a459ae1ea877979d7f8a0dc097ca54969c991aa83a3c55d0da219158497614",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/security/TenantIdentityTests.java": "3c90dabf30d8297686ce5c655f920d66496f2dd2ab3d337be43b05bce21c281e",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/TenantMigrationTests.java": "5fec9d16a380d00f7c20687f92645fbffadcc2b42fecc4ca6272467faa6d5ba4",
+        "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/WorkerEntraLiveTests.java": "78a297c561e28313dd2f09e77ccc744e5f1915ff297ea257a994d9e13e18560e",
+        "backend/services/pedidos-service/src/test/resources/application.properties": "63dc8c7bfd28a89a07890301a423c1f78ce4e43afae97ded7b9689796e0da279"
+      },
+      "passed": 130,
+      "log": {
+        "file": "backend/services/pedidos-service/target/tenant-integrity-full.log",
+        "sha256": "da6a230d164fba871e9158ae64b758333d5a9e44b7032237aa7897f110199b6a"
+      }
+    },
+    {
+      "module": "backend/services/pagos-service",
+      "command": "mvn -q -f backend/services/pagos-service/pom.xml test",
+      "exit_code": 0,
+      "tests": 127,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1,
+      "reports": [
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests.xml",
+          "sha256": "20dbac4d15c0a48289550c2d095598fb061d655fe88df7539b42f955dc45cf31",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:05:55.769727+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests.xml",
+          "sha256": "07b7050e1d3376eede30c7d6dfe88b15c5169677cba5edd85191b7be1cfd32c0",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:05:56.396667+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.DelegadoHttpTests.xml",
+          "sha256": "d4bec086eccb4d4cf4414b8c1cd5d80611f3e3f6562615a4c61bebdd88d17e61",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:06.293673+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.OutboxIsolationTests.xml",
+          "sha256": "5f3ebcf0cb522cb234079f5e460fb5eb9017922685f3500369183e90ec1f83c6",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:11.825499+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoAutorizacionTests.xml",
+          "sha256": "eec61fe7454de79e3fbc41946fb99d8d1abc744f93cc91e1a2f67e36ae12f2fb",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:12.114342+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoConcurrenciaTests.xml",
+          "sha256": "fa381af90a3c62bdb70e8235be43d6aac572d1a0db48fbdcf2acc3e424a5b021",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:12.240488+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoEstadosTests.xml",
+          "sha256": "107b03a799ebdebf675922d399c3be46a4e2280b5f3b7e3f4056e3163f8a11d5",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:12.247003+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoIdempotenciaTests.xml",
+          "sha256": "b444abf48c44fa7077a26f3a8f04be68a8282a031fb041fd6e9b2edfebbc9b83",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:12.383251+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoRecuperacionTests.xml",
+          "sha256": "f38cdb59697f8367ca95d4f53aaa46430c5d15ed70d5a9a9708b7f1f9bbbd89b",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:12.499706+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosApplicationTests.xml",
+          "sha256": "2fbb4fa1470695c0555cd82c702b7ef1b23e302bfd7f128705fb42f87d179cbb",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:14.828501+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoServiceTests.xml",
+          "sha256": "f50974919c76d2d11bfcadfbc08cefb661d97c995007a010a939d7c16e45b74e",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:14.962336+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoTenantIsolationTests.xml",
+          "sha256": "d1bbdee4696457ee5fc956903acf62a65b92da7af9ffae75463fe24c748ff282",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:15.123724+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PedidosRestClientTests.xml",
+          "sha256": "852111215db4304ec67e947787cfcdad550e280c00802be43913c8b972a33b94",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:15.400707+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.RabbitCoreTests.xml",
+          "sha256": "35d5b820ad73882f634e1bbb471a73ffbb27319adb1e3bfe0bf7eeb2d797b22d",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:29.605218+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.EntraJwtTests.xml",
+          "sha256": "97bdceddb458c56ecca2ef080ec4fa8a43239d62d2735dc5848f68c26c33cc5f",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:29.843699+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.TenantIdentityTests.xml",
+          "sha256": "8dc38ee75aac17b3928d15220a0d8568c4173ae23d5ccda19caed0c250fc092d",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:29.855745+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests.xml",
+          "sha256": "7751922f07677cacd3a8827360a342f687beba567ceecc38936c07d4ba078c96",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:51.326819+00:00"
+        },
+        {
+          "file": "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantMigrationTests.xml",
+          "sha256": "bdbec02a4dbb049c65ee5958022e5d9d9ef511f3d4c3dfc2508b1da46507f069",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:06:56.381198+00:00"
+        }
+      ],
+      "skipped_cases": [
+        "cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests.autenticaConProveedorReal"
+      ],
+      "source_hashes": {
+        "backend/services/pagos-service/pom.xml": "f29ae1880b4dea7cf81c5aab3a1df49468ecbc474eb11465b883991ad361e5b4",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/ClienteHttpConfiguration.java": "0f9f4cff7197f54aa55085cf8a6ded76ff821cec1517d1a3a59f53f64e67cf7e",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/EntraWorkerTokenProvider.java": "37db0a0d8fb886aece226ac55ed6067c53099791e8b44c72e41d175039385143",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/PedidoResumen.java": "b39d15a1ccad8c33bd7cd790e56078332189b7a999291b84ca08477cafa9e792",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/PedidosClient.java": "aad1adf089113c28ff90fa302d3c36f2357feffc08847944ec985f88ed3cd2cc",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/PedidosClientProperties.java": "290ebb46d44bf7575b734c04e96ef988f96850f0dd68490f4fce7226834872da",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/PedidosRestClient.java": "3f4a091ad9c0a01f322cc3afdc0f048cbabd7b78c15af64820db7e36cb3eec51",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/client/TokenAplicacionProvider.java": "623a203249917f437c32b32f410f4aa63b21971719bf2fb606172087f4cbb5ec",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/controller/PagoController.java": "96d666a62ea6f87baafb530f425f428c8769e2011a70b85fe69a3cb92f6854ff",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/dto/CrearPagoRequest.java": "3d477e3321fb25f73378f719c8d1937f0d677a9ee6ae37dc901e31321daef723",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/dto/PagoResponse.java": "db48b6266644398eff1b777e601238d33dc1b17ebe4e659ef2b91728f35e1b56",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/entity/EstadoPago.java": "258fbbf15c9e98820f3ace2ab5097d717f6927e5755bc2854b64fdb9427dfd66",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/entity/MetodoPago.java": "ef771aa23bb8c1365cae2bbfbd0d0dbc3c0da33a0b8f15f29a81f1c83363bae5",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/entity/Pago.java": "c92293e56e8b654c9864b424cf8e33c3d768880d12561324161aa31b6534d7d8",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/entity/TenantOrigin.java": "8a0f40749cb1d627f5ed3711d8cbd45edd28c29fe7c6762a0ed15fd956bd645d",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/exception/PagoException.java": "fc25e8d909b954482776862ba559472ce4772a5632d1992377a798e1edd895a2",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/exception/PagoExceptionHandler.java": "2071ebe626c96bb25df46d64cc957d634e7ec23749236aaa90dfa86f2d35b2b7",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/exception/PagoNoEncontradoException.java": "80503bc7007c017a2ed1c43f0d468083ba7d3025d242e6260c035a8346eda166",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/ConfirmarPedidoPorPago.java": "19be3084d025f3ca375718bf9e33954f7060cd8f9f18329f0c4c9402b61d2dfb",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/MessagingPropertiesConfiguration.java": "becb986a9e961becc65428f2a56e89d1beb7fb33f892eeb86b947a0ba0cd6098",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxDispatcher.java": "37f6d0891d07413ca34395afcb1be5e1c7271ffebd638fd30ea4d4f50de14893",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxMessage.java": "f5d5dd170f32d116c414fc4971e3b96c00a1c9c151b711943dcc6b80309d3ea5",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxRepository.java": "844103493fd36732a74cfdb5cc44090ca218e792615eb68952017009c4399f49",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/OutboxStore.java": "0aa44e282ee533508eb60bb6bdd0082f5a564c6c49602c9000ee8e218bcdeb8c",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/PagoConfirmacionPublisher.java": "d9ec4c1c5fc02e83ce277b0a0d639ba027236f65abfaee101b0e361be5293ce2",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/PublicationRejectedException.java": "54db229b2736c9db6329bf4310370e30e5d583f691ad9939606e4e22d956425b",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/messaging/RabbitProperties.java": "b26f9b6ec0cd23584c669ced57715e56a048fbc8ced33f7aaf37d1cb31053d57",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/PagosApplication.java": "e2e689ad9927566c71765e9e4dd8d61be3dc49d96845ed0870baa96e148216b6",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/repository/PagoRepository.java": "2c013253c374da7c2fe01268bd156d81d8ee13f2152160bbf50fc77e7b7fcb8d",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/security/EntraConfiguration.java": "65b4d604d57006108b1d40b8d3ccdd32b0746a107fd7a844def905038e9db100",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/security/IdentidadActual.java": "718391a074561ceff2312ccb00f790db86e046abc242775a47ae63773e90021b",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/security/IdentidadUsuario.java": "caee318bbd317c1f8e96c0f95803bba5f92ef87a593c8ba8f104522cf7ba7aff",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/security/LocalIdentityConfiguration.java": "670f2f34845a219ccf792a0f675c0fa2eb58f30aa6ac3ab31e02d1de83cda690",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/security/LocalIdentityFilter.java": "391da494206f871c2cecc6dfb5bce620b59f1ded766be8af04a6ea1d4bf73af7",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/security/LocalIdentityProperties.java": "76077c4de2127d0b98a20827335a8526c937f9cb551b7b597ad71caa044ac4c0",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/security/SecurityConfiguration.java": "540eba424dfcd103f45c7fa4e904cf8cde3514c3f706a28baacf0a8fd1827dfd",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/security/TenantSistema.java": "69f7be01ea02106405763f1c0ae3f8f71b7034690105edf2d235ee6cb2301054",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/security/UpstreamSeguro.java": "b16cbe1b29b4a87b3219afe7a8ae9b73777863e1f0339813769939f7f8ab73a4",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/service/PagoService.java": "afc4bba1a3bf0cdf610b619fad48d571b3b54bc80a6121fc2e2fa8390df9198a",
+        "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/service/ReconciliacionConfiguration.java": "4172f8e996159ba3831e35a36f3ccbd9044e45e5968e3e71c6a4b7474e85ce19",
+        "backend/services/pagos-service/src/main/resources/application.yml": "5b301f385eaed853dc9d6024568c2a7f2730976884c0b3f2969a234ead12b31f",
+        "backend/services/pagos-service/src/main/resources/db/migration/V1__crear_pagos.sql": "aff9c8fbf971886f01076a0da736c552a3d179f47eae34dc9bc2dde466130ea2",
+        "backend/services/pagos-service/src/main/resources/db/migration/V2__unicidad_y_confirmacion.sql": "69b7deb9c6ba16982b68fa11ca0150b62d57e798b3df74d9c90958b84ef20e06",
+        "backend/services/pagos-service/src/main/resources/db/migration/V3__confirmacion_outbox.sql": "407c8fb9f1791a32e0f28a070bc80a4c6166a4a0a45e87153b087f272511f741",
+        "backend/services/pagos-service/src/main/resources/db/migration/V4__aislamiento_tenant.sql": "3b77e6b0dd9c83c2edc9f988fd23b4decac69b94703fd1826921214ebba91a02",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/client/EntraWorkerLiveTests.java": "32497b9fc1d19101244c46e91885a761277b55983d0514b959981f62604f4a7d",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/client/EntraWorkerTokenProviderTests.java": "2b515ecf642f02923e3181ef478018fe9c64c50621dcb7d0e78173d559b5053a",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/DelegadoHttpTests.java": "a48e19081e8fc6b6fef07b41ea5c4f0d0843a00af3c3a1add3105eb35c4e24e0",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/OutboxIsolationTests.java": "a815be08ef48c5d87dc72707c4b84d037caacc35c6797bd4590cae38e070f25d",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoAutorizacionTests.java": "14269b458dfaf562e2aa0e533c7526f579ee93e79fd3a1acb965887301ce317a",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoConcurrenciaTests.java": "5a105d36cfe69cae2b4b863e475896d774563078649e720c63775962e1723100",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoEstadosTests.java": "f66ba3d74cffaae3142c8bb39a1d0081e09b13caf9a7202e90b6aff096127879",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoIdempotenciaTests.java": "c41fcdc3544e5409733672d1e14b866d7850412d3ecde1e282ee5867bc7e278d",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoRecuperacionTests.java": "920edb5cc7c1775aad7be7ac88587ab28ae36485021222b46686e481891a46b4",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagosApplicationTests.java": "a59bb6e2541f4354053f471b03d683a43b10f3f57599dcc8889a8969787cb777",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoServiceTests.java": "9cc0cceccd13b2d61a4a7a34b9bade7896e568de253df1c37c4437ac5858848a",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PagoTenantIsolationTests.java": "eb948a1ff93f8952044f75795110f031cec0325fc949c7ec23e4a93f7484c471",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PedidosClientStub.java": "d1b0008d4803049724881a9389e27f7f0d07cb27aa66f79533c8cc614828a7fa",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PedidosHttpServerStub.java": "22afc2d7682eaf8c5d7caf965ec9aba010f8e7545e702eae539c0cbe3dbcb293",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PedidosRestClientTests.java": "50c251e7b413749dbeb8fa9a6035e4a4b4c65141aa1c0a755e531a4367ac7eb1",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PedidosStubConfiguration.java": "d23968129b92068484a20febbc9b0d6d4dba6950537e4b64efed0a60c7c24f19",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/PostgresTestConfiguration.java": "fbf10b54b4e534c82649f8de157db7a6f7d8622fdfdd66b812fed0fe687941c4",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/RabbitCoreTests.java": "447522829c5bd69f89c6c0c423712a53c8b7548055734d74e902c0a7eb8a6c2f",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/security/EntraJwtTests.java": "ac9fd61ad30da275c84dc5c5bd360b2c80ffd36164c28687f9c989a1b79a60ca",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/security/EntraTestTokens.java": "0850d10a6174eb4b846d261f1b35f597a7dbd7d69ecf65dc6a6835e83507eb0b",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/security/TenantIdentityTests.java": "a593f59243d10c9f4e8c3316d65efc8950e8f251fd6f200c10de7e2a8e1cb108",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/TenantLocalHttpEndToEndTests.java": "35ee97e178db318e1dac089c7bda8767335ac4d36cf34cad0af3bd9bbf59dc2c",
+        "backend/services/pagos-service/src/test/java/cl/duoc/pedidos360/pagos/TenantMigrationTests.java": "33d69e7b919b7457c4430bb1d5e721ed7d00c0a35ff85b0a10873cd32005260c",
+        "backend/services/pagos-service/src/test/resources/application.properties": "daa1a6f40102d8784852e9d1d0dbaa6fde7235f956d7e3c555e97ccc8540f08d"
+      },
+      "passed": 126,
+      "log": {
+        "file": "backend/services/pagos-service/target/tenant-integrity-full.log",
+        "sha256": "3ace7fb997c4ec8180c39500a0f12d8d69997837d3146ae75adc37b9d6d816e9"
+      }
+    },
+    {
+      "module": "backend/bff",
+      "command": "mvn -q -f backend/bff/pom.xml test",
+      "exit_code": 0,
+      "tests": 140,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reports": [
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.BffSecurityTests.xml",
+          "sha256": "1c69cff94e94e020d1123855ece16f38a4eb21916b05dbd6dcecd55e1f11f4a8",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:37.163622+00:00"
+        },
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.client.ComercioInternalIsolationTests.xml",
+          "sha256": "d017c100204ba40074e3210290db3f0cb3a984b1afe6595817aba89d90aa7cdf",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:37.189523+00:00"
+        },
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.ConnectionConfigurationTests.xml",
+          "sha256": "31204b2a31ab8e282e6f989ffa661dbf9d70854fd6681c60b92a6774689ed6c7",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:37.257818+00:00"
+        },
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.JwtHttpTests.xml",
+          "sha256": "4edda0e556a304248902efd9e0a2dc5cb2703c5d40d54e08a1d248f3879223fc",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:46.203429+00:00"
+        },
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests.xml",
+          "sha256": "68cb6542005fa642b0a0b2cc699cfca4d34cef15e2d4941e8f37a58ba107e0b0",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:32.598656+00:00"
+        },
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests.xml",
+          "sha256": "abc41cb9347adf457ed9bee4766d544c9247ef0462e4958526be125f26c0e958",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:34.071524+00:00"
+        },
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests.xml",
+          "sha256": "09b07a0cbf6129d74d2a5a4241bb228d88e0791a0cf3b0646a60645610d5270f",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:34.630784+00:00"
+        },
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests.xml",
+          "sha256": "b40ea3cfc93b0a853e49b636b3d237ca9982a0e7775d2bbce74702a31d1f55e1",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:34.721231+00:00"
+        },
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.PedidosPagosDisabledTests.xml",
+          "sha256": "cd554f9f4a0877bba6c0b26efd3fac681501ed410c7daef2c7f150345e1163c1",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:37.860473+00:00"
+        },
+        {
+          "file": "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.security.EntraJwtTests.xml",
+          "sha256": "1640cee46f0666f8a00ff3bcc568eef9b62bdcf7aa4b75c80a646678162bd8e3",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:38.407607+00:00"
+        }
+      ],
+      "skipped_cases": [],
+      "source_hashes": {
+        "backend/bff/pom.xml": "ba5a56992f98180127933412de0d38750437dd875fd448a4ad409db5dc46e18d",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/BffApplication.java": "892d995af6477cbf944876f0eec974675c35ccb78f6cd63c6a6e54be4af2cc92",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/client/ComercioClient.java": "a166f71daeb76c62e48c60854bda16e0c54f0a04b7fc1a1963d17bd04d71de38",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/client/UsuariosClient.java": "19fa9db70ac28ffec8fc66289fd37d40033d4c4f07faba0bf514b6a0b7b3e88c",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/config/ConnectionConfiguration.java": "1f5f701bd9e69aaa1bac8dc669ce9b839323b11bbd1aed46e1c7dc2e8b34c4b8",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/controller/CatalogoAdminController.java": "f15bef6b86c59274ad84bd37c776bacc310f7317ab293498fbc78bee7dd136d2",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/controller/ComercioController.java": "c331ddea34d4ee90c3560553434646bf223658efb0228c07021fc0f45ec957df",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/controller/PedidosPagosController.java": "8c04d88016172f54624a85881f7b32c80a0c20a640fed02a4234a03ad2038260",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/controller/UsuariosController.java": "ee30d8c72a738dd82b4a23c7d30c27c3677984568742d4a0eb70cce270d3ddb4",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffActorContextFactory.java": "acaa7e8437a2bdcb2aa7a5f21816cb7e3ce565f7de66e32ae7f8957a83a34114",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffActorProperties.java": "68b078eb7b69a170805103547448341d1093df2949da8d507fdc9b26ad47f5dc",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffIdentityProofValidator.java": "fa86e9e35475302338d7964ca5559a88d90554b622eed3254941ecc35291e77b",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffQueryAdapter.java": "065bd349497cbf1948e9319b9d1a8937721f505bb6dfbc5b9960893e35bc10aa",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/BffQueryConfiguration.java": "17053a468a3e16ec035ee713cb97229590d693a95a212b4c199405fc1126f7ac",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/QueryInvoker.java": "e0ea71843f0b667266b01885e96a0dd2f915726e95ddfb1b1a30f34c8f3ee002",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/QueryOperationBudget.java": "bccc6172ef08f36c5706258e84e16c654d00a917ce9b26d8ccd20852fbfc7bc2",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/RequestFactory.java": "ac5b38cff7f8c773fa3b5d1768f1714a47daf975f5ab7edb648350239ede2553",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/messaging/RequestPlan.java": "2d9159abbdf06eb47ae3b54d050f526c39c522da4e504240894b58214c519e4e",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/security/EntraConfiguration.java": "69a4d4e0faac7be39a3b892e7fa30eccd059c1f6b1e9ddc44dea762610b50486",
+        "backend/bff/src/main/java/cl/duoc/pedidos360/bff/security/SecurityConfiguration.java": "9050ca998e4da057c53434f5886b75212b8db5d4feddf46204df0236224c92ed",
+        "backend/bff/src/main/resources/application.yml": "403564e9973ad4a326c7bbb2ba43bbacd32f48694fba4838b1e6a07bac1ec616",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/BffSecurityTests.java": "47e4f83d6cbc1e96ded270e38b38fa6f0f02a2c8125c581ae713301948d83cb2",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/client/ComercioInternalIsolationTests.java": "a30ce155944db55d76e6aff46df8ec8fcc865efa0455993f2291b31fadd646b5",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/ConnectionConfigurationTests.java": "f7163ebcb7fc5fc5a838deabf345b8bb62ab73c91079a1b72a9fdeaa5a860227",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/JwtHttpTests.java": "7c149184357d2a90320fbe8d50fa3b51c93cb6e0dbcd30225bec08bc63df638e",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffConsultasAdapterTests.java": "f989186cbf55440ac6476f181628fb29fee63147b2ab6e6382edb70f387bc027",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffIdentityCorrectionTests.java": "64825bd68ceb92d28a2780a407b32e8f169611c7ee2846de109cae21e5bf89c6",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/BffIdentityProofTests.java": "37b37456785127ddf371da2c05671b455ccf5aa7663f34aa571704a19d7d7777",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/messaging/PendingCorrelationRegistryTests.java": "8d5eec9072799a4d724d5af49808655c26f1551ddaff2478f0e6388805606f54",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/PedidosPagosDisabledTests.java": "318c5e2a2c25b651f51869c8d975cad5ef3d17d5654e9b6d83aa8dfc3278a2e3",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/security/EntraJwtTests.java": "aba15d941e051099fa43470ba03f824a3de788baa582a908a4c1a47809430058",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/bff/security/EntraTestTokens.java": "347537f046018fb7e1c191e9d2f4fecb91342a6dfd4eafa565cc8751a3f9b700",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureActorKeys.java": "1800fe897ffaa395a8e63ae9900210bf5a8c34847af32afa137e07943bf1a66b",
+        "backend/bff/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureIdentityKeys.java": "ef345566fd37d4a631b8b749ec7f6fa380e2f6afd827f3f1cce92bc6c3a83e97"
+      },
+      "passed": 140,
+      "log": {
+        "file": "backend/bff/target/tenant-integrity-full.log",
+        "sha256": "420a1f6db36d24175479442cd46127f5e23d3b8210a3fefb0228ec71c8d33b24"
+      }
+    },
+    {
+      "module": "backend/services/usuarios-service",
+      "command": "mvn -q -f backend/services/usuarios-service/pom.xml test",
+      "exit_code": 0,
+      "tests": 79,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reports": [
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.JwtHttpTests.xml",
+          "sha256": "37230d6cf93d37f635f019022caeb6bfd50fa27ab6668351a3748576cbf5c9d0",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:55.102019+00:00"
+        },
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests.xml",
+          "sha256": "a26d1c61e8f12adb7a80540999243618e37031a9283bc4e8fbc6a82e3e828831",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:55.708373+00:00"
+        },
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests.xml",
+          "sha256": "04ef59ba7fc57601b4df320f861fc3694461e3c0202e8fee7948c6246d44e272",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:58.572008+00:00"
+        },
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.EntraJwtTests.xml",
+          "sha256": "919d0716fd3062d5488952e54e5dfd83a76d0e508172749e648a08a8ae7cf876",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:59.645535+00:00"
+        },
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests.xml",
+          "sha256": "a495621784ebce7e88f17a5af512163120d8d791357f64944ec070076fec0c43",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:59.922790+00:00"
+        },
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests.xml",
+          "sha256": "ea371d002af18a705fae38d601c86499f0bffd227a08e124f46a2c874c296273",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:09.584576+00:00"
+        },
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests.xml",
+          "sha256": "cdcbda7cab9b058042551e34244312147eafeb47a7c121205e3eca4ca5409616",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:15.591974+00:00"
+        },
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml",
+          "sha256": "cf884f1f8a4b2d71cc3b07af4f8d7497fda438b88222e929b150335b36411b54",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:20.321028+00:00"
+        },
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml",
+          "sha256": "9e22a38717211808a3635aa99f88e9ca3235188425b83633a6b497ac5b16d4f7",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:27.175163+00:00"
+        },
+        {
+          "file": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml",
+          "sha256": "13a621f91f012179c15b37d473f772608798b2382424eee16796ab0879349575",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:04:01.076045+00:00"
+        }
+      ],
+      "skipped_cases": [],
+      "source_hashes": {
+        "backend/services/usuarios-service/pom.xml": "75bfaa5b86daba95ec6675b8531e9934ad7d55a2d6054cea4e69b360b4588edd",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/controller/UsuarioController.java": "c37b7ec3410dd7924146211362165d203aeb7593885e334f014b85a6b6ef38e9",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/dto/PaginaUsuarios.java": "7578060a63e8e939026ee2d7ab9dea7847cbcb467b66466600fdebcfd1681557",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/dto/PerfilRequest.java": "c70c4291fea8bae18d5389e0067ac99f9527177ecaa1e0b9181a1759329f5e91",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/dto/UsuarioResponse.java": "739aa172925744d26883b0673f0a447bfcbfd746bbf2d13f3e6d75769bf79531",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/entity/Usuario.java": "6f92d4c229924aa0e276f7a956a69de45e17e858f5ab7611b9d48215d2d65b37",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/exception/ApiException.java": "9bb2ec00a166a832b5c58a99325522ede9b0d2146d3cab871c7f37bae8d990d5",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/exception/ApiExceptionHandler.java": "cf5494bbb08baf253ca301a0492cc00f9149356fdbb2d095aee6540f6f6f62e0",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuarioQueryResponse.java": "f9ccde6c380891b3030a42d6cdfa9ce04eb55f88731586abcac51cf5221a25de",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosIdentityProofConfiguration.java": "cd9fb2d2e86b74556e31ab1ca3a7942c597556420b0c867fe6f037ac3aeb255b",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosIdentityProofSigner.java": "130bd60ee83039f7c912d9c56dd227e3ecb245d9384ba78e4d28b1a11bdb4611",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosMessagingConfiguration.java": "520af65f97268502f6c6cdb06f2c4a64453c7269dff94f84bdacadd96fde5752",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosQueryProcessor.java": "2a1bf6e0c1d56b0159c7c6e6913994e017e31643e29a17b5aa377dba63056479",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/repository/UsuarioRepository.java": "08482b82cf6c7f8a46de8e8bf2fdad86dad40b57763d6145921e46ec2536f156",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/security/EntraConfiguration.java": "7f9b31f80c61f095deedceae70638721236697faa08f6e380f1024d37f77d90b",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/security/IdentidadActual.java": "3befbea390bf5e26a252bfb29faa7763c2e3700986f6b4483ad86788a9e7f64c",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/security/IdentidadUsuario.java": "cc7bdf5f2a4db4714494e684615a058944ed29957f88af9d9217f86b5741584f",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/security/LocalIdentityConfiguration.java": "ae1b352dcbe18d524c4bdd2e0a341176c395120afb1539a93dce6febfe3d9493",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/security/LocalIdentityFilter.java": "0c339f1605ee7d094be5e485bf0d43d4bb5aa3d6cdfd3da0b52b501af1c1c890",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/security/LocalIdentityProperties.java": "b4e093424e34e88421c8517b99ab6f6829b78eb3c364ee26758de303c4291564",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/security/SecurityConfiguration.java": "ee926c73008c7b9862e009add6045e6e65d46176d3ec4b5ee88fd62a1be9e8a2",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/service/PerfilActualVerificado.java": "da7e1e11123d253558fc1b893d51d55c89cbd05489cc0a534106133d5f31a90a",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/service/UsuarioService.java": "99594cf36af4b2df21cb99f6cf3b97d403fe628b4feadd82e41b50940664e480",
+        "backend/services/usuarios-service/src/main/java/cl/duoc/pedidos360/usuarios/UsuariosApplication.java": "da6a981ea171a9342bd8a599a2ccaeef544a62b298f4187fe652b54cba27b209",
+        "backend/services/usuarios-service/src/main/resources/application.yml": "752776b07ce23adc38130de2a6a84a61815e8edc633374fbcddd1e1d7c917882",
+        "backend/services/usuarios-service/src/main/resources/db/migration/V1__crear_usuarios.sql": "73705976eec415837afc5d52c5260393318a22be114da238b399e9ad8e9e04e6",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureActorKeys.java": "1800fe897ffaa395a8e63ae9900210bf5a8c34847af32afa137e07943bf1a66b",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureIdentityKeys.java": "ef345566fd37d4a631b8b749ec7f6fa380e2f6afd827f3f1cce92bc6c3a83e97",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/JwtHttpTests.java": "2e7137b5eb81d9baeb2a73c5649b793de9866f625a2582ef155976967068a2e5",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/LocalIdentityConfigurationTests.java": "7cc588c2b25f11db4429becbd6c8f5a200ad0b06d4682717fe258d6de8a658ac",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/messaging/UsuariosIdentityProofTests.java": "e5563dbffd3e75e85d48439b5f39299553d509c992346ad076eb79579b249ed5",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/PostgresTestConfiguration.java": "2c15c7f6a29a17af044d6a4f98b38cd7c49e91fd87c4c4ece5c560c3cd212c45",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/security/EntraJwtTests.java": "55eb9536f7cdcb4d6a08bee6556cfa0b1cfe20fd24972980c39d69c8f8bfaf58",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/security/EntraTestTokens.java": "6411876c1230e876e82b82f07fbe66c7af2412c84c4d5cf3e8fcbecb6b70a6f4",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/security/LocalIdentityFilterTests.java": "605010657b2015ef1bc7e16bae0976064d913b6ebd1b519dc6eb5d0611adcc2e",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/UsuarioAdminApiTests.java": "b95f102195450839c345d2f7fbfd838f7e6b33eba4f34db897b4c79e226f3932",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/UsuarioApiTestBase.java": "1ca083c2a492ca4ff7f984b0310d11f39b42e95d3693b38041e4b39fd198dabd",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/UsuarioClienteApiTests.java": "a3bea90ecb6b8283167a33041cc0d3166d0a024b03b8d842abac8de3cb64d591",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/UsuarioRepositoryTests.java": "e0f2d6c8ae927e27933e47bdf2f67212c824ce4ae1040fe15f809345a0335b41",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/UsuariosApplicationTests.java": "7d50d70ae81963f9e8d05d34009331895242f8458dd34eefe54f0fad80650141",
+        "backend/services/usuarios-service/src/test/java/cl/duoc/pedidos360/usuarios/UsuariosRabbitTests.java": "903cac93b1875648511776723d14f30c13fe109281ad692e5025cf077c1bdb36",
+        "backend/services/usuarios-service/src/test/resources/application.properties": "f6bafbbcad7373c906de8cd1a36d2e7e42312e9b9a390dc1206494293d3cfa1e"
+      },
+      "passed": 79,
+      "log": {
+        "file": "backend/services/usuarios-service/target/tenant-integrity-full.log",
+        "sha256": "6ffe1d24e75f4457cda317f7f974a541e8ce57616d4892a81a37514d2bab2078"
+      }
+    },
+    {
+      "module": "backend/shared/p360-messaging-core",
+      "command": "mvn -q -f backend/shared/p360-messaging-core/pom.xml test",
+      "exit_code": 0,
+      "tests": 197,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reports": [
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml",
+          "sha256": "a62adb51f26d0733e154397149cc09a8b4f23c23650f11d73ce4d84398759136",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:33.051393+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml",
+          "sha256": "f8fb55c0d715254567e61c0816510eedcceb3e18ab7a26c7ca95e551cde99d73",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:34.055890+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml",
+          "sha256": "bdbb79e8fb7c18a2daf2242d6644b0567ab2794a386fbe00689981cddd51f472",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:35.178328+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml",
+          "sha256": "658ebc55c4257e7768c3659a0783576ec0916d7e6ed940543326dca6cb340b76",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:35.415604+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml",
+          "sha256": "0c97ae259ee34c85a0c95b1d5fd69fe2d0971b58a24d2b8d8a1763778c34bfa3",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:12.440244+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml",
+          "sha256": "20b8d4bb578287e3bae389e337c917f30b065682dce62a97e7e49f2ec563afe0",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:38.678451+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml",
+          "sha256": "10fbfc39f4a289dde3e7f0063f62c24784a00f46f9f213b2bfd86bc9087edaab",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:50.715701+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml",
+          "sha256": "5a8be5290715515e2dd974c8d9ea4c5810b06b1065fef423e6649db4c32def5c",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:52.185442+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml",
+          "sha256": "8e0fced6a9350a8eb7437f6b8f18157f4ff352a4c240dfb2787cd9754bc94efb",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:53.739766+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml",
+          "sha256": "5a5092b961b2f509268b87cb20f093b5932400174019499ed2d4ad929582cd22",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:53.827766+00:00"
+        },
+        {
+          "file": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml",
+          "sha256": "e55eb8715232e8a265a2ebc3c80247663b522115257c72f22a22d1a30361b2b7",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:55.620606+00:00"
+        }
+      ],
+      "skipped_cases": [],
+      "source_hashes": {
+        "backend/shared/p360-messaging-core/pom.xml": "d74505464e2fcd71190045243c10b1f9c5956573219badbc4b71c19dcf31067d",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/actor/ActorContext.java": "dfeb8dea89e048dfff1d750150d3e92fb8d201303b87208a19611f26b2923da6",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/actor/ActorContextException.java": "0762eb3c4e708c9e220e82ec2886a66a77ea24c3a29f53c17838517efb94cc08",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/actor/ActorContextSigner.java": "4cfd025a3d037da5c3cc118a163ec2658229ca3980007ede500ea9b01fa9237f",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/actor/SigningKey.java": "4071a2614510cc746cb627e6eca5b45dffc69a215ff0b467b6f54c4d11f81e61",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/actor/SigningKeyProvider.java": "827107c9c5c078ec9ff7a9fb063420166d3f57537b8a923002fc252f95d9cf01",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/Domain.java": "f2e0f4d251dc94dc01ce67b3afa5615dda85f641a1cac3548087c63cf4d78ee3",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/envelope/EnvelopeException.java": "83aa539e7bf99c915ff70325fc4fe393d3d0f3952d1e24194bd966e017225fd3",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/envelope/JsonFields.java": "4d7621d41e1487750108efc80b4695c23fb7a6abaf143c2a340ab1a4568bba0e",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/envelope/OperationResult.java": "1be2fd14fa0934b5e4ff830e354e48220cb0f59cb7049e13f61c3d4dcf200762",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/envelope/QueryBusinessException.java": "def8bbc05655995adc0833d2464f578c6ef4545c0b50f42c5c2ab0499b88fabc",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/envelope/QueryResponse.java": "4b2dd2c2397f7a885f26ae0b547be350d99472b853b536a47340347e06b568cd",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/envelope/QueryTemporaryException.java": "dc6be181da4b6ce422c3f4fb91647cb0c3620b76acf5243db7e8d837c5d391b4",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/envelope/RequestEnvelope.java": "5aed7d337d518c8b9d1727b7bd4f5839f6a99e4b4b4e749429d48787cac50068",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/envelope/RequestEnvelopeContext.java": "6d92254c6293e29eaf11be1654a02d324b400f843ed1f5e76a725aedc8d6ba6f",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/envelope/ResponseSchema.java": "99a803a1371fd37ae57fdd1eee47db0b3d8dc314ed015f3d27d4efb17db88219",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProof.java": "c5b171adebf7f5b571f74477a41bf7c1eb51afc025d4c8e87e04d68b864b40d5",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofCodec.java": "e5f1dc21180cd5c867b9303d6201cde4a62587e3f3efe8e347439d49d86f5722",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofException.java": "353b7fc7bc4d83e45ed870360c393f0ab15bd0dbaf6c7814eb71b6e494a616b7",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofKeys.java": "78a5700f34d23d9272819b55b50f0e726d942aa8bcfe1bdf4288ec8cbaa24b2f",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofVerifier.java": "ecb602b744d4c8ac183ceee611fbee0f163bddc4d43a74919a8f723c3940e527",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/MessagingProperties.java": "ca17cadb01b45de34efe5793ca35a2ab095d1364a7ccdc206a88657ba09eed59",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/QueryConsumerConfiguration.java": "2c128dbc7f786947dc2e8657e353c47decfdae879c1b990a53747710a57a0098",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/QueryMessagingConfiguration.java": "a563ea11f95991ed3e61d451c71b10f15071757cb16fcb03fefbc33830b13b57",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/QueryTopology.java": "c8362965a657ff39af2c5c188d7daac04416411ab7ed1ae64d19d2c261d2b607",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/QueryTopologyDeclaration.java": "d66da11cb8b82782248f442c506f446e64cd56715df11a9acd64ce9dcbf99389",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/HandoffFailureException.java": "edbc1ab0bbfaa84867ea761bd059b8880b12dda62918896e79e06a647fb301b2",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/HandoffPublisher.java": "43929d01a9ff9d9583b67c0421d3d7457cc2c162382601c12b130b1d790f4b2a",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/HandoffRecovery.java": "e5cbaad458514c82ada24931381756b3cf599203fd62990c9c23ad8053cff660",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/PendingCorrelationRegistry.java": "555698bb3b896a4eeea26d4c035101f745346c1f9d3b5bf9087f974d2506812d",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryConsumer.java": "cdd5d63936a7abe90738b6ca1b177b6ba012184af4cd10cf43740f067fac89de",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryConsumerRecovery.java": "10edba3ae71a141db1810bc3cd8f93adf53265adfc057e5ea20fc2c0a41af62e",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryFailureHandler.java": "9bb2a5d6e4be579173b914c43dc9a4717e1c6edae310144863f36fe0d7bea57a",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryPrecheck.java": "2761268737c8bbae542d8291f2697d354d682451b67abcb56952cf1a788e50a3",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryProcessor.java": "272f5b339189a50ef862c6d548bba268d1e7649a4fd617eb4b5ef60d6e4b544a",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryReplyPublisher.java": "299b7f0f87bd4911365c1eff3c56621f1107f8860e2fc8621773321dde90dca3",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryTimeoutException.java": "af57968b5c5238e09bc593c87325237d5087ca918e9dd920ee36e322535cc903",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryUnavailableException.java": "5996be890a37a0b683f79a7e110eca8926b6dab7a5a813183a7d0c2d9a990e6b",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/RequestPublisher.java": "6711960d8b342b8ffc3aaa5c7d121410f9a7a6c9e3c3e9167d69a72d76913838",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/ResponseConsumer.java": "635f9b41bd6b5ddf6882280599e0be27fe0fb0c8b8c469ecbe6170aacf4154ba",
+        "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/RelayMode.java": "6e3e1df2306578e6091f0b66738eade36f2599181fa41c7c25a02b0493f42071",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/ActorSecurityTests.java": "956713425ca8dabea6dfbb5bc2cca50de922fbb723afdfb2a4f226d381470537",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/ClasificacionFallosTest.java": "aa16357b2d87b16ba6d09dd00f1226823217da451905f69186e8be0971c0a452",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureActorKeys.java": "1800fe897ffaa395a8e63ae9900210bf5a8c34847af32afa137e07943bf1a66b",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureIdentityKeys.java": "ef345566fd37d4a631b8b749ec7f6fa380e2f6afd827f3f1cce92bc6c3a83e97",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/IdentityProofTests.java": "e235fadf71f66f6e3bded5938fbecb7ed68f5b944199c123392cf8db2d6dda7c",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/MessagingContractTests.java": "482380cc54db744f490ef9e4b4e3a9ff353010053e7e7fc4f40795f538af6f64",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/PlatformCompatibilityTests.java": "f49e30c04b52803a66043f1f83e0119aa58996b1780cd11e45cb6454a299b658",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/QueryMessagingFlowTests.java": "064adbeffb8b1f547b2462996dec751abc6c06227cb57acb3b3318cdddca6a9e",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/RecoveryRealTests.java": "98471857d4a296bc281392511e690ddb1e6f6a376c816235a9f01f760a923011",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/relay/QueryConsumerRecoveryTests.java": "f18fc02471a9d4d924787157ea8a208ac10949a0a242042afab95ab89c132140",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/RelayReliabilityTests.java": "43a0fb3bbe2586abdd69d892d076d529e654f52079890cafa74790855b1ec47f",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/RequestPublisherBudgetCorrectionTests.java": "bcbba5c85f72f44b6c48f38b6140d23eebe0dbe5c604a2657b79a49959108f9c",
+        "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/SettlementPublicationTests.java": "75c716a17ceea1179fd6f209499c5d4b5d0975cd5c9d8a49afe117a5ca7aecc0"
+      },
+      "passed": 197,
+      "log": {
+        "file": "backend/shared/p360-messaging-core/target/tenant-integrity-full.log",
+        "sha256": "5037cd0f289f4eaa65b008a450152a206e8f9bdc51f4c45cdf1610584f7d928f"
+      }
+    },
+    {
+      "module": "backend/services/restaurantes-service",
+      "command": "mvn -q -f backend/services/restaurantes-service/pom.xml test",
+      "exit_code": 0,
+      "tests": 34,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reports": [
+        {
+          "file": "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests.xml",
+          "sha256": "c2f4a8be6827a37aac3627c1963559331d0e7e33da048e1599d367f28b144caf",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:29.351435+00:00"
+        },
+        {
+          "file": "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests.xml",
+          "sha256": "dd84e6be292a8364f1dd016e848335d2ca50de046e34928d82cece2086f96c54",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:58.626237+00:00"
+        },
+        {
+          "file": "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests.xml",
+          "sha256": "a19404cd81c88cb80efba0ea378b5cbc2b93045f18c111baa574ce5f3451a60e",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:47.726873+00:00"
+        }
+      ],
+      "skipped_cases": [],
+      "source_hashes": {
+        "backend/services/restaurantes-service/pom.xml": "398f3fb0b608a6182e5e1232fe04c1176963d83400d2f8679423247d7fe0447e",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/controller/RestauranteController.java": "b75610a6f5eb54cb578cc87a5cd483c3c640b2ebfc86ea02522ae28f2914978e",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/dto/RestauranteDto.java": "60f22b5c4b80dbda5db23af2c69cbd84363cb67e03e1a015073ebf15f25b1591",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/entity/EstadoRestaurante.java": "b36405004aaa6df266b80b69e5910225920f79c68c769f79e0d567fbd9b41243",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/entity/Restaurante.java": "6f34bcaa33805b81bf9166bebd9bdc06d49f014843bb81c7b030ce4a053ec844",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/exception/ApiError.java": "6afff442dd1d29b064f91a42c10cae76d26f724d95f23bbcac31b553f5790585",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/exception/GlobalExceptionHandler.java": "6a8c1e211c82e60e316a00071c98cec3a47bff32b64af9028095bddf83e5c4ce",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/exception/RestauranteNoEncontradoException.java": "827b1332bfcd5d7c738cc1498d8d5a7e2dac3d75862b92853906041f1e39b433",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/messaging/RestaurantesMessagingConfiguration.java": "f7b125860d5f94b43ac0a12f00b22c0df20ff609ae569e91b3914d622dda3e01",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/messaging/RestaurantesQueryProcessor.java": "62b1eed5542efe9866f9ced7bf79d41d1fd1ae7a974480d138c044d5fb4adb77",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/repository/RestauranteRepository.java": "cd4d7248aca577652c879287fe9413ce489aff3a225ca10aad90ffbc0c929b74",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/RestaurantesApplication.java": "774b327c6c622e427fe688964c9f3fc397c709795acdc4e828bceef9d1d8527d",
+        "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/service/RestauranteService.java": "edcc5c92e9d86e1725d2f73634043d79821945da2514cc46dda56ebe708b2d23",
+        "backend/services/restaurantes-service/src/main/resources/application.yml": "a4977f1a2ffed2b6f80ae603b39373f1bb2c00988efd2269323ff57b6099a9f9",
+        "backend/services/restaurantes-service/src/main/resources/db/migration/V1__crear_tabla_restaurantes.sql": "3c3de8e0d29d8117823228097dd46ec3d9be06599075e2af0e5eebc6c9873e4c",
+        "backend/services/restaurantes-service/src/main/resources/db/migration/V2__insertar_restaurantes_iniciales.sql": "ae43eed67ce7c5bd722f68531b4b8de4f8afef9b43fc0b3fe0b94978662e9d28",
+        "backend/services/restaurantes-service/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureActorKeys.java": "1800fe897ffaa395a8e63ae9900210bf5a8c34847af32afa137e07943bf1a66b",
+        "backend/services/restaurantes-service/src/test/java/cl/duoc/pedidos360/restaurantes/RestaurantesConfigurationTests.java": "19194e9514c8845fd0bc0e110a74fd3ca8d3dc0ebf7ebe0f098aab24f3a2b0f1",
+        "backend/services/restaurantes-service/src/test/java/cl/duoc/pedidos360/restaurantes/RestaurantesHttpRegressionTests.java": "ebae02e089fcb37e275710e7703689c106244300a250f0232a44f8748296c8ed",
+        "backend/services/restaurantes-service/src/test/java/cl/duoc/pedidos360/restaurantes/RestaurantesRabbitTests.java": "5d725bd4699d001e7da942b9280be1a7b4f662827c978a903c1bd537ba1a13ef",
+        "backend/services/restaurantes-service/src/test/resources/application.properties": "f2d9e400d7a35aa35240a7185870bc1faca76a9a4f2733a9a57bb54b39901c68"
+      },
+      "passed": 34,
+      "log": {
+        "file": "backend/services/restaurantes-service/target/tenant-integrity-full.log",
+        "sha256": "7c7877afcb7c6cbce33a8035b0f3782e63c37e409a354e9d0b09947a7ff3c33d"
+      }
+    },
+    {
+      "module": "backend/services/productos-service",
+      "command": "mvn -q -f backend/services/productos-service/pom.xml test",
+      "exit_code": 0,
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reports": [
+        {
+          "file": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosConfigurationTests.xml",
+          "sha256": "a403b674002d2da45312d9dc704c5b1867a88bd074c076bfd160e33893ab9341",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:28.659568+00:00"
+        },
+        {
+          "file": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosHttpRegressionTests.xml",
+          "sha256": "9fb9dbeac31849eeb99a1d45a2a986ba5e860840291324b8eb91b27034dabecb",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:02:59.050230+00:00"
+        },
+        {
+          "file": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosQueryProcessorTests.xml",
+          "sha256": "378cdfa51be57cf3d5960876d1fef4ba7d4cbe2887e4497710077a28942effdf",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:01.807056+00:00"
+        },
+        {
+          "file": "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosRabbitTests.xml",
+          "sha256": "9e5166ce1f44f6c98f49a949743e9bc6377f86e92de9fd5825cb38f23fc4d9a8",
+          "timestamp": null,
+          "report_written_utc": "2026-10-09T00:03:42.976138+00:00"
+        }
+      ],
+      "skipped_cases": [],
+      "source_hashes": {
+        "backend/services/productos-service/pom.xml": "39ec345e68d00da3f7e11c1df6fa61cb0cd4f34e2b9209def41a766329b71b6b",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/controller/ProductoController.java": "b42cdc53855e704636ae4ad70b49d1111ca4aeac1593bb3e7347136264420dc9",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/dto/ProductoRequest.java": "c3fec3781ea4d5768aef3300da164f55e0950eb2d83345df81ee7d10c211423b",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/dto/ProductoResponse.java": "be3c980ebfd7205b327babacb5187f44a92c245729a8993da722af6e68cf6d60",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/entity/Producto.java": "9136f732eea6ca92c28ebe6b7ac2b62bbcd5faa6ac30f5253751fd8063441e68",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/exception/ErrorResponse.java": "947d41619a47c1160275c48620677f7c5a39456919987e187b78bdcb4053140f",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/exception/GlobalExceptionHandler.java": "01bd8ccf6233ee0033af256c520c8176e0659c5d213df3d836301e2918d9d061",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/exception/ProductoNoEncontradoException.java": "5071a6ef2585a1f387ad3821f02529e8f8788e5a69553ed3a688f2e4173365dd",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/messaging/ProductosMessagingConfiguration.java": "804e9a6e9324e743c58f6488961afdf7b8bdb7c3abd8b2d559c6890af21e52ff",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/messaging/ProductosQueryProcessor.java": "dce936dd997a22cc4896553af42ca0d2ef5734a8a179c5eb9e6f542a4fb3d481",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/ProductosApplication.java": "ba3d96c2460e3f7a63666ed523e0b30f3eaaaca1d5ebf5a3d3a05816cf303875",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/repository/ProductoRepository.java": "18124c7fcb6782acc37466128b5992821e768af53f396aa7e452e65bfc47102f",
+        "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/service/ProductoService.java": "64158069f950370bf2ef0d9df42740600d0a8993cbc4ed529f950372268dbf33",
+        "backend/services/productos-service/src/main/resources/application.yml": "f2ccfaac90a568f9ea4836582671f7af6aec5ec6e8461fddbf89b7e2cbe94584",
+        "backend/services/productos-service/src/main/resources/db/migration/V1__crear_tabla_productos.sql": "a74b9768ff72ad8b1d7e26e1830c25d03d42344914ae0c13b686e11857c2234a",
+        "backend/services/productos-service/src/main/resources/db/migration/V2__insertar_productos_iniciales.sql": "2954ac4029e6379dc0fc1f80c8d6ad95b2e590783803de8aec3ec54fcb71af1d",
+        "backend/services/productos-service/src/main/resources/db/migration/V3__completar_datos_demostracion.sql": "b52cee8ea6d2df8594d412ddc67364e9016702348968b4d9b9af600633e48f56",
+        "backend/services/productos-service/src/test/java/cl/duoc/pedidos360/messaging/fixture/FixtureActorKeys.java": "1800fe897ffaa395a8e63ae9900210bf5a8c34847af32afa137e07943bf1a66b",
+        "backend/services/productos-service/src/test/java/cl/duoc/pedidos360/productos/ProductosConfigurationTests.java": "742328ffaf7ea94fff6469f925f3037211b8afc0c7a7685fd4de5c253aa608d2",
+        "backend/services/productos-service/src/test/java/cl/duoc/pedidos360/productos/ProductosHttpRegressionTests.java": "4a5c84e30e271e344afc56b52f23cfc93b807b975e160c85c6b2789276b6e9d9",
+        "backend/services/productos-service/src/test/java/cl/duoc/pedidos360/productos/ProductosQueryProcessorTests.java": "e1fe74dd01168d47475151d869b3419d7b4a15ad15d7d06e3e30dbdaa5963b8f",
+        "backend/services/productos-service/src/test/java/cl/duoc/pedidos360/productos/ProductosRabbitTests.java": "0f14a2962fab9f819b7c8ba3e6ed9a150a5b71a4a3d8652f4fbdde76d75833c9"
+      },
+      "passed": 44,
+      "log": {
+        "file": "backend/services/productos-service/target/tenant-integrity-full.log",
+        "sha256": "3895803f58a7dfbe9bb10143344a9d845bc184a3983e3b762a706595b69c4857"
+      }
+    }
+  ],
+  "evidence_limits": [
+    "PostgreSQL 17 and RabbitMQ Testcontainers are disposable, not operational databases/brokers.",
+    "Injected exceptions, negative template futures and silent confirms do not prove real network partitions.",
+    "The two-service local E2E starts real Pedidos/Pagos HTTP applications without JWT or a Pedidos stub. Production-mode E2E uses signed RSA fixtures and a Usuarios HTTP stub, not live Entra.",
+    "Migration owner and runtime are separate non-superuser logins in disposable PostgreSQL only. Operational network/DB role guarantees and deployment were not verified or changed.",
+    "The new real-broker two-service integrity test invokes the actual Pedido processor manually after reception; it does not execute its listener/ACK."
+  ],
+  "passed": 750,
+  "historical_totals_not_reused": {
+    "head": "2e5fd9e6dc21b24361150624b83c9f650bc4c80d",
+    "tests": 746,
+    "passed": 744,
+    "skipped": 2,
+    "note": "Historical evidence; not claimed as executions of the new state."
+  },
+  "specific_regressions": {
+    "command": "mvn -q -f backend/services/pagos-service/pom.xml -Dtest=TenantLocalHttpEndToEndTests,OutboxIsolationTests,TenantMigrationTests,PedidosRestClientTests,RabbitCoreTests test",
+    "exit_code": 0,
+    "tests": 65,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "reports": [
+      {
+        "file": "backend/services/pagos-service/target/tenant-integrity-specific-reports/TEST-cl.duoc.pedidos360.pagos.OutboxIsolationTests.xml",
+        "sha256": "10c65e94437f45d34b11e678fb3ab78b96c12d36c79246756ecc70cb5d5bf660",
+        "cases": [
+          "runtimeCannotChangePaymentAssociationBeforeFinish",
+          "paymentOrderImmutableBeforeAndAfterOutboxInsert",
+          "runtimeCannotChangeMessageUuid",
+          "leaseExpiringWhileFinishWaitsCannotBeSettled",
+          "associationCannotChangeWhileFinishWaitsForConcurrentWriter",
+          "competingPublishersOnlyOneCanSettleSameLease",
+          "runtimeCannotChangeOriginalPayloadButCanUpdateMetadata",
+          "reconciledCannotFinishOrBlock",
+          "runtimeInsertCannotIntroduceInconsistentReferences",
+          "staleLeaseCannotFinishOrBlockNewLease",
+          "unknownCannotFinishOrBlock",
+          "simultaneousClaimsUseSkipLockedAndDifferentLeases",
+          "expiredLeaseRetainsWorkUntilRecoveryWithStableIdentity",
+          "concurrentPaymentUpdateAndOutboxInsertRetainOriginalOrder",
+          "concurrentOrderUpdateCannotDivergeFromClaimAndPublicationAssociation",
+          "foreignClaimExcludedAndFinishBlockDenied",
+          "incorrectAssociationPayloadOrClaimTenantAffectsZeroRows",
+          "validClaimAndFinalizationPreserveAssociation"
+        ]
+      },
+      {
+        "file": "backend/services/pagos-service/target/tenant-integrity-specific-reports/TEST-cl.duoc.pedidos360.pagos.PedidosRestClientTests.xml",
+        "sha256": "52e6126b070add6747e9a3be0054378ed2aed81fea587e26a44e4865062087ff",
+        "cases": [
+          "internoHabilitadoSinProveedorFallaAlConstruirYNoUsaLaRutaDelegada",
+          "internoSinTokenDisponibleFalla",
+          "consultaConFalloDelServidorConserva502",
+          "consultaPropagaUsuarioPeroConfirmacionUsaWorker",
+          "http400NoSeConsideraExitoSiLaConsultaDeEstadoFalla",
+          "confirmacionExitosaNoLanzaError",
+          "consultaDePedidoAjenoConserva403SinExponerRespuestaInterna",
+          "http409PorPedidoCanceladoNoSeConsideraExito",
+          "aceptaSoloLosDosOrigenesAcreditadosEnLaRutaInterna",
+          "consultaInexistenteConservaNull",
+          "http409SeAceptaSiElPedidoYaEstaConfirmado",
+          "interno409PorCanceladoSeReportaComoError",
+          "origenAusenteNuloDesconocidoOExtraNuncaConcedeAutorizacion",
+          "http500DePedidosSePropagaComoError",
+          "tenantDiscordanteDevuelve404SinFallback",
+          "http400NoSeConsideraExitoSiElPedidoNoEstaConfirmado",
+          "interno404PorPedidoInexistenteSeReportaComoError",
+          "interno204SeConsideraConfirmadoYEnviaElToken"
+        ]
+      },
+      {
+        "file": "backend/services/pagos-service/target/tenant-integrity-specific-reports/TEST-cl.duoc.pedidos360.pagos.RabbitCoreTests.xml",
+        "sha256": "c842533db2dee282591360b13eeed121bfc355042bdbff8bc09227d5cad3b817",
+        "cases": [
+          "legacyPedidoRejectedBeforeAtomicPaymentOutboxOrBrokerEffect",
+          "brokerConfirmWithFencedCompletionReportsUnsettledWithoutSecondSend(CapturedOutput)",
+          "tarjetaCommitPublicacionRealYPayloadExacto",
+          "efectivoPendienteAprobarYReintentarNoDuplicaIntencion",
+          "confirmTimeoutPermiteRepublicarMismoMessageId",
+          "confirmNegativoNoMarcaPublished",
+          "retainedOldOutboxAndNewPaymentPublishOnlyNewCommand",
+          "returnSinBindingNoMarcaPublishedYRecupera",
+          "aceptacionSinGuardarResultadoRecuperaLeaseYPublicaIdentidadEstable",
+          "claimJoinDoesNotLockPaymentParent",
+          "rollbackDespuesDeGuardarAmbosNoDejaHuerfanos",
+          "brokerCaidoNoBloqueaRegistroYRecuperaMismoMessageId",
+          "schedulerSoloReconciliacionHttpHistorica",
+          "inconsistentInitialPayloadsAreBlockedBeforeAnyBrokerPublication",
+          "dispatcherNuevoRecuperaPendienteTrasReinicio",
+          "blockAffectingZeroRowsReportsUnsettledAndDoesNotPublish(CapturedOutput)",
+          "dosReintentosConcurrentesCompartenPagoYComando",
+          "errorAlInsertarOutboxReviertePago",
+          "unknownAndReconciledOutboxNeverClaimedEvenAfterLeaseExpiration"
+        ]
+      },
+      {
+        "file": "backend/services/pagos-service/target/tenant-integrity-specific-reports/TEST-cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests.xml",
+        "sha256": "861aa0aad4af5d253690c4a4d159af06e0c7fd3fce6035ab26f4c0f1937ed230",
+        "cases": [
+          "absentLocalConfigurationCannotAuthenticateSpoofedHeaders",
+          "localOutsideLoopbackAndLocalWithEntraFailAtStartup",
+          "productionValidJwtWorksAndInvalidJwtHasNoLocalFallback",
+          "localHttpRegistersPaymentWithExactProjection",
+          "localRabbitCoordinationPersistsAtomicIntentWithoutBrokerActivation",
+          "realBrokerCommandConfirmsOnlyPersistedPaymentOrderViaManualProcessor",
+          "unknownAndForeignResourcesNotExposedOrPaid",
+          "discordantLocalTenantRejectedBeforePersistence"
+        ]
+      },
+      {
+        "file": "backend/services/pagos-service/target/tenant-integrity-specific-reports/TEST-cl.duoc.pedidos360.pagos.TenantMigrationTests.xml",
+        "sha256": "c450757d0e3a5dcd94b601e432522a933f065abf31ed4f829b602e8a6b52ad2b",
+        "cases": [
+          "upgradeRetainsUnknownGuardsWritersAndAllowsOnlyAuditedReconciliation",
+          "outboxUpgradeRetainsOriginalCommandAndGuardsRuntimeWithSeparatedMigrationOwner"
+        ]
+      }
+    ],
+    "log": {
+      "file": "backend/services/pagos-service/target/tenant-integrity-specific.log",
+      "sha256": "761d190e32a309b14748aba9b89259aaf867f507fede8d507c1a8663ac32c924"
+    },
+    "counting_note": "Run before complete suites; its 65 cases are also included in full-suite totals, not added twice."
+  }
+}

@@ -27,8 +27,8 @@ import tools.jackson.databind.json.JsonMapper;
 /**
  * Dos políticas independientes:
  * <ol>
- *   <li><b>Interna</b> ({@code /internal/**}): token de aplicación del worker de Pagos
- *       (rol {@code Pedidos.Confirmar}). No accesible por tokens de usuario ni vía BFF/CORS.</li>
+ *   <li><b>Interna</b> ({@code /internal/pedidos/{id}/confirmacion-pago}): token de aplicación del worker de Pagos
+ *       (rol {@code Pedidos.Confirmar}). No accesible por tokens de usuario ni vía BFF/CORS. La proyección resumen-pago usa la política delegada.</li>
  *   <li><b>Delegada</b> (resto): identidad de usuario validada por el BFF (o identidad local en dev).</li>
  * </ol>
  * Se separan por {@code securityMatcher}, no ampliando un validador común.
@@ -44,7 +44,7 @@ public class SecurityConfiguration {
     SecurityFilterChain cadenaInterna(HttpSecurity http,
             @org.springframework.beans.factory.annotation.Qualifier("jwtDecoderInterno") JwtDecoder jwtDecoderInterno,
             JwtAuthenticationConverter jwtAuthenticationConverterInterno, JsonMapper mapper) throws Exception {
-        return http.securityMatcher("/internal/**")
+        return http.securityMatcher("/internal/pedidos/*/confirmacion-pago")
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -89,6 +89,10 @@ public class SecurityConfiguration {
                     auth.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                             .requestMatchers("/actuator/health", "/actuator/health/**").permitAll();
                     if (enabled) {
+                        auth.requestMatchers(org.springframework.http.HttpMethod.GET, "/internal/pedidos/*/resumen-pago").access((authentication, context) -> {
+                            var authorities=authentication.get().getAuthorities().stream().map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
+                            return new org.springframework.security.authorization.AuthorizationDecision(authorities.contains("SCOPE_access_as_user") && (authorities.contains("ROLE_ADMIN") || authorities.contains("ROLE_CLIENTE")));
+                        });
                         auth.requestMatchers("/pedidos", "/pedidos/**").access((authentication, context) -> {
                             var roles = authentication.get().getAuthorities().stream()
                                 .map(org.springframework.security.core.GrantedAuthority::getAuthority).toList();
@@ -96,6 +100,7 @@ public class SecurityConfiguration {
                                 roles.contains("SCOPE_access_as_user") && (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_CLIENTE")));
                         });
                     } else if (identidad != null) {
+                        auth.requestMatchers(org.springframework.http.HttpMethod.GET, "/internal/pedidos/*/resumen-pago").authenticated();
                         auth.requestMatchers("/pedidos", "/pedidos/**", "/usuarios/**").authenticated();
                     }
                     auth.anyRequest().denyAll();
