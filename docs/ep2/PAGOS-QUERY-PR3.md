@@ -185,3 +185,9 @@ binarios anteriores a PR #94 ni aceptar identidad sin prueba en RabbitMQ.
 
 Entrega en feature/81-pagos-query-consumer, PR DRAFT hacia develop con Refs #81.
 READY FOR AUDIT no autoriza merge, activación, despliegue ni cierre del issue.
+
+Código probado: `40b01c72594994065def33b4180c0b426b974baa`. El commit posterior
+contiene únicamente este registro documental y `evidencias/PR3-tests.json`.
+SHA-256 del JSON: `c96f28220c0de71ef6456fe82ec17f8ad1d6e651ef3724b0c20967b34ff51ca8`.
+Sus 332 fuentes se comparan con contenido normalizado a LF; logs, reportes y JAR
+se identifican con hashes de sus bytes originales.
