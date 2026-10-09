@@ -108,6 +108,28 @@ public class BffQueryAdapter {
     /** Subdeadline explícito, sin orquestación ni renovación del presupuesto original. */
     public OperationResult ejecutar(Domain domain, JsonNode payload, JwtAuthenticationToken token,
             QueryOperationBudget budget, Instant requestDeadline) {
+        return ejecutarVerificado(domain, payload, token, budget, requestDeadline).result();
+    }
+
+    QueryOperationBudget iniciarOperacion(JwtAuthenticationToken token) { return fabrica.iniciarOperacion(token); }
+
+    boolean verificaPruebas() { return pruebas != null; }
+
+    /** Resultado interno de una consulta correlacionada; nunca se serializa como DTO HTTP. */
+    record VerifiedResult(OperationResult result, Instant effectiveDeadline, String identityJws) {
+        @Override public String toString() { return "VerifiedResult[redacted]"; }
+    }
+
+    static final class VerifiedBusinessException extends QueryBusinessException {
+        final Instant effectiveDeadline;
+        VerifiedBusinessException(QueryBusinessException error, Instant deadline) {
+            super(error.status(), error.code(), "La operación no pudo completarse.");
+            effectiveDeadline = deadline;
+        }
+    }
+
+    VerifiedResult ejecutarVerificado(Domain domain, JsonNode payload, JwtAuthenticationToken token,
+            QueryOperationBudget budget, Instant requestDeadline) {
         QueryInvoker operacion = operacion(domain).orElseThrow(() -> new IllegalStateException(
                 "el dominio " + domain + " no tiene una operacion registrada en el BFF"));
         if (domain == Domain.USUARIOS && pruebas != null) budget.claimUsuarios();
@@ -133,7 +155,10 @@ public class BffQueryAdapter {
             var resolved = resolver(domain, plan, cuerpo, System.nanoTime() - inicio, budget, effectiveDeadline);
             budget.requireRemaining(budget.originalDeadline());
             budget.requireRemaining(earlier(effectiveDeadline, resolved.effectiveDeadline()));
-            return resolved.result();
+            return new VerifiedResult(resolved.result(), earlier(effectiveDeadline, resolved.effectiveDeadline()), resolved.identityJws());
+        } catch (QueryBusinessException negocio) {
+            budget.requireRemaining(effectiveDeadline);
+            throw new VerifiedBusinessException(negocio, effectiveDeadline);
         } catch (QueryUnavailableException sinBroker) {
             correlaciones.descartar(plan.correlationId());
             throw sinBroker;
@@ -166,13 +191,21 @@ public class BffQueryAdapter {
     }
 
     /** Resuelve el cuerpo de la respuesta en el resultado equivalente al contrato HTTP. */
-    private record ResolvedResult(OperationResult result, Instant effectiveDeadline) {}
+    private record ResolvedResult(OperationResult result, Instant effectiveDeadline, String identityJws) {
+        @Override public String toString() { return "ResolvedResult[redacted]"; }
+    }
 
     private static Instant earlier(Instant a, Instant b) { return a.isBefore(b) ? a : b; }
 
     private ResolvedResult resolver(Domain domain, RequestPlan plan, byte[] cuerpo, long nanos, QueryOperationBudget budget,
             Instant acceptanceDeadline) {
-        QueryResponse respuesta = esquema.leer(cuerpo, properties.maxBodyBytes()).orElseThrow(
+        budget.requireRemaining(acceptanceDeadline);
+        QueryResponse respuesta = esquema.leer(cuerpo, properties.maxBodyBytes(), response -> {
+            budget.requireRemaining(acceptanceDeadline);
+            return plan.envelope().messageId().equals(response.messageId())
+                    && plan.correlationId().equals(response.correlationId())
+                    && plan.envelope().operacion().equals(response.operacion());
+        }).orElseThrow(
                 () -> new QueryUnavailableException("la respuesta no corresponde al contrato", null));
         budget.requireRemaining(acceptanceDeadline);
         if (!plan.envelope().messageId().equals(respuesta.messageId())
@@ -183,15 +216,17 @@ public class BffQueryAdapter {
             if (respuesta.payload() == null || respuesta.payload().isNull())
                 throw new QueryUnavailableException("la respuesta exitosa no trae payload", null);
             JsonNode payload = respuesta.payload();
+            String identityJws = null;
             Instant effectiveDeadline = plan.envelope().expiresAt();
             if (domain == Domain.USUARIOS && pruebas != null) {
                 var verified = pruebas.validate(payload, plan, budget);
+                identityJws = payload.path("pruebaIdentidad").stringValue();
                 payload = verified.perfil();
                 effectiveDeadline = verified.usableUntil();
             }
             else if (payload.has("pruebaIdentidad"))
                 throw new QueryUnavailableException("respuesta con prueba de identidad requiere verificador habilitado", null);
-            return new ResolvedResult(new OperationResult(respuesta.operacion(), respuesta.status(), payload), effectiveDeadline);
+            return new ResolvedResult(new OperationResult(respuesta.operacion(), respuesta.status(), payload), effectiveDeadline, identityJws);
         }
         budget.requireRemaining(acceptanceDeadline);
         var detalle = respuesta.error();

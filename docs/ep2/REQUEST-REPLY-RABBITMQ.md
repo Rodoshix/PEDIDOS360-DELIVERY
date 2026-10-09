@@ -92,10 +92,26 @@ Todos los campos se escriben siempre; el que no aplica viaja como `null` explíc
 | `operacion` | Operación atendida |
 | `correlationId` | Igual a la correlación del request; también viaja como propiedad AMQP |
 | `messageId` | Referencia el `messageId` del request |
-| `success` | `true` con `status` 2xx y `payload` objeto; `false` con `status` de error y `error` objeto |
+| `success` | `true` con `status` 2xx y `payload` según la operación canónica; `false` con `status` de error, `payload=null` y `error` objeto |
 | `status` | Código equivalente al contrato HTTP existente |
 | `error` | `{ "code", "title", "detail", "status" }`, sin datos sensibles |
 | `timestamp` | Instante UTC |
+
+Forma de `payload` para `success=true` (los ocho campos del envelope siguen siendo exactos;
+`error=null`). La tabla es cerrada: una operación desconocida o una forma discordante se rechaza.
+
+| Operación canónica | Forma permitida |
+|---|---|
+| `usuario.consultar-actual.v1` | Objeto |
+| `pago.consultar.v1` | Objeto |
+| `restaurante.listar.v1` | Array, incluido `[]` |
+| `producto.listar-disponibles.v1` | Array, incluido `[]` |
+
+El `payload` de **RequestEnvelope** sigue siendo siempre objeto. Para errores, todas las operaciones
+conservan `payload=null` y `error` objeto. El listener de respuestas realiza el precheck estructural
+con el parser compartido; ese precheck no acredita una operación pendiente. En el BFF, el mismo
+parser permite comprobar messageId, correlationId, operación esperada y deadline efectivo **antes**
+de aceptar la forma del payload. Después se aplican IdentityProof y proyección/validaciones de DTO.
 
 Un error de negocio esperado (`403`, `404`, `409`) **viaja como respuesta correlacionada y se
 confirma**: no se reintenta y no va a DLQ.

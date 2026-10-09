@@ -79,6 +79,12 @@ valores/filtrado; no prometer representacion textual de decimales ni orden nuevo
 
 ## Identidad y plazo
 
+El parser común admite array (incluido `[]`) exclusivamente para las dos operaciones canónicas
+de catálogo; rechaza objeto en `producto.listar-disponibles.v1`. Usuarios/Pagos conservan objeto.
+Errores conservan `payload=null` y `error` objeto. Véase la matriz cerrada en
+[REQUEST-REPLY-RABBITMQ](REQUEST-REPLY-RABBITMQ.md). En BFF #70, messageId, correlationId,
+operación esperada y deadline efectivo se acreditan antes de aceptar la forma y el DTO del resultado.
+
 HTTP publico BFF exige tenant/issuer Entra, scope access_as_user y CLIENTE o ADMIN.
 Productos HTTP interno no tiene filtros Spring Security. La nueva dependencia
 excluye el starter-security transitivo; spring-security-core solo aporta las

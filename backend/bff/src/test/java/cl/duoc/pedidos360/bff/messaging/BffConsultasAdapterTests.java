@@ -228,7 +228,9 @@ class BffConsultasAdapterTests {
             byte[] body = contexto.escribirRespuesta(respuesta);
             if (referenciaDiscordante != null) {
                 var invalid = (tools.jackson.databind.node.ObjectNode) json.readTree(body);
-                invalid.put(referenciaDiscordante, referenciaDiscordante.equals("operacion") ? "other.v1" : java.util.UUID.randomUUID().toString());
+                // Operación conocida y forma objeto válida: el BFF debe rechazar el vínculo,
+                // sin que el precheck estructural descarte antes una operación desconocida.
+                invalid.put(referenciaDiscordante, referenciaDiscordante.equals("operacion") ? "pago.consultar.v1" : java.util.UUID.randomUUID().toString());
                 body = json.writeValueAsBytes(invalid);
             }
             rabbit.send("", mensaje.getMessageProperties().getReplyTo(), new Message(body, metadatos));

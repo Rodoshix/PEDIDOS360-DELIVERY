@@ -26,6 +26,7 @@ import cl.duoc.pedidos360.messaging.relay.RequestPublisher;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(prefix = "pedidos360.messaging", name = "relay-mode", havingValue = "ACTIVE")
 @EnableConfigurationProperties(BffActorProperties.class)
+@org.springframework.context.annotation.Import(QueryMessagingConfiguration.class)
 public class BffQueryConfiguration {
 
     @Bean

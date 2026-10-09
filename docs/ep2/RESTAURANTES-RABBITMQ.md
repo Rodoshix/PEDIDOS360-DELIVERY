@@ -4,11 +4,17 @@ Base auditada: develop `82c32c0cc3582455040136bbefb70b4deb37bae4`. Implementaci�
 
 ## Contrato y seguridad
 
+La respuesta exitosa de `restaurante.listar.v1` lleva `payload` array de `RestauranteDto`,
+incluido `[]`; `error=null`. Una respuesta con objeto se rechaza. Se conserva el envelope de ocho
+campos y la matriz cerrada del [contrato compartido](REQUEST-REPLY-RABBITMQ.md). El request conserva
+`payload={}`. En la integración BFF #70 se acredita además la solicitud pendiente antes de aceptar
+el array; el nombre de operación remoto por sí solo no autoriza un resultado.
+
 `p360.queries` / `restaurante.listar.v1` / `p360.restaurantes.consultas.q`, payload `{}`. El processor llama exclusivamente `RestauranteService.listar()`, que usa `findAll()`. Devuelve el DTO y orden existentes, incluye INACTIVOS y devuelve `[]` sin registros. HTTP permanece oficial.
 
 El servicio HTTP interno no tiene filtro de Spring Security. El acceso público BFF con Entra habilitado exige `access_as_user` y rol CLIENTE o ADMIN; el precheck RabbitMQ conserva esa autorización. No incorpora validación de perfil activo, acceso a Usuarios, JWT original ni dependencia de SecurityContext HTTP. La exclusión de starter-security del core evita introducir filtros HTTP; security-core aporta la excepción de autorización.
 
-Se reutiliza #77 para HMAC, emisor/tenant, OID UUID, audiencia, vigencia y deadline; replyTo solo admite la cola técnica BFF. El core aplica ACK manual, prefetch 1, confirms, mandatory y returns. El retry corto usa policy TTL 1s de #69, seguido de DLQ; un handoff sin ruta conserva el original y usa recovery con backoff 500ms. La aplicación no declara topología, TTL ni policies. Relay DISABLED por defecto; dynamic=false y declare-topology=false.
+Se reutiliza #77 con el endurecimiento ES256 de #92 para emisor/tenant, OID UUID, audiencia, vigencia y deadline; no existe fallback HMAC. replyTo solo admite la cola técnica BFF. El core aplica ACK manual, prefetch 1, confirms, mandatory y returns. El retry corto usa policy TTL 1s de #69, seguido de DLQ; un handoff sin ruta conserva el original y usa recovery con backoff 500ms. La aplicación no declara topología, TTL ni policies. Relay DISABLED por defecto; dynamic=false y declare-topology=false.
 
 ## Matriz ejecutada (2026-10-08)
 

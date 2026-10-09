@@ -38,6 +38,12 @@ management:
       # Se preserva /actuator/health sin exigir broker mientras HTTP es el transporte predeterminado.
       enabled: false
 bff:
+  # Selección local por consulta; no habilita consumers ni realiza un corte operativo.
+  queries:
+    usuarios: ${BFF_QUERY_USUARIOS_MODE:HTTP}
+    restaurantes: ${BFF_QUERY_RESTAURANTES_MODE:HTTP}
+    productos: ${BFF_QUERY_PRODUCTOS_MODE:HTTP}
+    pagos: ${BFF_QUERY_PAGOS_MODE:HTTP}
   pedidos-pagos-enabled: ${BFF_PEDIDOS_PAGOS_ENABLED:false}
   pedidos-url: ${PEDIDOS_SERVICE_URL:http://127.0.0.1:8085}
   pagos-url: ${PAGOS_SERVICE_URL:http://127.0.0.1:8086}

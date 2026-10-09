@@ -44,7 +44,7 @@ class BffTemporalBarrierTests {
     final QueryOperationBudget budget=QueryOperationBudget.start(token,Duration.ofSeconds(5),clock,nanos::get);
     BffQueryAdapter adapter(Domain domain) {
         var actors=new BffActorContextFactory(new ActorContextSigner(FixtureActorKeys.provider(),clock,Duration.ZERO),
-                new BffActorProperties(tenant.toString(),Duration.ofSeconds(4),Set.of("p360.usuarios.consultas.q","p360.pagos.consultas.q")));
+                new BffActorProperties(tenant.toString(),Duration.ofSeconds(4),Set.of("p360.usuarios.consultas.q","p360.pagos.consultas.q","p360.restaurantes.consultas.q","p360.productos.consultas.q")));
         var adapter=new BffQueryAdapter(new RequestFactory(props,actors),publisher,registry,codec,schema,props);
         var operation=mock(QueryInvoker.class); when(operation.operacion()).thenReturn(props.routing().operacion(domain));
         adapter.registrar(domain,operation); return adapter;
@@ -83,7 +83,7 @@ class BffTemporalBarrierTests {
     @ParameterizedTest @ValueSource(ints={200,403,404})
     void expiryDuringResolutionIsCheckedBeforeReturningOrThrowingBusinessError(int status) {
         response(status,3000,null);
-        doAnswer(call->{var parsed=call.callRealMethod();advance(4000);return parsed;}).when(schema).leer(any(),anyInt());
+        doAnswer(call->{var parsed=call.callRealMethod();advance(4000);return parsed;}).when(schema).leer(any(),anyInt(),any());
         assertThatThrownBy(()->adapter(Domain.USUARIOS).ejecutar(Domain.USUARIOS,json.createObjectNode(),token,budget))
                 .isInstanceOf(QueryTimeoutException.class);
         assertThat(registry.enVuelo()).isZero();
@@ -102,7 +102,7 @@ class BffTemporalBarrierTests {
             var response=spy(parsed.orElseThrow());
             doAnswer(access->{advance(4000);return access.callRealMethod();}).when(response).payload();
             return Optional.of(response);
-        }).when(schema).leer(any(),anyInt());
+        }).when(schema).leer(any(),anyInt(),any());
         assertThatThrownBy(()->adapter(Domain.USUARIOS).ejecutar(Domain.USUARIOS,json.createObjectNode(),token,budget))
                 .isInstanceOf(QueryTimeoutException.class);
         assertThat(registry.enVuelo()).isZero();
