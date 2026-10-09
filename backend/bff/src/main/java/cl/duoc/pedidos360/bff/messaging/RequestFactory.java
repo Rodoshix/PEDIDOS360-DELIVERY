@@ -69,4 +69,10 @@ public final class RequestFactory {
     public MessagingProperties properties() {
         return properties;
     }
+
+    /** Acceso mínimo al verificador de la fábrica; el plan conserva su contrato interno existente. */
+    cl.duoc.pedidos360.messaging.actor.ActorContext verificarActor(Domain domain, RequestPlan plan) {
+        return actores.verificar(plan.envelope().actor(), QueryTopology.of(properties, domain).queue(),
+                plan.envelope().expiresAt());
+    }
 }

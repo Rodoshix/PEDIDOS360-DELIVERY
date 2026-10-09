@@ -211,16 +211,25 @@ class PagosQueryRabbitTests {
         var pago=save(T,10); var r=request(pago.getId(),10,Set.of("CLIENTE"),1);
         await().until(()->!r.expiresAt().isAfter(Instant.now())); send(r); dlq(); verify(service,never()).obtener(any(),any()); settled();
     }
-    @ParameterizedTest @ValueSource(strings={"messageId","correlation","replyTo","duplicate"})
+    @ParameterizedTest @ValueSource(strings={"messageId","correlation","replyTo","duplicate","type","version","routing","contentType"})
     void incoherentMetadataOrDuplicateJsonIsDefinitive(String kind) {
         var pago=save(T,10); var r=request(pago.getId(),10,Set.of("CLIENTE"),3750);
         var p=new MessageProperties(); p.setMessageId(kind.equals("messageId")?UUID.randomUUID().toString():r.messageId().toString());
         p.setCorrelationId(kind.equals("correlation")?"bad":UUID.randomUUID().toString());
         p.setReplyTo(kind.equals("replyTo")?COMMANDS:REPLIES);
+        p.setContentType(kind.equals("contentType")?"text/xml":"application/json");
         byte[] body=new RequestEnvelopeContext().escribir(r);
         if(kind.equals("duplicate")) body=new String(body,StandardCharsets.UTF_8)
                 .replace("\"pagoId\":1","\"pagoId\":1,\"pagoId\":1").getBytes(StandardCharsets.UTF_8);
-        admin.send("p360.queries",IdentityProof.OPERATION,new Message(body,p)); dlq();
+        if(kind.equals("type")||kind.equals("version")) {
+            var invalid=(tools.jackson.databind.node.ObjectNode)JSON.readTree(body);
+            if(kind.equals("type")) invalid.put("type","Other"); else invalid.put("version",2);
+            body=JSON.writeValueAsBytes(invalid);
+        }
+        // Default exchange reaches the same queue with a different received routing key, without topology changes.
+        if(kind.equals("routing")) { p.setHeader("x-death",List.of(Map.of("queue",RETRY))); admin.send("",MAIN,new Message(body,p)); }
+        else admin.send("p360.queries",IdentityProof.OPERATION,new Message(body,p));
+        var failed=dlq(); assertThat(failed.getMessageProperties().getRetryCount()).isZero();
         verify(service,never()).obtener(any(),any()); assertThat(admin.receive(REPLIES)).isNull(); settled();
     }
     @Test void authenticatedActorWithoutAllowedRoleGets403WithoutReadingPayment() {

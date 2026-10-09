@@ -75,8 +75,14 @@ public final class RequestEnvelopeContext {
         } catch (RuntimeException invalid) {
             throw new EnvelopeException(EnvelopeException.Reason.ESQUEMA_INVALIDO, "version fuera de rango", invalid);
         }
-        return new RequestEnvelope(messageId, raiz.path("type").stringValue(), version, occurredAt, expiresAt,
-                raiz.path("actor").stringValue(), raiz.path("operacion").stringValue(), raiz.path("payload"));
+        try {
+            return new RequestEnvelope(messageId, raiz.path("type").stringValue(), version, occurredAt, expiresAt,
+                    raiz.path("actor").stringValue(), raiz.path("operacion").stringValue(), raiz.path("payload"));
+        } catch (IllegalArgumentException invalid) {
+            // Only construction invariants are protocol failures, not arbitrary business exceptions.
+            throw new EnvelopeException(EnvelopeException.Reason.ESQUEMA_INVALIDO,
+                    "envelope no corresponde al contrato", invalid);
+        }
     }
 
     /**

@@ -102,23 +102,37 @@ public class BffQueryAdapter {
 
     /** Conserva el presupuesto original; ningún endpoint invoca aún una cadena Usuarios→Pagos. */
     public OperationResult ejecutar(Domain domain, JsonNode payload, JwtAuthenticationToken token, QueryOperationBudget budget) {
+        return ejecutar(domain, payload, token, budget, budget.originalDeadline());
+    }
+
+    /** Subdeadline explícito, sin orquestación ni renovación del presupuesto original. */
+    public OperationResult ejecutar(Domain domain, JsonNode payload, JwtAuthenticationToken token,
+            QueryOperationBudget budget, Instant requestDeadline) {
         QueryInvoker operacion = operacion(domain).orElseThrow(() -> new IllegalStateException(
                 "el dominio " + domain + " no tiene una operacion registrada en el BFF"));
         if (domain == Domain.USUARIOS && pruebas != null) budget.claimUsuarios();
-        RequestPlan plan = fabrica.planificar(domain, operacion.operacion(), payload, token, budget, budget.originalDeadline());
+        RequestPlan plan = fabrica.planificar(domain, operacion.operacion(), payload, token, budget, requestDeadline);
+        var actor = fabrica.verificarActor(domain, plan);
+        Instant limit = earlier(plan.envelope().expiresAt(), actor.expiraEn());
+        if (domain == Domain.PAGOS) {
+            if (pruebas == null) throw new QueryUnavailableException("Pagos requiere verificador de prueba de identidad", null);
+            limit = earlier(limit, pruebas.limitePagos(plan, budget, actor));
+        }
+        final Instant effectiveDeadline = limit;
+        budget.requireRemaining(effectiveDeadline);
         CompletableFuture<byte[]> espera = correlaciones.registrar(plan.correlationId());
         long inicio = System.nanoTime();
         try {
-            publicador.publicarConMedicion(plan.envelope(), plan.correlationId(), () -> budget.requireRemaining(plan.envelope().expiresAt()));
+            publicador.publicarConMedicion(plan.envelope(), plan.correlationId(), () -> budget.requireRemaining(effectiveDeadline));
             // El deadline es absoluto: la espera de la respuesta recibe solo lo que queda del
             // presupuesto, no un plazo nuevo. Antes se sumaban confirm (3 s) + espera (5 s).
-            long restante = budget.requireRemaining(plan.envelope().expiresAt());
+            long restante = budget.requireRemaining(effectiveDeadline);
             if (restante <= 0) throw new TimeoutException("presupuesto agotado en la publicacion");
             byte[] cuerpo = espera.get(restante, TimeUnit.NANOSECONDS);
-            budget.requireRemaining(plan.envelope().expiresAt());
-            var resolved = resolver(domain, plan, cuerpo, System.nanoTime() - inicio, budget);
+            budget.requireRemaining(effectiveDeadline);
+            var resolved = resolver(domain, plan, cuerpo, System.nanoTime() - inicio, budget, effectiveDeadline);
             budget.requireRemaining(budget.originalDeadline());
-            budget.requireRemaining(resolved.effectiveDeadline());
+            budget.requireRemaining(earlier(effectiveDeadline, resolved.effectiveDeadline()));
             return resolved.result();
         } catch (QueryUnavailableException sinBroker) {
             correlaciones.descartar(plan.correlationId());
@@ -154,9 +168,13 @@ public class BffQueryAdapter {
     /** Resuelve el cuerpo de la respuesta en el resultado equivalente al contrato HTTP. */
     private record ResolvedResult(OperationResult result, Instant effectiveDeadline) {}
 
-    private ResolvedResult resolver(Domain domain, RequestPlan plan, byte[] cuerpo, long nanos, QueryOperationBudget budget) {
+    private static Instant earlier(Instant a, Instant b) { return a.isBefore(b) ? a : b; }
+
+    private ResolvedResult resolver(Domain domain, RequestPlan plan, byte[] cuerpo, long nanos, QueryOperationBudget budget,
+            Instant acceptanceDeadline) {
         QueryResponse respuesta = esquema.leer(cuerpo, properties.maxBodyBytes()).orElseThrow(
                 () -> new QueryUnavailableException("la respuesta no corresponde al contrato", null));
+        budget.requireRemaining(acceptanceDeadline);
         if (!plan.envelope().messageId().equals(respuesta.messageId())
                 || !plan.correlationId().equals(respuesta.correlationId())
                 || !plan.envelope().operacion().equals(respuesta.operacion()))
@@ -175,14 +193,16 @@ public class BffQueryAdapter {
                 throw new QueryUnavailableException("respuesta con prueba de identidad requiere verificador habilitado", null);
             return new ResolvedResult(new OperationResult(respuesta.operacion(), respuesta.status(), payload), effectiveDeadline);
         }
-        budget.requireRemaining(plan.envelope().expiresAt());
+        budget.requireRemaining(acceptanceDeadline);
         var detalle = respuesta.error();
         log.info("Consulta operacion={} correlationId={} error de negocio status={} code={} {} ms",
                 plan.envelope().operacion(), plan.correlationId(), respuesta.status(),
                 detalle == null ? "SIN_CODIGO" : detalle.code(), nanos / 1_000_000);
-        throw new QueryBusinessException(org.springframework.http.HttpStatus.valueOf(respuesta.status()),
+        var error = new QueryBusinessException(org.springframework.http.HttpStatus.valueOf(respuesta.status()),
                 detalle == null ? "ERROR_DE_NEGOCIO" : detalle.code(),
                 detalle == null ? "La operacion no pudo completarse." : detalle.detail());
+        budget.requireRemaining(acceptanceDeadline);
+        throw error;
     }
 
     /** Envelope de diagnostico y reenvio manual, sin alterar el contrato. */

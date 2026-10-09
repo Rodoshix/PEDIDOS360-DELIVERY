@@ -156,6 +156,12 @@ class BffConsultasAdapterTests {
         private volatile boolean actorVerificado;
         private volatile boolean emitirPrueba;
         private volatile boolean alterarId;
+        private volatile boolean despuesDelActor;
+        private volatile boolean duplicar;
+        private volatile String referenciaDiscordante;
+        private volatile Instant actorExpiry;
+        private volatile Instant sentAt;
+        private volatile RequestEnvelope ultimoRequest;
 
         ServicioDePrueba(RequestEnvelopeContext contexto, ActorContextSigner firmante, RabbitTemplate rabbit,
                 String emisorEsperado, String colaDestino) {
@@ -187,6 +193,11 @@ class BffConsultasAdapterTests {
             ActorContext actor = firmante.verificar(envelope.actor(), emisorEsperado, List.of(colaDestino),
                     envelope.expiresAt());
             actorVerificado = true;
+            actorExpiry = actor.expiraEn(); ultimoRequest = envelope;
+            if (despuesDelActor) {
+                long delay = Duration.between(Instant.now(), actor.expiraEn().plusMillis(207)).toMillis();
+                if (delay > 0) Thread.sleep(delay);
+            }
             String correlationId = mensaje.getMessageProperties().getCorrelationId();
             QueryResponse respuesta;
             if (responder403) {
@@ -214,8 +225,15 @@ class BffConsultasAdapterTests {
             metadatos.setCorrelationId(correlationId);
             metadatos.setMessageId(envelope.messageId().toString());
             metadatos.setContentType("application/json");
-            rabbit.send("", mensaje.getMessageProperties().getReplyTo(),
-                    new Message(contexto.escribirRespuesta(respuesta), metadatos));
+            byte[] body = contexto.escribirRespuesta(respuesta);
+            if (referenciaDiscordante != null) {
+                var invalid = (tools.jackson.databind.node.ObjectNode) json.readTree(body);
+                invalid.put(referenciaDiscordante, referenciaDiscordante.equals("operacion") ? "other.v1" : java.util.UUID.randomUUID().toString());
+                body = json.writeValueAsBytes(invalid);
+            }
+            rabbit.send("", mensaje.getMessageProperties().getReplyTo(), new Message(body, metadatos));
+            if (duplicar) rabbit.send("", mensaje.getMessageProperties().getReplyTo(), new Message(body, metadatos));
+            sentAt = Instant.now();
             respuestasEnviadas++;
             canal.basicAck(mensaje.getMessageProperties().getDeliveryTag(), false);
         }
@@ -241,6 +259,9 @@ class BffConsultasAdapterTests {
     @org.junit.jupiter.api.BeforeEach
     void limpiarColas() {
         rabbit.execute(channel -> {
+            channel.queueDeclare(COLA_PAGOS, true, false, false, null);
+            channel.queueBind(COLA_PAGOS, "p360.queries", "pago.consultar.v1");
+            channel.queuePurge(COLA_PAGOS);
             channel.queuePurge(COLA_USUARIOS);
             channel.queuePurge(RESPUESTAS);
             return null;
@@ -403,7 +424,7 @@ class BffConsultasAdapterTests {
         assertThatThrownBy(() -> adaptadorUsuarios().ejecutar(Domain.USUARIOS,
                 JsonMapper.builder().build().createObjectNode(), token())).isInstanceOf(QueryTimeoutException.class);
         long transcurridoMs = (System.nanoTime() - inicio) / 1_000_000;
-        assertThat(transcurridoMs).isGreaterThanOrEqualTo(properties.deadline().toMillis() - 200);
+        assertThat(transcurridoMs).isGreaterThanOrEqualTo(properties.actorTtl().toMillis() - 200);
         assertThat(correlaciones.enVuelo()).isZero();
         // La cola queda limpia: no se acumulan respuestas huerfanas.
         assertThat(rabbit.receive(RESPUESTAS, 300)).isNull();
@@ -435,7 +456,7 @@ class BffConsultasAdapterTests {
     @Test
     void elDeadlineEsTotalYNoSeReiniciaTrasLaPublicacionConfirmada() {
         detenerServicios();
-        long presupuestoNanos = properties.deadline().toNanos();
+        long presupuestoNanos = properties.actorTtl().toNanos();
         long inicio = System.nanoTime();
         assertThatThrownBy(() -> adaptadorUsuarios().ejecutar(Domain.USUARIOS,
                 JsonMapper.builder().build().createObjectNode(), token())).isInstanceOf(QueryTimeoutException.class);
@@ -443,7 +464,7 @@ class BffConsultasAdapterTests {
 
         // Al menos se agoto el presupuesto y no se anadio un segundo plazo completo.
         assertThat(Duration.ofNanos(transcurrido)).as("no se espera menos que el presupuesto")
-                .isGreaterThanOrEqualTo(properties.deadline());
+                .isGreaterThanOrEqualTo(properties.actorTtl());
         assertThat(Duration.ofNanos(transcurrido)).as("confirm + espera nunca suman dos plazos")
                 .isLessThan(properties.deadline().plus(properties.deadline().dividedBy(2)));
         assertThat(transcurrido).as("el total sigue dentro del presupuesto absoluto")
@@ -465,6 +486,7 @@ class BffConsultasAdapterTests {
     @Test
     void unaRespuestaDuplicadaNoRompeLaCorrelacion() {
         var servicio = servicio(COLA_USUARIOS);
+        servicio.duplicar = true;
         try {
             var resultado = adaptadorUsuarios().ejecutar(Domain.USUARIOS, JsonMapper.builder().build().createObjectNode(),
                     token());
@@ -475,6 +497,68 @@ class BffConsultasAdapterTests {
         } finally {
             detenerServicios();
         }
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(ints = {200, 403, 404})
+    void lateResponseAfterVerifiedActorIsRejectedOnRealBroker(int status) {
+        var service = servicio(COLA_USUARIOS);
+        service.despuesDelActor = true; service.responder403(status == 403); service.responder404(status == 404);
+        var jwt = token(); var budget = new RequestFactory(properties, actores).iniciarOperacion(jwt);
+        try {
+            assertThatThrownBy(() -> adaptadorUsuarios().ejecutar(Domain.USUARIOS,
+                    JsonMapper.builder().build().createObjectNode(), jwt, budget)).isInstanceOf(QueryTimeoutException.class);
+            org.awaitility.Awaitility.await().atMost(Duration.ofSeconds(3)).until(() -> service.respuestasEnviadas() == 1);
+            assertThat(service.sentAt).isAfter(service.actorExpiry).isBefore(service.ultimoRequest.expiresAt());
+            assertThat(correlaciones.enVuelo()).isZero();
+            assertThatThrownBy(() -> budget.requireRemaining(budget.originalDeadline())).isInstanceOf(QueryTimeoutException.class);
+            assertThat(rabbit.receive(RESPUESTAS, 300)).isNull();
+        } finally { detenerServicios(); }
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"messageId", "correlationId", "operacion"})
+    void discordantResponseIsRejectedOnRealBroker(String reference) {
+        var service = servicio(COLA_USUARIOS); service.referenciaDiscordante = reference;
+        try {
+            assertThatThrownBy(() -> adaptadorUsuarios().ejecutar(Domain.USUARIOS,
+                    JsonMapper.builder().build().createObjectNode(), token())).isInstanceOf(QueryUnavailableException.class);
+            assertThat(correlaciones.enVuelo()).isZero();
+        } finally { detenerServicios(); }
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"before", "lateActor", "lateRequest"})
+    void explicitPagosSubdeadlineOnRealBrokerWithoutOrchestration(String mode) {
+        boolean late = !mode.equals("before");
+        var localActors = mode.equals("lateActor") ? new BffActorContextFactory(firmante,
+                new BffActorProperties(EntraTestTokens.TENANT,Duration.ofSeconds(1),java.util.Set.of(COLA_PAGOS))) : actores;
+        var factory = new RequestFactory(properties, localActors); var jwt = token(); var budget = factory.iniciarOperacion(jwt);
+        var adapter = new BffQueryAdapter(factory, publicador, correlaciones, contexto, new ResponseSchema(), properties);
+        var invoker = org.mockito.Mockito.mock(QueryInvoker.class);
+        org.mockito.Mockito.when(invoker.operacion()).thenReturn("pago.consultar.v1"); adapter.registrar(Domain.PAGOS, invoker);
+        adapter.configurarPruebas(new BffIdentityProofValidator(new cl.duoc.pedidos360.messaging.identity.IdentityProofVerifier(
+                cl.duoc.pedidos360.messaging.fixture.FixtureIdentityKeys.keys(), java.time.Clock.systemUTC(), Duration.ofMillis(250))));
+        Instant now = cl.duoc.pedidos360.messaging.identity.IdentityProofCodec.millis(Instant.now());
+        Instant r = budget.originalDeadline().minusSeconds(2);
+        Instant expiry = now.plusSeconds(4).isBefore(budget.originalDeadline()) ? now.plusSeconds(4) : budget.originalDeadline();
+        var proof = new cl.duoc.pedidos360.messaging.identity.IdentityProof(budget.tenant(), budget.oid(),42,now,now,
+                expiry,budget.originalDeadline(),java.util.UUID.randomUUID(),java.util.UUID.randomUUID());
+        var payload = JsonMapper.builder().build().createObjectNode().put("pagoId",1).put("pruebaIdentidad",
+                cl.duoc.pedidos360.messaging.fixture.FixtureIdentityKeys.sign(proof));
+        var service = servicio(COLA_PAGOS); service.despuesDelActor = late;
+        try {
+            if(late) {
+                assertThatThrownBy(() -> adapter.ejecutar(Domain.PAGOS,payload,jwt,budget,r)).isInstanceOf(QueryTimeoutException.class);
+                org.awaitility.Awaitility.await().atMost(Duration.ofSeconds(3)).until(() -> service.respuestasEnviadas() == 1);
+                assertThat(service.sentAt).isAfter(service.actorExpiry).isBefore(budget.originalDeadline());
+                if(mode.equals("lateActor")) assertThat(service.sentAt).isBefore(r);
+                else assertThat(service.sentAt).isAfter(r);
+            } else assertThat(adapter.ejecutar(Domain.PAGOS,payload,jwt,budget,r).status()).isEqualTo(200);
+            assertThat(service.ultimoRequest.expiresAt()).isEqualTo(r);
+            assertThat(service.actorExpiry).isBeforeOrEqualTo(r);
+            assertThat(correlaciones.enVuelo()).isZero();
+        } finally { detenerServicios(); }
     }
 
     @Test

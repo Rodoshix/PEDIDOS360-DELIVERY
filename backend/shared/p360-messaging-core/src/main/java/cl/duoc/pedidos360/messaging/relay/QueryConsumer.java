@@ -139,7 +139,10 @@ public class QueryConsumer {
                             "consulta fuera del presupuesto temporal permitido");
                 guard = new QueryDeadlineGuard(envelope.expiresAt(), reloj, System::nanoTime, receivedTicks, receivedAt);
                 guard.remainingNanos();
-                if (!envelope.messageId().toString().equals(messageId)
+                // Retry DLX restores the original functional routing key. Headers cannot grant an exception.
+                if (!operacionEsperada.equals(metadatos.getReceivedRoutingKey())
+                        || !MessageProperties.CONTENT_TYPE_JSON.equals(metadatos.getContentType())
+                        || !envelope.messageId().toString().equals(messageId)
                         || correlationId == null || !canonicalUuid(correlationId)
                         || !respuestas.replyToPermitido(metadatos.getReplyTo()))
                     throw new EnvelopeException(EnvelopeException.Reason.ESQUEMA_INVALIDO,

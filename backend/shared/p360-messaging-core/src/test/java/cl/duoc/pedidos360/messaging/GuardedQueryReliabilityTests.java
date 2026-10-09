@@ -83,6 +83,7 @@ class GuardedQueryReliabilityTests {
         var consumer=new QueryConsumer(codec,actor,processor,replies,failures,topology,"fixture",null,recovery,262144,clock,true);
         var metadata=new MessageProperties(); metadata.setMessageId(r.messageId().toString()); metadata.setCorrelationId(UUID.randomUUID().toString());
         metadata.setReplyTo(p.queues().responses()); metadata.setDeliveryTag(7);
+        metadata.setContentType(MessageProperties.CONTENT_TYPE_JSON); metadata.setReceivedRoutingKey(topology.routingKey());
         try {
             consumer.consumir(new Message(codec.escribir(r),metadata),channel);
             if(List.of("transport","interrupt","timeout").contains(mode)) {
@@ -106,6 +107,64 @@ class GuardedQueryReliabilityTests {
         assertThat(new QueryFailureHandler(handoff,replies,p,topology).gestionar(r,0,new QueryDeadlineGuard.Expired(),"corr",p.queues().responses(),true,null,g))
                 .isEqualTo(QueryFailureHandler.Resultado.DLQ);
         verify(rabbit).send(eq(p.exchanges().dlx()),eq(topology.failedRoutingKey()),argThat(m->codec.leer(m.getBody(),262144).equals(r)),any(CorrelationData.class));
+    }
+
+    @ParameterizedTest @ValueSource(strings={"type","version","routing","contentType"})
+    void protocolAndTransportFailuresGoDirectlyToDiagnosticDlq(String field) throws Exception {
+        var r=request(); var rabbit=mock(RabbitTemplate.class); confirmed(rabbit);
+        var actor=mock(ActorContextSigner.class); var processor=mock(QueryProcessor.class);
+        var replies=new QueryReplyPublisher(rabbit,codec,p,clock);
+        var failures=new QueryFailureHandler(new HandoffPublisher(rabbit,codec,p,topology),replies,p,topology);
+        var consumer=new QueryConsumer(codec,actor,processor,replies,failures,topology,"fixture",null,mock(HandoffRecovery.class),262144,clock,true);
+        var metadata=new MessageProperties(); metadata.setMessageId(r.messageId().toString());
+        metadata.setCorrelationId(UUID.randomUUID().toString()); metadata.setReplyTo(p.queues().responses()); metadata.setDeliveryTag(7);
+        metadata.setContentType(field.equals("contentType")?"application/json; charset=UTF-8":"application/json");
+        metadata.setReceivedRoutingKey(field.equals("routing")?topology.retryRoutingKey():topology.routingKey());
+        metadata.setHeader("x-death",List.of(Map.of("queue",topology.retryQueue())));
+        var body=(tools.jackson.databind.node.ObjectNode)codec.leerArbol(codec.escribir(r));
+        if(field.equals("type")) body.put("type","Other");
+        if(field.equals("version")) body.put("version",2);
+        consumer.consumir(new Message(JsonMapper.builder().build().writeValueAsBytes(body),metadata),mock(Channel.class));
+        verifyNoInteractions(actor,processor);
+        verify(rabbit,times(1)).send(eq(p.exchanges().dlx()),eq(topology.failedRoutingKey()),any(Message.class),any(CorrelationData.class));
+    }
+
+    @Test void businessIllegalArgumentExceptionStillUsesNormalRetry() {
+        var r=request(); var rabbit=mock(RabbitTemplate.class); confirmed(rabbit);
+        var replies=new QueryReplyPublisher(rabbit,codec,p,clock);
+        assertThat(new QueryFailureHandler(new HandoffPublisher(rabbit,codec,p,topology),replies,p,topology)
+                .gestionar(r,0,new IllegalArgumentException("business fixture"),"corr",p.queues().responses(),false,null,guard(r)))
+                .isEqualTo(QueryFailureHandler.Resultado.REINTENTADO);
+        verify(rabbit).send(eq(p.exchanges().retry()),eq(topology.retryRoutingKey()),any(Message.class),any(CorrelationData.class));
+    }
+
+    @Test void positiveConfirmObservedAfterDeadlineStillAcksWithoutAlternative() throws Exception {
+        var r=request(); var rabbit=mock(RabbitTemplate.class); var channel=mock(Channel.class);
+        var recovery=mock(HandoffRecovery.class); var actor=mock(ActorContextSigner.class);
+        when(actor.verificar(any(),any(),any(),any())).thenReturn(new ActorContext(UUID.randomUUID(),UUID.randomUUID(),
+                Set.of("CLIENTE"),Set.of("access_as_user"),start,start.plusSeconds(4),topology.queue(),UUID.randomUUID()));
+        try(var construction=mockConstruction(CorrelationData.class,(cd,ctx)->{
+            var future=new java.util.concurrent.CompletableFuture<CorrelationData.Confirm>() {
+                @Override public CorrelationData.Confirm get(long timeout,java.util.concurrent.TimeUnit unit) {
+                    assertThat(timeout).isPositive(); clock.now=r.expiresAt().plusMillis(1);
+                    return new CorrelationData.Confirm(true,null);
+                }
+            };
+            when(cd.getFuture()).thenReturn(future);
+        })) {
+            var replies=new QueryReplyPublisher(rabbit,codec,p,clock);
+            var handoff=new HandoffPublisher(rabbit,codec,p,topology);
+            var consumer=new QueryConsumer(codec,actor,(a,envelope)->envelope.payload(),replies,
+                    new QueryFailureHandler(handoff,replies,p,topology),topology,"fixture",null,recovery,262144,clock,true);
+            var metadata=new MessageProperties(); metadata.setMessageId(r.messageId().toString());
+            metadata.setCorrelationId(UUID.randomUUID().toString()); metadata.setReplyTo(p.queues().responses()); metadata.setDeliveryTag(7);
+            metadata.setContentType("application/json"); metadata.setReceivedRoutingKey(topology.routingKey());
+            consumer.consumir(new Message(codec.escribir(r),metadata),channel);
+            verify(channel).basicAck(7,false); verifyNoInteractions(recovery);
+            verify(rabbit,times(1)).send(eq(""),eq(p.queues().responses()),any(Message.class),any(CorrelationData.class));
+            assertThat(construction.constructed()).hasSize(1);
+            assertThat(construction.constructed().getFirst().getReturned()).isNull();
+        }
     }
     @ParameterizedTest @ValueSource(strings={"nack","return","transport","timeout"})
     void expiredDlqFailureNeverSettlesOrAttemptsFunctionalAlternative(String mode) {
