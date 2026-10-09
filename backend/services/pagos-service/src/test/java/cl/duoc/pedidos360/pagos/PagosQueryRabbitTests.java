@@ -138,7 +138,14 @@ class PagosQueryRabbitTests {
     }
     JsonNode reply() { var msg=admin.receive(REPLIES,6000); assertThat(msg).isNotNull(); return JSON.readTree(msg.getBody()); }
     Message dlq() { var msg=admin.receive(DLQ,6000); assertThat(msg).isNotNull(); return msg; }
-    void settled() { await().atMost(Duration.ofSeconds(5)).untilAsserted(()->assertThat(api("GET","queues/%2F/"+MAIN,null).path("messages_unacknowledged").intValue()).isZero()); }
+    void settled() {
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> {
+            var unacknowledged = api("GET", "queues/%2F/" + MAIN, null).path("messages_unacknowledged");
+            // Management can omit statistics until its first sample; absence is not zero.
+            assertThat(unacknowledged.isIntegralNumber()).isTrue();
+            assertThat(unacknowledged.intValue()).isZero();
+        });
+    }
 
     @Test void ownPaymentUsesRealListenerAndExactPublicProjectionWithoutWrites() {
         var pago=save(T,10); send(request(pago.getId(),10,Set.of("CLIENTE"),3750));
