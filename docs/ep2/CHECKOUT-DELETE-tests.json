@@ -1,0 +1,26 @@
+{
+  "base": "8c573a8c0b21d0ed45d08b30c3373be273e07367",
+  "tests": 229,
+  "passed": 229,
+  "failed": 0,
+  "skipped": 0,
+  "new_cases": 6,
+  "lint": "passed",
+  "production_builds": [
+    "HTTP passed (write:false)",
+    "RABBITMQ passed (write:false)",
+    "INVALID rejected"
+  ],
+  "test_nature": "Vite actual panel/handlers with hooks, router, HTTP and auth fixtures. No real-browser/Entra/broker/backend E2E.",
+  "source_sha256_lf": {
+    "frontend/src/config/checkoutCoordination.js": "ce9e12e461493686c994bf45876a10d9e010c952af1a74db8b9738ffd58e20b4",
+    "frontend/src/features/pedidos/RealConfirmarPedidoPanel.jsx": "229381c684857c3de30aa6846a011d356b7cc014a2fb8a35e7780bd06a8b3812",
+    "frontend/vite.config.js": "17db09224427eabbf0e19654b10c4ce587eae68d262d8725e4eeb37a9b73d6cd",
+    "frontend/Dockerfile": "4312f6e227140580d9479c0abddbded498a4f088212d723b0a21b163b5f95128",
+    "frontend/.env.example": "7cc2866258f55c9a65c60d9aef18419177bca7c194205a0f6def13858ffd95a8",
+    "frontend/tools/validate-docker-build.mjs": "e42ee2018596d0eb0ef78c1c62ee60e8d2596c94a8e6e4584f32763deeb5121e",
+    "frontend/tests/checkoutCoordination.test.js": "290975a008fba84c0e8ce390435e1d935eae652440da0784760d63b1044abe26",
+    "frontend/tests/dockerBuildConfiguration.test.js": "e6f9112d70a3182742148c0daa9bcd2b26064430ee4e91e624d7cf61cc6aed25"
+  },
+  "full_test_log_sha256": "bcb1fbe9ea6d15efae924410803c9f739a39df050e4e528b1a6d668ecc862e7e"
+}

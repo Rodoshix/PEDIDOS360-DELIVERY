@@ -6,6 +6,7 @@ import { createPedidoHttpAdapter, pedidoFailure } from './pedidoHttpAdapter.js'
 import { validatePedidoDraft } from './pedidoOperaciones.js'
 import { formatClp } from './pedidoFormat.js'
 import { ROUTE_PATHS } from '../../routes/routePaths.js'
+import { checkoutCoordination } from '../../config/checkoutCoordination.js'
 import './pedidos.css'
 
 /**
@@ -38,11 +39,15 @@ export default function RealConfirmarPedidoPanel() {
   const [creado, setCreado] = useState(null)
   // 'pendiente' | 'en_curso' | 'exitoso' | 'fallido'
   const [vaciado, setVaciado] = useState(null)
+  const [consultandoCarrito, setConsultandoCarrito] = useState(false)
+  const [consultaCarritoFallida, setConsultaCarritoFallida] = useState(false)
+  const consultandoRef = useRef(false)
   // Resultado INCIERTO de la creación: bloquea nuevos intentos hasta reconciliar.
   const [incierto, setIncierto] = useState(false)
   const [creando, setCreando] = useState(false)
   // Guardas síncronas: evitan envíos concurrentes sin depender de un render pendiente.
   const enviandoRef = useRef(false)
+  const pedidoRegistradoRef = useRef(false)
   const vaciandoRef = useRef(false)
   const errorRender = useRef(null)
 
@@ -74,7 +79,26 @@ export default function RealConfirmarPedidoPanel() {
   const restauranteId = cart?.restauranteId ?? null
   const total = items.reduce((sum, item) => sum + (item.subtotal ?? 0), 0)
 
+  async function consultarCarrito() {
+    if (consultandoRef.current) return
+    consultandoRef.current = true
+    setConsultandoCarrito(true)
+    setConsultaCarritoFallida(false)
+    try {
+      const client = (await import('../../services/httpClient.js')).default
+      const response = await client.get('/carrito')
+      if (response.status !== 200) throw new Error('carrito')
+      setCart(response.data)
+    } catch {
+      setConsultaCarritoFallida(true)
+    } finally {
+      consultandoRef.current = false
+      setConsultandoCarrito(false)
+    }
+  }
+
   async function vaciarCarrito() {
+    if (checkoutCoordination !== 'HTTP') return false
     // Guarda síncrona: impide DELETE solapados (botón + automático).
     if (vaciandoRef.current) return false
     vaciandoRef.current = true
@@ -96,7 +120,7 @@ export default function RealConfirmarPedidoPanel() {
   async function confirmar(event) {
     event.preventDefault()
     // Guarda síncrona: bloquea doble clic, envíos solapados y reintentos tras resultado incierto.
-    if (busy || enviandoRef.current || incierto) return
+    if (busy || enviandoRef.current || incierto || pedidoRegistradoRef.current) return
     const draft = {
       restauranteId,
       direccionEntrega,
@@ -118,9 +142,12 @@ export default function RealConfirmarPedidoPanel() {
         return
       }
       const pedido = controller.getSnapshot().pedido
+      pedidoRegistradoRef.current = true
       setCreado({ pedidoId: pedido.pedidoId, total: pedido.total })
-      setVaciado('pendiente')
-      await vaciarCarrito()
+      if (checkoutCoordination === 'HTTP') {
+        setVaciado('pendiente')
+        await vaciarCarrito()
+      }
     } finally {
       enviandoRef.current = false
       setCreando(false)
@@ -149,6 +176,14 @@ export default function RealConfirmarPedidoPanel() {
     {creado && <div className="pedidos-card">
       <h2>Pedido #{creado.pedidoId} creado</h2>
       <p>Total {formatClp(creado.total)}. Tu pedido ya está registrado; no se creará otro.</p>
+      {checkoutCoordination === 'RABBITMQ' && <div>
+        <p role="status">El pedido fue registrado. El vaciado del carrito se procesa separadamente; todavía no está confirmado.</p>
+        <button type="button" className="button button--secondary" disabled={busy || consultandoCarrito}
+          onClick={() => consultarCarrito()}>Consultar carrito</button>
+        {consultandoCarrito && <p role="status">Consultando tu carrito…</p>}
+        {consultaCarritoFallida && <p role="alert">No se pudo consultar el carrito. Puedes volver a consultar sin crear otro pedido.</p>}
+        {!consultandoCarrito && !consultaCarritoFallida && <p>Última lectura: {items.length} producto(s) en el carrito. Una lectura vacía no confirma qué operación lo vació.</p>}
+      </div>}
       {vaciado === 'en_curso' && <p role="status">Vaciando el carrito…</p>}
       {vaciado === 'exitoso' && <p role="status">Carrito vaciado.</p>}
       {vaciado === 'fallido' && <div role="alert" className="pedidos-error">
@@ -187,7 +222,9 @@ export default function RealConfirmarPedidoPanel() {
         </button>
         <Link className="button button--secondary" to={ROUTE_PATHS.cart}>Volver al carrito</Link>
       </div>
-      <p className="pedidos-notice">Al confirmar se crea el pedido y luego se vacía el carrito. Ante un error no se crea un segundo pedido.</p>
+      <p className="pedidos-notice">{checkoutCoordination === 'HTTP'
+        ? 'Al confirmar se crea el pedido y luego se vacía el carrito. Ante un error no se crea un segundo pedido.'
+        : 'Al confirmar se registra el pedido y se solicita el vaciado por separado. Los cambios posteriores del carrito pueden conservarse.'}</p>
     </form>}
   </div>
 }
