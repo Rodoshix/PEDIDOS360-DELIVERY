@@ -24,6 +24,9 @@ public class UpstreamSeguro implements AutoCloseable {
         return uri;
     }
     public JsonNode get(URI url, String bearer) {
+        return get(url,bearer,false);
+    }
+    public JsonNode get(URI url, String bearer, boolean strict) {
         var request = HttpRequest.newBuilder(url).timeout(Duration.ofSeconds(5))
             .header("Accept", "application/json");
         if (bearer != null) request.header("Authorization", "Bearer " + bearer);
@@ -38,7 +41,10 @@ public class UpstreamSeguro implements AutoCloseable {
                     org.springframework.http.HttpStatus.FORBIDDEN, "Acceso upstream rechazado.");
             if (response.statusCode() != 200 || !response.headers().firstValue("content-type")
                 .orElse("").toLowerCase(java.util.Locale.ROOT).startsWith("application/json")) throw new IllegalStateException();
-            var json = JsonMapper.builder().build().readTree(response.body());
+            var builder = JsonMapper.builder();
+            if (strict) builder.enable(tools.jackson.core.StreamReadFeature.STRICT_DUPLICATE_DETECTION)
+                    .enable(tools.jackson.databind.DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+            var json = builder.build().readTree(response.body());
             if (json == null || !json.isObject()) throw new IllegalStateException();
             return json;
         } catch (org.springframework.web.server.ResponseStatusException e) { throw e;

@@ -40,6 +40,7 @@ server:
   address: ${SERVER_ADDRESS:127.0.0.1}
 
 pedidos:
+  carrito-url: ${CARRITO_SERVICE_URL:http://localhost:8084}
   productos-url: ${PRODUCTOS_SERVICE_URL:http://localhost:8083}
   identidad-local:
     tenant-id: ${LOCAL_TENANT_ID:}
@@ -75,6 +76,14 @@ entra:
 
 pedidos360:
   messaging:
+    carrito:
+      mode: ${PEDIDOS_CARRITO_MODE:HTTP}
+      platform-ready: ${PEDIDOS_CARRITO_PLATFORM_READY:false}
+      host: ${PEDIDOS_CARRITO_RABBITMQ_HOST:localhost}
+      port: ${PEDIDOS_CARRITO_RABBITMQ_PORT:5672}
+      virtual-host: ${PEDIDOS_CARRITO_RABBITMQ_VHOST:pedidos360}
+      username: ${PEDIDOS_CARRITO_RABBITMQ_USERNAME:}
+      password: ${PEDIDOS_CARRITO_RABBITMQ_PASSWORD:}
     coordination-mode: ${PEDIDOS360_COORDINATION_MODE:HTTP}
     exchanges:
       commands: p360.pedidos.commands

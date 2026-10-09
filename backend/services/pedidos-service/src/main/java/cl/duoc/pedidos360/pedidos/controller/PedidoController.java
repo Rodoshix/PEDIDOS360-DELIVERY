@@ -22,16 +22,19 @@ public class PedidoController {
 
     private final PedidoService pedidos;
     private final IdentidadActual identidad;
+    private final cl.duoc.pedidos360.pedidos.service.CheckoutPedido checkout;
 
-    public PedidoController(PedidoService pedidos, IdentidadActual identidad) {
+    public PedidoController(PedidoService pedidos, IdentidadActual identidad,
+            cl.duoc.pedidos360.pedidos.service.CheckoutPedido checkout) {
         this.pedidos = pedidos;
         this.identidad = identidad;
+        this.checkout = checkout;
     }
 
     @PostMapping("/pedidos")
     @ResponseStatus(HttpStatus.CREATED)
     public PedidoResponse crear(@Valid @RequestBody CrearPedidoRequest request) {
-        return pedidos.crear(identidad.obtener(), request);
+        return checkout.crear(identidad.obtener(), request);
     }
 
     /** Historial de la identidad autenticada; no recibe usuarioId del cliente. */
