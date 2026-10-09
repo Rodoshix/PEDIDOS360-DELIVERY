@@ -66,6 +66,7 @@ public class QueryConsumer {
     private final HandoffRecovery recuperacion;
     private final Clock reloj;
     private final int maxBodyBytes;
+    private final boolean guarded;
 
     /**
      * @param emisorEsperado tenant de Entra que debe haber emitido el sobre.
@@ -82,6 +83,14 @@ public class QueryConsumer {
     public QueryConsumer(RequestEnvelopeContext contexto, ActorContextSigner actor, QueryProcessor procesador,
             QueryReplyPublisher respuestas, QueryFailureHandler fallos, QueryTopology topology,
             String emisorEsperado, QueryPrecheck precheck, HandoffRecovery recuperacion, int maxBodyBytes, Clock reloj) {
+        this(contexto, actor, procesador, respuestas, fallos, topology, emisorEsperado, precheck,
+                recuperacion, maxBodyBytes, reloj, false);
+    }
+
+    public QueryConsumer(RequestEnvelopeContext contexto, ActorContextSigner actor, QueryProcessor procesador,
+            QueryReplyPublisher respuestas, QueryFailureHandler fallos, QueryTopology topology,
+            String emisorEsperado, QueryPrecheck precheck, HandoffRecovery recuperacion, int maxBodyBytes,
+            Clock reloj, boolean guarded) {
         this.contexto = contexto;
         this.actor = actor;
         this.procesador = procesador;
@@ -95,6 +104,7 @@ public class QueryConsumer {
         this.recuperacion = recuperacion;
         this.reloj = java.util.Objects.requireNonNull(reloj);
         this.maxBodyBytes = maxBodyBytes;
+        this.guarded = guarded;
     }
 
     public QueryTopology topology() {
@@ -110,30 +120,51 @@ public class QueryConsumer {
     @RabbitListener(id = QueryConsumerRecovery.QUERY_LISTENER_ID, queues = "#{@queryTopology.queue()}",
             containerFactory = "queryListenerFactory")
     public void consumir(Message message, Channel channel) throws IOException {
+        long receivedTicks = System.nanoTime();
+        Instant receivedAt = reloj.instant();
         MessageProperties metadatos = message.getMessageProperties();
         String correlationId = metadatos.getCorrelationId();
         String messageId = metadatos.getMessageId();
         // retry-count es un campo reservado de Spring AMQP: se lee por su API, no como header libre.
         int intentos = (int) Math.min(Integer.MAX_VALUE, Math.max(0, metadatos.getRetryCount()));
         RequestEnvelope envelope = null;
+        QueryDeadlineGuard guard = null;
         try {
             envelope = contexto.leer(message.getBody(), maxBodyBytes);
+            if (guarded) {
+                if (java.time.Duration.between(envelope.occurredAt(), envelope.expiresAt())
+                        .compareTo(java.time.Duration.ofSeconds(5)) > 0
+                        || envelope.occurredAt().isAfter(receivedAt.plusSeconds(5)))
+                    throw new EnvelopeException(EnvelopeException.Reason.TIEMPO_INVALIDO,
+                            "consulta fuera del presupuesto temporal permitido");
+                guard = new QueryDeadlineGuard(envelope.expiresAt(), reloj, System::nanoTime, receivedTicks, receivedAt);
+                guard.remainingNanos();
+                if (!envelope.messageId().toString().equals(messageId)
+                        || correlationId == null || !canonicalUuid(correlationId)
+                        || !respuestas.replyToPermitido(metadatos.getReplyTo()))
+                    throw new EnvelopeException(EnvelopeException.Reason.ESQUEMA_INVALIDO,
+                            "propiedades AMQP no corresponden al contrato");
+            }
             if (envelope.vencido(reloj.instant())) {
                 throw new PlazoVencidoException("consulta vencida antes de ejecutarse");
             }
             validarOperacion(envelope);
             ActorContext contextoActor = actor.verificar(envelope.actor(), emisorEsperado, destinosPermitidos,
                     envelope.expiresAt());
+            if (guard != null) guard.narrow(contextoActor.expiraEn());
             if (precheck != null) precheck.validar(contextoActor);
             if (envelope.vencido(reloj.instant()))
                 throw new PlazoVencidoException("consulta vencida antes del procesamiento");
-            var payload = procesador.procesar(contextoActor, envelope);
+            var payload = guard == null ? procesador.procesar(contextoActor, envelope)
+                    : procesador.procesar(contextoActor, envelope, guard);
+            if (guard != null) guard.remainingNanos();
             if (envelope.vencido(reloj.instant()))
                 throw new PlazoVencidoException("consulta vencida durante el procesamiento");
-            respuestas.publicar(envelope, metadatos.getReplyTo(), correlationId,
-                    QueryResponse.exito(envelope, correlationId, payload, respuestas.ahora()));
+            var respuesta = QueryResponse.exito(envelope, correlationId, payload, respuestas.ahora());
+            if (guard == null) respuestas.publicar(envelope, metadatos.getReplyTo(), correlationId, respuesta);
+            else respuestas.publicar(envelope, metadatos.getReplyTo(), correlationId, respuesta, guard);
         } catch (Exception fallo) {
-            gestionarFallo(message, channel, envelope, fallo, correlationId, intentos, messageId);
+            gestionarFallo(message, channel, envelope, fallo, correlationId, intentos, messageId, guard);
             return;
         }
         // Settlement fuera del tratamiento de negocio: nunca origina otra publicación.
@@ -141,15 +172,18 @@ public class QueryConsumer {
     }
 
     private void gestionarFallo(Message message, Channel channel, RequestEnvelope envelope, Exception fallo,
-            String correlationId, int intentos, String messageId) {
+            String correlationId, int intentos, String messageId, QueryDeadlineGuard guard) {
         RequestEnvelope diagnosticable = envelope != null ? envelope : sobreParaDiagnostico(messageId);
         MessageProperties original = message.getMessageProperties();
         QueryFailureHandler.Resultado resultado;
         try {
             // Las propiedades originales viajan a la transferencia: sin ellas el retry perderia
             // correlationId y replyTo, y la respuesta del segundo intento no tendria destino.
-            resultado = fallos.gestionar(diagnosticable, intentos, fallo, correlationId,
+            if (guard == null) resultado = fallos.gestionar(diagnosticable, intentos, fallo, correlationId,
                     original.getReplyTo(), fallo instanceof PlazoVencidoException || diagnosticable.vencido(reloj.instant()), original);
+            else resultado = fallos.gestionar(diagnosticable, intentos, fallo, correlationId,
+                    original.getReplyTo(), fallo instanceof PlazoVencidoException || diagnosticable.vencido(reloj.instant())
+                            || guard != null && guard.exhausted(), original, guard);
         } catch (RuntimeException inesperado) {
             log.error("Consulta messageId={} fallo al gestionar el error; mensaje SIN CONFIRMAR: {}", messageId,
                     inesperado.getMessage());
@@ -169,6 +203,11 @@ public class QueryConsumer {
         if (!operacionEsperada.equals(envelope.operacion()))
             throw new EnvelopeException(EnvelopeException.Reason.ESQUEMA_INVALIDO,
                     "la operacion no corresponde a esta cola funcional");
+    }
+
+    private static boolean canonicalUuid(String value) {
+        try { return UUID.fromString(value).toString().equals(value); }
+        catch (IllegalArgumentException invalid) { return false; }
     }
 
     private void confirmar(Channel channel, long deliveryTag, String messageId, String correlationId, int intentos,

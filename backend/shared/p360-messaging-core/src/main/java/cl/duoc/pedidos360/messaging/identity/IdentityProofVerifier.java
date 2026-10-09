@@ -20,6 +20,33 @@ public final class IdentityProofVerifier {
         this.margin = margin;
     }
     public IdentityProof verify(String jws, UUID tenant, UUID oid, UUID usuariosRequestId, Instant originalDeadline) {
+        IdentityProof proof = verified(jws);
+        if (!proof.tenantId().equals(tenant) || !proof.entraObjectId().equals(oid)
+                || !proof.usuariosRequestId().equals(usuariosRequestId) || !proof.deadlineOriginal().equals(originalDeadline))
+            throw new IdentityProofException(IdentityProofException.Reason.VINCULO);
+        checkTime(proof);
+        return proof;
+    }
+
+    /** Pagos has no Usuarios request plan. Signed provenance is not an independent correlation check. */
+    public IdentityProof verifyForPagos(String jws,
+            cl.duoc.pedidos360.messaging.actor.ActorContext actor,
+            cl.duoc.pedidos360.messaging.envelope.RequestEnvelope request) {
+        IdentityProof proof = verified(jws);
+        if (actor == null || request == null || !proof.tenantId().equals(actor.tenantId())
+                || !proof.entraObjectId().equals(actor.sujetoId())
+                || !IdentityProof.AUDIENCE.equals(actor.audiencia())
+                || !IdentityProof.OPERATION.equals(request.operacion())
+                || request.expiresAt().isAfter(usableUntil(proof))
+                || actor.expiraEn().isAfter(request.expiresAt()))
+            throw new IdentityProofException(IdentityProofException.Reason.VINCULO);
+        checkTime(proof);
+        if (!actor.expiraEn().isAfter(clock.instant()) || !request.expiresAt().isAfter(clock.instant()))
+            throw new IdentityProofException(IdentityProofException.Reason.VENCIDA);
+        return proof;
+    }
+
+    private IdentityProof verified(String jws) {
         if (jws == null || jws.length() > 4096) throw new IdentityProofException(IdentityProofException.Reason.FORMATO);
         String[] parts = jws.split("\\.", -1);
         if (parts.length != 3) throw new IdentityProofException(IdentityProofException.Reason.FORMATO);
@@ -38,15 +65,15 @@ public final class IdentityProofVerifier {
             throw new IdentityProofException(IdentityProofException.Reason.FIRMA);
         }
         IdentityProof proof = IdentityProofCodec.read(IdentityProofCodec.object(payload));
-        if (!proof.tenantId().equals(tenant) || !proof.entraObjectId().equals(oid)
-                || !proof.usuariosRequestId().equals(usuariosRequestId) || !proof.deadlineOriginal().equals(originalDeadline))
-            throw new IdentityProofException(IdentityProofException.Reason.VINCULO);
+        return proof;
+    }
+
+    private void checkTime(IdentityProof proof) {
         Instant now = clock.instant();
         if (proof.emitidoEn().isAfter(now.plus(margin)))
             throw new IdentityProofException(IdentityProofException.Reason.TIEMPO_INCOHERENTE);
         if (!proof.expiraEn().isAfter(now.plus(margin)))
             throw new IdentityProofException(IdentityProofException.Reason.VENCIDA);
-        return proof;
     }
     /** Límite conservador para complementar la verificación con un presupuesto monotónico. */
     public Instant usableUntil(IdentityProof proof) { return proof.expiraEn().minus(margin); }

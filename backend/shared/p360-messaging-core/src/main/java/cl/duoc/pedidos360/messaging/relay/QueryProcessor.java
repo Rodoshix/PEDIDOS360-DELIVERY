@@ -28,4 +28,9 @@ import cl.duoc.pedidos360.messaging.envelope.RequestEnvelope;
 public interface QueryProcessor {
 
     JsonNode procesar(ActorContext actor, RequestEnvelope request);
+
+    /** Compatible entry point: existing processors retain their original behavior. */
+    default JsonNode procesar(ActorContext actor, RequestEnvelope request, QueryDeadlineGuard guard) {
+        return procesar(actor, request);
+    }
 }

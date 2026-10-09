@@ -92,41 +92,47 @@ public final class QueryFailureHandler {
      */
     public Resultado gestionar(RequestEnvelope envelope, int retryCount, Exception fallo, String correlationId,
             String replyTo, boolean plazoVencido, MessageProperties original) {
+        return gestionar(envelope, retryCount, fallo, correlationId, replyTo, plazoVencido, original, null);
+    }
+
+    public Resultado gestionar(RequestEnvelope envelope, int retryCount, Exception fallo, String correlationId,
+            String replyTo, boolean plazoVencido, MessageProperties original, QueryDeadlineGuard guard) {
         if (fallo instanceof HandoffFailureException publication && publication.resultadoIncierto())
             return Resultado.SIN_CONFIRMAR;
-        if (plazoVencido || envelope.vencido(respuestas.ahora())) {
+        if (plazoVencido || envelope.vencido(respuestas.ahora()) || guard != null && guard.exhausted()) {
             log.error("Consulta messageId={} correlationId={} plazo vencido: no se ejecuta ni se reintenta; {}",
                     messageIdSeguro(envelope), correlationId, fallo.getClass().getSimpleName());
-            return transferir(envelope, retryCount, fallo, Destino.DLQ, original);
+            return transferir(envelope, retryCount, fallo, Destino.DLQ, original, guard);
         }
         if (respondeAlSolicitante(fallo)) {
             log.warn("Consulta messageId={} correlationId={} respuesta de negocio: {}", messageIdSeguro(envelope),
                     correlationId, fallo.getMessage());
             try {
-                respuestas.publicar(envelope, replyTo, correlationId, respuestaDeFallo(envelope, fallo, correlationId));
+                if (guard == null) respuestas.publicar(envelope, replyTo, correlationId, respuestaDeFallo(envelope, fallo, correlationId));
+                else respuestas.publicar(envelope, replyTo, correlationId, respuestaDeFallo(envelope, fallo, correlationId), guard);
                 return Resultado.RESPONDIDO;
             } catch (HandoffFailureException handoffFallido) {
                 if (handoffFallido.resultadoIncierto()) return Resultado.SIN_CONFIRMAR;
                 log.error("Consulta messageId={} correlationId={} respuesta de negocio no confirmada: {}",
                         messageIdSeguro(envelope), correlationId, handoffFallido.getMessage());
                 return transferir(envelope, retryCount, fallo,
-                        retryCount >= 1 || envelope.vencido(respuestas.ahora()) ? Destino.DLQ : Destino.RETRY, original);
+                        retryCount >= 1 || envelope.vencido(respuestas.ahora()) ? Destino.DLQ : Destino.RETRY, original, guard);
             }
         }
         if (definitivo(fallo)) {
             log.error("Consulta messageId={} correlationId={} retryCount={} fallo definitivo: {} - {}",
                     messageIdSeguro(envelope), correlationId, retryCount, fallo.getClass().getSimpleName(),
                     fallo.getMessage());
-            return transferir(envelope, retryCount, fallo, Destino.DLQ, original);
+            return transferir(envelope, retryCount, fallo, Destino.DLQ, original, guard);
         }
         if (retryCount >= 1) {
             log.error("Consulta messageId={} correlationId={} retryCount={} agotado: {}", messageIdSeguro(envelope),
                     correlationId, retryCount, fallo.getClass().getSimpleName());
-            return transferir(envelope, retryCount, fallo, Destino.DLQ, original);
+            return transferir(envelope, retryCount, fallo, Destino.DLQ, original, guard);
         }
         log.warn("Consulta messageId={} correlationId={} fallo transitorio, retry corto: {}",
                 messageIdSeguro(envelope), correlationId, fallo.getClass().getSimpleName());
-        return transferir(envelope, retryCount, fallo, Destino.RETRY, original);
+        return transferir(envelope, retryCount, fallo, Destino.RETRY, original, guard);
     }
 
     /** Clase de error diagnosticada, sin datos sensibles. */
@@ -176,14 +182,15 @@ public final class QueryFailureHandler {
      * {@code requeue=true} ni un bucle de reintentos caliente.
      */
     private Resultado transferir(RequestEnvelope envelope, int retryCount, Exception fallo, Destino destino,
-            MessageProperties original) {
+            MessageProperties original, QueryDeadlineGuard guard) {
         try {
-            if (destino == Destino.RETRY && envelope.vencido(respuestas.ahora())) {
+            if (destino == Destino.RETRY && (envelope.vencido(respuestas.ahora()) || guard != null && guard.exhausted())) {
                 log.warn("Consulta messageId={} plazo vencido antes del handoff; destino DLQ", messageIdSeguro(envelope));
                 destino = Destino.DLQ;
             }
             if (destino == Destino.RETRY) {
-                handoff.aRetry(envelope, retryCount, claseDeFallo(fallo), original);
+                if (guard == null) handoff.aRetry(envelope, retryCount, claseDeFallo(fallo), original);
+                else handoff.aRetry(envelope, retryCount, claseDeFallo(fallo), original, guard);
                 return Resultado.REINTENTADO;
             }
             handoff.aDlq(envelope, retryCount, claseDeFallo(fallo), original);
@@ -191,6 +198,9 @@ public final class QueryFailureHandler {
                     messageIdSeguro(envelope), envelope.vencido(respuestas.ahora()));
             return Resultado.DLQ;
         } catch (HandoffFailureException handoffFallido) {
+            if (destino == Destino.RETRY && guard != null && guard.exhausted()
+                    && handoffFallido.resultado() == HandoffFailureException.ResultadoPublicacion.NO_ENVIADO)
+                return transferir(envelope, retryCount, fallo, Destino.DLQ, original, guard);
             log.error("Consulta messageId={} transferencia a {} no confirmada; queda SIN CONFIRMAR "
                     + "y la recuperacion del consumidor rehara el intento: {}", messageIdSeguro(envelope), destino,
                     handoffFallido.getMessage());

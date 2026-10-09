@@ -40,6 +40,14 @@ server:
   address: ${SERVER_ADDRESS:127.0.0.1}
 
 pagos:
+  consultas:
+    rabbitmq:
+      host: ${PAGOS_QUERY_RABBITMQ_HOST:localhost}
+      port: ${PAGOS_QUERY_RABBITMQ_PORT:5672}
+      virtual-host: ${PAGOS_QUERY_RABBITMQ_VHOST:pedidos360}
+      username: ${PAGOS_QUERY_RABBITMQ_USERNAME:}
+      password: ${PAGOS_QUERY_RABBITMQ_PASSWORD:}
+      connection-timeout: 3s
   worker:
     enabled: ${PAGOS_WORKER_ENABLED:false}
     tenant-id: ${ENTRA_TENANT_ID:}
@@ -79,15 +87,52 @@ entra:
 
 pedidos360:
   messaging:
+    relay-mode: ${PEDIDOS360_RELAY_MODE:DISABLED}
+    role: SERVICE
+    declare-topology: false
     coordination-mode: ${PEDIDOS360_COORDINATION_MODE:HTTP}
     exchanges:
       commands: p360.pedidos.commands
+      queries: p360.queries
+      retry: p360.retry
+      dlx: p360.dlx
     routing-keys:
       confirmar: pedido.confirmar.v1
     queues:
       confirmacion: p360.pedidos.confirmacion.q
+      responses: p360.bff.consultas.respuestas.q
     confirm-timeout: 3s
     lease: 30s
     batch-size: 10
     dispatch-interval-ms: 5000
     publisher-retry-delay: 30s
+    naming:
+      prefix: p360.
+      query-suffix: .consultas.q
+      retry-suffix: .consultas.retry.1s.q
+      dlq-suffix: .consultas.dlq
+      retry-key-suffix: .retry.1s
+      failed-key-suffix: .failed
+    routing:
+      usuario: usuario.consultar-actual.v1
+      restaurante: restaurante.listar.v1
+      producto: producto.listar-disponibles.v1
+      pago: pago.consultar.v1
+      usuario-base: usuario.consultar-actual
+      restaurante-base: restaurante.listar
+      producto-base: producto.listar-disponibles
+      pago-base: pago.consultar
+    deadline: 5s
+    actor-ttl: 4s
+    retry-delay: 1s
+    recovery-backoff: 500ms
+    max-pending-correlations: 1024
+    max-body-bytes: 262144
+    actor:
+      emisor: ${ENTRA_TENANT_ID:}
+      public-jwks: ${PEDIDOS360_ACTOR_PUBLIC_JWKS:}
+      tolerancia-reloj: ${PEDIDOS360_ACTOR_CLOCK_SKEW:5s}
+    identity-proof:
+      enabled: ${PEDIDOS360_IDENTITY_PROOF_ENABLED:false}
+      public-jwks: ${USUARIOS_IDENTITY_PROOF_PUBLIC_JWKS:}
+      clock-margin: 250ms

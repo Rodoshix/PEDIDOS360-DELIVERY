@@ -120,7 +120,8 @@ almacena, no se recalcula después de Usuarios. La prueba firma deadlineOriginal
 Los timestamps nunca se redondean hacia adelante.
 
 RequestFactory admite explícitamente el mismo presupuesto y un plazo efectivo <=D.
-El primer request utiliza D; el futuro request de Pagos debe utilizar E. Los tests
+El primer request utiliza D; el request de Pagos definido en PR 3 utiliza R <= E−margen.
+La preparación de este PR 2 utilizaba E; PR 3 exige el recorte conservador. Los tests
 preparan ese segundo envelope, sin publicarlo ni implementar la llamada funcional.
 Cada paso lleva su propia audiencia/messageId/correlationId. ActorContext se recorta
 por su TTL, el plazo efectivo y JWT.exp, sin renovar ninguno de esos límites.

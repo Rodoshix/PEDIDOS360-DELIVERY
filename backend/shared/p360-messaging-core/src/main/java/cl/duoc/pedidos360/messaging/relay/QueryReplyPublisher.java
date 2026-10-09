@@ -53,6 +53,13 @@ public final class QueryReplyPublisher {
      *     inaceptable.
      */
     public byte[] publicar(RequestEnvelope request, String replyTo, String correlationId, QueryResponse respuesta) {
+        return publicar(request, replyTo, correlationId, respuesta, null);
+    }
+
+    public boolean replyToPermitido(String replyTo) { return properties.queues().responses().equals(replyTo); }
+
+    public byte[] publicar(RequestEnvelope request, String replyTo, String correlationId, QueryResponse respuesta,
+            QueryDeadlineGuard guard) {
         if (correlationId == null || correlationId.isBlank())
             throw new HandoffFailureException("el request no trae correlationId");
         if (replyTo == null || replyTo.isBlank()) throw new HandoffFailureException("el request no trae replyTo");
@@ -60,6 +67,7 @@ public final class QueryReplyPublisher {
             throw new HandoffFailureException("el replyTo no corresponde a la cola tecnica autorizada");
         if (respuesta == null) throw new HandoffFailureException("no hay respuesta que publicar");
         remainingNanos(request);
+        guardBeforeSend(guard);
         byte[] cuerpo;
         try { cuerpo = contexto.escribirRespuesta(respuesta); }
         catch (RuntimeException invalid) {
@@ -74,11 +82,12 @@ public final class QueryReplyPublisher {
         var correlacion = new CorrelationData(correlationId);
         try {
             long ttlMillis = java.time.Duration.between(ahora(), request.expiresAt()).toMillis();
+            if (guard != null) ttlMillis = Math.min(ttlMillis, guardBeforeSend(guard) / 1_000_000);
             if (ttlMillis <= 0) throw new HandoffFailureException("plazo de respuesta agotado");
             metadatos.setExpiration(Long.toString(ttlMillis));
             rabbit.send("", replyTo, new Message(cuerpo, metadatos), correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
-                    .get(confirmWaitNanos(request), java.util.concurrent.TimeUnit.NANOSECONDS);
+                    .get(confirmWaitNanos(request, guard), java.util.concurrent.TimeUnit.NANOSECONDS);
             if (!confirmacion.ack()) throw new HandoffFailureException("el broker rechazo la respuesta", RECHAZADO_CONFIRMADO);
             if (correlacion.getReturned() != null)
                 throw new HandoffFailureException("la respuesta volvio sin destino disponible", RECHAZADO_CONFIRMADO);
@@ -93,10 +102,21 @@ public final class QueryReplyPublisher {
         return cuerpo;
     }
 
-    private long confirmWaitNanos(RequestEnvelope request) {
-        try { return remainingNanos(request); }
+    private long confirmWaitNanos(RequestEnvelope request, QueryDeadlineGuard guard) {
+        try { return guard == null ? remainingNanos(request) : Math.min(remainingNanos(request), guard.remainingNanos()); }
         catch (HandoffFailureException exhausted) {
             throw new HandoffFailureException("plazo agotado tras enviar respuesta; confirm incierto", INCIERTO, exhausted);
+        }
+        catch (QueryDeadlineGuard.Expired exhausted) {
+            throw new HandoffFailureException("plazo agotado tras enviar respuesta; confirm incierto", INCIERTO, exhausted);
+        }
+    }
+
+    private static long guardBeforeSend(QueryDeadlineGuard guard) {
+        if (guard == null) return Long.MAX_VALUE;
+        try { return guard.remainingNanos(); }
+        catch (QueryDeadlineGuard.Expired exhausted) {
+            throw new HandoffFailureException("plazo de respuesta agotado", NO_ENVIADO, exhausted);
         }
     }
 
