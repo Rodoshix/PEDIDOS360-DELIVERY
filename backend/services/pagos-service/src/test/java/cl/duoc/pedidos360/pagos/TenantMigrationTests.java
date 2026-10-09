@@ -40,7 +40,11 @@ class TenantMigrationTests {
     assertThatThrownBy(()->sql.execute("ALTER TABLE pagos.confirmacion_outbox DISABLE TRIGGER guard_outbox_identity")).isInstanceOf(SQLException.class);
     assertThatThrownBy(()->sql.execute("UPDATE pagos.confirmacion_outbox SET estado='PUBLISHED'")).isInstanceOfSatisfying(SQLException.class,e->assertThat(e.getSQLState()).isEqualTo("23514"));
     sql.execute("INSERT INTO pagos.pagos(pedido_id,usuario_id,monto,moneda,metodo,estado,clave_idempotencia,tenant_id,tenant_origin) VALUES(600,10,1,'CLP','EFECTIVO','PENDIENTE','new','11111111-1111-1111-1111-111111111111','AUTHENTICATED_NEW')");
-    sql.execute("INSERT INTO pagos.confirmacion_outbox(message_id,pago_id,payload,estado,next_attempt_at) VALUES(gen_random_uuid(),2,'new-payload','PENDING',now())");
+    assertThatThrownBy(()->sql.execute("UPDATE pagos.pagos SET pedido_id=700 WHERE id=2")).isInstanceOfSatisfying(SQLException.class,e->assertThat(e.getSQLState()).isEqualTo("23514"));
+    var newCommand=cl.duoc.pedidos360.pagos.messaging.ConfirmarPedidoPorPago.crear(600,2);
+    try(var insert=runtime.prepareStatement("INSERT INTO pagos.confirmacion_outbox(message_id,pago_id,payload,estado,next_attempt_at) VALUES(?,2,?,'PENDING',now())")) {
+     insert.setObject(1,newCommand.messageId());insert.setString(2,tools.jackson.databind.json.JsonMapper.builder().build().writeValueAsString(newCommand));insert.executeUpdate();
+    }
     for(String update:java.util.List.of("pago_id=2","message_id=gen_random_uuid()","payload='altered'")) {
      assertThatThrownBy(()->sql.execute("UPDATE pagos.confirmacion_outbox SET "+update+" WHERE pago_id=1")).isInstanceOfSatisfying(SQLException.class,e->assertThat(e.getSQLState()).isEqualTo("23514"));
     }

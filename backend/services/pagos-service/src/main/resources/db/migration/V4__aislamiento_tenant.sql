@@ -49,6 +49,18 @@ END $$;
 CREATE TRIGGER guard_tenant_origin BEFORE INSERT OR UPDATE OR DELETE ON pagos
  FOR EACH ROW EXECUTE FUNCTION guard_tenant_origin();
 
+-- Ordinary payment association never changes, including before an outbox INSERT.
+-- Checking only for an existing outbox would race with a concurrent insert.
+CREATE FUNCTION guard_payment_order() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+ IF NEW.pedido_id IS DISTINCT FROM OLD.pedido_id THEN
+  RAISE EXCEPTION 'Payment order immutable' USING ERRCODE='23514';
+ END IF;
+ RETURN NEW;
+END $$;
+CREATE TRIGGER guard_payment_order BEFORE UPDATE ON pagos
+ FOR EACH ROW EXECUTE FUNCTION guard_payment_order();
+
 -- No grants to runtime roles. Future operator must independently verify evidence,
 -- related resources and deployment identity namespaces before invoking this function.
 CREATE FUNCTION reconcile_tenant(resource BIGINT, expected_version BIGINT, target UUID, evidence TEXT)
@@ -75,6 +87,7 @@ REVOKE ALL ON FUNCTION reconcile_tenant(BIGINT,BIGINT,UUID,TEXT) FROM PUBLIC;
 -- Identity must survive native SQL writers as well as ORM updates. Existing
 -- historical commands are retained; normal new work can update states/leases.
 CREATE FUNCTION guard_outbox_identity() RETURNS trigger LANGUAGE plpgsql SET search_path=pagos,pg_temp AS $$
+DECLARE command JSONB; parent_order BIGINT;
 BEGIN
  IF TG_OP='UPDATE' AND (NEW.message_id IS DISTINCT FROM OLD.message_id
     OR NEW.pago_id IS DISTINCT FROM OLD.pago_id OR NEW.payload IS DISTINCT FROM OLD.payload) THEN
@@ -88,6 +101,25 @@ BEGIN
  END IF;
  IF NOT EXISTS(SELECT 1 FROM pagos WHERE id=NEW.pago_id AND tenant_origin='AUTHENTICATED_NEW') THEN
   RAISE EXCEPTION 'Authenticated outbox parent required' USING ERRCODE='23514';
+ END IF;
+ -- Only new inserts: preserve existing bytes and allow safe blocking of a
+ -- previously corrupt command. This does not backfill/rewrite historical rows.
+ IF TG_OP='INSERT' THEN
+  SELECT pedido_id INTO parent_order FROM pagos WHERE id=NEW.pago_id;
+  BEGIN
+   command:=NEW.payload::jsonb;
+   IF jsonb_typeof(command) IS DISTINCT FROM 'object'
+      OR jsonb_typeof(command->'messageId') IS DISTINCT FROM 'string'
+      OR command->>'messageId' IS DISTINCT FROM NEW.message_id::text
+      OR jsonb_typeof(command->'pagoId') IS DISTINCT FROM 'number'
+      OR command->>'pagoId' IS DISTINCT FROM NEW.pago_id::text
+      OR jsonb_typeof(command->'pedidoId') IS DISTINCT FROM 'number'
+      OR command->>'pedidoId' IS DISTINCT FROM parent_order::text THEN
+    RAISE EXCEPTION 'Outbox references inconsistent' USING ERRCODE='23514';
+   END IF;
+  EXCEPTION WHEN invalid_text_representation THEN
+   RAISE EXCEPTION 'Outbox references invalid' USING ERRCODE='23514';
+  END;
  END IF;
  -- Recheck real time after acquiring the row lock, including an unchanged row
  -- whose writer held the lock beyond lease expiry. Returning NULL yields zero

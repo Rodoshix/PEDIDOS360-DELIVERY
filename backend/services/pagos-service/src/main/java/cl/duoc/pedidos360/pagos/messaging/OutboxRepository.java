@@ -14,6 +14,14 @@ public interface OutboxRepository extends JpaRepository<OutboxMessage,UUID> {
         """, nativeQuery=true)
     List<OutboxMessage> claimable(@Param("now") Instant now, @Param("batch") int batch, @Param("tenant") UUID tenant);
 
+    // Called inside claim's transaction after locking outbox. The FK and SQL
+    // immutability of Pago.pedido_id keep this association stable until publish.
+    @Query(value="""
+        SELECT p.pedido_id FROM pagos.pagos p JOIN pagos.confirmacion_outbox o ON o.pago_id=p.id
+        WHERE o.message_id=:id AND p.tenant_id=:tenant AND p.tenant_origin='AUTHENTICATED_NEW'
+        """,nativeQuery=true)
+    Long pedidoIdReclamado(@Param("id") UUID id, @Param("tenant") UUID tenant);
+
     @Modifying
     @Query(value="""
         UPDATE pagos.confirmacion_outbox o
@@ -23,10 +31,10 @@ public interface OutboxRepository extends JpaRepository<OutboxMessage,UUID> {
           AND o.lease_until > clock_timestamp() AND o.pago_id=:pagoId AND o.payload=:payload
           AND :claimTenant=:tenant
           AND EXISTS (SELECT 1 FROM pagos.pagos p WHERE p.id=o.pago_id
-              AND p.tenant_id=:tenant AND p.tenant_origin='AUTHENTICATED_NEW')
+              AND p.pedido_id=:pedidoId AND p.tenant_id=:tenant AND p.tenant_origin='AUTHENTICATED_NEW')
         """,nativeQuery=true)
     int complete(@Param("id") UUID id, @Param("token") UUID token,
-        @Param("pagoId") Long pagoId, @Param("payload") String payload,
+        @Param("pagoId") Long pagoId, @Param("pedidoId") Long pedidoId, @Param("payload") String payload,
         @Param("claimTenant") UUID claimTenant, @Param("tenant") UUID tenant,
         @Param("state") String state, @Param("published") Instant published,
         @Param("next") Instant next, @Param("error") String error);

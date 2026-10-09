@@ -194,4 +194,62 @@ class TenantLocalHttpEndToEndTests {
             }
         }
     }
+    @Test void realBrokerCommandConfirmsOnlyPersistedPaymentOrderViaManualProcessor() throws Exception {
+        try(var broker=new org.testcontainers.rabbitmq.RabbitMQContainer("rabbitmq:4.1-management-alpine");
+            var p=start("pedidos",T,true,false,"HTTP","http://127.0.0.1:1",Map.of())) {
+            broker.start();long original=pedido(p,T),other=pedido(p,T);
+            try(var q=start("pagos",T,true,false,"RABBITMQ",url(p),Map.of())) {
+                assertThat(register(q,original,null).statusCode()).isEqualTo(201);
+                var store=q.getBean(cl.duoc.pedidos360.pagos.messaging.OutboxStore.class);
+                var properties=q.getBean(cl.duoc.pedidos360.pagos.messaging.RabbitProperties.class);
+                var cf=new org.springframework.amqp.rabbit.connection.CachingConnectionFactory(broker.getHost(),broker.getAmqpPort());
+                try {
+                    cf.setUsername(broker.getAdminUsername());cf.setPassword(broker.getAdminPassword());
+                    cf.setPublisherConfirmType(org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType.CORRELATED);
+                    cf.setPublisherReturns(true);
+                    var rabbit=new org.springframework.amqp.rabbit.core.RabbitTemplate(cf);
+                    var admin=new org.springframework.amqp.rabbit.core.RabbitAdmin(cf);
+                    var queue=new org.springframework.amqp.core.Queue("identity.integrity.test");
+                    admin.declareExchange(new org.springframework.amqp.core.DirectExchange(properties.exchanges().commands()));
+                    admin.declareQueue(queue);
+                    admin.declareBinding(new org.springframework.amqp.core.Binding(queue.getName(),org.springframework.amqp.core.Binding.DestinationType.QUEUE,properties.exchanges().commands(),properties.routingKeys().confirmar(),null));
+                    var publisher=new cl.duoc.pedidos360.pagos.messaging.PagoConfirmacionPublisher(rabbit,properties);
+                    new cl.duoc.pedidos360.pagos.messaging.OutboxDispatcher(store,publisher,q.getBean(JsonMapper.class),properties).dispatch();
+                    var delivered=rabbit.receive(queue.getName(),3000);assertThat(delivered).isNotNull();
+                    var payload=JSON.readTree(delivered.getBody());assertThat(payload.size()).isEqualTo(6);
+                    assertThat(payload.path("pedidoId").longValue()).isEqualTo(original);
+                    var jdbc=q.getBean(JdbcTemplate.class);
+                    assertThat(payload.path("pagoId").longValue()).isEqualTo(jdbc.queryForObject("SELECT id FROM pagos.pagos",Long.class));
+                    assertThat(payload.path("messageId").stringValue()).isEqualTo(delivered.getMessageProperties().getMessageId());
+                    // Actual processor/service transaction, invoked manually after
+                    // real broker reception: this is not a listener/ACK test.
+                    var processor=p.getBean("pedidoConfirmacionProcessor");
+                    processor.getClass().getMethod("process",org.springframework.amqp.core.Message.class).invoke(processor,delivered);
+                    var orders=p.getBean(JdbcTemplate.class);
+                    assertThat(orders.queryForObject("SELECT estado FROM pedidos.pedidos WHERE id=?",String.class,original)).isEqualTo("CONFIRMADO");
+                    assertThat(orders.queryForObject("SELECT estado FROM pedidos.pedidos WHERE id=?",String.class,other)).isEqualTo("CREADO");
+                    assertThat(jdbc.queryForObject("SELECT estado FROM pagos.confirmacion_outbox",String.class)).isEqualTo("PUBLISHED");
+                    assertThat(rabbit.receive(queue.getName(),100)).isNull();
+                    long foreign=pedido(p,OTHER);
+                    for(long invalidTarget:List.of(other,foreign)) {
+                        long unpaid=pedido(p,T);
+                        assertThat(register(q,unpaid,null).statusCode()).isEqualTo(201);
+                        Long paymentId=jdbc.queryForObject("SELECT id FROM pagos.pagos WHERE pedido_id=?",Long.class,unpaid);
+                        UUID messageId=jdbc.queryForObject("SELECT message_id FROM pagos.confirmacion_outbox WHERE pago_id=?",UUID.class,paymentId);
+                        var corrupt=new cl.duoc.pedidos360.pagos.messaging.ConfirmarPedidoPorPago(messageId,"ConfirmarPedidoPorPago",1,java.time.Instant.now(),invalidTarget,paymentId);
+                        // Owner-only disposable fixture models pre-existing corruption;
+                        // runtime INSERT is tested separately and cannot introduce it.
+                        jdbc.execute("ALTER TABLE pagos.confirmacion_outbox DISABLE TRIGGER guard_outbox_identity");
+                        try {jdbc.update("UPDATE pagos.confirmacion_outbox SET payload=? WHERE message_id=?",JSON.writeValueAsString(corrupt),messageId);}
+                        finally {jdbc.execute("ALTER TABLE pagos.confirmacion_outbox ENABLE TRIGGER guard_outbox_identity");}
+                        new cl.duoc.pedidos360.pagos.messaging.OutboxDispatcher(store,publisher,q.getBean(JsonMapper.class),properties).dispatch();
+                        assertThat(rabbit.receive(queue.getName(),100)).isNull();
+                        assertThat(jdbc.queryForObject("SELECT estado FROM pagos.confirmacion_outbox WHERE message_id=?",String.class,messageId)).isEqualTo("BLOCKED");
+                        assertThat(orders.queryForObject("SELECT estado FROM pedidos.pedidos WHERE id=?",String.class,unpaid)).isEqualTo("CREADO");
+                        assertThat(orders.queryForObject("SELECT estado FROM pedidos.pedidos WHERE id=?",String.class,invalidTarget)).isEqualTo("CREADO");
+                    }
+                } finally {cf.destroy();}
+            }
+        }
+    }
 }

@@ -321,4 +321,23 @@ class RabbitCoreTests {
             finally {jdbc.execute("ALTER TABLE pagos.pagos ENABLE TRIGGER guard_tenant_origin");}
         }
     }
+    @Test void inconsistentInitialPayloadsAreBlockedBeforeAnyBrokerPublication() {
+        for(String variant:java.util.List.of("PAYMENT","ORDER","FOREIGN_ORDER","MESSAGE")) {
+            registrar(MetodoPago.TARJETA);
+            var row=outbox.findAll().getFirst();var payment=pagos.findAll().getFirst();
+            var command=new ConfirmarPedidoPorPago(variant.equals("MESSAGE")?UUID.randomUUID():row.getMessageId(),
+                "ConfirmarPedidoPorPago",1,Instant.now(),variant.equals("ORDER")?600:variant.equals("FOREIGN_ORDER")?700:500,
+                variant.equals("PAYMENT")?payment.getId()+1:payment.getId());
+            // Pre-existing corruption fixture, solely in a disposable owner session.
+            // Normal runtime INSERT cannot create these bytes (SQL regression).
+            jdbc.execute("ALTER TABLE pagos.confirmacion_outbox DISABLE TRIGGER guard_outbox_identity");
+            try {jdbc.update("UPDATE pagos.confirmacion_outbox SET payload=?",json.writeValueAsString(command));}
+            finally {jdbc.execute("ALTER TABLE pagos.confirmacion_outbox ENABLE TRIGGER guard_outbox_identity");}
+            dispatcher.dispatch();dispatcher.dispatch();
+            assertThat(outbox.findAll().getFirst().getEstado()).as(variant).isEqualTo(OutboxMessage.State.BLOCKED);
+            assertThat(outbox.findAll().getFirst().getPayload()).isEqualTo(json.writeValueAsString(command));
+            assertThat(rabbit.receive(properties.queues().confirmacion(),100)).as(variant).isNull();
+            outbox.deleteAll();pagos.deleteAll();pedidos.reiniciar();
+        }
+    }
 }

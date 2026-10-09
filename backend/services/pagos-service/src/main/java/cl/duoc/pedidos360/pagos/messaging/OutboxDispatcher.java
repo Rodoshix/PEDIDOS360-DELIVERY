@@ -27,6 +27,7 @@ public class OutboxDispatcher {
             try {
                 var command=json.readValue(claim.payload(),ConfirmarPedidoPorPago.class);
                 if (!claim.messageId().equals(command.messageId()) || command.version()!=1
+                    || command.pagoId()!=claim.pagoId() || command.pedidoId()!=claim.pedidoId()
                     || !"ConfirmarPedidoPorPago".equals(command.type()) || command.occurredAt()==null
                     || command.pedidoId()<1 || command.pagoId()<1) throw new IllegalArgumentException();
             } catch (RuntimeException invalid) {

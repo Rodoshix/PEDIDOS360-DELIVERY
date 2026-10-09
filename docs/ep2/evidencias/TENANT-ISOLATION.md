@@ -67,7 +67,7 @@ Claim outbox une Pago para filtrar tenant y AUTHENTICATED_NEW, conservando FOR U
 
 HEAD previo auditado: 51a15a4bf65e453f52c3f0e686dd73658fa13fb3. Correcciones limitadas a P1 (settlement outbox) y P2 (HTTP local). El HEAD final se identifica en GitHub y los hashes normalizados del JSON vinculan las fuentes probadas sin incluir un hash circular del propio commit.
 
-**P1.** Claim conserva messageId, pagoId, tenantId autorizado, lease token y payload original. finish y block comparten un único UPDATE condicional: UUID, estado IN_FLIGHT, mismo Pago/payload, token, lease vigente por reloj de PostgreSQL, igualdad entre tenant reclamado y tenant del worker, y Pago asociado del mismo tenant con AUTHENTICATED_NEW. Un claim construido para un Pago externo no concede autorización. Los atributos de tenant/origen del Pago siguen protegidos por su trigger previo.
+**P1.** Claim conserva messageId, pagoId, pedidoId persistido, tenantId autorizado, lease token y payload original. finish y block comparten un único UPDATE condicional: UUID, estado IN_FLIGHT, mismo Pago/Pedido/payload, token, lease vigente por reloj de PostgreSQL, igualdad entre tenant reclamado y tenant del worker, y Pago asociado del mismo tenant con AUTHENTICATED_NEW. Un claim construido para un Pago externo no concede autorización. Los atributos de tenant/origen del Pago siguen protegidos por su trigger previo.
 
 V4 añade guard_outbox_identity: SQL directo no puede cambiar message_id, pago_id o payload. Conserva actualizaciones legítimas de estado, intentos y leases de trabajo nuevo; retiene mutaciones/borrado de outbox histórico. No modifica V1–V3. El trigger comprueba además el vencimiento después de obtener el lock: si un settlement esperó hasta agotar el lease, omite el UPDATE y produce cero filas, incluso si no cambió la versión de la fila bloqueada.
 
@@ -99,13 +99,36 @@ OutboxIsolationTests usa PostgreSQL 17 real para CAS, SQL runtime y locks. La pr
 
 RabbitCoreTests usa RabbitMQ real para confirm/routing y comprueba una entrega sin envío inmediato alternativo cuando el settlement fue fenced. La sustitución de lease y la rama de payload inválido son inyecciones controladas, no particiones reales de red. La prueba de dos publishers verifica la competición real de settlement en PostgreSQL; no acredita despliegues simultáneos de servicios operativos.
 
-TenantLocalHttpEndToEndTests arranca las dos aplicaciones HTTP de producción y PostgreSQL desechable. Compila las fuentes reales de Pedidos desde el repositorio con JDK 21 y -parameters, sin añadir dependencia entre servicios ni un stub de Pedidos. Sus siete casos verifican: proyección local exacta y POST 201; intención Pago+outbox en coordinación RabbitMQ sin enviar al broker; tenant discordante sin escritura; UNKNOWN/externo/inexistente 404; configuración local ausente 401 pese a headers falsificados; rechazo de no-loopback y local+Entra; JWT válido en modo producción y rechazo de JWT inválido, tenant incorrecto o ausencia de token. Los flujos locales no instalan JWT. Solo el caso JWT usa claves RSA firmadas de fixture y un stub HTTP de Usuarios; no ejecuta Entra live.
+TenantLocalHttpEndToEndTests arranca las dos aplicaciones HTTP de producción y PostgreSQL desechable. Compila las fuentes reales de Pedidos desde el repositorio con JDK 21 y -parameters, sin añadir dependencia entre servicios ni un stub de Pedidos. Sus primeros siete casos verifican: proyección local exacta y POST 201; intención Pago+outbox en coordinación RabbitMQ sin enviar al broker; tenant discordante sin escritura; UNKNOWN/externo/inexistente 404; configuración local ausente 401 pese a headers falsificados; rechazo de no-loopback y local+Entra; JWT válido en modo producción y rechazo de JWT inválido, tenant incorrecto o ausencia de token. Los flujos locales no instalan JWT. Solo el caso JWT usa claves RSA firmadas de fixture y un stub HTTP de Usuarios; no ejecuta Entra live. El octavo caso de integridad se describe a continuación.
+
+### P1 adicional: integridad Pago–Pedido del comando V1
+
+HEAD auditado de esta corrección: 2e5fd9e6dc21b24361150624b83c9f650bc4c80d. La auditoría reprodujo con PostgreSQL y RabbitMQ reales un outbox de Pago para Pedido 101 cuyo JSON apuntaba al Pedido 201: se publicó, quedó PUBLISHED y el processor confirmó 201 mientras 101 seguía CREADO. El flujo legítimo crear(Pago) generaba referencias coherentes, pero el INSERT runtime no las acreditaba; la inmutabilidad del payload conservaba también un contenido inicialmente incorrecto. El filtro de tenant de Pedidos evitaba efectos externos, sin impedir la publicación incoherente ni los efectos sobre otro Pedido del mismo tenant.
+
+Ahora Claim obtiene pedidoId mediante pedidoIdReclamado: consulta tenant-aware sobre el Pago persistido, dentro de la misma transacción después de FOR UPDATE OF o SKIP LOCKED. No lo toma del JSON. Antes de publicar, dispatcher exige igualdad de messageId, pagoId y pedidoId con Claim y mantiene las validaciones V1 previas. Una discrepancia utiliza block() y su UPDATE protegido; no reescribe bytes ni UUID, no publica, no regenera comando y no añade retries funcionales. El settlement revalida también pedidoId persistido; NOT_SETTLED sigue conservando recuperación sin falso bloqueo.
+
+V4 añade guard_payment_order, que impide todo cambio ordinario de Pago.pedido_id desde la inserción. Se elige esta garantía en vez de comprobar solo existencia de outbox: evita la carrera INSERT outbox/UPDATE Pago y no añade locks del padre al claim. No hay ruta, setter o UPDATE de aplicación que reasigne el Pedido de un Pago; sus cambios legítimos de estado y confirmación siguen permitidos. Tenant/origen y sus reglas de reconciliación permanecen intactos.
+
+guard_outbox_identity valida además, exclusivamente al INSERT, las referencias del JSON original: UUID igual a message_id, pagoId numérico igual a pago_id, pedidoId numérico igual al Pedido del padre AUTHENTICATED_NEW. JSON inválido, ausente o incoherente falla con SQLState 23514. Esta defensa comprueba referencias, sin presentar el trigger como un validador completo del protocolo; dispatcher/processor conservan sus restantes restricciones. No cambia datos existentes ni verifica/republica automáticamente histórico. Un outbox preexistente corrupto de trabajo nuevo puede ser reclamado y bloqueado conservando sus bytes; UNKNOWN y RECONCILED_LEGACY no son reclamados.
+
+| Caso autorizado | Regresión permanente |
+|---|---|
+| A/L: comando legítimo, Pedido correcto, V1/UUID | TenantLocalHttpEndToEndTests.realBrokerCommandConfirmsOnlyPersistedPaymentOrderViaManualProcessor; RabbitCoreTests.tarjetaCommitPublicacionRealYPayloadExacto |
+| B/C/D/E: referencias de otro Pago/Pedido/tenant o UUID discordante | RabbitCoreTests.inconsistentInitialPayloadsAreBlockedBeforeAnyBrokerPublication; cuatro variantes, BLOCKED y cola real vacía. El caso entre servicios también usa Pedidos persistidos reales de ambos tenants |
+| F: INSERT runtime incorrecto | OutboxIsolationTests.runtimeInsertCannotIntroduceInconsistentReferences; seis variantes, SQLState 23514 y cero filas |
+| G: estabilidad antes y después del outbox | paymentOrderImmutableBeforeAndAfterOutboxInsert; también login runtime separado en TenantMigrationTests |
+| H: UPDATE frente a claim e INSERT | concurrentOrderUpdateCannotDivergeFromClaimAndPublicationAssociation; concurrentPaymentUpdateAndOutboxInsertRetainOriginalOrder; bloqueo SQL observado en pg_stat_activity |
+| I: histórico retenido | unknownCannotFinishOrBlock; reconciledCannotFinishOrBlock; retainedOldOutboxAndNewPaymentPublishOnlyNewCommand; upgrade desde V3 conserva bytes/origen/estado |
+| J: block sin settlement | blockAffectingZeroRowsReportsUnsettledAndDoesNotPublish; inyección de lease, SQL real, BLOCK_NOT_SETTLED sin publicación |
+| K: fencing/SKIP LOCKED | staleLeaseCannotFinishOrBlockNewLease; competingPublishersOnlyOneCanSettleSameLease; simultaneousClaimsUseSkipLockedAndDifferentLeases |
+
+La prueba nueva de broker/processor registra Pago e intención a través del HTTP local real de ambos servicios, publica con confirms/returns en RabbitMQ desechable, verifica los seis campos V1 y el UUID, recibe el mensaje y después invoca manualmente el bean processor de Pedidos. Comprueba que solo su Pedido queda CONFIRMADO y otro queda CREADO. Añade comandos incoherentes hacia Pedidos realmente persistidos del mismo tenant y de otro tenant: quedan BLOCKED, sin entregas y sin modificar sus Pedidos. No ejecuta el listener/ACK de esas entregas. Los casos corruptos usan un fixture de owner en contenedor para representar corrupción previa, restauran el trigger y prueban la barrera del dispatcher y ausencia de entregas; no afirman que runtime pueda eludir el nuevo INSERT guard. Las pruebas SQL runtime y migrador separado siguen sin privilegios operativos.
 
 ConfirmarPedidoPorPago V1 conserva seis campos sin tenant. Worker sigue siendo de un único tenant, no un bus multitenant general. No se implementa consumer Pagos #81 ni BFF #70. No cambian contratos, deadlines o handoff diagnóstico de PR #92/#93.
 
 ## Evidencia de pruebas
 
-TENANT-ISOLATION-tests.json contiene evidencia nueva posterior a las correcciones P1/P2: resultados Surefire y hashes de fuentes/reportes/logs. No se reutilizan las 573 pruebas del PR #93 ni las 719 exitosas anteriores de PR #94 como ejecuciones del estado corregido. Las siete suites se ejecutaron nuevamente.
+TENANT-ISOLATION-tests.json contiene evidencia nueva posterior a la corrección de integridad: resultados Surefire y hashes de fuentes/reportes/logs. No se reutilizan las 573 pruebas del PR #93, las 719 exitosas iniciales de PR #94 ni las 744 del HEAD previo como ejecuciones del estado corregido. Las siete suites se ejecutaron nuevamente; los totales históricos quedan identificados separadamente.
 
 Migraciones: PostgreSQL 17 desechable, ejecutar versión anterior, insertar histórico, actualizar, verificar UNKNOWN, escritores antiguos, inmutabilidad, reconciliación idempotente y denegación runtime. Otras pruebas usan fixtures históricos explícitos en contenedores. Locks, unicidad y leases se prueban con PostgreSQL real. Suites outbox/consumer usan RabbitMQ real para payload, confirms, returns y procesamiento. Fallos inyectados no demuestran particiones reales de red. Entra live no se considera ejecutada cuando está omitida.
 
@@ -124,12 +147,12 @@ HTTP oficial; relay/prueba DISABLED por defecto. Sin cambios de topología 21/7/
 
 ## Resultado de la ejecución final
 
-746 pruebas registradas: 744 exitosas, 2 omitidas, 0 fallos y 0 errores. Siete suites completas ejecutadas de nuevo tras las correcciones en esta rama, cada comando con exit code 0. Hay 25 casos nuevos frente al HEAD auditado. Antes se ejecutaron las 59 regresiones específicas (0 fallos/errores/omisiones); están incluidas en el total de las suites y no se suman dos veces. El JSON conserva también sus reportes separados y hashes.
+752 pruebas registradas: 750 exitosas, 2 omitidas, 0 fallos y 0 errores. Siete suites completas ejecutadas de nuevo tras la corrección de integridad, cada comando con exit code 0. Hay seis casos nuevos frente al HEAD 2e5fd9e6dc21b24361150624b83c9f650bc4c80d, además de ampliar casos existentes. Primero se ejecutaron las 65 regresiones específicas (0 fallos/errores/omisiones); están incluidas en el total de las suites y no se suman dos veces. El JSON conserva sus reportes separados y hashes, y distingue los totales del HEAD previo. Después de ampliar el caso entre servicios con Pedidos reales de ambos tenants se repitieron las regresiones específicas y la suite completa de Pagos; los reportes finales corresponden a esas fuentes definitivas.
 
 | Suite | Total | Exitosas | Omitidas |
 |---|---:|---:|---:|
 | backend/services/pedidos-service | 131 | 130 | 1 |
-| backend/services/pagos-service | 121 | 120 | 1 |
+| backend/services/pagos-service | 127 | 126 | 1 |
 | backend/bff | 140 | 140 | 0 |
 | backend/services/usuarios-service | 79 | 79 | 0 |
 | backend/shared/p360-messaging-core | 197 | 197 | 0 |

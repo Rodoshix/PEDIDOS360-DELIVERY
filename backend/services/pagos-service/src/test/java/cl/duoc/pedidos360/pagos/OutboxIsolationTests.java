@@ -47,7 +47,7 @@ class OutboxIsolationTests {
         String payload=json.writeValueAsString(command);
         UUID token=UUID.randomUUID();
         jdbc.update("INSERT INTO pagos.confirmacion_outbox(message_id,pago_id,payload,estado,next_attempt_at,lease_token,lease_until) VALUES(?,?,?,'PENDING',now(),?,now()+interval '1 hour')",command.messageId(),pago.getId(),payload,token);
-        return new OutboxStore.Claim(command.messageId(),pago.getId(),tenant,token,payload);
+        return new OutboxStore.Claim(command.messageId(),pago.getId(),pedido,tenant,token,payload);
     }
     OutboxStore.Claim leased(UUID tenant,long pedido) {
         var c=pending(tenant,pedido);
@@ -74,6 +74,7 @@ class OutboxIsolationTests {
         var c=store.claim().getFirst();
         assertThat(c.pagoId()).isEqualTo(original.pagoId());
         assertThat(c.tenantId()).isEqualTo(T);
+        assertThat(c.pedidoId()).isEqualTo(500);
         assertThat(c.payload()).isEqualTo(original.payload());
         assertThat(store.finish(c,null)).isTrue();
         assertThat(state(c)).isEqualTo("PUBLISHED");
@@ -84,7 +85,7 @@ class OutboxIsolationTests {
         assertThat(store.claim()).isEmpty();
         assertThat(store.finish(c,null)).isFalse();
         assertThat(store.block(c)).isFalse();
-        var forged=new OutboxStore.Claim(c.messageId(),c.pagoId(),T,c.token(),c.payload());
+        var forged=new OutboxStore.Claim(c.messageId(),c.pagoId(),c.pedidoId(),T,c.token(),c.payload());
         assertThat(store.finish(forged,null)).isFalse();
         assertThat(store.block(forged)).isFalse();
         assertThat(state(c)).isEqualTo("IN_FLIGHT");
@@ -123,9 +124,10 @@ class OutboxIsolationTests {
     @Test void incorrectAssociationPayloadOrClaimTenantAffectsZeroRows() {
         var c=leased(T,500);var other=payment(T,600);
         for(var invalid:List.of(
-            new OutboxStore.Claim(c.messageId(),other.getId(),T,c.token(),c.payload()),
-            new OutboxStore.Claim(c.messageId(),c.pagoId(),OTHER,c.token(),c.payload()),
-            new OutboxStore.Claim(c.messageId(),c.pagoId(),T,c.token(),"{}"))) {
+            new OutboxStore.Claim(c.messageId(),other.getId(),c.pedidoId(),T,c.token(),c.payload()),
+            new OutboxStore.Claim(c.messageId(),c.pagoId(),c.pedidoId(),OTHER,c.token(),c.payload()),
+            new OutboxStore.Claim(c.messageId(),c.pagoId(),c.pedidoId(),T,c.token(),"{}"),
+            new OutboxStore.Claim(c.messageId(),c.pagoId(),999L,T,c.token(),c.payload()))) {
             assertThat(store.finish(invalid,null)).isFalse();assertThat(store.block(invalid)).isFalse();
         }
         assertThat(state(c)).isEqualTo("IN_FLIGHT");
@@ -202,6 +204,74 @@ class OutboxIsolationTests {
             assertThat(first.messageId()).isNotEqualTo(second.messageId());
             assertThat(first.token()).isNotEqualTo(second.token());
             assertThat(store.finish(first,null)).isTrue();assertThat(store.block(second)).isTrue();
+        }
+    }
+    @Test void runtimeInsertCannotIntroduceInconsistentReferences() throws Exception {
+        var payment=payment(T,500);
+        try(var conn=runtime();var sql=conn.createStatement()) {
+            // Test the real minimum writer's INSERT privilege, without owner/DDL.
+            sql.execute("RESET ROLE");
+            sql.execute("GRANT INSERT ON pagos.confirmacion_outbox TO outbox_runtime");
+            sql.execute("SET ROLE outbox_runtime");
+            for(String variant:List.of("PAYMENT","ORDER","FOREIGN_ORDER","MESSAGE","MALFORMED","MISSING")) {
+                var id=UUID.randomUUID();
+                var command=new ConfirmarPedidoPorPago(variant.equals("MESSAGE")?UUID.randomUUID():id,
+                    "ConfirmarPedidoPorPago",1,Instant.now(),variant.equals("ORDER")?600:variant.equals("FOREIGN_ORDER")?700:500,
+                    variant.equals("PAYMENT")?payment.getId()+1:payment.getId());
+                String payload=variant.equals("MALFORMED")?"not-json":variant.equals("MISSING")?"{}":json.writeValueAsString(command);
+                try(var insert=conn.prepareStatement("INSERT INTO pagos.confirmacion_outbox(message_id,pago_id,payload,estado,next_attempt_at) VALUES(?,?,?,'PENDING',now())")) {
+                    insert.setObject(1,id);insert.setLong(2,payment.getId());insert.setString(3,payload);
+                    assertThatThrownBy(insert::executeUpdate).as(variant).isInstanceOfSatisfying(SQLException.class,e->assertThat(e.getSQLState()).isEqualTo("23514"));
+                }
+            }
+        }
+        assertThat(jdbc.queryForObject("SELECT count(*) FROM pagos.confirmacion_outbox",Long.class)).isZero();
+    }
+    @Test void paymentOrderImmutableBeforeAndAfterOutboxInsert() throws Exception {
+        var payment=payment(T,500);
+        jdbc.execute("GRANT UPDATE ON pagos.pagos TO outbox_runtime");
+        immutable("UPDATE pagos.pagos SET pedido_id=600 WHERE id="+payment.getId());
+        var command=ConfirmarPedidoPorPago.crear(500,payment.getId());
+        jdbc.update("INSERT INTO pagos.confirmacion_outbox(message_id,pago_id,payload,estado,next_attempt_at) VALUES(?,?,?,'PENDING',now())",command.messageId(),payment.getId(),json.writeValueAsString(command));
+        immutable("UPDATE pagos.pagos SET pedido_id=600 WHERE id="+payment.getId());
+        assertThat(store.claim().getFirst().pedidoId()).isEqualTo(500);
+    }
+    @Test void concurrentOrderUpdateCannotDivergeFromClaimAndPublicationAssociation() throws Exception {
+        var original=pending(T,500);
+        jdbc.execute("GRANT UPDATE ON pagos.pagos TO outbox_runtime");
+        try(var conn=runtime();var sql=conn.createStatement();var executor=Executors.newSingleThreadExecutor()) {
+            conn.setAutoCommit(false);
+            sql.execute("SELECT id FROM pagos.pagos FOR UPDATE");
+            Savepoint point=conn.setSavepoint();
+            assertThatThrownBy(()->sql.execute("UPDATE pagos.pagos SET pedido_id=600"))
+                .isInstanceOfSatisfying(SQLException.class,e->assertThat(e.getSQLState()).isEqualTo("23514"));
+            conn.rollback(point);
+            // Claim still locks only outbox; a parent's non-key row lock does not
+            // weaken SKIP LOCKED or authorize a divergent association.
+            var claim=executor.submit(()->store.claim().getFirst()).get(5,TimeUnit.SECONDS);
+            assertThat(claim.pedidoId()).isEqualTo(500);
+            assertThat(claim.payload()).isEqualTo(original.payload());
+            conn.commit();
+            assertThat(store.finish(claim,null)).isTrue();
+        }
+    }
+    @Test void concurrentPaymentUpdateAndOutboxInsertRetainOriginalOrder() throws Exception {
+        var payment=payment(T,500);
+        jdbc.execute("GRANT UPDATE ON pagos.pagos TO outbox_runtime");
+        try(var conn=runtime();var sql=conn.createStatement();var executor=Executors.newSingleThreadExecutor()) {
+            conn.setAutoCommit(false);sql.execute("SELECT id FROM pagos.pagos FOR UPDATE");
+            Savepoint point=conn.setSavepoint();
+            assertThatThrownBy(()->sql.execute("UPDATE pagos.pagos SET pedido_id=600"))
+                .isInstanceOfSatisfying(SQLException.class,e->assertThat(e.getSQLState()).isEqualTo("23514"));
+            conn.rollback(point);
+            var command=ConfirmarPedidoPorPago.crear(500,payment.getId());
+            var insertion=executor.submit(()->jdbc.update("INSERT INTO pagos.confirmacion_outbox(message_id,pago_id,payload,estado,next_attempt_at) VALUES(?,?,?,'PENDING',now())",command.messageId(),payment.getId(),json.writeValueAsString(command)));
+            try {
+                await().atMost(java.time.Duration.ofSeconds(5)).until(()->jdbc.queryForObject("SELECT count(*) FROM pg_stat_activity WHERE wait_event_type='Lock' AND query LIKE 'INSERT INTO pagos.confirmacion_outbox%'",Integer.class)>0);
+                assertThat(insertion.isDone()).isFalse();
+            } finally {conn.commit();}
+            assertThat(insertion.get(5,TimeUnit.SECONDS)).isEqualTo(1);
+            assertThat(store.claim().getFirst().pedidoId()).isEqualTo(500);
         }
     }
 }
