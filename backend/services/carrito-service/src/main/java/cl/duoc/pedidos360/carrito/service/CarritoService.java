@@ -32,7 +32,7 @@ public class CarritoService {
         return carritos.findByTenantIdAndEntraObjectId(usuario.tenantId(), usuario.objectId());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = org.springframework.transaction.annotation.Isolation.REPEATABLE_READ)
     public CarritoResponse obtener() {
         return buscarPropio().map(this::respuesta).orElseGet(CarritoResponse::vacio);
     }

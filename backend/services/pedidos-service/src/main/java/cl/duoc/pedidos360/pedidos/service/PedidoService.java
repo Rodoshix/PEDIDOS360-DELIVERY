@@ -24,6 +24,8 @@ public class PedidoService {
     private final PedidoRepository pedidos;
     private final LineaPedidoRepository lineas;
     private final CatalogoPedidos catalogo;
+    @org.springframework.beans.factory.annotation.Autowired(required=false)
+    private cl.duoc.pedidos360.pedidos.messaging.carrito.CarritoOutboxStore carritoOutbox;
 
     public PedidoService(PedidoRepository pedidos, LineaPedidoRepository lineas, CatalogoPedidos catalogo) {
         this.pedidos = pedidos;
@@ -49,6 +51,17 @@ public class PedidoService {
             pedido.agregarLinea(new LineaPedido(item.productoId(), item.cantidad(), precio));
         }
         return toResponse(pedidos.save(pedido));
+    }
+
+    @Transactional
+    public PedidoResponse crearConCarrito(IdentidadUsuario identidad, CrearPedidoRequest request,
+            CarritoSnapshotClient.Snapshot snapshot) {
+        if (carritoOutbox == null || snapshot == null || !identidad.tenantId().equals(snapshot.tenant()))
+            throw new PedidoException(HttpStatus.FORBIDDEN,"Coordinación de carrito no habilitada.");
+        var response = crear(identidad,request);
+        pedidos.flush();
+        carritoOutbox.crear(pedidos.findById(response.pedidoId()).orElseThrow(),snapshot);
+        return response;
     }
 
     /** Detalle del pedido: solo el propietario o ADMIN. */
