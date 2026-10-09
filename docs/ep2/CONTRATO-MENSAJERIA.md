@@ -120,7 +120,7 @@ El payload estricto ConfirmarPedidoPorPago V1 y sus exclusiones anteriores perma
 | ConsultarUsuarioActual | Sin ID de perfil; actor verificable determina identidad/tenant | usuario.consultar-actual.v1 |
 | ListarRestaurantes | Sin parámetros de negocio adicionales | restaurante.listar.v1 |
 | ListarProductosDisponibles | restauranteId positivo | producto.listar-disponibles.v1 |
-| ConsultarPago | pagoId positivo; actor verificable para pertenencia | pago.consultar.v1 |
+| ConsultarPago | exactamente pagoId Long positivo y pruebaIdentidad JWS de Usuarios; actor ES256 verificado, identidad local y autorización tenant-aware | pago.consultar.v1 |
 
 Envelope de consultas: messageId UUID estable, type, version, occurredAt UTC, expiresAt UTC y parámetros de la tabla. correlationId/replyTo son propiedades AMQP, junto con message_id coincidente, content_type, app_id y retry-count. Timeout inicial 5 s; un retry corto no renueva expiresAt. Respuesta correlacionada con resultado o error equivalente al HTTP; ACK solo tras confirm positivo sin return. Errores HTTP esperados generan respuesta; inválidos/técnicos agotados/vencidos se diagnostican y van a DLQ. La forma JSON exacta de respuesta y del contexto firmado se especificará/revisará en el issue de base antes de consumers.
 

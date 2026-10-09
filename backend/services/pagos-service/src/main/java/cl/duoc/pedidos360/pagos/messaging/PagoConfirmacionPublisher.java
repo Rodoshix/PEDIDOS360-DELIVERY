@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class PagoConfirmacionPublisher {
     private final RabbitTemplate rabbit;
     private final RabbitProperties properties;
-    public PagoConfirmacionPublisher(RabbitTemplate rabbit, RabbitProperties properties) {
+    public PagoConfirmacionPublisher(@org.springframework.beans.factory.annotation.Qualifier("rabbitTemplate") RabbitTemplate rabbit, RabbitProperties properties) {
         this.rabbit=rabbit; this.properties=properties;
         rabbit.setMandatory(true);
     }

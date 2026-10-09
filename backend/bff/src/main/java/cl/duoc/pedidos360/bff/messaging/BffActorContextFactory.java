@@ -38,6 +38,13 @@ public final class BffActorContextFactory {
         return properties.destinos();
     }
 
+    /** Verifica el JWS local; nunca obtiene la vigencia desde la respuesta o headers AMQP. */
+    ActorContext verificar(String sobre, String destino, Instant plazo) {
+        if (!properties.destinos().contains(destino))
+            throw new IllegalArgumentException("destino no habilitado para el BFF");
+        return firmante.verificar(sobre, properties.emisor(), List.of(destino), plazo);
+    }
+
     /** Emite el sobre firmado del actor autenticado para la cola destino indicada. */
     public String emitir(JwtAuthenticationToken token, String colaDestino, Instant emision, Instant plazoRequest) {
         if (token == null || !token.isAuthenticated())

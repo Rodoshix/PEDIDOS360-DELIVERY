@@ -18,6 +18,26 @@ public final class BffIdentityProofValidator {
     private static final Set<String> RESPONSE_FIELDS = Set.of("id", "nombre", "apellido", "email", "telefono",
             "activo", "creadoEn", "actualizadoEn", "pruebaIdentidad");
     public BffIdentityProofValidator(IdentityProofVerifier verifier) { this.verifier = verifier; }
+
+    /** Valida el request explícito de Pagos; no sustituye la correlación independiente de Usuarios. */
+    Instant limitePagos(RequestPlan plan, QueryOperationBudget budget,
+            cl.duoc.pedidos360.messaging.actor.ActorContext actor) {
+        try {
+            JsonNode jws = plan.envelope().payload().path("pruebaIdentidad");
+            if (!jws.isString()) throw new IdentityProofException(IdentityProofException.Reason.FORMATO);
+            var proof = verifier.verifyForPagos(jws.stringValue(), actor, plan.envelope());
+            if (!proof.deadlineOriginal().equals(budget.originalDeadline())
+                    || !proof.tenantId().equals(budget.tenant()) || !proof.entraObjectId().equals(budget.oid()))
+                throw new IdentityProofException(IdentityProofException.Reason.VINCULO);
+            return verifier.usableUntil(proof);
+        } catch (IdentityProofException invalid) {
+            if (invalid.reason() == IdentityProofException.Reason.VENCIDA) {
+                budget.invalidate();
+                throw new QueryTimeoutException("vigencia de la prueba de identidad agotada");
+            }
+            throw new QueryUnavailableException("request de Pagos contiene prueba de identidad inválida", null);
+        }
+    }
     public record VerifiedProfile(JsonNode perfil, IdentityProof prueba, Instant usableUntil) {
         @Override public String toString() { return "VerifiedProfile[redacted]"; }
     }

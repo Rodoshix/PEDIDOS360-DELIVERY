@@ -112,6 +112,9 @@ class BffIdentityCorrectionTests {
     void adapterChecksAgainAfterSuccessfulValidationBeforeReturning(long finish) {
         var b=budget();var p=f.plan(b);var properties=properties();var factory=mock(RequestFactory.class);when(factory.properties()).thenReturn(properties);
         when(factory.planificar(eq(Domain.USUARIOS),anyString(),any(),any(),same(b),eq(b.originalDeadline()))).thenReturn(p);
+        when(factory.verificarActor(Domain.USUARIOS,p)).thenReturn(new cl.duoc.pedidos360.messaging.actor.ActorContext(
+                b.tenant(),b.oid(),Set.of("CLIENTE"),Set.of("access_as_user"),f.now,f.now.plusSeconds(4),
+                "p360.usuarios.consultas.q",FixtureActorKeys.ID));
         var registry=new PendingCorrelationRegistry(8);var context=new RequestEnvelopeContext();var publisher=mock(RequestPublisher.class);
         var payload=f.profile(FixtureIdentityKeys.sign(f.proof(p,b)));
         doAnswer(c->{registry.completar(p.correlationId(),context.escribirRespuesta(QueryResponse.exito(p.envelope(),p.correlationId(),payload,f.now)));return 0L;})

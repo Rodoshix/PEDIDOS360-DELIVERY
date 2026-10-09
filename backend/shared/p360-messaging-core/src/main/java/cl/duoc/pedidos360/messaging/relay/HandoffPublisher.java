@@ -67,12 +67,17 @@ public final class HandoffPublisher {
      */
     public void aRetry(RequestEnvelope envelope, int retryCountActual, String claseDeFallo,
             MessageProperties original) {
+        aRetry(envelope, retryCountActual, claseDeFallo, original, null);
+    }
+
+    public void aRetry(RequestEnvelope envelope, int retryCountActual, String claseDeFallo,
+            MessageProperties original, QueryDeadlineGuard guard) {
         if (retryCountActual >= 1 || envelope.vencido(java.time.Instant.now()))
             throw new HandoffFailureException("retry agotado o plazo vencido");
         MessageProperties metadatos = clonarConDiagnostico(original, envelope, retryCountActual + 1, claseDeFallo,
                 "retry", topology.queue());
         confirmar(properties.exchanges().retry(), topology.retryRoutingKey(),
-                new Message(serializar(envelope), metadatos), "retry corto", envelope);
+                new Message(serializar(envelope), metadatos), "retry corto", envelope, guard);
     }
 
     /** Envia a la DLQ del dominio sin replay automatico. */
@@ -81,7 +86,7 @@ public final class HandoffPublisher {
                 topology.queue());
         metadatos.setHeader("plazo-vencido", envelope.vencido(java.time.Instant.now()));
         confirmar(properties.exchanges().dlx(), topology.failedRoutingKey(),
-                new Message(serializar(envelope), metadatos), "DLQ", null);
+                new Message(serializar(envelope), metadatos), "DLQ", null, null);
     }
 
     /**
@@ -139,13 +144,21 @@ public final class HandoffPublisher {
         return copia;
     }
 
-    private void confirmar(String exchange, String routingKey, Message mensaje, String destino, RequestEnvelope request) {
+    private void confirmar(String exchange, String routingKey, Message mensaje, String destino, RequestEnvelope request,
+            QueryDeadlineGuard guard) {
         var correlacion = new CorrelationData(mensaje.getMessageProperties().getMessageId() + ":" + destino);
         try {
             confirmBudget(request);
+            if (guard != null) {
+                try { guard.remainingNanos(); }
+                catch (QueryDeadlineGuard.Expired expired) {
+                    throw new HandoffFailureException("plazo de retry agotado", NO_ENVIADO, expired);
+                }
+            }
             rabbit.send(exchange, routingKey, mensaje, correlacion);
             CorrelationData.Confirm confirmacion = correlacion.getFuture()
-                    .get(confirmBudgetTrasEnvio(request), java.util.concurrent.TimeUnit.NANOSECONDS);
+                    .get(guard == null ? confirmBudgetTrasEnvio(request)
+                            : Math.min(confirmBudgetTrasEnvio(request), guard.remainingNanos()), java.util.concurrent.TimeUnit.NANOSECONDS);
             if (!confirmacion.ack())
                 throw new HandoffFailureException("el broker rechazo la transferencia a " + destino, RECHAZADO_CONFIRMADO);
             if (correlacion.getReturned() != null)
