@@ -638,3 +638,24 @@ La verificación de esta rama usa una sesión ficticia aislada;
 no acredita una nueva prueba de Microsoft, backend, pagos ni creación de pedidos reales.
 Después de integrar, el siguiente trabajo del Integrante 1 es Docker de sus componentes.
 HTTP/BFF, integración global y tareas del integrante 5 permanecen fuera de alcance.
+
+
+### Preparación de checkout Pedido → Carrito (#70)
+
+`VITE_PEDIDOS_CARRITO_MODE` es configuración pública de build, con default `HTTP`.
+Solo admite `HTTP` o `RABBITMQ`; Vite y la validación Docker rechazan otros valores.
+Docker acepta el ARG del mismo nombre, también HTTP por defecto. Cambiarlo requiere
+construir otro artefacto; no se toma de query strings, storage, DOM ni respuestas.
+No modifica los modos del backend ni es una barrera de seguridad del servidor.
+
+HTTP conserva POST /pedidos seguido de DELETE /carrito y el reintento exclusivo del
+DELETE. RabbitMQ evita ambos DELETE después del 201 y permite solo GET /carrito:
+el 201 acredita registro del pedido, no vaciado confirmado. Los DTO, endpoints,
+headers y MSAL existentes se conservan. No activar esta variante sin coordinar
+PEDIDOS_CARRITO_MODE, CARRITO_PEDIDOS_MODE y las condiciones operativas aprobadas.
+
+El artefacto nuevo no retira pestañas/bundles antiguos. El futuro corte debe demostrar
+su retirada en el entorno controlado antes de activar comandos. Publicar nuevos
+assets o invalidar caché no detiene JavaScript ya cargado. Si no se puede acreditar
+esa retirada, se necesita aprobar una barrera en servidor; no se implementa aquí y
+no se bloquea el DELETE manual. Ver docs/ep2/CHECKOUT-DELETE-EXCLUSION.md.
