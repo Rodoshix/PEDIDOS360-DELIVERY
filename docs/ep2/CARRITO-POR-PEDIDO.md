@@ -112,7 +112,7 @@ Rollback de código conserva tablas e intenciones; no elimina recepciones ni rep
 
 ### Ejecución final
 
-Fuentes de código y tests: commit `0e416cb916626c987406ed47b2c8824403f7685c` (la documentación se registra después, sin cambiar esas fuentes funcionales).
+Fuentes de código y tests: commit `236d9dbf52a4c68e1c50dc6904622bbd8abe2873` (la documentación se registra después, sin cambiar esas fuentes funcionales).
 
 | Suite | Casos | Exitosos | Omitidos |
 |---|---:|---:|---:|
@@ -123,11 +123,14 @@ Fuentes de código y tests: commit `0e416cb916626c987406ed47b2c8824403f7685c` (l
 | Productos | 44 | 44 | 0 |
 | Pedidos | 152 | 151 | 1 |
 | Pagos | 187 | 186 | 1 |
-| Carrito | 95 | 95 | 0 |
-| **Total** | **1059** | **1057** | **2** |
+| Carrito | 99 | 99 | 0 |
+| **Total** | **1063** | **1061** | **2** |
 
-Cero failures/errors; **60 regresiones específicas #82** incluidas en el total. Las dos omisiones son Entra live, sin credenciales reales.
+Cero failures/errors; **64 regresiones específicas #82** incluidas en el total. Las dos omisiones son Entra live, sin credenciales reales.
 
 Una reejecución en el workspace coincidió con el inicio del compilador JDT de VS Code y falló por desaparición temporal de clases/recursos de `target`; no se cuenta como exitosa. Pedidos y Carrito se reejecutaron completos desde copias temporales aisladas de las mismas fuentes y terminaron sin fallos. Al finalizar se restauró únicamente la codificación de dos comentarios originales del YAML de Pedidos; no cambiaron valores de configuración, lógica ni tests. El manifiesto identifica esta corrección no funcional y conserva hashes de logs y XML de las ejecuciones finales.
 
-Los artifacts locales originales están archivados en `C:/Users/Rodri/AppData/Local/Temp/p360-issue82-evidence`; los hashes y nombres de cada caso quedan versionados en `ISSUE82-tests.json`. No se atribuyen estos resultados a GitHub CI ni a entornos desplegados.
+Los artifacts locales originales están archivados en `C:/Users/Rodri/AppData/Local/Temp/p360-pr97-reaudit/evidence`; los hashes y nombres de cada caso quedan versionados en `ISSUE82-tests.json`. No se atribuyen estos resultados a GitHub CI ni a entornos desplegados.
+
+
+La reauditoria focalizada posterior se describe en [PR97-REAUDIT.md](PR97-REAUDIT.md). Las ocho suites de esa reauditoria se ejecutaron nuevamente desde fuentes aisladas iguales al commit funcional; Pagos conserva la estructura de repositorio requerida por su E2E. El manifest actualizado sustituye los totales y hashes finales anteriores, preservados en el historial Git.

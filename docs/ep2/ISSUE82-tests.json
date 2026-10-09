@@ -1,16 +1,16 @@
 {
   "base": "2ae0f9e19cd9a9d7014c6e2e935adcbbe81a5269",
-  "source_commit": "0e416cb916626c987406ed47b2c8824403f7685c",
+  "source_commit": "236d9dbf52a4c68e1c50dc6904622bbd8abe2873",
   "source_hash_definition": "SHA256 of Git blob bytes (repository LF); excludes subsequent documentation-only commit",
-  "generated_utc": "2026-10-09T06:19:24.718656+00:00",
+  "generated_utc": "2026-10-09T06:39:52.298669+00:00",
   "total": {
-    "tests": 1059,
-    "successful": 1057,
+    "tests": 1063,
+    "successful": 1061,
     "skipped": 2,
     "failures": 0,
     "errors": 0
   },
-  "specific_regressions": 60,
+  "specific_regressions": 64,
   "regression_cases": [
     {
       "module": "core",
@@ -230,6 +230,11 @@
     {
       "module": "carrito",
       "class": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
+      "name": "realRetryPublicationWithInjectedConfirmLossHasNoAlternative"
+    },
+    {
+      "module": "carrito",
+      "class": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
       "name": "secondTransientFailureHasNoSecondRetry"
     },
     {
@@ -241,6 +246,11 @@
       "module": "carrito",
       "class": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
       "name": "missingOriginIsRejectedByActualListener"
+    },
+    {
+      "module": "carrito",
+      "class": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
+      "name": "actualRetryPreservesTransportIdentityAndCommittedReceipt"
     },
     {
       "module": "carrito",
@@ -271,6 +281,11 @@
       "module": "carrito",
       "class": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
       "name": "restartUsesPersistedReceiptAndDoesNotRepeatEffect"
+    },
+    {
+      "module": "carrito",
+      "class": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
+      "name": "highIdValueEqualityEmptiesOnceAndPreservesLaterVersion"
     },
     {
       "module": "carrito",
@@ -309,6 +324,11 @@
     },
     {
       "module": "carrito",
+      "class": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
+      "name": "retryWithReceiptButWithoutAuthorizationIsRejected"
+    },
+    {
+      "module": "carrito",
       "class": "cl.duoc.pedidos360.carrito.CarritoMigrationCompatibilityTests",
       "name": "additiveMigrationPreservesPriorCartAndHasNoReceipts"
     }
@@ -317,124 +337,124 @@
     {
       "module": "core",
       "command": "mvn -B -ntp install",
-      "working_directory": "C:\\Users\\Rodri\\Documents\\GitHub\\PEDIDOS360-DELIVERY\\backend\\shared\\p360-messaging-core",
+      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\core",
       "tests": 265,
       "successful": 265,
       "skipped": 0,
       "failures": 0,
       "errors": 0,
-      "completed": "2026-10-09T03:00:18-03:00",
-      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\full.log",
-      "log_sha256": "9f03d9854d820c89c6600afcb4e304b761d434c64635613f6985ccc5c8b96281",
+      "completed": "2026-10-09T03:30:50-03:00",
+      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\full.log",
+      "log_sha256": "11e63d2b3dbb9ec69ec3d9c26a14cad4277cc1496c59f2f9479b531978e27b48",
       "surefire": [
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml",
-          "sha256": "2007a7c7a4ff58a6af89014a55eaa23a37298f06b62ca204e250e272981522b9",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml",
+          "sha256": "2c908e949e809082d7c1e7f361bb3d72ffd9ddef3796c102995b07c1e289ec02",
           "class": "cl.duoc.pedidos360.messaging.ActorSecurityTests",
           "tests": 29,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.CarritoCommandContractTests.xml",
-          "sha256": "bc92d463dad95ca92adce1c891143b2c16eb9f2ac16659715c0d292195346e8d",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.CarritoCommandContractTests.xml",
+          "sha256": "fc56c6515450c769579f7da7e21535a7a9f473007cf64870adf38f9a2ee8f012",
           "class": "cl.duoc.pedidos360.messaging.CarritoCommandContractTests",
           "tests": 16,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests.xml",
-          "sha256": "fb19bd6f8dba28335b10382105ff326f06762111b639a77c543dd60cb6b6ed11",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests.xml",
+          "sha256": "c8675c3aaa7eeca2dff766dcd9481de3ad85bf8124079438d63c970b5fe31b07",
           "class": "cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests",
           "tests": 17,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml",
-          "sha256": "d1efa7445400d8e68dc32481d96e78a9d7c7cd4dc49bee46dfc5fa4b13c1c577",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml",
+          "sha256": "0a56342ab14309ab99683342e52afe6c776f033952f8c509092bdaa4b7db2185",
           "class": "cl.duoc.pedidos360.messaging.ClasificacionFallosTest",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests.xml",
-          "sha256": "8824d8e6dbd915665b69686acb6224f81a8e420a384154f0e30af4dcb5590059",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests.xml",
+          "sha256": "14d5a1f40005ac83f4b7c0958006cd3b5f7b27f01e6fda0e799f87fe905e4c98",
           "class": "cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests",
           "tests": 24,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml",
-          "sha256": "9451902037de9580e583f982b6c5094d251f05eff0d72c152f0ad642580c1416",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml",
+          "sha256": "571d86d4cefe4bc6dd31fd4c3343519df3a15710a1b7e51cade94f23d084f7de",
           "class": "cl.duoc.pedidos360.messaging.IdentityProofTests",
           "tests": 48,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml",
-          "sha256": "c8c22f1b9e4c87595c11da5eefcda3df4f894eff7a1a60dc897cc419aa529386",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml",
+          "sha256": "9ae0e7c3789bd432a292bc4e3ecc5cd3b3c6db01f62caabe65cbda6328546eef",
           "class": "cl.duoc.pedidos360.messaging.MessagingContractTests",
           "tests": 17,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.PagosIdentityProofTests.xml",
-          "sha256": "471855551f77035d8819fdbf3fb9d73c6649b5998c3ff08e4f8768445105fb3b",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.PagosIdentityProofTests.xml",
+          "sha256": "85d0003ffeb07796b0f76ccc41dda41c7bb478d3df681c3cccc30208577251fe",
           "class": "cl.duoc.pedidos360.messaging.PagosIdentityProofTests",
           "tests": 9,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml",
-          "sha256": "db21eb1ec1f6221d0bcc1847821e2c9d4428d2a59942cb0b402f3eda27a30657",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml",
+          "sha256": "247c347edd1b395265005cff043bd425665cb7ee3b924f165c9b0e1fb5e410e2",
           "class": "cl.duoc.pedidos360.messaging.PlatformCompatibilityTests",
           "tests": 4,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests.xml",
-          "sha256": "5cc594716ee32f7ea2806a11ffc88a7b68270d4fd06fa915efc6cc059799645c",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests.xml",
+          "sha256": "c48ec9062956333735873d7d605c90667e9ddc5234ee82409e2a5514ff678761",
           "class": "cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests",
           "tests": 2,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml",
-          "sha256": "cc9a0a586a9bb94b2fac1057c0a1868ed26d4ea726ae8f35733ca3d75bfd5fd3",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml",
+          "sha256": "c3d598191cb86a2e54ef1f13f629e4e6c5a8d82b2eb882d4b691263f6b668d67",
           "class": "cl.duoc.pedidos360.messaging.QueryMessagingFlowTests",
           "tests": 22,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml",
-          "sha256": "da7db08d98c50d68fad2b18ef128ca58cc57dbb3c2eb28388447c383cdd06285",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml",
+          "sha256": "bc31f6a39d310cec329409bc2460b01eba62736aa99ca84dd8c7cfb85021a40d",
           "class": "cl.duoc.pedidos360.messaging.RecoveryRealTests",
           "tests": 1,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml",
-          "sha256": "6812c5b92faa07513dd7823cb2ee81e6d1fab7e85fe5c900cb44275b201b4dab",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml",
+          "sha256": "9c09af0ce3619d06c87324bff130cf4c45ec9ed21383c4ca15b490e43823765f",
           "class": "cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests",
           "tests": 7,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml",
-          "sha256": "ab93b55639e243e025d1679df39eb7214259958d49d82f477655e780f1160630",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml",
+          "sha256": "466d1b97051fbda50aa72cc168976f453bd45df0d17357172a66d3a5ae34d8da",
           "class": "cl.duoc.pedidos360.messaging.RelayReliabilityTests",
           "tests": 17,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml",
-          "sha256": "0a0ab8211a833d86cbae67d3da3723e10d3cd4e858a3d19652ca87377307486a",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml",
+          "sha256": "625040545dc9fbce4799407cc4ac7e7f004a689ed3c9e74d377490c887308f7d",
           "class": "cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests",
           "tests": 11,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\core\\TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml",
-          "sha256": "01299c1ad3ce054deade4357370ad0bb4a7dc60ea1b62c38a8fa60f0835978bc",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\core\\TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml",
+          "sha256": "f0f37791e5b0c4331382e324373783e5137094dcb11064cd6afb0999ee83525a",
           "class": "cl.duoc.pedidos360.messaging.SettlementPublicationTests",
           "tests": 38,
           "skipped": 0
@@ -444,103 +464,103 @@
     {
       "module": "bff",
       "command": "mvn -B -ntp test",
-      "working_directory": "C:\\Users\\Rodri\\Documents\\GitHub\\PEDIDOS360-DELIVERY\\backend\\bff",
+      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\bff",
       "tests": 203,
       "successful": 203,
       "skipped": 0,
       "failures": 0,
       "errors": 0,
-      "completed": "2026-10-09T03:02:26-03:00",
-      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\full.log",
-      "log_sha256": "cb2181499188bb226e80ef4072de34da1fe63235cf0432109219394045a36644",
+      "completed": "2026-10-09T03:32:22-03:00",
+      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\full.log",
+      "log_sha256": "6543f0f3de526ee6a7e2f9004dea67aad76b76cd0426e1899e8b55b5fddea265",
       "surefire": [
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.BffSecurityTests.xml",
-          "sha256": "1a9edd37f40cc9e888967fe2a5049f636e1e71e4bec51c7cdad04d5291007bf1",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.BffSecurityTests.xml",
+          "sha256": "7119efbbdf41d0347a882c988fe30ad46aae58b0231ed61d8d7719378a25d5dc",
           "class": "cl.duoc.pedidos360.bff.BffSecurityTests",
           "tests": 4,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.client.ComercioInternalIsolationTests.xml",
-          "sha256": "e91505fe96b4fc79805f354f778564a68e5043046954f606c1d78f0b42f103d6",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.client.ComercioInternalIsolationTests.xml",
+          "sha256": "f10ed710e0944324d502c5dafe0c2cea6565d9dd1059248adc4f0d210281e2e4",
           "class": "cl.duoc.pedidos360.bff.client.ComercioInternalIsolationTests",
           "tests": 1,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.ConnectionConfigurationTests.xml",
-          "sha256": "05267b121c5cb122f9bb4d1b5992ad4d55bc35e09130d0e82786e856b48717a9",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.ConnectionConfigurationTests.xml",
+          "sha256": "93f9dd9f346b9ceb973875c507f4fc189860735ca68c84407c74d0aad4254a43",
           "class": "cl.duoc.pedidos360.bff.ConnectionConfigurationTests",
           "tests": 9,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.JwtHttpTests.xml",
-          "sha256": "c2a5947a5b04fc25d0d80eaf5dfbdb1dd052431bb635347f0d833eb1da655247",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.JwtHttpTests.xml",
+          "sha256": "775527c056d226593e5dd390822f2e3198eb46a2e418f50ccc587107522dea14",
           "class": "cl.duoc.pedidos360.bff.JwtHttpTests",
           "tests": 27,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffCatalogResponseBindingTests.xml",
-          "sha256": "7bb1709ad009fe7554b11242f6e410958cd7e16456eaf84a302e160a928f4e8d",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffCatalogResponseBindingTests.xml",
+          "sha256": "84b291e5bcd47707f9cff669a82fa13699fa2b2d974e8461a1b2938fee63fe1c",
           "class": "cl.duoc.pedidos360.bff.messaging.BffCatalogResponseBindingTests",
           "tests": 9,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests.xml",
-          "sha256": "d7e33c248bebe846b862d3825f244e0de25677ab3e855363766e81e76770965c",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests.xml",
+          "sha256": "113542ef521e50599fa6d99d604a631c40ce03fb9012cfe8f4ca0129a7bba0af",
           "class": "cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests",
           "tests": 22,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests.xml",
-          "sha256": "2be0705b9cf602a13939c62418c582f87af9e649d773fedc0752f25d64d4ab53",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests.xml",
+          "sha256": "ee578a19e7776ac23eb075300c2f277682287b501af90d6e42808b276fa9b587",
           "class": "cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests",
           "tests": 43,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests.xml",
-          "sha256": "edd3e21f1782871c1bec350db95857f40a897fde810a22903b2b17188a89cd10",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests.xml",
+          "sha256": "6ecd3a6be8feaf42fa5c9edfde0f1d91f0b4f344158d18ba72032d2e05e533d1",
           "class": "cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests",
           "tests": 15,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapterTests.xml",
-          "sha256": "281fa9519ebecdd576577a6f33b101aa8d91ba2ccaa7abce7cc4e122dc520110",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapterTests.xml",
+          "sha256": "de6040deb4e42936345e353391a3f522323024ecccd6b58e5828c7e907a81be1",
           "class": "cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapterTests",
           "tests": 24,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffTemporalBarrierTests.xml",
-          "sha256": "828fbcf096d67c8872f1235affa3ce2f5af5aad5ac269997182bcb49362b57b6",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.BffTemporalBarrierTests.xml",
+          "sha256": "a77dc3b22ac030e0087f354818a621c9174d1f9e3a3c8549c179f97fe5517ee5",
           "class": "cl.duoc.pedidos360.bff.messaging.BffTemporalBarrierTests",
           "tests": 21,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests.xml",
-          "sha256": "98c423885ca340f6113869260cbce884b9060f031f599d2ce22821d4d42ea0f0",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests.xml",
+          "sha256": "0e6ac3939b69d09872c63ba2dcd14f6c065a399babde67229fb635a1a394807d",
           "class": "cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests",
           "tests": 10,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.PedidosPagosDisabledTests.xml",
-          "sha256": "25e1d0cbfeb2911f10b6659fd434e60eba29d9dce4cb278a4681a8dda24cc69c",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.PedidosPagosDisabledTests.xml",
+          "sha256": "4292f1cf1598d9ae3d5105c93acd4cce3f963ec222e4abc17ef7f5a6a1969fe4",
           "class": "cl.duoc.pedidos360.bff.PedidosPagosDisabledTests",
           "tests": 1,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\bff\\TEST-cl.duoc.pedidos360.bff.security.EntraJwtTests.xml",
-          "sha256": "2b2b6e336de7b751a0963b55496624415e80d40b6177f0318f2562bdc4646a80",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\bff\\TEST-cl.duoc.pedidos360.bff.security.EntraJwtTests.xml",
+          "sha256": "9a9cc5eeb5ec7cc36d88ffabec3fa2af2a7522f3deec870eb98e64440303161a",
           "class": "cl.duoc.pedidos360.bff.security.EntraJwtTests",
           "tests": 17,
           "skipped": 0
@@ -550,82 +570,82 @@
     {
       "module": "usuarios",
       "command": "mvn -B -ntp test",
-      "working_directory": "C:\\Users\\Rodri\\Documents\\GitHub\\PEDIDOS360-DELIVERY\\backend\\services\\usuarios-service",
+      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\usuarios-service",
       "tests": 79,
       "successful": 79,
       "skipped": 0,
       "failures": 0,
       "errors": 0,
-      "completed": "2026-10-09T03:02:49-03:00",
-      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\full.log",
-      "log_sha256": "175507de1dba7b5bfb6172254df67f895cbf259418b5e7350595e6c83474614c",
+      "completed": "2026-10-09T03:33:30-03:00",
+      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\full.log",
+      "log_sha256": "492ec22a5903805e7d7b981c592f468c22c01d5b393a4ac12d5128722bcc9acb",
       "surefire": [
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.JwtHttpTests.xml",
-          "sha256": "59d3841f77f75a9419036148e6a729beea40044314791d9a1fb0117f916809bd",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.JwtHttpTests.xml",
+          "sha256": "7a0cbbfca4757b1b8b78c2e47485ebcbff65e32a92c99ae94a9b8b805caf752b",
           "class": "cl.duoc.pedidos360.usuarios.JwtHttpTests",
           "tests": 4,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests.xml",
-          "sha256": "28f8a35edd6e81b9c7e3c9cf8748c0b6edf8aedbda392e8cbbec2768c10e72a8",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests.xml",
+          "sha256": "7686679f10be4bb92c14fcbde77c06f251e29fbd37cba2e30976b3bc6e6fdab6",
           "class": "cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests",
           "tests": 4,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests.xml",
-          "sha256": "1a845789fb708c086233214811b4376ad467438a6f0760215832ae9079c55038",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests.xml",
+          "sha256": "baef2445e43b587758d4d4a0f850c5a1073216987e1796b851f6dbd7d03450a0",
           "class": "cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.security.EntraJwtTests.xml",
-          "sha256": "0b432df96b6f8e319c78b92de94b2a6863cfbc5cd1d340fccb19c27f7c44efe9",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.security.EntraJwtTests.xml",
+          "sha256": "7f415c45436ecc62768eb694cd66c614d5a65b0503f6a62c256bf2294fdd2879",
           "class": "cl.duoc.pedidos360.usuarios.security.EntraJwtTests",
           "tests": 17,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests.xml",
-          "sha256": "0ae0df6800ee0887fa3d483d9e1b5a6676d3eff7fb6c53801c20f38f07e98fed",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests.xml",
+          "sha256": "37b2d68526657c6dc90021e3002c0c23199c107768986fe66bb89334dde90ea9",
           "class": "cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests.xml",
-          "sha256": "77f5eab1e5213469faf8e5b820fb67b89463a537650017f1cf0d9482fd693df0",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests.xml",
+          "sha256": "0c99cf68e832d8ab46060330c31b165e856bb763159e6f29a266bfad4b4edde1",
           "class": "cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests",
           "tests": 4,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests.xml",
-          "sha256": "e0224dc7c7e49f23dd2a5220b57cf27ff2f0da2f5792e7c20de001207b76bfa2",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests.xml",
+          "sha256": "94ee39162ab02462b32b54a4b4388feca168ba8b29348cd061c47402f153e081",
           "class": "cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests",
           "tests": 8,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml",
-          "sha256": "30b3c9d8601bc66b664fa652c71326af9d19f886c3e4ba6e9e30c174c06042e0",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml",
+          "sha256": "3be32553e16ba4a02f7d26321a1631b5f097c06753e0a7c8f94d133e3e4504ab",
           "class": "cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml",
-          "sha256": "33803707927e4335a00c00477b28b192dcffc8dfb665b862f5b00946efd8af82",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml",
+          "sha256": "ac0563c11c3ff47276fce6c6fc67377ff3ec6c44a0dfc4b7a6fb98bbc0f365b8",
           "class": "cl.duoc.pedidos360.usuarios.UsuariosApplicationTests",
           "tests": 2,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml",
-          "sha256": "456a676629c2ec5527d4988c9d44c1881a9bcee5c734127d4b2c828b91011cc5",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\usuarios\\TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml",
+          "sha256": "14623deafdfc009406641bb3e7e2f129c08cc7ea9d2a38ecf5456ef06c1b988d",
           "class": "cl.duoc.pedidos360.usuarios.UsuariosRabbitTests",
           "tests": 25,
           "skipped": 0
@@ -635,33 +655,33 @@
     {
       "module": "restaurantes",
       "command": "mvn -B -ntp test",
-      "working_directory": "C:\\Users\\Rodri\\Documents\\GitHub\\PEDIDOS360-DELIVERY\\backend\\services\\restaurantes-service",
+      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\restaurantes-service",
       "tests": 34,
       "successful": 34,
       "skipped": 0,
       "failures": 0,
       "errors": 0,
-      "completed": "2026-10-09T03:04:52-03:00",
-      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\restaurantes\\full.log",
-      "log_sha256": "ce8c32d8703d8c4ae1a8d9fb22404606742615e1a9e263112c4a36b6202d965a",
+      "completed": "2026-10-09T03:34:39-03:00",
+      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\restaurantes\\full.log",
+      "log_sha256": "2c1233fabd709b9e07d14e52ddeffb6204ff3ef29e185cf150e87d6d29401600",
       "surefire": [
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\restaurantes\\TEST-cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests.xml",
-          "sha256": "bff338f590a8e1043402334d96a8788ecb151d9703aae818bb159a5f7bbd6337",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\restaurantes\\TEST-cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests.xml",
+          "sha256": "3daa9394619c51d6eb55bd2337c5ffad7b7cd6f98625e06aa1287ad108b383ba",
           "class": "cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\restaurantes\\TEST-cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests.xml",
-          "sha256": "bae8f5e6d69368ed2fc4f667e4fb5a1e7b8a7726e5e477a73fa4f9daaadc6deb",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\restaurantes\\TEST-cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests.xml",
+          "sha256": "7b43ebba8f09b89679793762f0985d21e7b7d36dd13fed938c8a50eb9339855e",
           "class": "cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\restaurantes\\TEST-cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests.xml",
-          "sha256": "efcfeb5f1938881ce2ac131dc3ef634830fdfcb359a26ee1407be0afe23f8d57",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\restaurantes\\TEST-cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests.xml",
+          "sha256": "f8a240260323a999fecd899681fa22729ef56dd44c058a27bc3f980af395d463",
           "class": "cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests",
           "tests": 25,
           "skipped": 0
@@ -671,40 +691,40 @@
     {
       "module": "productos",
       "command": "mvn -B -ntp test",
-      "working_directory": "C:\\Users\\Rodri\\Documents\\GitHub\\PEDIDOS360-DELIVERY\\backend\\services\\productos-service",
+      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\productos-service",
       "tests": 44,
       "successful": 44,
       "skipped": 0,
       "failures": 0,
       "errors": 0,
-      "completed": "2026-10-09T03:04:50-03:00",
-      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\productos\\full.log",
-      "log_sha256": "3a95912d260a7a4c6207ad7d7d425db486d02bbc5514da47826f21834b11c6cc",
+      "completed": "2026-10-09T03:34:37-03:00",
+      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\productos\\full.log",
+      "log_sha256": "677067dcae7e5866461452731c0494cf018a29bafa28e7bd3367b0b7b08eb9ee",
       "surefire": [
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\productos\\TEST-cl.duoc.pedidos360.productos.ProductosConfigurationTests.xml",
-          "sha256": "75a96893496097e6660d42506fc47b54aa07fbfa556e62cc8706e0c9223fefbb",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\productos\\TEST-cl.duoc.pedidos360.productos.ProductosConfigurationTests.xml",
+          "sha256": "9dd8ef6fb361ce3b53120395372b25387f17562285953a6860376449b5e8c886",
           "class": "cl.duoc.pedidos360.productos.ProductosConfigurationTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\productos\\TEST-cl.duoc.pedidos360.productos.ProductosHttpRegressionTests.xml",
-          "sha256": "d20219daa124a274d93c49c822e94c14497295ba1e903085727d5505b143d1b0",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\productos\\TEST-cl.duoc.pedidos360.productos.ProductosHttpRegressionTests.xml",
+          "sha256": "94c1c3d13b68883b8a6600d49ee7eb62448f02a9d3dd058f16d35b3a51e7ddc6",
           "class": "cl.duoc.pedidos360.productos.ProductosHttpRegressionTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\productos\\TEST-cl.duoc.pedidos360.productos.ProductosQueryProcessorTests.xml",
-          "sha256": "05937a46605d164cb65987c20ca6707d473773ee84765021a2c01fc63d6f7044",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\productos\\TEST-cl.duoc.pedidos360.productos.ProductosQueryProcessorTests.xml",
+          "sha256": "235c88b8c9d1d61da9772bd614a3cff220d670dfa359231dd0097714e9d9a50b",
           "class": "cl.duoc.pedidos360.productos.ProductosQueryProcessorTests",
           "tests": 13,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\productos\\TEST-cl.duoc.pedidos360.productos.ProductosRabbitTests.xml",
-          "sha256": "16daf48177058470252ffe4273ba1b2bae055ab65c3dffbb1615a8d3023e8f1b",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\productos\\TEST-cl.duoc.pedidos360.productos.ProductosRabbitTests.xml",
+          "sha256": "08a3afdbb9a1befbc07fe9c55d99d44cea571cf5add87fd70317120976e870e6",
           "class": "cl.duoc.pedidos360.productos.ProductosRabbitTests",
           "tests": 22,
           "skipped": 0
@@ -714,159 +734,159 @@
     {
       "module": "pedidos",
       "command": "mvn -B -ntp test",
-      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-final-isolated\\pedidos-service",
+      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\pedidos-service",
       "tests": 152,
       "successful": 151,
       "skipped": 1,
       "failures": 0,
       "errors": 0,
-      "completed": "2026-10-09T03:17:02-03:00",
-      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\full.log",
-      "log_sha256": "ca3ba0688cee1cab7c743512c79b6a94f343eb2e48594433dd653e64c13516a9",
+      "completed": "2026-10-09T03:36:12-03:00",
+      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\full.log",
+      "log_sha256": "c93b6bf3ba1b778c1c60a965b88b0a4538bf8da9fe4d8071cdb7f196c64e4ae0",
       "surefire": [
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.CarritoOutboxMigrationCompatibilityTests.xml",
-          "sha256": "d83eae50038923efad4843c6f3d85ddaf75852c388ac6e910649f2650b41c4de",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.CarritoOutboxMigrationCompatibilityTests.xml",
+          "sha256": "98912ca85f5d051a3232ef9b47827afcb640404eedd99febdf3e4696afe28d49",
           "class": "cl.duoc.pedidos360.pedidos.CarritoOutboxMigrationCompatibilityTests",
           "tests": 1,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.CarritoPublisherIntegrationTests.xml",
-          "sha256": "8e14183b9932ae88dcb511da74c1d2ad4b901c05b6016893f434c33ede9ae80e",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.CarritoPublisherIntegrationTests.xml",
+          "sha256": "db1241949c2fd766385e03860a9ffe7254f588f3eac90527a2e9316a4db2f764",
           "class": "cl.duoc.pedidos360.pedidos.CarritoPublisherIntegrationTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.CarritoSnapshotClientTests.xml",
-          "sha256": "8cdcd9799d6bd0f2be923921e6e18c1b142afc0bef6944ef6af5c845168d42b1",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.CarritoSnapshotClientTests.xml",
+          "sha256": "2a3768e62b1bebc90a51f0eba5353a0065fc223fd7026d83536dbab6e5b62891",
           "class": "cl.duoc.pedidos360.pedidos.CarritoSnapshotClientTests",
           "tests": 8,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.CatalogoPedidosHttpTests.xml",
-          "sha256": "1fbff353541a6cc404efdc6a76e395928089292a2465ea1269e87bd37720041a",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.CatalogoPedidosHttpTests.xml",
+          "sha256": "3480b7f9354f09256e969d1b91aa464add804259b0f608ccc72d27f26b78c866",
           "class": "cl.duoc.pedidos360.pedidos.CatalogoPedidosHttpTests",
           "tests": 7,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.DelegadoHttpTests.xml",
-          "sha256": "8772ed2db09d5c0bbfb4abb255094c09b09c62efdc9a961b270a939957d978ba",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.DelegadoHttpTests.xml",
+          "sha256": "881315257dd9b72f33dedf830ef695eb31432e7ee32c5573e9e646b83b5174b1",
           "class": "cl.duoc.pedidos360.pedidos.DelegadoHttpTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.EstadoPedidoTests.xml",
-          "sha256": "071ed65afe134a07528fd15c20a0d1eb1d600127cc77f4324e4307da309ca9a8",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.EstadoPedidoTests.xml",
+          "sha256": "6a372731c924d14e49145f3fdd452319734b1bf80cb7c28e1985e3b34312dd53",
           "class": "cl.duoc.pedidos360.pedidos.EstadoPedidoTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.messaging.ConfirmacionConsumerRecoveryTests.xml",
-          "sha256": "7e4d081fe611e5f3a75027b387907279d3e462ac73e5edf16d16c378888c535c",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.messaging.ConfirmacionConsumerRecoveryTests.xml",
+          "sha256": "f0fc51fd16d8ddaf0c215c104a79aa3686b1da287115f722696578d10c45c8f0",
           "class": "cl.duoc.pedidos360.pedidos.messaging.ConfirmacionConsumerRecoveryTests",
           "tests": 7,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoAutorizacionTests.xml",
-          "sha256": "6b9e60f602a5ebe3d914a639f59e438f0a1781e1eed917e3dd0c6578ee625055",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoAutorizacionTests.xml",
+          "sha256": "0e93d0a285fa392550277ddae26fc66e132afcedfe96feffb8358616e242b1fd",
           "class": "cl.duoc.pedidos360.pedidos.PedidoAutorizacionTests",
           "tests": 8,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoCarritoOutboxTests.xml",
-          "sha256": "02d7d35d382aea6259f6b3c48f22fd9efe161bac482ded05c8e9711541bb461c",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoCarritoOutboxTests.xml",
+          "sha256": "89326caaeb6fa75220107f1b79657cae11ba5502dbf2f8cab396e0234d4669d9",
           "class": "cl.duoc.pedidos360.pedidos.PedidoCarritoOutboxTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoConfirmacionPagoTests.xml",
-          "sha256": "089e5d4436fc06fc6bd1648ca1c5ee856d355bfbe27a93ce2e7f2dd70ca8ff35",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoConfirmacionPagoTests.xml",
+          "sha256": "fcd033bc13ba52c33a345838cc096eecdf752d9685d453fd37649034e7c3941d",
           "class": "cl.duoc.pedidos360.pedidos.PedidoConfirmacionPagoTests",
           "tests": 4,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoInternoSeguridadHttpTests.xml",
-          "sha256": "bc7e0bc85fd2d3a99f769a6f29cf7f5b0c59d53aff38728082e2439519b50ca9",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoInternoSeguridadHttpTests.xml",
+          "sha256": "d51305a37d578e5cf905e91fbf480f3343fc8ef97e9f2c5ca74036d88e62eb98",
           "class": "cl.duoc.pedidos360.pedidos.PedidoInternoSeguridadHttpTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoRepositoryTests.xml",
-          "sha256": "d70ce44307721f7f265e157cca6d30e8645e710d48529478f34bae9dfa26ead5",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoRepositoryTests.xml",
+          "sha256": "f485bbd236a13cd94883265bb0fca9d7d331f630fcb9843d82af708dd5b05217",
           "class": "cl.duoc.pedidos360.pedidos.PedidoRepositoryTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidosApplicationTests.xml",
-          "sha256": "1cdd368e90defa43f44aa74d1a56aca0d0cc86a7e183f499aa52dd593df17d76",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidosApplicationTests.xml",
+          "sha256": "c7c000d1ccdabc9f0f9425db68300b71ed8dbab89f31503b9e96e68b3ffe76c9",
           "class": "cl.duoc.pedidos360.pedidos.PedidosApplicationTests",
           "tests": 1,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoTenantIsolationTests.xml",
-          "sha256": "5515c725136ece589c4453b13030c7586118a9608b3c041ccfb2d713de1cc6e6",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.PedidoTenantIsolationTests.xml",
+          "sha256": "61f06bcaf4ec0d87e9fbb6791d19cdc2045b991ad706a97fd989b2334f5269fc",
           "class": "cl.duoc.pedidos360.pedidos.PedidoTenantIsolationTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.RabbitConsumerTests.xml",
-          "sha256": "aa65eed5622897711fe7a61f098749bcb16eaa64851ad045964bdffe1c66d5e2",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.RabbitConsumerTests.xml",
+          "sha256": "1de794448b45f1db3d9e3eb06d7dde4fcde258bf9b56ecbff1036f7b52e5b650",
           "class": "cl.duoc.pedidos360.pedidos.RabbitConsumerTests",
           "tests": 25,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.ReliabilityPolicyTests.xml",
-          "sha256": "d098175c1d1ab5cceb90010ec65de0d72300c6e3d110133b6ad35e9f29982b79",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.ReliabilityPolicyTests.xml",
+          "sha256": "18569f5316f558f683488967cdd84eb9a4992df58a815324a7f4df5cbef027a0",
           "class": "cl.duoc.pedidos360.pedidos.ReliabilityPolicyTests",
           "tests": 22,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.security.EntraJwtTests.xml",
-          "sha256": "b8bd8afc163061f0ee54750e50417a740b2f373b60b83928680aaf744411f356",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.security.EntraJwtTests.xml",
+          "sha256": "3c61a7014025df9c151b63e0ad01c11a4c9151f0a45337f4c00f5b8fc4bc642a",
           "class": "cl.duoc.pedidos360.pedidos.security.EntraJwtTests",
           "tests": 17,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.security.SeguridadInternaTests.xml",
-          "sha256": "08ead4991bda8f68b86b5b7f4bd847f15ed34cf662064c366cd7f7dbd662105f",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.security.SeguridadInternaTests.xml",
+          "sha256": "16095f66631c7ef80f41de315a64edacbc18578fdd19ed29aaa3f79ce83d5c8b",
           "class": "cl.duoc.pedidos360.pedidos.security.SeguridadInternaTests",
           "tests": 12,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.security.TenantIdentityTests.xml",
-          "sha256": "cb178600a165670ec0530e788b4cb1de9dcc01fbb2e23741aae712c9603f3f30",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.security.TenantIdentityTests.xml",
+          "sha256": "152098798ba6f94f48dd20e2b46efa03fbdcb807e01ab4f3fc920325ebb9d9fa",
           "class": "cl.duoc.pedidos360.pedidos.security.TenantIdentityTests",
           "tests": 2,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.TenantMigrationTests.xml",
-          "sha256": "b6823020b6776e40b3996c744789b17db0ea0aa220abe4f0889a2cfdb6582fc0",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.TenantMigrationTests.xml",
+          "sha256": "a124e249a44a8af723dcc762407a12997159485debf5dfdbf85432cf81f1a393",
           "class": "cl.duoc.pedidos360.pedidos.TenantMigrationTests",
           "tests": 1,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests.xml",
-          "sha256": "073a4acd7706dbde91ed629ed82461f1e4318375f147349962fbd8d20dac1058",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pedidos\\TEST-cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests.xml",
+          "sha256": "fe66c56efe9047bea7a0285827cd9fb5505fc13a666615a0c4b7a6ea8d756b0b",
           "class": "cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests",
           "tests": 1,
           "skipped": 1
@@ -876,166 +896,166 @@
     {
       "module": "pagos",
       "command": "mvn -B -ntp test",
-      "working_directory": "C:\\Users\\Rodri\\Documents\\GitHub\\PEDIDOS360-DELIVERY\\backend\\services\\pagos-service",
+      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\e2e-repository\\backend\\services\\pagos-service",
       "tests": 187,
       "successful": 186,
       "skipped": 1,
       "failures": 0,
       "errors": 0,
-      "completed": "2026-10-09T03:03:49-03:00",
-      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\full.log",
-      "log_sha256": "030d7e8cac3d0d3b6c3005c7f1db4cae545812ad1e71107d1cc1ebf5c742bbae",
+      "completed": "2026-10-09T03:39:06-03:00",
+      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\full.log",
+      "log_sha256": "820a9797a665f4364bdf7243ecb07b907c4a1006600293a3a9aec27ce40f7122",
       "surefire": [
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.BffQueriesEndToEndTests.xml",
-          "sha256": "b027a9b82a8d51080ec66278a83f8ee33ed8b4d8de814847b3af055f5740f0e4",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.BffQueriesEndToEndTests.xml",
+          "sha256": "42852f7d05f6aaf22bb29f6eb707765d0ca7f7a7eb1946aa6c87b5533dde148f",
           "class": "cl.duoc.pedidos360.pagos.BffQueriesEndToEndTests",
           "tests": 8,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests.xml",
-          "sha256": "271b94974521753439a88970524385533dfdcf6e777a31cf703f96de3c4346fc",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests.xml",
+          "sha256": "1ccbe1e3af39addb3fb5a4bcab9a1cb0b13a14c0b6a5d292d73453af940247ad",
           "class": "cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests",
           "tests": 1,
           "skipped": 1
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests.xml",
-          "sha256": "554eb73ca65e899b18f6d231e7e19e5e6811a3ebf71f8badaab2b4b8921a5f58",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests.xml",
+          "sha256": "31a1fce419e50d394391c97c7a3672663137c5060b574dc8f24641bc9c26edd7",
           "class": "cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests",
           "tests": 5,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.DelegadoHttpTests.xml",
-          "sha256": "ba2d3d5fd54e4c58b668f628216528be6fe008e356ef39d4ff3c23ee78085030",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.DelegadoHttpTests.xml",
+          "sha256": "fb75b7c4bcdc53f11059851d047e261bd758f087967fae82ddb186cdd078a080",
           "class": "cl.duoc.pedidos360.pagos.DelegadoHttpTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.messaging.PagosQueryConfigurationTests.xml",
-          "sha256": "d5f487aa789a421f230947f2ff9d4ea230b6305b72fb83c5968d2cffc5625ed8",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.messaging.PagosQueryConfigurationTests.xml",
+          "sha256": "d718eb73187464808d11d32c86ae1d6650466ed7e550b233319118ab63cf2688",
           "class": "cl.duoc.pedidos360.pagos.messaging.PagosQueryConfigurationTests",
           "tests": 8,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.OutboxIsolationTests.xml",
-          "sha256": "05912c1bd3fa3f70be6d95e3ff214ccf5089bb955985e464f1d5f7812505e42e",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.OutboxIsolationTests.xml",
+          "sha256": "714a3ce6495edf298770de62a3e1942d3ca4f5fb09291887d106a907f16261d7",
           "class": "cl.duoc.pedidos360.pagos.OutboxIsolationTests",
           "tests": 18,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoAutorizacionTests.xml",
-          "sha256": "6b14185e5daa284b543c0a32f92ca73b2d313d12c8efde87a2c045943669631c",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoAutorizacionTests.xml",
+          "sha256": "471752ac0056b3df19780de6d1994361738ba8c7f7eb551e63edf3fdbf2cd3db",
           "class": "cl.duoc.pedidos360.pagos.PagoAutorizacionTests",
           "tests": 8,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoConcurrenciaTests.xml",
-          "sha256": "72e6c76cde6d74dcf132cfce456c250028ecb4c882e2ff9236f5f158ea714c69",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoConcurrenciaTests.xml",
+          "sha256": "1bd430a310051494230cfa05621428f27d569af2bd018e4a1ef639ee6c3dc61f",
           "class": "cl.duoc.pedidos360.pagos.PagoConcurrenciaTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoEstadosTests.xml",
-          "sha256": "88cc6ecec78837b0ae396af709421f233b0f92de108003596fca6a4f45d4c517",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoEstadosTests.xml",
+          "sha256": "531b600eb6e1bf665f5e3ee48a5780f20ac7d8c2ed2362fe777ce948feb2d443",
           "class": "cl.duoc.pedidos360.pagos.PagoEstadosTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoIdempotenciaTests.xml",
-          "sha256": "3d807a51444dc62b88686ffd377dd68299a3b27c92fba3e9d5933a946a19981e",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoIdempotenciaTests.xml",
+          "sha256": "85fcc01d653804599af229fd0e6cb128d41b1f4813519db07fff208f3ed67864",
           "class": "cl.duoc.pedidos360.pagos.PagoIdempotenciaTests",
           "tests": 4,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoRecuperacionTests.xml",
-          "sha256": "6976ff8a1ad3442de34f09c981d9429d3e87013b68306ccdca07c4d1c06fbc02",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoRecuperacionTests.xml",
+          "sha256": "d78942e1cd1f28bd1275d9643a88fb7c682094a83e54be94d9c8960638ad647e",
           "class": "cl.duoc.pedidos360.pagos.PagoRecuperacionTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagosApplicationTests.xml",
-          "sha256": "0fd89d08786a69a53631f7257badbd1acdd6f2da8b11aea3910f97eb1d019d23",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagosApplicationTests.xml",
+          "sha256": "d7be514d3bc68625796fb545ed3dd414b5af36dc692be34885e240ed744011bd",
           "class": "cl.duoc.pedidos360.pagos.PagosApplicationTests",
           "tests": 1,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoServiceTests.xml",
-          "sha256": "d7b85b2f09e7cb689db6146d9da2d8fa7bb94c44ccf2af62f955649739b54dc3",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoServiceTests.xml",
+          "sha256": "9fb5e56c7bb08fd7916636a4aa11e0dd29a2ab867b88b55a8b61db5fb4a0b47f",
           "class": "cl.duoc.pedidos360.pagos.PagoServiceTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagosQueryProcessorTests.xml",
-          "sha256": "7cfe2f0c5459082f885ec0a459422c8a398c3eddbad6eb896921de9251641282",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagosQueryProcessorTests.xml",
+          "sha256": "485613567cf2d665b4fdf3903d7363767efacfeaecfbbfe9c9de99469706bf81",
           "class": "cl.duoc.pedidos360.pagos.PagosQueryProcessorTests",
           "tests": 12,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagosQueryRabbitTests.xml",
-          "sha256": "79643d3c34b199a5a37b2e6ba785460fd9d9c47f46eb158179bdb8fa61af91ea",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagosQueryRabbitTests.xml",
+          "sha256": "018144498b99539a973451bd778cf696463d9183f60545d7734a1aa5625b0549",
           "class": "cl.duoc.pedidos360.pagos.PagosQueryRabbitTests",
           "tests": 32,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoTenantIsolationTests.xml",
-          "sha256": "aaf4ace0767331cd2f606d5e990564e4d3245f67dcc61e4470415993d2b3edfe",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PagoTenantIsolationTests.xml",
+          "sha256": "5daf8e3e2391996ad1ecdb491ca01c29ca2b06c10151c0ecae2ee34d3909a165",
           "class": "cl.duoc.pedidos360.pagos.PagoTenantIsolationTests",
           "tests": 6,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PedidosRestClientTests.xml",
-          "sha256": "0dd58159c3cfb69c8cde9b5f3707284db081e62b59c7f8e2b6abdcfe2a6b0e0c",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.PedidosRestClientTests.xml",
+          "sha256": "33fe37602965d3a74fa0df0af66326977728df3c8c3b0156ae293085eac63983",
           "class": "cl.duoc.pedidos360.pagos.PedidosRestClientTests",
           "tests": 18,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.RabbitCoreTests.xml",
-          "sha256": "8e47e4dc12010b42b62d2b9c2d104c95457adb0049827fb2eafbe5c06d4982d7",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.RabbitCoreTests.xml",
+          "sha256": "f1576518ec1832da909bc8dd33b68df76f28aca45b170fa87f3af6247b7cfc9a",
           "class": "cl.duoc.pedidos360.pagos.RabbitCoreTests",
           "tests": 19,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.security.EntraJwtTests.xml",
-          "sha256": "34d000541ddc25498ceb628f86f52a863a3a7a52474fa2e045c05107022223b6",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.security.EntraJwtTests.xml",
+          "sha256": "6638888c8e6f404a9c01385153bed09a9a23d818bd79bfdcacd533225435b95a",
           "class": "cl.duoc.pedidos360.pagos.security.EntraJwtTests",
           "tests": 17,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.security.TenantIdentityTests.xml",
-          "sha256": "ac34cc9f0b2a1d61a450bbac93e206c2d7fb649e99e466861e55fb8f47cafae3",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.security.TenantIdentityTests.xml",
+          "sha256": "af4dcb44982082fd2baaaa4320d08280795deaa8d4bb09349cf6e4434839b5c3",
           "class": "cl.duoc.pedidos360.pagos.security.TenantIdentityTests",
           "tests": 2,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests.xml",
-          "sha256": "8aeba10f27be07489ff967770bcbafa93720bf4ec26370b841d1628ecff16790",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests.xml",
+          "sha256": "0686c8dffd9680c6f85cba41951acc7ff9f96d30c2afd10c0a8cad5918a7cf90",
           "class": "cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests",
           "tests": 8,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.TenantMigrationTests.xml",
-          "sha256": "bbd5b08c88ee8424044c23f614c28690dce1a8cd98d7d9966ccb6ea38a5203df",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\pagos\\TEST-cl.duoc.pedidos360.pagos.TenantMigrationTests.xml",
+          "sha256": "4168ffff7210d07ca7a6e588ddbadaefdac7058706fae1c79a56b66ad7150f6d",
           "class": "cl.duoc.pedidos360.pagos.TenantMigrationTests",
           "tests": 2,
           "skipped": 0
@@ -1045,103 +1065,103 @@
     {
       "module": "carrito",
       "command": "mvn -B -ntp test",
-      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-final-isolated\\carrito-service",
-      "tests": 95,
-      "successful": 95,
+      "working_directory": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\carrito-service",
+      "tests": 99,
+      "successful": 99,
       "skipped": 0,
       "failures": 0,
       "errors": 0,
-      "completed": "2026-10-09T03:16:25-03:00",
-      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\full.log",
-      "log_sha256": "006aa8b8f0409ad004b0440f1729f0b2ab03e43c8b417cda2ff3fdc33273c856",
+      "completed": "2026-10-09T03:32:16-03:00",
+      "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\full.log",
+      "log_sha256": "6880262b7a06558870adffb109a2cf092734039adc1ff0069abc0cd4328792d0",
       "surefire": [
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoApiTests.xml",
-          "sha256": "5857d07390a044c3731ad517e0dd67f920d7217494679af3db815f8e17c238b9",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoApiTests.xml",
+          "sha256": "893f155ac9bc6ee3ee106fb1d01d0c08d4fb3123cf0323c56420fb270326f689",
           "class": "cl.duoc.pedidos360.carrito.CarritoApiTests",
           "tests": 10,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoApplicationTests.xml",
-          "sha256": "531d91c331785e494a0bd81543dd3770ea45830f394d610e40c3a121b9250d85",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoApplicationTests.xml",
+          "sha256": "563afef6c030901a632ef87b9557b9590a6b6efcc3782ec67b6c2539f7c65c45",
           "class": "cl.duoc.pedidos360.carrito.CarritoApplicationTests",
           "tests": 5,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoCatalogoApiTests.xml",
-          "sha256": "855f2870f4789151d80532f520b05cc90f66d3892d308c20c187eaa67eb7b5aa",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoCatalogoApiTests.xml",
+          "sha256": "650b3bffe36c3e5e3638e4e513a915ad5f29b4a93e24143d657e345acf834e16",
           "class": "cl.duoc.pedidos360.carrito.CarritoCatalogoApiTests",
           "tests": 7,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests.xml",
-          "sha256": "956dbfdaa0144542339abb66136a01d593f3c82ff3dbf4b6fd17f9b33eaccb0e",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests.xml",
+          "sha256": "d6e8121003e9ac7b96b32d5164b6626f285aa26508ed9f2dc8d3e35bab34a5d7",
           "class": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
-          "tests": 22,
+          "tests": 26,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoConcurrenciaTests.xml",
-          "sha256": "c8c117bf225c842298d3216b6ab3446a5b2a5f9d7d482a788e283bc55004dae8",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoConcurrenciaTests.xml",
+          "sha256": "67e043d3f23aaba6da3632ce808c71963b8b9fdbb1bfe7f30445963b9a567d25",
           "class": "cl.duoc.pedidos360.carrito.CarritoConcurrenciaTests",
           "tests": 2,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoEntraHttpTests.xml",
-          "sha256": "17be20e11827b85d6fed6f1a4b003d5318e66ebb3e587c1de01ee238c4f77403",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoEntraHttpTests.xml",
+          "sha256": "e6827909abd12c6e0af2d5a26e5c4ab11070f99e944d8177da25ad7d931d5944",
           "class": "cl.duoc.pedidos360.carrito.CarritoEntraHttpTests",
           "tests": 3,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoMigrationCompatibilityTests.xml",
-          "sha256": "a369661aeb35505fd598fac678c2dc9f1867b19effb69e91b704f2ce5cd1ca6a",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoMigrationCompatibilityTests.xml",
+          "sha256": "84756f35885af65d5079dcc304fe7bd31961fc4440c77152b6cc848a229e67c2",
           "class": "cl.duoc.pedidos360.carrito.CarritoMigrationCompatibilityTests",
           "tests": 1,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoRepositoryTests.xml",
-          "sha256": "56e21d72a852b5f340897e4d6ca7445dcb40a6b5b9a9ff9e20d492058520238a",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoRepositoryTests.xml",
+          "sha256": "e2448262ee29b7362678152771359efa30533054b7b5f17d817925e9c320d7f2",
           "class": "cl.duoc.pedidos360.carrito.CarritoRepositoryTests",
           "tests": 11,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoServiceTests.xml",
-          "sha256": "ee89016a544d7b2c0b79f3c8e79c7192e11d19e83aca2d2e9cbfed4e5d8d42a8",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoServiceTests.xml",
+          "sha256": "41309b13af23be47b3284cd800d254c514c880758837188ba0e484160f148040",
           "class": "cl.duoc.pedidos360.carrito.CarritoServiceTests",
           "tests": 2,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoTests.xml",
-          "sha256": "580032cd1d9a363c3b71f428e33ff01dcd24135f031a89a1f6f93bec6e1f453d",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.CarritoTests.xml",
+          "sha256": "0196cd25c7c8342581517cd5591c1f7ef3d30bb6195e13e66c9f1bc194889b52",
           "class": "cl.duoc.pedidos360.carrito.CarritoTests",
           "tests": 8,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.LocalIdentityConfigurationTests.xml",
-          "sha256": "fd2c6e54d633a6e9968fca7629fd1a4bfa3d078caa25132da87e96a69de767b3",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.LocalIdentityConfigurationTests.xml",
+          "sha256": "4f80ce6a1230bf4ad2714ddbc841c05fc3a2c469f93fb60b4cfbcd50f2870780",
           "class": "cl.duoc.pedidos360.carrito.LocalIdentityConfigurationTests",
           "tests": 4,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.security.EntraJwtTests.xml",
-          "sha256": "d4c96851d1bbbb0c36adb1e5949e34089418c84d24a62956aa409968e9b97cf1",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.security.EntraJwtTests.xml",
+          "sha256": "c6c39eb1e30ce98a495beac09eff259a77e4ef7ff6826ca18d52fadceb7efdc9",
           "class": "cl.duoc.pedidos360.carrito.security.EntraJwtTests",
           "tests": 17,
           "skipped": 0
         },
         {
-          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-issue82-evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.security.LocalIdentityFilterTests.xml",
-          "sha256": "d181319c40040551893e65fce1378e2659a1a03cc7f583e31b8fbe570de757b2",
+          "file": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\carrito\\TEST-cl.duoc.pedidos360.carrito.security.LocalIdentityFilterTests.xml",
+          "sha256": "259cf60e6c06755d2b37b6da3d37548c6ba5bb800b1656a7ca23dfedd21ebcb7",
           "class": "cl.duoc.pedidos360.carrito.security.LocalIdentityFilterTests",
           "tests": 3,
           "skipped": 0
@@ -1154,12 +1174,12 @@
     "backend/services/carrito-service/src/main/java/cl/duoc/pedidos360/carrito/messaging/CarritoCommandListener.java": "aafba9963ca2f746c249b83c83f433d1f6aabcbada7b5a55d268d386c58f6b2c",
     "backend/services/carrito-service/src/main/java/cl/duoc/pedidos360/carrito/messaging/CarritoConsumerRecovery.java": "5dd503a3720037aae7fd187e5596660e3482b2bc3bbf8e3fcf13bc7a3073aa88",
     "backend/services/carrito-service/src/main/java/cl/duoc/pedidos360/carrito/messaging/CarritoMessagingConfiguration.java": "32e4e6e72f03ca8c0c3ef775e6205a958f27e8eb4b85c331611a5ebb6c4f5945",
-    "backend/services/carrito-service/src/main/java/cl/duoc/pedidos360/carrito/messaging/CarritoReceiptStore.java": "ac35217e528ed7df221791308e1011e5034729e1f8959e81610a3931d41276f6",
+    "backend/services/carrito-service/src/main/java/cl/duoc/pedidos360/carrito/messaging/CarritoReceiptStore.java": "47012f5cef47601f5c7ab27b2c9e3be596fc323107e39f7b97792891498493b9",
     "backend/services/carrito-service/src/main/java/cl/duoc/pedidos360/carrito/messaging/InvalidCartCommand.java": "3b41d8fbe337c6f6c69eb2c59ddee4d8f6591651a2a7ff8edd24a9d6a02a0b38",
     "backend/services/carrito-service/src/main/java/cl/duoc/pedidos360/carrito/service/CarritoService.java": "02bf8a740bac97114e924d176f09d9861740523886cc5bb2796a87247b97048f",
     "backend/services/carrito-service/src/main/resources/application.yml": "b310e9a013cc29fa50d9efbaf1cd044278307013a7d532f0fd09d0ce40b59f1f",
     "backend/services/carrito-service/src/main/resources/db/migration/V2__vaciado_por_pedido.sql": "8674ac69e9d4382924970dcfb605a2313ad0c24eb513da16bbad5b50a01d3599",
-    "backend/services/carrito-service/src/test/java/cl/duoc/pedidos360/carrito/CarritoCommandIntegrationTests.java": "5dd4e35438671e9acd9f6f7bdb2b6fbc1664fc81f90eb9b8671e0ab2a3e0e70d",
+    "backend/services/carrito-service/src/test/java/cl/duoc/pedidos360/carrito/CarritoCommandIntegrationTests.java": "c2cd715a7b83e49ea7268028ebc81f3ce9a8c44053658e6d813a076ea4cdf688",
     "backend/services/carrito-service/src/test/java/cl/duoc/pedidos360/carrito/CarritoMigrationCompatibilityTests.java": "37ce6d3e31fd63780aa2b20e48d44799597fcadf44540da7300874b1eb775d33",
     "backend/services/carrito-service/src/test/java/cl/duoc/pedidos360/carrito/CarritoRestartProbe.java": "6f3818ad89df8a7eb0745e311fc92fa1348e6229222ce5f837a6cd34693c3d8e",
     "backend/services/pedidos-service/pom.xml": "53f55f38e8b13fc8b39338ae012d671b6be0b5ba4748919a7d6c53481ab2cfbf",
@@ -1175,7 +1195,7 @@
     "backend/services/pedidos-service/src/main/resources/application.yml": "8567f377e54af0cd3b73e3aa6febd9507a9389a30377b3a2925bd74fbd5451c0",
     "backend/services/pedidos-service/src/main/resources/db/migration/V3__carrito_vaciado_outbox.sql": "0b57d8f6269f96a176c599086691bf6c67f5bccf38c2ebda4a96e2d50fd8fb70",
     "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/CarritoOutboxMigrationCompatibilityTests.java": "fed250b7d4847b6a62222c724cbc3d8c03869f6880c668fd6e3666955daa0368",
-    "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/CarritoPublisherIntegrationTests.java": "9deb0823191e1c6093c8e7aa1c2f3f4f13c1b32166b276fc360042a3f4e3688f",
+    "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/CarritoPublisherIntegrationTests.java": "2ac16a6ac2b1b877ffab031dba8957d56f763d785a2290d55a5d641ac5405a36",
     "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/CarritoSnapshotClientTests.java": "14b1c974a5b3ad3b8c660bbc7261d0cc17f03839cf759750353c4e035a6e4ffb",
     "backend/services/pedidos-service/src/test/java/cl/duoc/pedidos360/pedidos/PedidoCarritoOutboxTests.java": "606d8d182d37e790c2f2e984d233812dfcbe20eee390716b9c145ba34830bbe2",
     "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/command/CarritoCommandProperties.java": "08d40f761c137d2ccd4e3e7780367068da985e591e912d0566493088794e0d90",
@@ -1183,7 +1203,7 @@
     "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/command/VaciarCarritoPorPedido.java": "734019ba7f8f000e4424a872ad593244f3f6290431e7cc39cd11d73ccae8e369",
     "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/CarritoCommandContractTests.java": "e0a36139870203ea6746e5cd4186029c7c227f063b3932408defdce26f0260a4"
   },
-  "installed_core_jar_sha256": "de4c83f4a93e869b6c173afd3829190138b0aaaefcc3fba907a7c592023834c0",
+  "installed_core_jar_sha256": "332a0955f7e088f18afd537d0b1df81e2ccf158852db6955a0768f4a590c6ee0",
   "evidence": {
     "postgresql": "17-alpine (observed 17.11), real disposable containers",
     "rabbitmq_new_command": "4.1.8-management-alpine, real disposable containers with quorum queues",
@@ -1195,10 +1215,10 @@
         "cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests",
         "cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests"
       ],
-      "reason": "No live Entra credentials provided; tests skipped by their existing condition."
+      "reason": "No live Entra credentials provided; existing conditions omit two tests."
     },
-    "workspace_interference": "A failed rerun overlapped JDT language-server recompilation/removal of target classes/resources. Final Pedidos/Carrito runs use isolated copies; source bytes checked. Failed runs are not included in successful totals.",
-    "post_test_nonfunctional_change": "Two existing Pedidos YAML comments had their original UTF-8 encoding restored after the suites; no YAML values or code/test behavior changed.",
+    "workspace_interference": "Final reaudit uses isolated sources for all eight modules; previous JDT interference pertains to initial delivery.",
+    "post_test_nonfunctional_change": "None in this reaudit; subsequent commit changes documentation/evidence only.",
     "limits": "No deployed flag activation, operational grants or AWS/RDS changes; no AMQP 1.0 GHSA reproduction; no frontend checkout cut or complete deployed E2E for the new coordination."
   },
   "pending_activation": [
@@ -1208,5 +1228,52 @@
     "Migration/runtime roles and minimal grants on real databases",
     "Coordinated checkout cut #70 excluding parallel HTTP delete",
     "Outstanding operational prerequisites from PR #94"
-  ]
+  ],
+  "reaudit": {
+    "audited_head": "0d7f94a0acd659cac61708815d08a1399f09bcbd",
+    "production_change": "CarritoReceiptStore: explicit .equals(c.carritoId())",
+    "before_after": "High-ID regression passes before and after. The original RHS is primitive long, so previous == already compared values by unboxing; no reference-identity rejection reproduced.",
+    "retry_conversion": "Real Basic.Get contains retry-count=0. Spring 4.1.1 converter exposes it as MessageProperties.retryCount, removes it from headers. Existing opt-in listener normalization preserves raw count 0->1; no production conversion fix required.",
+    "focused_proofs": [
+      {
+        "kind": "before_id",
+        "command": "mvn test -Dtest=CarritoCommandIntegrationTests#highIdValueEqualityEmptiesOnceAndPreservesLaterVersion",
+        "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\before_id.log",
+        "sha256": "c964626ad95a4a733b2f26c1ddce79fa4555724765e3f4d2a3b181ebc0160a43",
+        "result": [
+          "1",
+          "0",
+          "0",
+          "0"
+        ]
+      },
+      {
+        "kind": "after_focused_carrito",
+        "command": "mvn test -Dtest=CarritoCommandIntegrationTests",
+        "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\after_focused_carrito.log",
+        "sha256": "5e5f94bd5462043a6173ee106bdfa87b99b1587d256829793a5efb8ed0bc362a",
+        "result": [
+          "26",
+          "0",
+          "0",
+          "0"
+        ]
+      },
+      {
+        "kind": "after_focused_publisher",
+        "command": "mvn test -Dtest=CarritoPublisherIntegrationTests",
+        "log": "C:\\Users\\Rodri\\AppData\\Local\\Temp\\p360-pr97-reaudit\\evidence\\after_focused_publisher.log",
+        "sha256": "3e8bb160ef9230ea1e5b679a546b3f6f602076ac7d8f02476e2b6d132202120f",
+        "result": [
+          "6",
+          "0",
+          "0",
+          "0"
+        ]
+      }
+    ],
+    "new_cases": 4,
+    "full_source_copies": "Byte-for-byte isolated copies of committed source/POM; Pagos E2E copy preserves backend/bff and backend/services/pedidos-service layout.",
+    "excluded_failed_attempts": "Flat/incomplete isolated Pagos layouts caused setup failures; existing cleanup set context classloader null before initialization, causing subsequent JDBC discovery failures. Corrected copy layout; no versioned legacy tests modified; complete suite rerun."
+  }
 }
