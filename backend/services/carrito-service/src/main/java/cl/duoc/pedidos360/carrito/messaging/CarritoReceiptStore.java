@@ -61,7 +61,7 @@ VALUES(?,?,?,?,?,?,?) ON CONFLICT(message_id) DO NOTHING
         carritos
             .findByTenantIdAndEntraObjectId(
                 c.propietario().tenantId(), c.propietario().entraObjectId())
-            .filter(x -> x.getId() == c.carritoId());
+            .filter(x -> x.getId().equals(c.carritoId()));
     Result outcome;
     if (found.isEmpty() || found.get().getVersion() < c.expectedCarritoVersion())
       outcome = Result.REJECTED;

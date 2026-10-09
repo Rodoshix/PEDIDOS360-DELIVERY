@@ -170,7 +170,7 @@ class CarritoCommandIntegrationTests {
   }
 
   @Autowired jakarta.persistence.EntityManager entityManager;
-  @Autowired CarritoCommandListener listener;
+  @MockitoSpyBean CarritoCommandListener listener;
   @Autowired JdbcTemplate db;
   @Autowired PlatformTransactionManager manager;
   @Autowired CarritoService service;
@@ -183,7 +183,7 @@ class CarritoCommandIntegrationTests {
 
   @AfterEach
   void resetFixtures() {
-    reset(receipts, carritos, consumerPublisher);
+    reset(receipts, carritos, consumerPublisher, listener);
     SecurityContextHolder.clearContext();
   }
 
@@ -832,5 +832,191 @@ class CarritoCommandIntegrationTests {
         .write((cmd.canonical() + "\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
     process.getOutputStream().close();
     return new Child(process, log);
+  }
+
+  @Test
+  void highIdValueEqualityEmptiesOnceAndPreservesLaterVersion() throws Exception {
+    db.queryForObject(
+        "SELECT setval(pg_get_serial_sequence('carrito.carritos','id'), GREATEST(COALESCE((SELECT"
+            + " MAX(id) FROM carrito.carritos),0),1000),true)",
+        Long.class);
+    var c = cart();
+    Long independentId = Long.valueOf(c.getId().toString());
+    assertThat(c.getId()).isGreaterThan(127L);
+    assertThat(independentId).isEqualTo(c.getId()).isNotSameAs(c.getId());
+    var original = command(c);
+    var cmd =
+        new VaciarCarritoPorPedido(
+            original.messageId(),
+            original.type(),
+            1,
+            original.occurredAt(),
+            original.pedidoId(),
+            independentId,
+            original.expectedCarritoVersion(),
+            original.propietario());
+    receipts.accept(cmd, false);
+    assertThat(receipts.process(cmd, false)).isEqualTo(CarritoReceiptStore.Result.EMPTIED);
+    modify(c);
+    var after = carritos.findByTenantIdAndEntraObjectId(T, c.getEntraObjectId()).orElseThrow();
+    receipts.accept(cmd, false);
+    assertThat(receipts.process(cmd, false)).isEqualTo(CarritoReceiptStore.Result.EMPTIED);
+    assertThat(
+            carritos
+                .findByTenantIdAndEntraObjectId(T, c.getEntraObjectId())
+                .orElseThrow()
+                .getVersion())
+        .isEqualTo(after.getVersion());
+    var later =
+        new VaciarCarritoPorPedido(
+            UUID.randomUUID(),
+            cmd.type(),
+            1,
+            cmd.occurredAt(),
+            cmd.pedidoId() + 1,
+            independentId,
+            cmd.expectedCarritoVersion(),
+            cmd.propietario());
+    receipts.accept(later, false);
+    assertThat(receipts.process(later, false))
+        .isEqualTo(CarritoReceiptStore.Result.OMITTED_VERSION_CHANGED);
+    assertThat(
+            carritos
+                .findByTenantIdAndEntraObjectId(T, c.getEntraObjectId())
+                .orElseThrow()
+                .getLineas())
+        .hasSize(1);
+  }
+
+  @Test
+  void actualRetryPreservesTransportIdentityAndCommittedReceipt() throws Exception {
+    var cmd = command(cart());
+    var deliveries = new java.util.concurrent.CopyOnWriteArrayList<Message>();
+    doAnswer(
+            call -> {
+              var m = (Message) call.getArgument(0);
+              if (cmd.messageId().toString().equals(m.getMessageProperties().getMessageId())) {
+                deliveries.add(m);
+                if (((Number) m.getMessageProperties().getHeader("retry-count")).longValue() == 1) {
+                  assertThat(
+                          db.queryForObject(
+                              "SELECT retry_authorized FROM carrito.vaciado_por_pedido WHERE"
+                                  + " message_id=?",
+                              Boolean.class,
+                              cmd.messageId()))
+                      .isTrue();
+                  assertThat(
+                          db.queryForObject(
+                              "SELECT canonical_payload FROM carrito.vaciado_por_pedido WHERE"
+                                  + " message_id=?",
+                              String.class,
+                              cmd.messageId()))
+                      .isEqualTo(cmd.canonical());
+                }
+              }
+              return call.callRealMethod();
+            })
+        .when(listener)
+        .consume(any(Message.class), any(com.rabbitmq.client.Channel.class));
+    doThrow(
+            new org.springframework.dao.TransientDataAccessResourceException(
+                "injected first SQL failure"))
+        .doCallRealMethod()
+        .when(receipts)
+        .process(eq(cmd), anyBoolean());
+    send(publisher, cmd, PUB, 0);
+    terminal(cmd, "EMPTIED");
+    assertThat(deliveries).hasSize(2);
+    for (int i = 0; i < 2; i++) {
+      var m = deliveries.get(i);
+      assertThat(((Number) m.getMessageProperties().getHeader("retry-count")).longValue())
+          .isEqualTo(i);
+      assertThat(m.getMessageProperties().getReceivedUserId()).isEqualTo(i == 0 ? PUB : CON);
+      assertThat(m.getMessageProperties().getMessageId()).isEqualTo(cmd.messageId().toString());
+      assertThat(m.getBody())
+          .isEqualTo(cmd.canonical().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+    }
+    verify(consumerPublisher, times(1))
+        .send(
+            eq(CarritoCommandProperties.RETRY_EXCHANGE),
+            eq(CarritoCommandProperties.RETRY_ROUTE),
+            any(Message.class),
+            any(CorrelationData.class));
+  }
+
+  @Test
+  void retryWithReceiptButWithoutAuthorizationIsRejected() throws Exception {
+    var c = cart();
+    var cmd = command(c);
+    receipts.accept(cmd, false);
+    send(consumerPublisher, cmd, CON, 1);
+    dlq(cmd.messageId());
+    assertThat(state(cmd)).isEqualTo("RECEIVED");
+    assertThat(
+            carritos
+                .findByTenantIdAndEntraObjectId(T, c.getEntraObjectId())
+                .orElseThrow()
+                .getLineas())
+        .hasSize(1);
+  }
+
+  @Test
+  void realRetryPublicationWithInjectedConfirmLossHasNoAlternative() throws Exception {
+    var c = cart();
+    var cmd = command(c);
+    var channel = mock(com.rabbitmq.client.Channel.class);
+    doThrow(
+            new org.springframework.dao.TransientDataAccessResourceException(
+                "injected first SQL failure"))
+        .doCallRealMethod()
+        .when(receipts)
+        .process(eq(cmd), anyBoolean());
+    var actual = new RabbitTemplate(consumerPublisher.getConnectionFactory());
+    actual.setMandatory(true);
+    doAnswer(
+            call -> {
+              assertThat(
+                      db.queryForObject(
+                          "SELECT retry_authorized FROM carrito.vaciado_por_pedido WHERE"
+                              + " message_id=?",
+                          Boolean.class,
+                          cmd.messageId()))
+                  .isTrue();
+              var inner = new CorrelationData(UUID.randomUUID().toString());
+              actual.send(call.getArgument(0), call.getArgument(1), call.getArgument(2), inner);
+              assertThat(inner.getFuture().get(5, TimeUnit.SECONDS).ack()).isTrue();
+              assertThat(inner.getReturned()).isNull();
+              return null;
+            })
+        .when(consumerPublisher)
+        .send(
+            eq(CarritoCommandProperties.RETRY_EXCHANGE),
+            eq(CarritoCommandProperties.RETRY_ROUTE),
+            any(Message.class),
+            any(CorrelationData.class));
+    var p = new MessageProperties();
+    p.setMessageId(cmd.messageId().toString());
+    p.setContentType("application/json");
+    p.setReceivedUserId(PUB);
+    p.setReceivedExchange(CarritoCommandProperties.EXCHANGE);
+    p.setReceivedRoutingKey(CarritoCommandProperties.ROUTE);
+    p.setHeader("retry-count", 0);
+    p.setDeliveryTag(9L);
+    listener.consume(
+        new Message(cmd.canonical().getBytes(java.nio.charset.StandardCharsets.UTF_8), p), channel);
+    verify(channel, never()).basicAck(anyLong(), anyBoolean());
+    terminal(cmd, "EMPTIED");
+    verify(consumerPublisher, times(1))
+        .send(
+            eq(CarritoCommandProperties.RETRY_EXCHANGE),
+            eq(CarritoCommandProperties.RETRY_ROUTE),
+            any(Message.class),
+            any(CorrelationData.class));
+    verify(consumerPublisher, never())
+        .send(
+            eq(CarritoCommandProperties.DLX),
+            anyString(),
+            any(Message.class),
+            any(CorrelationData.class));
   }
 }

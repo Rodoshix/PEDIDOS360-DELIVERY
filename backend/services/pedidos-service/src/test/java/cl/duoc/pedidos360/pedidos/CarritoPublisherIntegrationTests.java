@@ -151,11 +151,28 @@ class CarritoPublisherIntegrationTests {
     var c = claim();
     publisher.publish(c);
     assertThat(store.finish(c, null)).isTrue();
-    var m = receive(c.id());
+    var wire = new java.util.concurrent.atomic.AtomicReference<com.rabbitmq.client.GetResponse>();
+    await()
+        .atMost(Duration.ofSeconds(5))
+        .until(
+            () -> {
+              var incoming = admin.execute(ch -> ch.basicGet(CarritoCommandProperties.QUEUE, true));
+              if (incoming != null && c.id().toString().equals(incoming.getProps().getMessageId()))
+                wire.set(incoming);
+              return wire.get() != null;
+            });
+    assertThat(((Number) wire.get().getProps().getHeaders().get("retry-count")).longValue())
+        .isZero();
+    var m =
+        new Message(
+            wire.get().getBody(),
+            new org.springframework.amqp.rabbit.support.DefaultMessagePropertiesConverter()
+                .toMessageProperties(wire.get().getProps(), wire.get().getEnvelope(), "UTF-8"));
     assertThat(m.getBody())
         .isEqualTo(c.payload().getBytes(java.nio.charset.StandardCharsets.UTF_8));
     assertThat(m.getMessageProperties().getReceivedUserId())
         .isEqualTo("p360-pedidos-carrito-publisher");
+    assertThat(m.getMessageProperties().getRetryCount()).isZero();
   }
 
   @Test
