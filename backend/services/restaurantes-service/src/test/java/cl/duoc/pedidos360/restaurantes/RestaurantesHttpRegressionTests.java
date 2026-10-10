@@ -88,4 +88,15 @@ class RestaurantesHttpRegressionTests {
         assertThat(call("PUT","/restaurantes/999999",data("Otro","ABIERTO")).statusCode()).isEqualTo(404);
         assertThat(call("DELETE","/restaurantes/999999",null).statusCode()).isEqualTo(404);
     }
+
+    @Test void openApiStillDescribesCatalogHttpContract() throws Exception {
+        var response = call("GET", "/v3/api-docs", null);
+        assertThat(response.statusCode()).isEqualTo(200);
+        var document = json.readTree(response.body());
+        assertThat(document.path("openapi").asString()).startsWith("3.");
+        var operation = document.path("paths").path("/restaurantes").path("get");
+        assertThat(operation.isObject()).isTrue();
+        assertThat(operation.path("responses").has("200")).isTrue();
+        assertThat(document.path("components").path("schemas").isObject()).isTrue();
+    }
 }

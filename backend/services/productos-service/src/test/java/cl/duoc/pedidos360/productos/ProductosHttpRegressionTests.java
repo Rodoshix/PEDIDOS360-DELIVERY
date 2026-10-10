@@ -108,4 +108,15 @@ class ProductosHttpRegressionTests {
         assertThat(call("GET", "/productos/999999", null).statusCode()).isEqualTo(404);
         assertThat(call("PUT", "/productos/999999", product("Test", true)).statusCode()).isEqualTo(404);
     }
+
+    @Test void openApiStillDescribesCatalogHttpContract() throws Exception {
+        var response = call("GET", "/v3/api-docs", null);
+        assertThat(response.statusCode()).isEqualTo(200);
+        var document = json.readTree(response.body());
+        assertThat(document.path("openapi").asString()).startsWith("3.");
+        var operation = document.path("paths").path("/productos").path("get");
+        assertThat(operation.isObject()).isTrue();
+        assertThat(operation.path("responses").has("200")).isTrue();
+        assertThat(document.path("components").path("schemas").isObject()).isTrue();
+    }
 }
