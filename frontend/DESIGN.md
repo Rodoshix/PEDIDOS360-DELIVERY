@@ -49,3 +49,9 @@ El banco `npm run preview:profile` permite revisar layout y sesión ficticia sin
 **Fase 6 pendiente: Pedidos/Pagos.** No modificar lógica ni reorganizar estas pantallas antes del trabajo de RabbitMQ de Entrega 2. Retomar después del merge en otra rama nueva dedicada.
 
 Las fases 7 y 8 se aplican también a las nuevas superficies administrativas de Fase 4. El catálogo de clientes conserva su flujo actual y Fase 6 sigue fuera de esta rama. El issue general #60 permanece abierto; no usar palabras de autocierre en el PR.
+
+## Fase 4 CLIENTE — catálogo (#60)
+
+`RestaurantesPage`, `RealCatalogPanel` y `RealCatalog` presentan la selección nativa de restaurante, nombre/estado disponibles y productos con precio CLP y disponibilidad. Reutilizan Field/Select, Button, Badge, LoadingState, EmptyState y Alert. No incorporan imágenes, calificaciones ni horarios sin datos reales. Los estilos `client-catalog` están limitados a esta ruta; el selector y la acción de agregar tienen 44 px de alto y el layout pasa a una columna en móvil.
+
+Conservar los handlers, controllers, adaptadores, rutas y clave de montaje por identidad existentes. La presentación anuncia carga, errores sanitizados, vacíos, disponibilidad y éxito; el error del catálogo conserva foco programático y el agregado mantiene los bloqueos existentes. Administración, Checkout y Fase 6 siguen fuera de este cambio. Evidencia y límites en `docs/frontend-60-client-catalog.md` desde la raíz del repositorio.

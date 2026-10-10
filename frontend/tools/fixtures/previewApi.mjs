@@ -16,7 +16,7 @@ export function createPreviewApi() {
   return async function middleware(req, res, next) {
     if (req.url === '/__preview/scenario' && req.method === 'POST') {
       let text = ''; for await (const chunk of req) text += chunk
-      if (!['normal', 'empty', 'error', 'slow'].includes(text)) { res.statusCode = 400; res.end(); return }
+      if (!['normal', 'empty', 'error', 'slow', 'catalog-empty-products', 'catalog-unavailable', 'catalog-denied'].includes(text)) { res.statusCode = 400; res.end(); return }
       scenario = text; users.clear(); res.statusCode = 204; res.end(); return
     }
     if (!req.url?.startsWith('/api/')) return next()
@@ -26,9 +26,10 @@ export function createPreviewApi() {
     if (req.url === '/api/restaurantes/admin/acceso') return send(key === 'A' ? 204 : 403)
     if (scenario === 'slow') await new Promise(resolve => setTimeout(resolve, 1500))
     if (scenario === 'error') return send(503, {})
+    if (scenario === 'catalog-denied' && /^\/api\/(restaurantes|productos)/.test(req.url)) return send(403, {})
     const catalog = req.url.match(/^\/api\/(restaurantes|productos)(?:\/(\d+))?(?:\/disponibilidad\?disponible=(true|false))?$/)
     const restaurantProducts = req.url.match(/^\/api\/productos\/restaurante\/(\d+)$/)
-    if (restaurantProducts) return send(200, scenario === 'empty' ? [] : products.filter(row => row.restauranteId === Number(restaurantProducts[1])))
+    if (restaurantProducts) return send(200, ['empty', 'catalog-empty-products'].includes(scenario) ? [] : products.filter(row => row.restauranteId === Number(restaurantProducts[1])).map(row => scenario === 'catalog-unavailable' ? { ...row, disponible: false } : row))
     if (catalog) {
       const [, kind, id, availability] = catalog
       let rows = kind === 'restaurantes' ? restaurants : products
@@ -52,6 +53,19 @@ export function createPreviewApi() {
     }
     if (scenario === 'empty') state.items = []
     if (req.url === '/api/carrito' && req.method === 'DELETE') { state.items = []; state.version++; return send(204) }
+    if (req.url === '/api/carrito/items' && req.method === 'POST') {
+      let text = ''; for await (const chunk of req) text += chunk
+      try {
+        const { productoId, cantidad } = JSON.parse(text), product = products.find(row => row.id === productoId)
+        if (!product || !product.disponible || scenario === 'catalog-unavailable' || !Number.isInteger(cantidad) || cantidad < 1) return send(400, {})
+        const existing = state.items.find(row => row.productoId === productoId)
+        if (existing) { existing.cantidad += cantidad; existing.subtotal = existing.cantidad * existing.precioUnitario }
+        else state.items.push({ productoId, nombre: product.nombre, cantidad, precioUnitario: product.precio, subtotal: cantidad * product.precio })
+        state.version++
+        return send(200, { id: key === 'B' ? 2 : 1, restauranteId: 1, moneda: 'CLP', version: state.version,
+          actualizadoEn: '2026-10-06T12:00:00Z', items: state.items, total: state.items.reduce((sum, item) => sum + item.subtotal, 0) })
+      } catch { return send(400, {}) }
+    }
     const itemId = req.url.match(/^\/api\/carrito\/items\/(\d+)$/)?.[1]
     if (itemId && req.method === 'DELETE') { state.items = state.items.filter(item => item.productoId !== Number(itemId)); state.version++; return send(204) }
     if (itemId && req.method === 'PUT') {
