@@ -1,0 +1,3151 @@
+[
+  {
+    "id": "GHSA-5m9f-rphj-c435",
+    "summary": "RabbitMQ Java client: TrustEverythingTrustManager used by default in useSslProtocol() enables MITM",
+    "severityOSV": "MODERATE",
+    "priorityForSeparateTriage": "P1",
+    "exploitationDemonstrated": false,
+    "applicability": "MITM si se usa useSslProtocol() sin trust manager seguro/hostname. No hay llamada a esa sobrecarga en main; el overlay exige CA y hostname. TLS operativo aÃºn no acreditado.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.33.0"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.33.0"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-5m9f-rphj-c435"
+    ]
+  },
+  {
+    "id": "GHSA-5xwg-cfvj-gff5",
+    "summary": "RabbitMQ Java client accepts broker frames larger than the negotiated AMQP frame_max",
+    "severityOSV": "LOW",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "AceptaciÃ³n de frames mayores que frame_max; depende de frames del peer AMQP. Presente en cliente runtime; no se reprodujo un peer malicioso.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.33.0"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.33.0"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-5xwg-cfvj-gff5"
+    ]
+  },
+  {
+    "id": "GHSA-68mj-5wr7-6fgg",
+    "summary": "RabbitMQ Java client ValueReader: Oversized LongString/bytes length triggers OOM via unchecked allocation",
+    "severityOSV": "HIGH",
+    "priorityForSeparateTriage": "P1",
+    "exploitationDemonstrated": false,
+    "applicability": "OOM al decodificar long strings/bytes AMQP. Ruta de protocolo relevante al habilitar conexiones; no se probÃ³ explotaciÃ³n. Auth del dominio posterior no protege el parser de frames.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.33.1"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.33.1"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-68mj-5wr7-6fgg"
+    ]
+  },
+  {
+    "id": "GHSA-6g32-pxv4-2wfj",
+    "summary": "RabbitMQ Java client: Unvalidated Class.forName in JSON-RPC ProcedureDescription enables arbitrary class loading",
+    "severityOSV": "HIGH",
+    "priorityForSeparateTriage": "P3",
+    "exploitationDemonstrated": false,
+    "applicability": "Carga de clases en JSON-RPC ProcedureDescription. No se encontrÃ³ uso de JSON-RPC/ProcedureDescription en main. CÃ³digo empaquetado; ruta explotable no identificada.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.33.0"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.33.0"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-6g32-pxv4-2wfj"
+    ]
+  },
+  {
+    "id": "GHSA-7822-rcf6-97fx",
+    "summary": "RabbitMQ: Malformed UTF-8 in shortstr properties permanently disables RPC consumers",
+    "severityOSV": "MODERATE",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "UTF-8 malformado afecta consumers JSON-RPC segÃºn el aviso. AplicaciÃ³n usa request/reply propio, sin JsonRpcClient/Server; no se demostrÃ³ alcance sobre listeners propios.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.36.0"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.36.0"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-7822-rcf6-97fx"
+    ]
+  },
+  {
+    "id": "GHSA-7hhh-6rmp-j9qf",
+    "summary": "jackson-core: UTF8DataInputJsonParser._reportInvalidToken() missing maxErrorTokenLength limit -> unbounded StringBuilder growth (DoS)",
+    "severityOSV": "HIGH",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "DoS en parser DataInput. Parsers del envelope/respuesta usan byte[]/String; no se encontrÃ³ DataInput en main. Presencia confirmada; entrada por esa ruta no demostrada.",
+    "packages": [
+      {
+        "package": "tools.jackson.core:jackson-core",
+        "versionObservedInPreviousSBOM": "3.1.5",
+        "versionInFourRuntimeImages": "3.1.5",
+        "fixEvents": [
+          "3.1.7",
+          "3.2.3"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.0.0"
+              },
+              {
+                "fixed": "3.1.7"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.2.0"
+              },
+              {
+                "fixed": "3.2.3"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-core-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-core-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-core-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-core-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "carrito",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "pagos",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "productos",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          }
+        ],
+        "presenceDemonstrated": true
+      },
+      {
+        "package": "com.fasterxml.jackson.core:jackson-core",
+        "versionObservedInPreviousSBOM": "2.21.5",
+        "versionInFourRuntimeImages": null,
+        "fixEvents": [
+          "2.21.7",
+          "2.22.3",
+          "2.18.11"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.19.0"
+              },
+              {
+                "fixed": "2.21.7"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.22.0"
+              },
+              {
+                "fixed": "2.22.3"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.8.0"
+              },
+              {
+                "fixed": "2.18.11"
+              }
+            ]
+          }
+        ],
+        "inImages": [],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME in previous Productos image (SBOM BOOT-INF/lib); NOT PACKAGED in four corrected runtime images",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-core-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-core-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "productos",
+            "line": "|  |  |  |  \\- com.fasterxml.jackson.core:jackson-core:jar:2.21.5:compile (version managed from 2.21.5)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/FasterXML/jackson-core/security/advisories/GHSA-7hhh-6rmp-j9qf"
+    ]
+  },
+  {
+    "id": "GHSA-93j5-89vc-pph4",
+    "summary": "RabbitMQ Java client ValueReader: Unbounded recursive table/array nesting causes StackOverflowError DoS",
+    "severityOSV": "HIGH",
+    "priorityForSeparateTriage": "P1",
+    "exploitationDemonstrated": false,
+    "applicability": "Stack overflow por tables/arrays AMQP anidados. Decoder runtime relevante si recibe frames adversarios; no se ejecutÃ³ PoC ni se acredita mitigaciÃ³n por validaciÃ³n JSON.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.33.1"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.33.1"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-93j5-89vc-pph4"
+    ]
+  },
+  {
+    "id": "GHSA-9xv2-5v5q-p794",
+    "summary": "Apache Tomcat's DIGEST authenticator has an Authentication Bypass by Capture-replay vulnerability",
+    "severityOSV": "CRITICAL",
+    "priorityForSeparateTriage": "P3",
+    "exploitationDemonstrated": false,
+    "applicability": "Replay limitado con autenticaciÃ³n DIGEST de Tomcat. Sin configuraciÃ³n DIGEST en main; autorizaciÃ³n JWT/Spring Security. OSV CRITICAL, Apache Low; no bypass JWT demostrado.",
+    "packages": [
+      {
+        "package": "org.apache.tomcat.embed:tomcat-embed-core",
+        "versionObservedInPreviousSBOM": "11.0.24",
+        "versionInFourRuntimeImages": "11.0.24",
+        "fixEvents": [
+          "11.0.25",
+          "10.1.58",
+          "9.0.121"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "11.0.0-M1"
+              },
+              {
+                "fixed": "11.0.25"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "10.1.0-M1"
+              },
+              {
+                "fixed": "10.1.58"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "9.0.0.M1"
+              },
+              {
+                "fixed": "9.0.121"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "8.5.0"
+              },
+              {
+                "last_affected": "8.5.100"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "7.0.30"
+              },
+              {
+                "last_affected": "7.0.109"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "carrito",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "pagos",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "productos",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://tomcat.apache.org/security-11.html"
+    ]
+  },
+  {
+    "id": "GHSA-cqgh-8p3p-mx4m",
+    "summary": "RabbitMQ: JSONReader in the default JSON-RPC mapper never terminates on truncated input, causing DoS",
+    "severityOSV": "MODERATE",
+    "priorityForSeparateTriage": "P3",
+    "exploitationDemonstrated": false,
+    "applicability": "Bucle en mapper JSON-RPC truncado. Sin uso de JSON-RPC/JSONReader del cliente RabbitMQ en main; no hay ruta explotable identificada.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.36.1"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.36.1"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-cqgh-8p3p-mx4m"
+    ]
+  },
+  {
+    "id": "GHSA-cxp5-3px4-pw24",
+    "summary": "jackson-databind quadratic forward-reference completion ",
+    "severityOSV": "HIGH",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "DoS por resoluciÃ³n cuadrÃ¡tica de referencias hacia delante. No se encontraron JsonIdentityInfo/object-id en DTO main; verificar otros deserializadores antes de aceptaciÃ³n.",
+    "packages": [
+      {
+        "package": "tools.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "3.1.5",
+        "versionInFourRuntimeImages": "3.1.5",
+        "fixEvents": [
+          "3.1.7",
+          "3.2.3"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.0.0"
+              },
+              {
+                "fixed": "3.1.7"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.2.0"
+              },
+              {
+                "fixed": "3.2.3"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "productos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      },
+      {
+        "package": "com.fasterxml.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "2.21.5",
+        "versionInFourRuntimeImages": null,
+        "fixEvents": [
+          "2.21.7",
+          "2.18.11",
+          "2.22.3"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.19.0"
+              },
+              {
+                "fixed": "2.21.7"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.5.0"
+              },
+              {
+                "fixed": "2.18.11"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.22.0"
+              },
+              {
+                "fixed": "2.22.3"
+              }
+            ]
+          }
+        ],
+        "inImages": [],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME in previous Productos image (SBOM BOOT-INF/lib); NOT PACKAGED in four corrected runtime images",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "productos",
+            "line": "|  |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.21.5:compile (version managed from 2.22.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/FasterXML/jackson-databind/security/advisories/GHSA-cxp5-3px4-pw24"
+    ]
+  },
+  {
+    "id": "GHSA-gcx9-497g-6cp6",
+    "summary": "Apache Tomcat has an Improper Access Control, Incorrect Authorization vulnerability",
+    "severityOSV": "CRITICAL",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "Bypass de security constraints declarativas en Tomcat. No se identificÃ³ configuraciÃ³n declarativa web.xml/Realm en main; Spring Security JWT aplica filtros independientes. OSV CRITICAL frente a Apache Important.",
+    "packages": [
+      {
+        "package": "org.apache.tomcat.embed:tomcat-embed-core",
+        "versionObservedInPreviousSBOM": "11.0.24",
+        "versionInFourRuntimeImages": "11.0.24",
+        "fixEvents": [
+          "11.0.25",
+          "10.1.58",
+          "9.0.121"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "11.0.0-M1"
+              },
+              {
+                "fixed": "11.0.25"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "10.1.0-M1"
+              },
+              {
+                "fixed": "10.1.58"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "9.0.0-M1"
+              },
+              {
+                "fixed": "9.0.121"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "8.5.0"
+              },
+              {
+                "last_affected": "8.5.100"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "7.0.0"
+              },
+              {
+                "last_affected": "7.0.109"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "carrito",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "pagos",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "productos",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://tomcat.apache.org/security-11.html"
+    ]
+  },
+  {
+    "id": "GHSA-gx83-3vf8-gh7j",
+    "summary": "jackson-databind: Comparable missing from DefaultBaseTypeLimitingValidator's unsafe base types (incomplete PolymorphicTypeValidator denylist)",
+    "severityOSV": "MODERATE",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "Validador por defecto con JsonTypeInfo y base Comparable. No se encontrÃ³ JsonTypeInfo/Comparable ni typing global habilitado en main. El aviso aclara que typing con PTV explÃ­cito es otra ruta.",
+    "packages": [
+      {
+        "package": "tools.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "3.1.5",
+        "versionInFourRuntimeImages": "3.1.5",
+        "fixEvents": [
+          "3.1.6",
+          "3.2.2"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.0.0"
+              },
+              {
+                "fixed": "3.1.6"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.2.0"
+              },
+              {
+                "fixed": "3.2.2"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "productos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      },
+      {
+        "package": "com.fasterxml.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "2.21.5",
+        "versionInFourRuntimeImages": null,
+        "fixEvents": [
+          "2.18.10",
+          "2.21.6",
+          "2.22.2"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.11.0"
+              },
+              {
+                "fixed": "2.18.10"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.19.0"
+              },
+              {
+                "fixed": "2.21.6"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.22.0"
+              },
+              {
+                "fixed": "2.22.2"
+              }
+            ]
+          }
+        ],
+        "inImages": [],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME in previous Productos image (SBOM BOOT-INF/lib); NOT PACKAGED in four corrected runtime images",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "productos",
+            "line": "|  |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.21.5:compile (version managed from 2.22.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/FasterXML/jackson-databind/security/advisories/GHSA-gx83-3vf8-gh7j"
+    ]
+  },
+  {
+    "id": "GHSA-h3x4-894j-xpx5",
+    "summary": "Apache Tomcat's FORM authentication process has an Incorrect Authorization vulnerability",
+    "severityOSV": "CRITICAL",
+    "priorityForSeparateTriage": "P3",
+    "exploitationDemonstrated": false,
+    "applicability": "Restricciones de mÃ©todo en autenticaciÃ³n FORM Tomcat. No se encontrÃ³ FORM Tomcat en main. OSV CRITICAL, Apache Low; no bypass de roles JWT demostrado.",
+    "packages": [
+      {
+        "package": "org.apache.tomcat.embed:tomcat-embed-core",
+        "versionObservedInPreviousSBOM": "11.0.24",
+        "versionInFourRuntimeImages": "11.0.24",
+        "fixEvents": [
+          "11.0.25",
+          "10.1.58",
+          "9.0.121"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "11.0.0-M1"
+              },
+              {
+                "fixed": "11.0.25"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "10.1.0-M1"
+              },
+              {
+                "fixed": "10.1.58"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "9.0.0-M1"
+              },
+              {
+                "fixed": "9.0.121"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "8.5.0"
+              },
+              {
+                "last_affected": "8.5.100"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "7.0.0"
+              },
+              {
+                "last_affected": "7.0.109"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "carrito",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "pagos",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          },
+          {
+            "module": "productos",
+            "line": "|  |  |  +- org.apache.tomcat.embed:tomcat-embed-core:jar:11.0.24:compile (version managed from 11.0.24)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://tomcat.apache.org/security-11.html"
+    ]
+  },
+  {
+    "id": "GHSA-h6w7-qmcm-q6xr",
+    "summary": "RabbitMQ Java client: plaintext broker credentials leaked in exception message from ConnectionFactoryConfigurator.load()",
+    "severityOSV": "MODERATE",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "ContraseÃ±a en excepciÃ³n de ConnectionFactoryConfigurator.load(). No se encontrÃ³ esa API en main; conexiones usan configurers Spring. Mantener saneamiento de logs; no se probaron secretos reales.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.35.0"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.35.0"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-h6w7-qmcm-q6xr"
+    ]
+  },
+  {
+    "id": "GHSA-jh4v-gfqj-7rhx",
+    "summary": "RabbitMQ Java client has frame-level OOM: Math.min(maxInboundMessageBodySize, 0) defeats frame size enforcement",
+    "severityOSV": "HIGH",
+    "priorityForSeparateTriage": "P1",
+    "exploitationDemonstrated": false,
+    "applicability": "OOM con frame_max=0 y frame sobredimensionado de broker/MITM. Cliente runtime afectado; los lÃ­mites del envelope llegan despuÃ©s de allocation. No se demostrÃ³ broker malicioso ni TLS operativo.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.34.0"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.34.0"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-jh4v-gfqj-7rhx"
+    ]
+  },
+  {
+    "id": "GHSA-p6pp-m3f8-5c89",
+    "summary": " jackson-core: ReDoS: quadratic backtracking in NumberInput.PATTERN_FLOAT via looksLikeValidNumber()",
+    "severityOSV": "HIGH",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "ReDoS de NumberInput.looksLikeValidNumber(). Hay parsing JSON HTTP/RabbitMQ, pero no se demostrÃ³ llamada alcanzable con entrada adversaria; requiere triage de coerciones, no basta strict fields.",
+    "packages": [
+      {
+        "package": "tools.jackson.core:jackson-core",
+        "versionObservedInPreviousSBOM": "3.1.5",
+        "versionInFourRuntimeImages": "3.1.5",
+        "fixEvents": [
+          "3.1.7",
+          "3.2.2"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.0.0"
+              },
+              {
+                "fixed": "3.1.7"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.2.0"
+              },
+              {
+                "fixed": "3.2.2"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-core-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-core-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-core-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-core-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "carrito",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "pagos",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "productos",
+            "line": "|        \\- tools.jackson.core:jackson-core:jar:3.1.5:compile (version managed from 3.1.5)"
+          }
+        ],
+        "presenceDemonstrated": true
+      },
+      {
+        "package": "com.fasterxml.jackson.core:jackson-core",
+        "versionObservedInPreviousSBOM": "2.21.5",
+        "versionInFourRuntimeImages": null,
+        "fixEvents": [
+          "2.18.11",
+          "2.21.7",
+          "2.22.3"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.17.0"
+              },
+              {
+                "fixed": "2.18.11"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.19.0"
+              },
+              {
+                "fixed": "2.21.7"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.22.0"
+              },
+              {
+                "fixed": "2.22.3"
+              }
+            ]
+          }
+        ],
+        "inImages": [],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME in previous Productos image (SBOM BOOT-INF/lib); NOT PACKAGED in four corrected runtime images",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-core-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-core-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "productos",
+            "line": "|  |  |  |  \\- com.fasterxml.jackson.core:jackson-core:jar:2.21.5:compile (version managed from 2.21.5)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/FasterXML/jackson-core/security/advisories/GHSA-p6pp-m3f8-5c89"
+    ]
+  },
+  {
+    "id": "GHSA-q4xh-88c3-wmh7",
+    "summary": "jackson-databind: Duration XMLGregorianCalendar Unbounded Number Parse DoS",
+    "severityOSV": "HIGH",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "DoS por nÃºmeros no acotados al deserializar Duration/XMLGregorianCalendar. Duration se usa para configuraciÃ³n, no se identificÃ³ DTO pÃºblico de esos tipos; coerciÃ³n explotable no demostrada.",
+    "packages": [
+      {
+        "package": "tools.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "3.1.5",
+        "versionInFourRuntimeImages": "3.1.5",
+        "fixEvents": [
+          "3.2.2",
+          "3.1.6"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.2.0"
+              },
+              {
+                "fixed": "3.2.2"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.0.0"
+              },
+              {
+                "fixed": "3.1.6"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "productos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      },
+      {
+        "package": "com.fasterxml.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "2.21.5",
+        "versionInFourRuntimeImages": null,
+        "fixEvents": [
+          "2.18.10",
+          "2.21.6",
+          "2.22.2"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.14.0"
+              },
+              {
+                "fixed": "2.18.10"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.19.0"
+              },
+              {
+                "fixed": "2.21.6"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.22.0"
+              },
+              {
+                "fixed": "2.22.2"
+              }
+            ]
+          }
+        ],
+        "inImages": [],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME in previous Productos image (SBOM BOOT-INF/lib); NOT PACKAGED in four corrected runtime images",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "productos",
+            "line": "|  |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.21.5:compile (version managed from 2.22.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/FasterXML/jackson-databind/security/advisories/GHSA-q4xh-88c3-wmh7"
+    ]
+  },
+  {
+    "id": "GHSA-qx7j-jv8m-fppr",
+    "summary": "RabbitMQ Java client malformed body frame triggers raw command assembler exception",
+    "severityOSV": "MODERATE",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "ExcepciÃ³n del assembler con body frame malformado. Ruta AMQP genÃ©rica presente; probar robustez del cliente frente a peer adversario antes de activar, sin asumir que ACK de negocio la mitiga.",
+    "packages": [
+      {
+        "package": "com.rabbitmq:amqp-client",
+        "versionObservedInPreviousSBOM": "5.30.0",
+        "versionInFourRuntimeImages": "5.30.0",
+        "fixEvents": [
+          "5.31.0"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "0"
+              },
+              {
+                "fixed": "5.31.0"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/amqp-client-5.30.0.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "bff",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          },
+          {
+            "module": "productos",
+            "line": "|     |  +- com.rabbitmq:amqp-client:jar:5.30.0:compile (version managed from 5.31.0)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-qx7j-jv8m-fppr"
+    ]
+  },
+  {
+    "id": "GHSA-wjgm-6hv5-3cvf",
+    "summary": "jackson-databind: Path Deserialization Missing Scheme Allowlist for FileSystemProvider Resolution",
+    "severityOSV": "MODERATE",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "ResoluciÃ³n de FileSystemProvider al deserializar Path sin allowlist de schemes. Path se usa para archivos locales, no se identificÃ³ DTO externo Path; ruta de deserializaciÃ³n no demostrada.",
+    "packages": [
+      {
+        "package": "tools.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "3.1.5",
+        "versionInFourRuntimeImages": "3.1.5",
+        "fixEvents": [
+          "3.1.6",
+          "3.2.2"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.0.0"
+              },
+              {
+                "fixed": "3.1.6"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.2.0"
+              },
+              {
+                "fixed": "3.2.2"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "productos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      },
+      {
+        "package": "com.fasterxml.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "2.21.5",
+        "versionInFourRuntimeImages": null,
+        "fixEvents": [
+          "2.18.10",
+          "2.21.6",
+          "2.22.2"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.8.0"
+              },
+              {
+                "fixed": "2.18.10"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.19.0"
+              },
+              {
+                "fixed": "2.21.6"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.22.0"
+              },
+              {
+                "fixed": "2.22.2"
+              }
+            ]
+          }
+        ],
+        "inImages": [],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME in previous Productos image (SBOM BOOT-INF/lib); NOT PACKAGED in four corrected runtime images",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "productos",
+            "line": "|  |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.21.5:compile (version managed from 2.22.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/FasterXML/jackson-databind/security/advisories/GHSA-wjgm-6hv5-3cvf"
+    ]
+  },
+  {
+    "id": "GHSA-wv8q-qhhj-9h54",
+    "summary": "jackson-databind retains every unknown raw type ID ",
+    "severityOSV": "HIGH",
+    "priorityForSeparateTriage": "P2",
+    "exploitationDemonstrated": false,
+    "applicability": "RetenciÃ³n de IDs de tipo polimÃ³rficos desconocidos. No se encontrÃ³ JsonTypeInfo/typing en main; presencia no prueba una ruta funcional vulnerable.",
+    "packages": [
+      {
+        "package": "tools.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "3.1.5",
+        "versionInFourRuntimeImages": "3.1.5",
+        "fixEvents": [
+          "3.1.7",
+          "3.2.3"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.0.0"
+              },
+              {
+                "fixed": "3.1.7"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "3.2.0"
+              },
+              {
+                "fixed": "3.2.3"
+              }
+            ]
+          }
+        ],
+        "inImages": [
+          "bff",
+          "carrito",
+          "pedidos",
+          "pagos"
+        ],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME (packaged BOOT-INF/lib); also available during build/tests",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          },
+          {
+            "service": "usuarios",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "b6778bcbb641c4ab46d30fcc649102db69b320f4471c976f9227c0827b6dab82",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-3.1.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:3a3f369de7ad58c44bfd549670bec6eeab7bc0a628df942baab96253de402f73",
+                "diff_id": "sha256:e0ee7bfbd6bdd3d5be66b969bb75d7504327f46757f6a2ccefa15cecbcc5dc74",
+                "file_digests": {
+                  "SHA1": "c491b8cf6899f684c061faa9977e95048cc596b6",
+                  "SHA256": "b00991e192f676ccdf63f0be944bfbb99ea278d70bc5b0a7a23b19d0b48939be"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "core",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "bff",
+            "line": "|  |     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.5)"
+          },
+          {
+            "module": "carrito",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pedidos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "pagos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          },
+          {
+            "module": "productos",
+            "line": "|     \\- tools.jackson.core:jackson-databind:jar:3.1.5:compile (version managed from 3.1.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      },
+      {
+        "package": "com.fasterxml.jackson.core:jackson-databind",
+        "versionObservedInPreviousSBOM": "2.21.5",
+        "versionInFourRuntimeImages": null,
+        "fixEvents": [
+          "2.18.11",
+          "2.21.7",
+          "2.22.3"
+        ],
+        "affectedRangesOSV": [
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.0.0"
+              },
+              {
+                "fixed": "2.18.11"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.19.0"
+              },
+              {
+                "fixed": "2.21.7"
+              }
+            ]
+          },
+          {
+            "type": "ECOSYSTEM",
+            "events": [
+              {
+                "introduced": "2.22.0"
+              },
+              {
+                "fixed": "2.22.3"
+              }
+            ]
+          }
+        ],
+        "inImages": [],
+        "directInServicePOM": [],
+        "relationship": "TRANSITIVE",
+        "scope": "RUNTIME in previous Productos image (SBOM BOOT-INF/lib); NOT PACKAGED in four corrected runtime images",
+        "previousRuntimeEvidence": [
+          {
+            "service": "productos",
+            "sourceCommit": "9a782e59dbd28c06c548dcc20ab34689d1f50b7e",
+            "sbomSHA256": "530b17c5430085e75805df7c95d6f9dab4e61af4391f22f6ed93e86f1f42bc9b",
+            "locations": [
+              {
+                "path": "/app/app.jar/BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb"
+              },
+              {
+                "path": "/app/app.jar:BOOT-INF/lib/jackson-databind-2.21.5.jar",
+                "ordinal": 14,
+                "digest": "sha256:734b29f1f6d7a30c20f6662c058248b4104b184c7dd7ceb55fa8a22a8c2e2bff",
+                "diff_id": "sha256:2a92d96e5afe2dc11301b9e0b910a5d9e9900a77c9598a4909510bc436b3fadb",
+                "file_digests": {
+                  "SHA1": "d71205c3240a1052e07c25da0e6441a6cac0732f",
+                  "SHA256": "4621ebbc0416b98bd5eccf04f13241229bb13ea718ec22a0c577cbff3b4d6008"
+                }
+              }
+            ]
+          }
+        ],
+        "dependencyTreeEvidence": [
+          {
+            "module": "productos",
+            "line": "|  |  |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.21.5:compile (version managed from 2.22.1)"
+          }
+        ],
+        "presenceDemonstrated": true
+      }
+    ],
+    "primaryReferences": [
+      "https://github.com/FasterXML/jackson-databind/security/advisories/GHSA-wv8q-qhhj-9h54"
+    ]
+  }
+]

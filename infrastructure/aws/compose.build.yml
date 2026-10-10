@@ -11,6 +11,8 @@ services:
   bff:
     build:
       context: ../../backend/bff
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   usuarios:
     build:
       context: ../../backend/services/usuarios-service
@@ -29,9 +31,15 @@ services:
   carrito:
     build:
       context: ../../backend/services/carrito-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   pedidos:
     build:
       context: ../../backend/services/pedidos-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   pagos:
     build:
       context: ../../backend/services/pagos-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core

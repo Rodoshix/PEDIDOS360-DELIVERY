@@ -1,0 +1,14 @@
+# Contexto adicional: solo fuente y POM, nunca repositorio Maven o artefactos locales.
+**
+!pom.xml
+!src/
+!src/main/
+!src/main/**
+**/.env*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.jks
+**/.m2/**
+**/target/**
+**/.git/**
