@@ -50,6 +50,7 @@ export default function RealConfirmarPedidoPanel() {
   const pedidoRegistradoRef = useRef(false)
   const vaciandoRef = useRef(false)
   const errorRender = useRef(null)
+  const recuperacionRef = useRef(null)
 
   useEffect(() => {
     let disposed = false
@@ -68,7 +69,7 @@ export default function RealConfirmarPedidoPanel() {
         if (!disposed) setCargando(false)
       }
     }).catch(error => { if (!disposed) { setCargando(false); setCartError(error) } })
-    return () => { disposed = true; controller.cancelPending() }
+    return () => { disposed = true; recuperacionRef.current?.abort(); controller.cancelPending() }
   }, [controller, sessionBusy])
 
   const busy = sessionBusy || cargando || creando || state.status === 'saving'
@@ -78,6 +79,28 @@ export default function RealConfirmarPedidoPanel() {
   const items = Array.isArray(cart?.items) ? cart.items : []
   const restauranteId = cart?.restauranteId ?? null
   const total = items.reduce((sum, item) => sum + (item.subtotal ?? 0), 0)
+
+  async function recuperarCarritoInicial() {
+    if (busy || recuperacionRef.current || !cartError || error?.code !== 'LOAD_FAILED'
+      || enviandoRef.current || pedidoRegistradoRef.current || incierto) return
+    const abort = new AbortController()
+    recuperacionRef.current = abort
+    setCargando(true)
+    setCartError(null)
+    try {
+      const client = (await import('../../services/httpClient.js')).default
+      abort.signal.throwIfAborted()
+      const response = await client.get('/carrito', { signal: abort.signal })
+      if (abort.signal.aborted) return
+      if (response.status !== 200) throw new Error('carrito')
+      setCart(response.data)
+    } catch (failure) {
+      if (!abort.signal.aborted) setCartError(failure)
+    } finally {
+      if (recuperacionRef.current === abort) recuperacionRef.current = null
+      if (!abort.signal.aborted) setCargando(false)
+    }
+  }
 
   async function consultarCarrito() {
     if (consultandoRef.current) return
@@ -156,8 +179,10 @@ export default function RealConfirmarPedidoPanel() {
 
   return <div className="pedidos-section" aria-busy={busy}>
     {cargando && <p role="status">Consultando tu carrito…</p>}
-    {error && !creado && !incierto && <div ref={errorRender} role="alert" className="pedidos-error">
+    {error && !creado && !incierto && <div ref={errorRender} tabIndex={-1} role="alert" className="pedidos-error">
       <p>{error.message}</p>
+      {cartError && error.code === 'LOAD_FAILED' && <button type="button" className="button button--secondary"
+        disabled={busy} onClick={() => recuperarCarritoInicial()}>Reintentar consulta del carrito</button>}
       {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
         onClick={() => authorizeApi(destination)}>Continuar con Microsoft</button>}
       {error.code === 'UNAUTHORIZED' && <button type="button" className="button button--primary" disabled={busy}

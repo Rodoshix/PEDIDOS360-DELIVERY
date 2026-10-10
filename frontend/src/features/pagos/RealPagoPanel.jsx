@@ -68,8 +68,11 @@ export default function RealPagoPanel({ pedidoId }) {
     {state.status === 'loading' && <p role="status">Consultando el pago del pedido…</p>}
     {state.status === 'saving' && <p role="status">Registrando el pago…</p>}
     {state.status === 'empty' && <p role="status">Este pedido todavía no tiene pagos registrados. Elige un método para registrar el primero.</p>}
-    {error && <div ref={errorRender} role="alert" className="pagos-error">
+    {error && <div ref={errorRender} tabIndex={-1} role="alert" className="pagos-error">
       <p>{error.message}</p>
+      {state.operation === 'load' && error.code === 'LOAD_FAILED'
+        && <button type="button" className="button button--secondary" disabled={busy}
+          onClick={() => controller.load(id)}>Reintentar consulta</button>}
       {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
         onClick={() => authorizeApi(destination)}>Continuar con Microsoft</button>}
       {error.code === 'UNAUTHORIZED' && <button type="button" className="button button--primary" disabled={busy}
