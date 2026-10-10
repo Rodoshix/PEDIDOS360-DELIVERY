@@ -162,16 +162,11 @@ class PlatformTests(unittest.TestCase):
                 if domain != 'carrito':
                     identity = publish('', 'p360.bff.consultas.respuestas.q', user=user)
                     receive('p360.bff.consultas.respuestas.q', identity, user='p360-bff')
-                if domain in ('usuarios', 'restaurantes', 'productos'):
-                    identity = publish('p360.dlx', key + '.failed', user=user)
-                    receive(f'p360.{domain}.{operation}.dlq', identity)
-                    with connection(user) as conn:
-                        with self.assertRaises(pika.exceptions.ChannelClosedByBroker) as denied:
-                            conn.channel().queue_declare('p360.forbidden', durable=True)
-                        self.assertEqual(403, denied.exception.reply_code)
-                else:
+                identity = publish('p360.dlx', key + '.failed', user=user)
+                receive(f'p360.{domain}.{operation}.dlq', identity)
+                with connection(user) as conn:
                     with self.assertRaises(pika.exceptions.ChannelClosedByBroker) as denied:
-                        publish('p360.dlx', key + '.failed', user=user)
+                        conn.channel().queue_declare('p360.forbidden', durable=True)
                     self.assertEqual(403, denied.exception.reply_code)
 
     def test_08_bff_query_and_response_permissions(self):
@@ -185,9 +180,9 @@ class PlatformTests(unittest.TestCase):
             connection('p360-admin-demo', p.BUSINESS)
         with connection('p360-admin-demo', p.SANDBOX) as conn:
             channel = conn.channel()
-            channel.exchange_declare('demo.platform', exchange_type='direct', durable=True)
-            channel.queue_declare('demo.platform.q', durable=True, arguments={'x-queue-type': 'classic'})
-            channel.queue_bind('demo.platform.q', 'demo.platform', 'demo')
+            channel.exchange_declare('p360.demo.platform', exchange_type='direct', durable=True)
+            channel.queue_declare('p360.demo.platform.q', durable=True, arguments={'x-queue-type': 'classic'})
+            channel.queue_bind('p360.demo.platform.q', 'p360.demo.platform', 'demo')
             with self.assertRaises(pika.exceptions.ChannelClosedByBroker) as denied:
                 conn.channel().queue_declare(MAIN, durable=True)
             self.assertEqual(403, denied.exception.reply_code)
@@ -255,11 +250,11 @@ class PlatformTests(unittest.TestCase):
                 if path == 'queues/pedidos360':
                     return api.call('GET', 'queues/pedidos360-admin-demo')
                 return []
-        expected = dict(queues=[dict(name='demo.platform.q', durable=True, auto_delete=False,
+        expected = dict(queues=[dict(name='p360.demo.platform.q', durable=True, auto_delete=False,
                                     arguments={'x-queue-type': 'quorum'})], exchanges=[], bindings=[], policies=[])
         with self.assertRaisesRegex(RuntimeError, 'PREFLIGHT BLOCKED'):
             p.preflight(SandboxView(), expected)
-        self.assertEqual('classic', api.call('GET', 'queues/pedidos360-admin-demo/demo.platform.q')['type'])
+        self.assertEqual('classic', api.call('GET', 'queues/pedidos360-admin-demo/p360.demo.platform.q')['type'])
 
 
 if __name__ == '__main__':

@@ -1,0 +1,229 @@
+# Prepared configuration only. Literal inactive modes cannot be enabled by .env.
+# Merge with compose.yml; no broker deployment or topology declarations here.
+x-ep2-env: &ep2-env
+  PEDIDOS360_RELAY_MODE: "DISABLED"
+  PEDIDOS360_IDENTITY_PROOF_ENABLED: "false"
+  PEDIDOS360_DECLARE_TOPOLOGY: "false"
+  SPRING_RABBITMQ_DYNAMIC: "false"
+  SPRING_RABBITMQ_HOST: "p360-rabbitmq"
+  SPRING_RABBITMQ_PORT: "5671"
+  SPRING_RABBITMQ_VIRTUALHOST: "pedidos360"
+  SPRING_RABBITMQ_SSL_ENABLED: "true"
+  SPRING_RABBITMQ_SSL_VERIFYHOSTNAME: "true"
+  SPRING_RABBITMQ_SSL_VALIDATESERVERCERTIFICATE: "true"
+  JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/run/ep2/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit"
+services:
+  bff:
+    environment:
+      <<: *ep2-env
+      SPRING_RABBITMQ_USERNAME: p360-bff
+      BFF_QUERY_USUARIOS_MODE: HTTP
+      BFF_QUERY_RESTAURANTES_MODE: HTTP
+      BFF_QUERY_PRODUCTOS_MODE: HTTP
+      BFF_QUERY_PAGOS_MODE: HTTP
+    volumes:
+      - type: bind
+        source: ${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12
+        target: /run/ep2/truststore.p12
+        read_only: true
+        bind: {create_host_path: false}
+    secrets:
+      - source: ep2_bff_password
+        target: spring.rabbitmq.password
+      - source: ep2_actor_public
+        target: pedidos360.messaging.actor.public-jwks
+      - source: ep2_actor_private
+        target: pedidos360.messaging.actor.private-jwk
+      - source: ep2_actor_kid
+        target: pedidos360.messaging.actor.clave-id
+      - source: ep2_identity_public
+        target: pedidos360.messaging.identity-proof.public-jwks
+  usuarios:
+    environment:
+      <<: *ep2-env
+      SPRING_RABBITMQ_USERNAME: p360-usuarios-consumer
+    volumes:
+      - type: bind
+        source: ${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12
+        target: /run/ep2/truststore.p12
+        read_only: true
+        bind: {create_host_path: false}
+    secrets:
+      - source: ep2_usuarios_password
+        target: spring.rabbitmq.password
+      - source: ep2_actor_public
+        target: pedidos360.messaging.actor.public-jwks
+      - source: ep2_identity_public
+        target: pedidos360.messaging.identity-proof.public-jwks
+      - source: ep2_identity_private
+        target: pedidos360.messaging.identity-proof.private-jwk
+      - source: ep2_identity_kid
+        target: pedidos360.messaging.identity-proof.key-id
+  restaurantes:
+    environment:
+      <<: *ep2-env
+      SPRING_RABBITMQ_USERNAME: p360-restaurantes-consumer
+    volumes:
+      - type: bind
+        source: ${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12
+        target: /run/ep2/truststore.p12
+        read_only: true
+        bind: {create_host_path: false}
+    secrets:
+      - source: ep2_restaurantes_password
+        target: spring.rabbitmq.password
+      - source: ep2_actor_public
+        target: pedidos360.messaging.actor.public-jwks
+  productos:
+    environment:
+      <<: *ep2-env
+      SPRING_RABBITMQ_USERNAME: p360-productos-consumer
+    volumes:
+      - type: bind
+        source: ${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12
+        target: /run/ep2/truststore.p12
+        read_only: true
+        bind: {create_host_path: false}
+    secrets:
+      - source: ep2_productos_password
+        target: spring.rabbitmq.password
+      - source: ep2_actor_public
+        target: pedidos360.messaging.actor.public-jwks
+  pedidos:
+    environment:
+      <<: *ep2-env
+      SPRING_RABBITMQ_USERNAME: p360-pedidos-consumer
+      PEDIDOS360_COORDINATION_MODE: HTTP
+      PEDIDOS360_RELIABILITY_PLATFORM_READY: "false"
+      PEDIDOS_CARRITO_MODE: HTTP
+      PEDIDOS_CARRITO_PLATFORM_READY: "false"
+      PEDIDOS360_MESSAGING_CARRITO_HOST: p360-rabbitmq
+      PEDIDOS360_MESSAGING_CARRITO_PORT: "5671"
+      PEDIDOS360_MESSAGING_CARRITO_VIRTUALHOST: pedidos360
+      PEDIDOS360_MESSAGING_CARRITO_USERNAME: p360-pedidos-carrito-publisher
+      PEDIDOS360_MESSAGING_CARRITO_SSL_ENABLED: "true"
+      PEDIDOS360_MESSAGING_CARRITO_SSL_VERIFYHOSTNAME: "true"
+      PEDIDOS360_MESSAGING_CARRITO_SSL_VALIDATESERVERCERTIFICATE: "true"
+    volumes:
+      - type: bind
+        source: ${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12
+        target: /run/ep2/truststore.p12
+        read_only: true
+        bind: {create_host_path: false}
+    secrets:
+      - source: ep2_pedidos_password
+        target: spring.rabbitmq.password
+      - source: ep2_pedidos_cart_password
+        target: pedidos360.messaging.carrito.password
+  pagos:
+    environment:
+      <<: *ep2-env
+      SPRING_RABBITMQ_USERNAME: p360-pagos-publisher
+      PEDIDOS360_COORDINATION_MODE: HTTP
+      PEDIDOS360_RELIABILITY_PLATFORM_READY: "false"
+      PAGOS_QUERY_RABBITMQ_HOST: p360-rabbitmq
+      PAGOS_QUERY_RABBITMQ_PORT: "5671"
+      PAGOS_QUERY_RABBITMQ_VHOST: pedidos360
+      PAGOS_QUERY_RABBITMQ_USERNAME: p360-pagos-consumer
+      PAGOS_CONSULTAS_RABBITMQ_SSL_ENABLED: "true"
+      PAGOS_CONSULTAS_RABBITMQ_SSL_VERIFYHOSTNAME: "true"
+      PAGOS_CONSULTAS_RABBITMQ_SSL_VALIDATESERVERCERTIFICATE: "true"
+    volumes:
+      - type: bind
+        source: ${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12
+        target: /run/ep2/truststore.p12
+        read_only: true
+        bind: {create_host_path: false}
+    secrets:
+      - source: ep2_pagos_password
+        target: spring.rabbitmq.password
+      - source: ep2_actor_public
+        target: pedidos360.messaging.actor.public-jwks
+      - source: ep2_identity_public
+        target: pedidos360.messaging.identity-proof.public-jwks
+      - source: ep2_pagos_query_password
+        target: pagos.consultas.rabbitmq.password
+  carrito:
+    environment:
+      <<: *ep2-env
+      SPRING_RABBITMQ_USERNAME: p360-carrito-consumer
+      CARRITO_PEDIDOS_MODE: HTTP
+      CARRITO_PEDIDOS_PLATFORM_READY: "false"
+      PEDIDOS360_MESSAGING_CARRITO_HOST: p360-rabbitmq
+      PEDIDOS360_MESSAGING_CARRITO_PORT: "5671"
+      PEDIDOS360_MESSAGING_CARRITO_VIRTUALHOST: pedidos360
+      PEDIDOS360_MESSAGING_CARRITO_USERNAME: p360-carrito-consumer
+      PEDIDOS360_MESSAGING_CARRITO_SSL_ENABLED: "true"
+      PEDIDOS360_MESSAGING_CARRITO_SSL_VERIFYHOSTNAME: "true"
+      PEDIDOS360_MESSAGING_CARRITO_SSL_VALIDATESERVERCERTIFICATE: "true"
+    volumes:
+      - type: bind
+        source: ${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12
+        target: /run/ep2/truststore.p12
+        read_only: true
+        bind: {create_host_path: false}
+    secrets:
+      - source: ep2_carrito_password
+        target: spring.rabbitmq.password
+      - source: ep2_carrito_password
+        target: pedidos360.messaging.carrito.password
+  rabbit-admin:
+    profiles: [ep2-admin-prepared]
+    image: ${IMAGE_REGISTRY:?registry required}/pedidos360-rabbit-admin:${IMAGE_TAG:?tag required}
+    platform: linux/amd64
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    pids_limit: 256
+    restart: unless-stopped
+    networks: [services]
+    environment:
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: "8090"
+      SERVER_SSL_ENABLED: "true"
+      SERVER_SSL_KEY_STORE: file:/run/tls/server.p12
+      SERVER_SSL_KEY_STORE_TYPE: PKCS12
+      SPRING_CONFIG_IMPORT: configtree:/run/secrets/
+      JAVA_TOOL_OPTIONS: "-Djavax.net.ssl.trustStore=/run/ep2/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit"
+      RABBIT_ADMIN_HOST: p360-rabbitmq
+      RABBIT_ADMIN_PORT: "5671"
+      RABBIT_ADMIN_TLS: "true"
+      RABBIT_ADMIN_USERNAME: p360-admin-demo
+      ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:?tenant required}
+      ENTRA_API_CLIENT_ID: ${ENTRA_API_CLIENT_ID:?audience required}
+      ENTRA_FRONTEND_CLIENT_ID: ${ENTRA_FRONTEND_CLIENT_ID:?client required}
+    volumes:
+      - type: bind
+        source: ${AWS_TLS_DIR:?TLS directory required}/rabbit-admin.p12
+        target: /run/tls/server.p12
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${EP2_PRIVATE_DIR}/tls/apps-truststore.p12
+        target: /run/ep2/truststore.p12
+        read_only: true
+        bind: {create_host_path: false}
+    secrets:
+      - source: ep2_admin_password
+        target: rabbit-admin.password
+      - source: tls_password
+        target: server.ssl.key-store-password
+secrets:
+  ep2_bff_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/BFF_PASSWORD"}
+  ep2_actor_public: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/PEDIDOS360_ACTOR_PUBLIC_JWKS"}
+  ep2_actor_private: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/PEDIDOS360_ACTOR_PRIVATE_JWK"}
+  ep2_actor_kid: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/PEDIDOS360_ACTOR_KEY_ID"}
+  ep2_identity_public: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/USUARIOS_IDENTITY_PROOF_PUBLIC_JWKS"}
+  ep2_usuarios_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/USUARIOS_CONSUMER_PASSWORD"}
+  ep2_identity_private: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/USUARIOS_IDENTITY_PROOF_PRIVATE_JWK"}
+  ep2_identity_kid: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/USUARIOS_IDENTITY_PROOF_KEY_ID"}
+  ep2_restaurantes_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/RESTAURANTES_CONSUMER_PASSWORD"}
+  ep2_productos_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/PRODUCTOS_CONSUMER_PASSWORD"}
+  ep2_pedidos_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/PEDIDOS_CONSUMER_PASSWORD"}
+  ep2_pedidos_cart_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/PEDIDOS_CARRITO_PUBLISHER_PASSWORD"}
+  ep2_pagos_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/PAGOS_PUBLISHER_PASSWORD"}
+  ep2_pagos_query_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/PAGOS_CONSUMER_PASSWORD"}
+  ep2_carrito_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/CARRITO_CONSUMER_PASSWORD"}
+  ep2_admin_password: {file: "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/ADMIN_DEMO_PASSWORD"}

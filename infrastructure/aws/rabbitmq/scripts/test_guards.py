@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import unittest
 from unittest.mock import patch
+from types import SimpleNamespace
 
 import platform_source as p
 import provision
@@ -10,6 +11,28 @@ import tools
 
 
 class GuardsTests(unittest.TestCase):
+    def test_invalid_identity_blocks_before_startup_probes(self):
+        env = dict(tools.SAFE, EP2_EXECUTION_SCOPE='LOCAL_TEST',
+                   EP2_BACKEND_NETWORK='isolated', RABBITMQ_DATA_DIR='/temporary/data',
+                   EP2_PRIVATE_DIR='/temporary/private')
+        def command(args, **kwargs):
+            if args[:3] == ['docker', 'network', 'inspect']:
+                return '[{"Internal":true,"Driver":"bridge"}]'
+            raise AssertionError('Invalid identity must prevent startup probes')
+        with patch.dict(os.environ, env, clear=True), patch.object(tools, 'load_env'), \
+             patch.object(Path, 'is_dir', return_value=True), \
+             patch.object(Path, 'is_file', return_value=True), \
+             patch.object(Path, 'stat', return_value=SimpleNamespace(st_size=32)), \
+             patch.object(Path, 'read_text', return_value='x' * 32), \
+             patch.object(tools.ssl, 'create_default_context'), \
+             patch.object(tools, 'run', side_effect=command), \
+             patch.object(tools.subprocess, 'run', return_value=SimpleNamespace(returncode=1)) as checked:
+            with self.assertRaisesRegex(ValueError, 'ES256/IdentityProof'):
+                tools.preflight()
+            self.assertEqual(1, checked.call_count)
+            self.assertEqual('node', checked.call_args.args[0][0])
+            self.assertTrue(checked.call_args.kwargs['capture_output'])
+
     def test_inventory_import_is_source_of_truth(self):
         self.assertEqual(Path(p.__file__).resolve(),
                          tools.ROOT.parents[1] / 'rabbitmq/platform_control.py')

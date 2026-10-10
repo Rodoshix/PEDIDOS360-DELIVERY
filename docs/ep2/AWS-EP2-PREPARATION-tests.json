@@ -1,0 +1,152 @@
+{
+  "issue": 71,
+  "base": "d9d97594719ba77abb307c4c27f962d2c2da2149",
+  "branch": "codex/71-local-ep2-preparation",
+  "recorded_at_utc": "2026-10-10T02:30:05.202085+00:00",
+  "suites": [
+    {
+      "name": "RabbitMQ TLS disposable",
+      "kind": "real_broker_manual_AMQP_probes",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "log": "pr71-tls.log",
+      "command": "EP2_ENV_FILE=<ignored LOCAL_TEST .env>; EP2_PLATFORM_TESTS=1; python -B -m unittest discover -s infrastructure/aws/rabbitmq/scripts -p test_tls_platform.py -v"
+    },
+    {
+      "name": "RabbitAdmin complete Maven suite",
+      "kind": "real_broker_Testcontainers_JWT_RSA_fixture_not_Entra_live",
+      "passed": 61,
+      "failed": 0,
+      "skipped": 0,
+      "log": "pr71-rabbitadmin.log",
+      "command": "mvn -f backend/services/rabbit-admin-service/pom.xml test"
+    },
+    {
+      "name": "ES256 identity configuration",
+      "kind": "offline_real_ephemeral_crypto",
+      "passed": 18,
+      "failed": 0,
+      "skipped": 1,
+      "log": "pr71-identity.log",
+      "command": "node --test infrastructure/aws/rabbitmq/scripts/identity_check.test.mjs",
+      "omission": "Windows symlink privilege not assumed; Linux permission enforcement not executed on Windows"
+    },
+    {
+      "name": "Exact accounts",
+      "kind": "offline_unit",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "log": "pr71-accounts.log",
+      "command": "python -B -m unittest discover -s infrastructure/rabbitmq -p test_accounts.py -v"
+    },
+    {
+      "name": "Safety guards including pre-start identity rejection",
+      "kind": "offline_unit_injection",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "log": "pr71-guards.log",
+      "command": "python -B -m unittest discover -s infrastructure/aws/rabbitmq/scripts -p test_guards.py -v"
+    },
+    {
+      "name": "Prepared and inherited Compose",
+      "kind": "read_only_compose_config_static_assertions",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "log": "pr71-compose.log",
+      "command": "node --test infrastructure/aws/ep2-prepared.test.mjs infrastructure/aws/compose.test.mjs"
+    },
+    {
+      "name": "Existing AWS preparators",
+      "kind": "offline_config_crypto_local_tools_no_AWS",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0,
+      "log": "pr71-aws-regression.log",
+      "command": "node --test infrastructure/aws/deployment.test.mjs infrastructure/aws/compose.test.mjs infrastructure/aws/transfer-worker.test.mjs",
+      "overlap": "Six compose.test.mjs cases also included in preceding suite; do not sum as distinct tests."
+    }
+  ],
+  "additional_checks": [
+    {
+      "name": "Spring Binder actual RabbitProperties",
+      "verified_connections": 10,
+      "network_used": false,
+      "log": "pr71-spring-binding.log",
+      "command": "mvn -f backend/services/rabbit-admin-service/pom.xml dependency:build-classpath -Dmdep.outputFile=<temporary classpath>; java -cp <classpath> infrastructure/aws/rabbitmq/scripts/PreparedBindingProbe.java <repository root>"
+    },
+    {
+      "name": "RabbitAdmin packaging",
+      "status": "local Docker build success; not started/deployed as overlay",
+      "log": "pr71-admin-image.log",
+      "image": "p360-pr71-rabbit-admin:local",
+      "command": "docker build -f infrastructure/aws/rabbitmq/Dockerfile.rabbit-admin --build-context maven-wrapper=backend/services/usuarios-service -t p360-pr71-rabbit-admin:local backend/services/rabbit-admin-service"
+    }
+  ],
+  "earlier_failed_attempts": [
+    {
+      "log": "pr71-tls-first-failed.log",
+      "tests_run": 19,
+      "failures": 4,
+      "reason": "Old test expected DLX denial for Pagos/Carrito despite newly approved permission. Its now permitted messages remained unsettled and affected two subsequent receives. Updated expectation includes positive DLX and denied configure; repeated on fresh data."
+    },
+    {
+      "log": "pr71-tls-unprovisioned.log",
+      "tests_run": 0,
+      "errors": 1,
+      "reason": "Fresh disposable broker had been started but not provisioned. Provisioned before final run; no assertions weakened."
+    }
+  ],
+  "limitations": [
+    "No AWS calls, deployment, operational permission mutation or flag activation.",
+    "Full application overlay not started; Compose and Binder do not demonstrate AWS connectivity.",
+    "Actual truststore composition, Linux ownership, operational signing keys, Entra live and database runtime/migrator roles pending.",
+    "Business/frontend suites not rerun; their sources and contracts unchanged.",
+    "No global durable query terminality; clock synchronization required.",
+    "RabbitMQ GHSA-6588-rqcr-59pw protocol/version operational assessment pending; no claim of immunity.",
+    "Cluster #73 and cut/rollback #70 not implemented."
+  ],
+  "source_sha256_normalized_lf": {
+    "docs/ep2/AWS-EP2-PREPARATION.md": "122e0e25878f73c1a866d567eeab1697ea02ebc8aaaf3d511fd86382b248642d",
+    "docs/ep2/PLATAFORMA-RABBITMQ.md": "9f7eba7d7fae4a7219fc8e0553efe50150e91af867f0b3bbf68418ce659f93fb",
+    "infrastructure/aws/compose.ep2-build.yml": "8cbedc08e6cfa28095023c8b00854a6cd58eced7ec4268ede5f337a36eeed668",
+    "infrastructure/aws/compose.ep2-prepared.yml": "ffedd13d1596c264d27af00b54fb42fc564c465dfdf08a3ec1b2712cbdeb2217",
+    "infrastructure/aws/ep2-prepared.test.mjs": "7f6f8acb5cfe20370140d83e9b10af55fa3808b5327ecc87481ae16f513fcd6d",
+    "infrastructure/aws/rabbitmq/.env.example": "77399dd2040163df7f50a483f9f50a28485e5a1b5771fb8731beca765a8dea86",
+    "infrastructure/aws/rabbitmq/Dockerfile.rabbit-admin": "655630cf003629961c34cc194c1b0552188e5d24fa14bafd555986189eba74e8",
+    "infrastructure/aws/rabbitmq/Dockerfile.rabbit-admin.dockerignore": "0d85551d3b7fd2c1cd15ba2901d42d5115829e364f7589d74b15a4d150f849e6",
+    "infrastructure/aws/rabbitmq/README.md": "8aa78a3dc3941f8341c5b7dac21d3fa3f1b1efed2309254f57fa9378486df405",
+    "infrastructure/aws/rabbitmq/scripts/PreparedBindingProbe.java": "7cb2304c08ceac18f260d9cbfc72428e1b16852f3ad5c0d18be1623c828c7a9b",
+    "infrastructure/aws/rabbitmq/scripts/identity_check.mjs": "f7bb838dcac1be9e7b233729ef99ad9f96e71cc412f7fec6478291cb743ee111",
+    "infrastructure/aws/rabbitmq/scripts/identity_check.test.mjs": "16b7e0c200f33da8558fca6fc78490258e0ab2c14a9e30cce51b2e8237547b9a",
+    "infrastructure/aws/rabbitmq/scripts/identity_fixture.mjs": "5cf1ae5fa49c90691658b339f2b00adc442bcfd37dc44c915bb1e1df62bd9df7",
+    "infrastructure/aws/rabbitmq/scripts/local_fixture.py": "af0486d885cad627c3aac5664ce2d4ad167e0e3d1c57e9cbb353e4e562ef0dcd",
+    "infrastructure/aws/rabbitmq/scripts/test_guards.py": "7fa82356706b23f71f224335f38b434688477f7a3cd3cdeaf770b6e316275b32",
+    "infrastructure/aws/rabbitmq/scripts/test_tls_platform.py": "db4f1d6994ff83b62b8ab581ba2214624e8fede5736d69f57ff8bd818e701da6",
+    "infrastructure/aws/rabbitmq/scripts/tools.py": "1be8130018e19bfbdeca4f88092f82bf44c0f6284e85286ef33c92a7edf89e49",
+    "infrastructure/rabbitmq/README.md": "d5104ad5bd9a0c53381ec60ed3a4b4a1eb15617d8f01d8cf1ce609202517fd5d",
+    "infrastructure/rabbitmq/platform_control.py": "53c9856ef6c619e021bdd17e1ce811d0fcc4fbba0e7b6040ac9c9ae0135aee71",
+    "infrastructure/rabbitmq/test_accounts.py": "a3bbc802e2bdb80e92ed90d17cb113d2e53a60a95099a5c8aab41db41f84040a",
+    "infrastructure/rabbitmq/test_platform.py": "d09daaa1ed21ac1bfa2dea2d43ff16d834a118542414dce67b6d4a4c989bacd1"
+  },
+  "log_sha256_original_bytes": {
+    "pr71-accounts.log": "c930aaa8a0c851aaa39b52f7918ede981dfd2ad9d4b6c9893f912e0b68044cc5",
+    "pr71-admin-image.log": "a1b422e3c246e39719f323990d737f3e413f7190426d98d1df43b208f785e1fd",
+    "pr71-aws-regression.log": "442f196d87732a84ca2458e48ee3b0a72344a23d9cf5774b139859c56c3fe081",
+    "pr71-compose.log": "2d737462410465da6a2479d16c0868a73b604d03882491c17c76cebae9f6edac",
+    "pr71-guards.log": "859e89bd3321326b97a5ec85ced9b2eede39afb18b220859722e2630561ee353",
+    "pr71-identity.log": "f67a50d17076b62e1196f939f6183b5764a27d19013e0e9a92dce292ce01c7f5",
+    "pr71-provision.log": "873e3c87f2dcc1ca3dfbdad7a07d0f3f8ae5cd321fa0ade9ee7e9263e1713d0c",
+    "pr71-rabbitadmin.log": "52639c11b7bcd24f237eef20a672a3d26a537d6564e651a35c2d0e4fa36033f7",
+    "pr71-spring-binding.log": "fcf108394bc3cb9186864530113660502969ebff5dc3dcadc6e373817f3a1f1e",
+    "pr71-start.log": "5a3b1755a1e534fcf6185c751e40fd27573f7ecc96f8cda8a2858c11738d1fbe",
+    "pr71-tls-first-failed.log": "eab02e4d5d7ec3a80e3e90b2c94a11639d05141add808c4a5fa29e6255904861",
+    "pr71-tls-unprovisioned.log": "dc409d90b2dd72b70107cf4971b17b07099400f805195e5218cbb49dcc0a5a47",
+    "pr71-tls.log": "5c757f5fb3af9f76a74a332c11c1f0864c7d171a313f60b0906d6f02590a4584"
+  },
+  "log_directory": "infrastructure/aws/rabbitmq/evidence (ignored local logs; SHA256 does not make missing logs retrievable)",
+  "source_hash_definition": "UTF-8 source bytes normalized CRLF to LF, matching Git blobs. Manifest excluded to avoid self-reference."
+}

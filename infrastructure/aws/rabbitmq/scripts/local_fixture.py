@@ -18,10 +18,11 @@ def main():
     data = TEST / 'data'
     for path in (tls, secret_dir, data):
         path.mkdir(parents=True, exist_ok=True)
-    for key in {a[1] for a in p.accounts()} | {'ERLANG_COOKIE', 'PEDIDOS360_ACTOR_SECRET', 'PEDIDOS360_ACTOR_KEY_ID'}:
+    for key in {a[1] for a in p.accounts()} | {'ERLANG_COOKIE'}:
         file = secret_dir / key
         if not file.exists():
             file.write_text(secrets.token_hex(32), encoding='utf-8')
+    subprocess.run(['node', str(ROOT / 'scripts/identity_fixture.mjs')], check=True)
     openssl = os.environ.get('EP2_TEST_OPENSSL', 'openssl')
     def openssl_run(*args):
         subprocess.run([openssl, *args], cwd=tls, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

@@ -25,7 +25,7 @@ Entrega 1; no sobrescribir su despliegue. El helper Docker monta esa fuente en
 read-only. `Dockerfile.tools` fija Python por digest y pika 1.3.2; construirlo antes
 de la ventana y registrar su image ID en `EP2_AMQP_TOOLS_IMAGE`. No instala paquetes
 durante provisioning. El host necesita Linux, Python 3, Docker Compose v2 con
-`up --wait`, findmnt, lsblk y stat; OpenSSL se verifica dentro de la imagen fijada.
+`up --wait`, Node.js 22+, findmnt, lsblk y stat; OpenSSL se verifica dentro de la imagen fijada.
 
 ## EBS: preparación operativa previa
 
@@ -63,8 +63,12 @@ validación AWS quedó resuelto con esta separación de material público/privad
   tls/server-key.pem
   secrets/<archivo por cuenta>
   secrets/ERLANG_COOKIE
-  secrets/PEDIDOS360_ACTOR_SECRET
-  secrets/PEDIDOS360_ACTOR_KEY_ID
+  identity/PEDIDOS360_ACTOR_PRIVATE_JWK
+  identity/PEDIDOS360_ACTOR_PUBLIC_JWKS
+  identity/PEDIDOS360_ACTOR_KEY_ID
+  identity/USUARIOS_IDENTITY_PROOF_PRIVATE_JWK
+  identity/USUARIOS_IDENTITY_PROOF_PUBLIC_JWKS
+  identity/USUARIOS_IDENTITY_PROOF_KEY_ID
 ```
 
 Generar la clave del servidor y CSR fuera de Git, solicitar certificado firmado
@@ -87,9 +91,11 @@ Archivos de contraseñas (una línea >=24 caracteres): `BOOTSTRAP_PASSWORD`,
 `PEDIDOS_CARRITO_PUBLISHER_PASSWORD`, `REPLAY_PASSWORD`, `ADMIN_DEMO_PASSWORD`,
 `USUARIOS_CONSUMER_PASSWORD`, `RESTAURANTES_CONSUMER_PASSWORD`,
 `PRODUCTOS_CONSUMER_PASSWORD`, `CARRITO_CONSUMER_PASSWORD`, `PAGOS_CONSUMER_PASSWORD`.
-La lista canónica proviene de `accounts()` de #69. Cookie >=24 caracteres;
-actor secret >=32 y key ID no vacío: están reservados para integración posterior,
-**no se conectan al BFF desde este paquete**.
+La lista canónica proviene de `accounts()` de #69. Cookie >=24 caracteres.
+Las identidades ES256 se validan offline antes de las sondas de arranque.
+No se exige ni se utiliza PEDIDOS360_ACTOR_SECRET. La preparación de aplicaciones
+y el reparto de archivos se describen en
+[AWS-EP2-PREPARATION.md](../../../docs/ep2/AWS-EP2-PREPARATION.md).
 
 Secretos sin permisos para others; directorios privados con acceso mínimo.
 La clave TLS debe ser legible por la identidad RabbitMQ verificada (por ejemplo
