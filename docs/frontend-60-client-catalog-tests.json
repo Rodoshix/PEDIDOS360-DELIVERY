@@ -1,0 +1,213 @@
+{
+  "base": "66978e38a2ba1ba592cc9d679517e8d753446e12",
+  "branch": "codex/60-client-catalog",
+  "date": "2026-10-09",
+  "timezone": "America/Santiago",
+  "evidence_directory": "C:/Users/Rodri/Documents/ChatGPT/Pedidos360 Delivery/evidence/issue60-client-catalog-20261009",
+  "source_hash_encoding": "UTF-8 LF normalized, no BOM",
+  "focused": {
+    "skipped": 0,
+    "passed": 41,
+    "failed": 0
+  },
+  "frontend": {
+    "skipped": 0,
+    "passed": 240,
+    "failed": 0
+  },
+  "new_catalog_cases": 6,
+  "lint": "oxlint: exit 0",
+  "build_http": "exit 0",
+  "build_rabbitmq": "exit 0",
+  "sources": [
+    {
+      "file": "frontend/src/features/carrito/RealCatalog.jsx",
+      "sha256": "b30649563c9b04722a34c180f201b44e4efc254a23d7c5b77090b602ce835018"
+    },
+    {
+      "file": "frontend/src/features/restaurantes/RealCatalogPanel.jsx",
+      "sha256": "3f0e2185dcd05aea8b8340118b3e279feef3abd17eb6a140a191c66e58ee78a1"
+    },
+    {
+      "file": "frontend/src/features/restaurantes/RestaurantesPage.jsx",
+      "sha256": "7a187f3d68fd152f4999728de760b4d926018de05af65a7012093eb00be456ed"
+    },
+    {
+      "file": "frontend/src/features/restaurantes/catalog.css",
+      "sha256": "0859783b3b95b6f127751a9a693aae8b3a89fb84311f541cf8e93d1bba72bca6"
+    },
+    {
+      "file": "frontend/tests/clientCatalog.test.js",
+      "sha256": "57c336efc3875651d5d9ba08b946cbbfb254051167584089b85fc6e08a88c3fc"
+    },
+    {
+      "file": "frontend/tools/fixtures/previewApi.mjs",
+      "sha256": "7c1b3bc85e4a77badc2a17d289096ab7470cb4b5520cb5d353296ad3600c841f"
+    }
+  ],
+  "evidence": [
+    {
+      "file": "added.png",
+      "sha256": "5bf0a84b0b12a09dfe34f6319633b1f368cedfebb52f6d12b065331fdf0d2f11"
+    },
+    {
+      "file": "build-http.log",
+      "sha256": "e74310c8f8985e57765f227e7fabaf429afd8efb82699ceef88ee64d005be629"
+    },
+    {
+      "file": "build-rabbitmq.log",
+      "sha256": "fd82aed9625f7cbfac2de7aaf532db4ad9a74cb244fd3580469de6d5cad9e03f"
+    },
+    {
+      "file": "denied.png",
+      "sha256": "6a8ef493cf8fe2e9ac25d11b3c4594ec6499f3a120868e1e9d5fc9e094017a1f"
+    },
+    {
+      "file": "desktop.png",
+      "sha256": "cf58f602d606adbb3984c97ad2da579dff825dcfa890311a9b358b8b0af22900"
+    },
+    {
+      "file": "empty-products.png",
+      "sha256": "7ff0674f40211d8fdfa89b3c7e4e2a181f1154965bd34fe937910d02826a3073"
+    },
+    {
+      "file": "empty-restaurants.png",
+      "sha256": "fd1f98674d816f596ab93c4a73975a1e3ac842ef871c6df197fe5c67c4137c21"
+    },
+    {
+      "file": "error.png",
+      "sha256": "6bc6dc9eb8b482f85bca635f2ad58051b5020705e6933354d3a00892632a767e"
+    },
+    {
+      "file": "focused.log",
+      "sha256": "d8617c2e89f6f2a4a0ea43feba3634cf9a7e01e038bd74af9a6ef6186d333731"
+    },
+    {
+      "file": "frontend-tests.log",
+      "sha256": "c8afac76e6281f476546aefdd5185ad4bef422fde16f0513ce03e69cc68e1a9b"
+    },
+    {
+      "file": "lint.log",
+      "sha256": "110aae6032e48b061350c5b8aed3121ff02d3c1ca4c26ec24633f8f0e46cb884"
+    },
+    {
+      "file": "mobile-320-keyboard.png",
+      "sha256": "444f96265f94d08571e9b4b8c89193bc780764a58557a215550d2abf2cd93772"
+    },
+    {
+      "file": "mobile-metrics.json",
+      "sha256": "9a1f72b031bf9737d7f322711fe2022786ea15f8f4453df892042b58f47a4b87"
+    },
+    {
+      "file": "mobile.png",
+      "sha256": "a96f65349d6d349697616bada2c5e720ca33aec540e6cbbed013fcc9a9762c9d"
+    },
+    {
+      "file": "saving.png",
+      "sha256": "5c516eca93d4cd0bf71233e671de68ec5c3986853d3da303f1128597f8ed6a54"
+    },
+    {
+      "file": "session-b.png",
+      "sha256": "8bcee8d8610924b327a9b9ac43e844cb5693c0d1d045e5c69a18f35c8437b3b3"
+    },
+    {
+      "file": "session-required.png",
+      "sha256": "3317a576c160bc277ac17eda6886c30e56ec31b33a556b9833e373c457857ba7"
+    },
+    {
+      "file": "unavailable.png",
+      "sha256": "fc7abee96a39529b62a76f5311bbf462028015bc871f523575bf702c0c6c6503"
+    }
+  ],
+  "browser": {
+    "keyboard": "ArrowDown/Enter selection; Tab; Enter add; visible outline",
+    "touch_height_px": 44,
+    "desktop": "1280x900",
+    "states": [
+      "available",
+      "unavailable",
+      "empty restaurants",
+      "empty products",
+      "503",
+      "403",
+      "saving",
+      "success",
+      "session change",
+      "session required"
+    ],
+    "mobile": [
+      "390x844",
+      "320x780"
+    ]
+  },
+  "limits": [
+    "hooks/transport/auth fixtures",
+    "loopback preview with production components/controllers/adapters",
+    "no Entra live/backend/broker/PostgreSQL/AWS",
+    "chunk >500 kB warning retained",
+    "not screen-reader certification"
+  ],
+  "evidence_correction": {
+    "audited_head": "c47c32d42cc0706f7a129e407692ab1637b08bd5",
+    "date": "2026-10-09",
+    "original_sha256": "a8c77b8dfeadbea72d45765a95af3ea4f46d08040befa6c74d2914697c8b9278",
+    "original_dimensions": "305x972",
+    "originals_backup": "recheck-originals/",
+    "repository_directory": "docs/evidence/60-client-catalog",
+    "capture_encoding": "JPEG bytes returned by browser API; legacy .png names retained without image editing",
+    "viewport": "1280x900",
+    "waits": [
+      "scenario-specific message visible",
+      "client-catalog aria-busy=false"
+    ],
+    "http": [
+      {
+        "scenario": "empty",
+        "activation_status": 204,
+        "path": "/api/restaurantes",
+        "status": 200,
+        "body": "[]"
+      },
+      {
+        "scenario": "error",
+        "activation_status": 204,
+        "path": "/api/restaurantes",
+        "status": 503,
+        "body": "{}"
+      },
+      {
+        "scenario": "catalog-denied",
+        "activation_status": 204,
+        "path": "/api/restaurantes",
+        "status": 403,
+        "body": "{}"
+      }
+    ],
+    "unexpected_javascript_errors": 0,
+    "test_suites_rerun": false,
+    "historical_results_unchanged": true,
+    "captures": [
+      {
+        "file": "empty-restaurants.png",
+        "sha256": "fd1f98674d816f596ab93c4a73975a1e3ac842ef871c6df197fe5c67c4137c21",
+        "width": 1265,
+        "height": 889,
+        "format": "Jpeg"
+      },
+      {
+        "file": "error.png",
+        "sha256": "6bc6dc9eb8b482f85bca635f2ad58051b5020705e6933354d3a00892632a767e",
+        "width": 1265,
+        "height": 889,
+        "format": "Jpeg"
+      },
+      {
+        "file": "denied.png",
+        "sha256": "6a8ef493cf8fe2e9ac25d11b3c4594ec6499f3a120868e1e9d5fc9e094017a1f",
+        "width": 1265,
+        "height": 889,
+        "format": "Jpeg"
+      }
+    ]
+  }
+}
