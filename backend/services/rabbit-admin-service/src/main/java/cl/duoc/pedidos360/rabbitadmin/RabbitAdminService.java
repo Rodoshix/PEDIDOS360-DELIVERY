@@ -37,7 +37,8 @@ public class RabbitAdminService {
     }
     public void deleteQueue(String name) {
         SandboxRules.name(name);
-        call("DELETE_QUEUE",name,() -> { admin.deleteQueue(name,true,true); return null; });
+        // Fixed policy: counters and conditional queue.delete do not protect pending ACKs.
+        call("DELETE_QUEUE",name,() -> { throw AdminFailure.queueDeletionDisabled(); });
     }
     public ExchangeResult putExchange(String name, ExchangeRequest request) {
         SandboxRules.name(name);
@@ -87,6 +88,9 @@ public class RabbitAdminService {
     private <T> T call(String operation,String resource,Supplier<T> work) {
         String outcome="OK";
         try { return work.get(); }
+        catch (AdminFailure failure) {
+            outcome=failure.status().name(); throw failure;
+        }
         catch (AmqpException failure) {
             AdminFailure safe=translate(failure); outcome=safe.status().name(); throw safe;
         } catch (RuntimeException failure) {

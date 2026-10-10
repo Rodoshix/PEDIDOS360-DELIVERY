@@ -1,20 +1,22 @@
 {
   "base": "82ab9957e144c1893c914b4960f970578b2491f3",
+  "audited_parent": "0de1bbdfa4e671f2f391a106997ba6280886493a",
   "date": "2026-10-09",
+  "timezone": "America/Santiago",
   "command": "mvn -B -ntp -f backend/services/rabbit-admin-service/pom.xml verify",
   "total": {
-    "tests": 57,
-    "failures": 1,
+    "tests": 61,
+    "failures": 0,
     "errors": 0,
     "skipped": 0,
-    "passed": 56
+    "passed": 61
   },
   "reports": [
     {
       "suite": "cl.duoc.pedidos360.rabbitadmin.ConfigurationTests",
       "file": "TEST-cl.duoc.pedidos360.rabbitadmin.ConfigurationTests.xml",
-      "sha256": "d314174f691dcaa2f2b101809f31bb37b83830ddc414c52907336bccc7c7c935",
-      "tests": 5,
+      "sha256": "f9cd604a54323ff08d1618b63b999885c7b38361203c0dcad6042a27c7730197",
+      "tests": 6,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -22,84 +24,92 @@
     {
       "suite": "cl.duoc.pedidos360.rabbitadmin.RabbitAdminIntegrationTests",
       "file": "TEST-cl.duoc.pedidos360.rabbitadmin.RabbitAdminIntegrationTests.xml",
-      "sha256": "40c5b2f6aeaac69595fb689999fd20c0f09e5cb466c9336895806c33d97d1432",
-      "tests": 52,
-      "failures": 1,
+      "sha256": "d55aa4084c155ad85fe6c1432767501a5ef79810c48f8881148c2c058f15aa3a",
+      "tests": 55,
+      "failures": 0,
       "errors": 0,
       "skipped": 0
     }
   ],
-  "log_sha256": "c7bd363ed44fda7d5f7e19d484a4ed058c1e88e1921e3df7c8949e905b13ba74",
-  "previous_56_case_jar_sha256": "d9b30d5077dc5240066396828df82e24f64acc6814d868398396250fcc3aff84",
-  "evidence_directory": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\evidence\\issue67-local-20261009",
+  "log_file": "p360-67-policy-verified.log",
+  "log_sha256": "a08a29732135188278c6a9882230cdb9f7467234dd5d9daf1604d8be8caa2673",
+  "jar_sha256": "2dab167759c8bc79c7ae0f61eb99aae5d9ce712a07aeb9cbc6b622487628cd15",
+  "evidence_directory": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\evidence\\issue67-local-20261009\\queue-delete-policy",
   "source_sha256_lf": {
     "backend/services/rabbit-admin-service/.env.example": "89b8958166c680051df58627ad69eccd6e899da3e9f11ee0b5dcc2d3193c2c6f",
     "backend/services/rabbit-admin-service/pom.xml": "9966fce936b73765890b101425e8dcbf7b9066e6a71ffdb0ea50f7ef22986b43",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/AdminAuditFilter.java": "b2a994781c0e909d38c5b56f1966361748121e88630890d556c73000f3d15d55",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/AdminDtos.java": "c273fc62cf292bc25ed4a8d94511afb7b3b450be771125038f65edd5d7d7a4fd",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/AdminErrors.java": "205027c5d9739ab3dd5e40e88f0bbee7a7a55f1a8c30812bd301dca01f7691ee",
-    "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/AdminFailure.java": "52ff344f3928be33039b5701dc52ebc91808fac2bcc76595d8f110a1a4cb5117",
+    "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/AdminFailure.java": "245558dec9f64c4f9841b089838456c3842958ed2b0634f3b9316d4ac805d1ad",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/BrokerConfiguration.java": "dfc195cd2e8d1d214b37822339b22dfdae432e3db61a7cd0e1dbda3d47645aa3",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/EntraConfiguration.java": "98e33c3743980b2bb8ab8751855bd1468cac328b50f92b2d54ffe869422cf2d6",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/JsonConfiguration.java": "6b98f0464b67ebf7349161af56c019d9be69a37de5a03fd9fe7d4351c51a3692",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/RabbitAdminApplication.java": "fa70d393ec224e2b2886c77ee5869a79988ebd18df08fb22d3bfdae837b02f93",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/RabbitAdminController.java": "42a33859a6e9c68f14a901b3a73004fbbd0654603f56b299c39847289c393e12",
-    "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/RabbitAdminService.java": "ec914fac3be6b7dee95eed457a2d1914ca3c1215f15012a7d5018ef4d0323aac",
+    "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/RabbitAdminService.java": "8f3c2871b3bfd4e11640faf354bdef5de1c0c1bb8962442faac94d67ce21f189",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/SandboxRules.java": "32d8aa05253c1d8b1ba8ea938f1dc0ebbce981a9a48b06351a8a79e39dcdbdde",
     "backend/services/rabbit-admin-service/src/main/java/cl/duoc/pedidos360/rabbitadmin/SecurityConfiguration.java": "3cdf05b73e3df0316d64ddd846dc3e08ae9f03285168aa9ede5275254bee2020",
     "backend/services/rabbit-admin-service/src/main/resources/application.yml": "be7e17470a6f19702c707d55f0af776aa5b00ec946b4910b2aa88de84de7d008",
-    "backend/services/rabbit-admin-service/src/test/java/cl/duoc/pedidos360/rabbitadmin/ConfigurationTests.java": "f1b923ad0d0b333d5b6ca8c9ea3dbf8f6741fba2139aecccc2c8df1af392b063",
-    "backend/services/rabbit-admin-service/src/test/java/cl/duoc/pedidos360/rabbitadmin/RabbitAdminIntegrationTests.java": "0d5bbba9377b384e81fd2471aae036832186714b35ab73232047c682772807cf",
-    "docs/ep2/RABBITADMIN-67.md": "ec59bfcaffcac2e9047ffdf71881b64aedff234068f46674e632164e10339d16"
+    "backend/services/rabbit-admin-service/src/test/java/cl/duoc/pedidos360/rabbitadmin/ConfigurationTests.java": "45789508eecb02f4964300f9ee3f9e5c0ce96f209375ad203fd564cacf9d8302",
+    "backend/services/rabbit-admin-service/src/test/java/cl/duoc/pedidos360/rabbitadmin/RabbitAdminIntegrationTests.java": "b8dd5152e493fe3f5b7c1f44ac1d50a40aa4ef68c01318dbd2dc0892caf0af64",
+    "docs/ep2/RABBITADMIN-67.md": "cb7d2d5c540dfb5d95660ca7566b4fbb323ddbbc7c5fdcfc295eb337eb87b36c"
+  },
+  "regression": {
+    "name": "unacknowledgedMessageMustPreventDeletion",
+    "status": "PASSED",
+    "broker": "RabbitMQ 4.1.8",
+    "steps": [
+      "basic.get autoAck=false",
+      "ready=0 and consumers=0",
+      "DELETE 403",
+      "GET queue 200",
+      "physical channel closed without ACK",
+      "ready=1",
+      "same message contents recovered"
+    ]
+  },
+  "service_amqp_isolation": {
+    "test": "queueDeletionIsBlockedInServiceWithoutAnyAmqpInteraction",
+    "nature": "Unit test with RabbitAdmin mock; verifyNoInteractions, not a broker conservation test"
+  },
+  "historical_evidence": {
+    "manifest_file": "pre-correction-tests.json",
+    "manifest_sha256": "514873bbb1ad070fc523746c5493bf71dc0ba210f8681031e5da95a4c776a41b",
+    "total": {
+      "tests": 57,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 56
+    },
+    "log_sha256": "c7bd363ed44fda7d5f7e19d484a4ed058c1e88e1921e3df7c8949e905b13ba74",
+    "blocking_regression": "unacknowledgedMessageMustPreventDeletion: expected409_actual204"
   },
   "excluded_attempts": [
     {
-      "file": "p360-67-tests.log",
-      "sha256": "9ddc481e82d78d86a6c3651046c09db52e85cf9ab41a227bc1e53a99f6c76c91",
-      "counted": false
-    },
-    {
-      "file": "p360-67-intermediate.log",
-      "sha256": "9ffde94f9d8226ec61434e9281ab38a2d7a0f2f3bb1a5df19576ff1c8dd94ce1",
-      "counted": false
-    },
-    {
-      "file": "p360-67-newcases-failed.log",
-      "sha256": "c2cbe6eadbf5b9784a285e27918e6e3917d520bb0c1a4f97a66229b56169459c",
-      "counted": false
-    },
-    {
-      "file": "p360-67-preaudit.log",
-      "sha256": "fbf5babf852c410993d2e8d496d1f7db9e28525bc31056a6ea6694738ac79601",
-      "counted": false
-    },
-    {
-      "file": "p360-67-preformat.log",
-      "sha256": "e588de7abf73f4a5e9c927720a50acd4393d6dc5d72f25bc2f532c606b67af9f",
-      "counted": false
-    },
-    {
-      "file": "p360-67-56-success.log",
-      "sha256": "2a218e9c822dff964dfe5d5cbe439dd3d6f896d58c410fa2fe87b87f5e99cbca",
-      "counted": false
+      "file": "p360-67-policy-final.log",
+      "sha256": "ffdcbf6e25bf94ab9aab85b1760cc17120d95e417fbfe526e7104830f6e07504",
+      "counted": false,
+      "reason": "Cross-channel ordering assumption in new ready-message conservation test; changed to exact unordered contents and reran complete suite"
     }
   ],
-  "nature": "Real HTTP server, real RSA signatures/Entra validators and disposable RabbitMQ 4.1.8 with restricted sandbox account. Entra authority/provisioning fixtures.",
+  "nature": "Real HTTP server, real RSA signatures/Entra validators and disposable RabbitMQ 4.1.8 with restricted sandbox account; Entra/provisioning fixtures. Six unit tests, including mocked zero-AMQP-interactions policy test.",
   "omissions": [],
   "limitations": [
-    "No Entra live",
+    "No Entra live; not represented as runner-skipped tests",
     "No deployment/AWS/TLS in destination",
     "No operational credentials or prefix grants changed",
     "Other services suites not rerun; no existing code/contracts changed",
-    "Quorum conditional deletion unsupported and rejected without unconditional fallback"
+    "Queue DELETE deliberately disabled; full queue CRUD not implemented",
+    "Direct broker access with configure permissions is outside the REST/service prohibition"
   ],
   "issue70": {
     "pr99": "MERGED",
     "merge": "82ab9957e144c1893c914b4960f970578b2491f3",
     "state": "OPEN"
   },
-  "verdict": "BLOCKED",
-  "blocking_regression": "unacknowledgedMessageMustPreventDeletion: expected409_actual204",
-  "targeted_reproduction_log_sha256": "24d6653c70ea8e1f886985bd5dba53d398ea68bb64db659fbae606dbf9da24f7",
+  "verdict": "READY FOR INDEPENDENT AUDIT",
+  "approved_policy": "Alternative B: queue DELETE fixed 403 after authentication/authorization and valid sandbox name; no AMQP call or reactivation option",
   "operational_prerequisite": "Sandbox inventory grants ^demo\\.; API requires p360.demo.; change pending separate approval"
 }

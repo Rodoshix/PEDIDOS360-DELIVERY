@@ -32,6 +32,8 @@ import tools.jackson.databind.json.JsonMapper;
     "entra.api-client-id=22222222-2222-2222-2222-222222222222",
     "entra.frontend-client-id=33333333-3333-3333-3333-333333333333",
     "entra.enabled=false", // No such bypass: JWT remains mandatory.
+    "rabbit-admin.allow-queue-delete=true", // Unknown properties cannot override fixed policy.
+    "rabbit-admin.delete-queues.enabled=true",
     "spring.rabbitmq.virtual-host=pedidos360"})
 @Import(RabbitAdminIntegrationTests.Keys.class)
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -76,10 +78,14 @@ class RabbitAdminIntegrationTests {
         } catch(Exception e) { throw new IllegalStateException(e); }
     }
     HttpResponse<String> request(String method,String path,String body,String jwt) throws Exception {
+        return request(method,path,body,jwt,Map.of());
+    }
+    HttpResponse<String> request(String method,String path,String body,String jwt,Map<String,String> headers) throws Exception {
         try(var http=HttpClient.newHttpClient()) {
             var r=HttpRequest.newBuilder(URI.create("http://127.0.0.1:"+port+"/admin/rabbit"+path)).timeout(Duration.ofSeconds(10));
             if(jwt!=null) r.header("Authorization","Bearer "+jwt);
             r.header("Content-Type","application/json");
+            headers.forEach(r::header);
             return http.send(r.method(method,body==null?HttpRequest.BodyPublishers.noBody():HttpRequest.BodyPublishers.ofString(body)).build(),HttpResponse.BodyHandlers.ofString());
         }
     }
@@ -99,9 +105,42 @@ class RabbitAdminIntegrationTests {
         assertThat(call("DELETE","/bindings/"+id,null).statusCode()).isEqualTo(204);
         rabbit.convertAndSend(e,"key","unrouted");
         assertThat(rabbit.receive(q,100)).isNull();
-        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(204);
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(403);
         assertThat(call("DELETE","/exchanges/"+e,null).statusCode()).isEqualTo(204);
-        assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(409);
+        assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200);
+    }
+    @Test void emptyQueueDeletionIsForbiddenWithStableSanitizedResponse() throws Exception {
+        String q=queue();
+        var result=call("DELETE","/queues/"+q,null);
+        assertThat(result.statusCode()).isEqualTo(403);
+        var problem=JSON.readTree(result.body());
+        assertThat(problem.path("status").intValue()).isEqualTo(403);
+        assertThat(problem.path("detail").stringValue())
+            .isEqualTo("Eliminación de queues deshabilitada por política de seguridad.");
+        var retained=call("GET","/queues/"+q,null);
+        assertThat(retained.statusCode()).isEqualTo(200);
+        assertThat(JSON.readTree(retained.body()).path("messages").intValue()).isZero();
+    }
+    @Test void queueDeleteStillRequiresValidJwtScopeAndAdmin() throws Exception {
+        String q=queue(),path="/queues/"+q;
+        for(String jwt:Arrays.asList(null,"not.jwt",token(Map.of(),key()),token(Map.of("exp",Date.from(Instant.now().minusSeconds(180))))))
+            assertThat(request("DELETE",path,null,jwt).statusCode()).isEqualTo(401);
+        for(var claims:List.of(Map.<String,Object>of("roles",List.of("CLIENTE")),Map.<String,Object>of("scp","wrong"))) {
+            var denied=request("DELETE",path,null,token(claims));
+            assertThat(denied.statusCode()).isEqualTo(403);
+            assertThat(denied.body()).doesNotContain("Eliminación de queues deshabilitada");
+        }
+        assertThat(call("DELETE",path,null).statusCode()).isEqualTo(403);
+        assertThat(call("GET",path,null).statusCode()).isEqualTo(200);
+    }
+    @Test void callerCannotEnableQueueDeletionThroughQueryHeadersOrBody() throws Exception {
+        String q=queue();
+        var result=request("DELETE","/queues/"+q+"?enabled=true&force=true&allowQueueDelete=true",
+            "{\"enabled\":true,\"force\":true}",token(Map.of()),Map.of("X-Allow-Queue-Delete","true","X-Force","true"));
+        assertThat(result.statusCode()).isEqualTo(403);
+        assertThat(JSON.readTree(result.body()).path("detail").stringValue())
+            .isEqualTo("Eliminación de queues deshabilitada por política de seguridad.");
+        assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200);
     }
     @ParameterizedTest @ValueSource(strings={"direct","fanout","topic"})
     void exchangeTypes(String type) throws Exception { String e=exchange(type); assertThat(call("DELETE","/exchanges/"+e,null).statusCode()).isEqualTo(204); }
@@ -116,23 +155,39 @@ class RabbitAdminIntegrationTests {
     @Test void queueMessagesInsertedAfterReadPreventDeletion() throws Exception {
         String q=queue(),e=exchange("direct"); bind(q,e);
         assertThat(JSON.readTree(call("GET","/queues/"+q,null).body()).path("messages").intValue()).isZero();
-        var rabbit=new RabbitTemplate(cf); rabbit.convertAndSend(e,"key","preserve");
-        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(409);
-        assertThat(rabbit.receive(q,2000)).isNotNull();
-        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(204);
+        var rabbit=new RabbitTemplate(cf);
+        for(String body:List.of("preserve-1","preserve-2","preserve-3")) rabbit.convertAndSend(e,"key",body);
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(403);
+        assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200);
+        var retained=new ArrayList<String>();
+        for(int i=0;i<3;i++) retained.add(new String(rabbit.receive(q,2000).getBody(),java.nio.charset.StandardCharsets.UTF_8));
+        // Publications can use different cached channels: verify all contents, not cross-channel order.
+        assertThat(retained).containsExactlyInAnyOrder("preserve-1","preserve-2","preserve-3");
+        assertThat(rabbit.receive(q,100)).isNull();
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(403);
     }
     @Test void unacknowledgedMessageMustPreventDeletion() throws Exception {
         String q=queue(),e=exchange("direct"); bind(q,e);
         new RabbitTemplate(cf).convertAndSend(e,"key","must-not-be-deleted-unacked");
-        try(var connection=cf.createConnection();var channel=connection.createChannel(false)) {
+        var raw=new com.rabbitmq.client.ConnectionFactory();
+        raw.setHost(BROKER.getHost()); raw.setPort(BROKER.getAmqpPort());
+        raw.setUsername("p360-admin-demo"); raw.setPassword("local-test-only"); raw.setVirtualHost(SandboxRules.VHOST);
+        // A real client channel, not a Spring cached proxy: close really requeues pending ACKs.
+        try(var connection=raw.newConnection();var channel=connection.createChannel()) {
             var delivery=channel.basicGet(q,false);
             assertThat(delivery).isNotNull();
             var read=JSON.readTree(call("GET","/queues/"+q,null).body());
             assertThat(read.path("messages").intValue()).isZero();
             assertThat(read.path("consumers").intValue()).isZero();
             // A ready-count snapshot is not proof that no message remains awaiting ACK.
-            assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(409);
+            assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(403);
+            assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200);
         }
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() ->
+            assertThat(JSON.readTree(call("GET","/queues/"+q,null).body()).path("messages").intValue()).isEqualTo(1));
+        assertThat(new RabbitTemplate(cf).receive(q,2000).getBody())
+            .isEqualTo("must-not-be-deleted-unacked".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        assertThat(new RabbitTemplate(cf).receive(q,100)).isNull();
     }
     @Test void queueConsumerAddedAfterReadPreventsDeletion() throws Exception {
         String q=queue();
@@ -140,10 +195,11 @@ class RabbitAdminIntegrationTests {
         try(var connection=cf.createConnection();var channel=connection.createChannel(false)) {
             String consumer=channel.basicConsume(q,true,(tag,msg) -> {},tag -> {});
             await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> assertThat(JSON.readTree(call("GET","/queues/"+q,null).body()).path("consumers").intValue()).isEqualTo(1));
-            assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(409);
+            assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(403);
             channel.basicCancel(consumer);
         }
-        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(204);
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(403);
+        assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200);
     }
     @ParameterizedTest @ValueSource(strings={"amq.topic","p360.queries","p360.pedidos.confirmacion.q","demo.old","p360.demo","p360.demo.-bad","p360.demo.bad@name"})
     void protectedNamesRejectedOnAllResourceRoutes(String n) throws Exception {
@@ -173,7 +229,7 @@ class RabbitAdminIntegrationTests {
         }
         assertThat(call("PUT","/queues/"+q,"{\"durable\":true}").statusCode()).isEqualTo(409);
         assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200);
-        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(409);
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(403);
         assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200); // No unconditional fallback.
     }
     @Test void callerQueryCannotSelectConnection() throws Exception {
@@ -221,8 +277,9 @@ class RabbitAdminIntegrationTests {
     @Test void auditDoesNotExposeRequestOrToken(org.springframework.boot.test.system.CapturedOutput output) throws Exception {
         String secret="AUDIT_SECRET_SENTINEL",jwt=token(Map.of());
         queue();
+        String q=queue(); assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(403);
         assertThat(request("PUT","/queues/"+name(),"{\"durable\":true,\"password\":\""+secret+"\"}",jwt).statusCode()).isEqualTo(400);
-        assertThat(output.getAll()).contains("RabbitAdmin requestId=","actorHash=","operation=PUT_QUEUE").doesNotContain(secret,jwt,"local-test-only",OID);
+        assertThat(output.getAll()).contains("RabbitAdmin requestId=","actorHash=","operation=PUT_QUEUE","operation=DELETE_QUEUE","outcome=FORBIDDEN").doesNotContain(secret,jwt,"local-test-only",OID);
     }
     @ParameterizedTest @ValueSource(strings={"exp","nbf"})
     void missingLifetimeIsUnauthorized(String claim) throws Exception {
@@ -240,7 +297,7 @@ class RabbitAdminIntegrationTests {
         try {
             assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(503);
             assertThat(call("PUT","/queues/"+name(),"{\"durable\":true}").statusCode()).isEqualTo(503);
-            assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(503);
+            assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(403);
         } finally { check("rabbitmqctl","start_app"); }
         await().atMost(Duration.ofSeconds(15)).untilAsserted(() -> assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200));
     }

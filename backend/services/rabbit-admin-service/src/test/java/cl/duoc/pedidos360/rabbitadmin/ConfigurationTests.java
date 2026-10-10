@@ -5,6 +5,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
 class ConfigurationTests {
+    @Test void queueDeletionIsBlockedInServiceWithoutAnyAmqpInteraction() {
+        var admin=org.mockito.Mockito.mock(org.springframework.amqp.rabbit.core.RabbitAdmin.class);
+        var service=new RabbitAdminService(admin);
+        assertThatThrownBy(() -> service.deleteQueue("p360.demo.allowed"))
+            .isInstanceOf(AdminFailure.class)
+            .hasMessage("Eliminación de queues deshabilitada por política de seguridad.")
+            .satisfies(e -> assertThat(((AdminFailure)e).status()).isEqualTo(org.springframework.http.HttpStatus.FORBIDDEN));
+        assertThatThrownBy(() -> service.deleteQueue("p360.queries")).isInstanceOf(AdminFailure.class);
+        assertThatThrownBy(() -> service.deleteQueue("")).isInstanceOf(AdminFailure.class);
+        org.mockito.Mockito.verifyNoInteractions(admin);
+    }
     @Test void emptyAndDefaultExchangeNamesAreInvalid() {
         assertThatThrownBy(() -> SandboxRules.name("")).isInstanceOf(AdminFailure.class)
             .satisfies(e -> assertThat(((AdminFailure)e).status()).isEqualTo(org.springframework.http.HttpStatus.BAD_REQUEST));
