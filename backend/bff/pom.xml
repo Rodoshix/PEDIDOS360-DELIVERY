@@ -6,6 +6,7 @@
   <properties>
         <rabbit-amqp-client.version>5.37.0</rabbit-amqp-client.version>
         <jackson-bom.version>3.1.7</jackson-bom.version>
+        <tomcat.version>11.0.26</tomcat.version>
 <java.version>21</java.version></properties>
   <dependencies>
     <!-- Base comun de request/reply y reliability simple (EP2-12). -->

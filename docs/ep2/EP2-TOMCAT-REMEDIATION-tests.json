@@ -1,0 +1,2068 @@
+{
+  "base": "1e39a4c3a3d3e0d1abf589b47a752afc7147bb1f",
+  "branch": "codex/71-tomcat-security",
+  "properties": {
+    "tomcat.version": "11.0.26"
+  },
+  "sourceSHA256": {
+    "backend/bff/pom.xml": "09106a5557e519b68853fafe2f30e6bc12f778fde61deb4789c1b3f06d996ffb",
+    "backend/services/carrito-service/pom.xml": "fb49706b7998fec43e447ba28525de58e62a7b88018fdbdb3c08d21b3529a080",
+    "backend/services/pagos-service/pom.xml": "45c575977a93df927b5cd239942a8fa3610920b75dfb15170e7bbe4060fafaea",
+    "backend/services/pedidos-service/pom.xml": "66088899016d2f67e8526a4c5a2024d3a0aadda5f69292f34115500483ea1cc7",
+    "backend/services/productos-service/pom.xml": "afd33a3d5c18553ec580b81a1b94c6a1f3f18c4d01fd30a6164c280e07a5dd38",
+    "backend/services/restaurantes-service/pom.xml": "e83e2a55d41a3f876ef480bcc217153db05f125bdaff40dc6de5b6d42787a7f1",
+    "backend/services/usuarios-service/pom.xml": "1abc9e58f166c438fb2c22bfd62ac8892c3b3f9a31e3ff9877432499e2a5694f",
+    "backend/shared/p360-messaging-core/pom.xml": "7b6007ba9c3375e0e87b6d19ef74020b53dff9c5a844f47350151a565e51dadb",
+    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/BffSecurityTests.java": "8937fab529a5a130f63d8234d359cdab11442467144e7d72213bd9ad4a468962"
+  },
+  "modules": [
+    {
+      "module": "shared/p360-messaging-core",
+      "command": [
+        "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
+        "-B",
+        "-ntp",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "clean",
+        "install"
+      ],
+      "startUTC": "2026-10-10T08:04:35.252383+00:00",
+      "exitCode": 0,
+      "totals": {
+        "tests": 265,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "classes": [
+        {
+          "name": "cl.duoc.pedidos360.messaging.ActorSecurityTests",
+          "tests": 29,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.CarritoCommandContractTests",
+          "tests": 16,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.ClasificacionFallosTest",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests",
+          "tests": 24,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.IdentityProofTests",
+          "tests": 48,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.MessagingContractTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.PagosIdentityProofTests",
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.PlatformCompatibilityTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.QueryMessagingFlowTests",
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.RecoveryRealTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.RelayReliabilityTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests",
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.SettlementPublicationTests",
+          "tests": 38,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "jars": [
+        {
+          "file": "p360-messaging-core-0.0.1-SNAPSHOT.jar",
+          "sha256": "c11ac740fe718168243858da9816614624aeca8aa04de4b23e7ab3e817f4ec3c",
+          "libraries": []
+        }
+      ]
+    },
+    {
+      "module": "bff",
+      "command": [
+        "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
+        "-B",
+        "-ntp",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "clean",
+        "verify"
+      ],
+      "startUTC": "2026-10-10T08:05:24.616789+00:00",
+      "exitCode": 0,
+      "totals": {
+        "tests": 205,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "classes": [
+        {
+          "name": "cl.duoc.pedidos360.bff.BffSecurityTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.client.ComercioInternalIsolationTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.ConnectionConfigurationTests",
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.JwtHttpTests",
+          "tests": 27,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.messaging.BffCatalogResponseBindingTests",
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests",
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests",
+          "tests": 43,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests",
+          "tests": 15,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapterTests",
+          "tests": 24,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.messaging.BffTemporalBarrierTests",
+          "tests": 21,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests",
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.PedidosPagosDisabledTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.bff.security.EntraJwtTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "jars": [
+        {
+          "file": "bff-0.0.1-SNAPSHOT.jar",
+          "sha256": "65ced1eb90f2df9749523294cbb3b8590e3d8dd08c1106be9176ad842a509fc3",
+          "libraries": [
+            "BOOT-INF/lib/",
+            "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
+            "BOOT-INF/lib/nimbus-jose-jwt-10.9.1.jar",
+            "BOOT-INF/lib/spring-boot-jackson-4.1.1.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
+            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
+            "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
+            "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
+            "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
+            "BOOT-INF/lib/classmate-1.7.3.jar",
+            "BOOT-INF/lib/logback-classic-1.5.38.jar",
+            "BOOT-INF/lib/logback-core-1.5.38.jar",
+            "BOOT-INF/lib/log4j-to-slf4j-2.25.5.jar",
+            "BOOT-INF/lib/log4j-api-2.25.5.jar",
+            "BOOT-INF/lib/jul-to-slf4j-2.0.18.jar",
+            "BOOT-INF/lib/jakarta.annotation-api-3.0.0.jar",
+            "BOOT-INF/lib/snakeyaml-2.6.jar",
+            "BOOT-INF/lib/spring-boot-amqp-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-4.1.1.jar",
+            "BOOT-INF/lib/spring-context-7.0.9.jar",
+            "BOOT-INF/lib/spring-messaging-7.0.9.jar",
+            "BOOT-INF/lib/spring-rabbit-4.1.1.jar",
+            "BOOT-INF/lib/spring-amqp-4.1.1.jar",
+            "BOOT-INF/lib/amqp-client-5.30.0.jar",
+            "BOOT-INF/lib/netty-transport-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-buffer-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-resolver-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-base-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-compression-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-protobuf-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-marshalling-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-handler-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-transport-native-unix-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/spring-tx-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-transaction-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-persistence-4.1.1.jar",
+            "BOOT-INF/lib/slf4j-api-2.0.18.jar",
+            "BOOT-INF/lib/jackson-annotations-2.21.jar",
+            "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-security-oauth2-resource-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-jose-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-crypto-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-resource-server-7.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
+            "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
+            "BOOT-INF/lib/spring-web-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-webmvc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
+            "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
+            "BOOT-INF/lib/spring-expression-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-security-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-config-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-web-7.1.1.jar",
+            "BOOT-INF/lib/spring-aop-7.0.9.jar",
+            "BOOT-INF/lib/spring-beans-7.0.9.jar",
+            "BOOT-INF/lib/spring-core-7.0.9.jar",
+            "BOOT-INF/lib/commons-logging-1.3.6.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-health-4.1.1.jar",
+            "BOOT-INF/lib/micrometer-observation-1.17.1.jar",
+            "BOOT-INF/lib/jspecify-1.0.1.jar",
+            "BOOT-INF/lib/micrometer-commons-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-jakarta9-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-core-1.17.1.jar",
+            "BOOT-INF/lib/HdrHistogram-2.2.2.jar",
+            "BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jarmode-tools-4.1.1.jar"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "services/usuarios-service",
+      "command": [
+        "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
+        "-B",
+        "-ntp",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "clean",
+        "verify"
+      ],
+      "startUTC": "2026-10-10T08:06:38.341941+00:00",
+      "exitCode": 0,
+      "totals": {
+        "tests": 79,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "classes": [
+        {
+          "name": "cl.duoc.pedidos360.usuarios.JwtHttpTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.security.EntraJwtTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuariosApplicationTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuariosRabbitTests",
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "jars": [
+        {
+          "file": "usuarios-service-0.0.1-SNAPSHOT.jar",
+          "sha256": "c023697e9d6a95112d3252b13f2f61edcd2003d97835220813c6263b79557990",
+          "libraries": [
+            "BOOT-INF/lib/",
+            "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
+            "BOOT-INF/lib/nimbus-jose-jwt-10.9.1.jar",
+            "BOOT-INF/lib/spring-boot-jackson-4.1.1.jar",
+            "BOOT-INF/lib/logback-classic-1.5.38.jar",
+            "BOOT-INF/lib/logback-core-1.5.38.jar",
+            "BOOT-INF/lib/log4j-to-slf4j-2.25.5.jar",
+            "BOOT-INF/lib/log4j-api-2.25.5.jar",
+            "BOOT-INF/lib/jul-to-slf4j-2.0.18.jar",
+            "BOOT-INF/lib/jakarta.annotation-api-3.0.0.jar",
+            "BOOT-INF/lib/snakeyaml-2.6.jar",
+            "BOOT-INF/lib/spring-boot-amqp-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-4.1.1.jar",
+            "BOOT-INF/lib/spring-context-7.0.9.jar",
+            "BOOT-INF/lib/spring-messaging-7.0.9.jar",
+            "BOOT-INF/lib/spring-rabbit-4.1.1.jar",
+            "BOOT-INF/lib/spring-amqp-4.1.1.jar",
+            "BOOT-INF/lib/amqp-client-5.30.0.jar",
+            "BOOT-INF/lib/netty-transport-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-buffer-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-resolver-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-base-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-compression-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-protobuf-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-marshalling-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-handler-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-transport-native-unix-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/spring-tx-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-transaction-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-persistence-4.1.1.jar",
+            "BOOT-INF/lib/slf4j-api-2.0.18.jar",
+            "BOOT-INF/lib/jackson-annotations-2.21.jar",
+            "BOOT-INF/lib/spring-boot-security-oauth2-resource-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-jose-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-crypto-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-resource-server-7.1.1.jar",
+            "BOOT-INF/lib/spring-boot-security-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-config-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-web-7.1.1.jar",
+            "BOOT-INF/lib/spring-expression-7.0.9.jar",
+            "BOOT-INF/lib/spring-aop-7.0.9.jar",
+            "BOOT-INF/lib/spring-beans-7.0.9.jar",
+            "BOOT-INF/lib/spring-core-7.0.9.jar",
+            "BOOT-INF/lib/commons-logging-1.3.6.jar",
+            "BOOT-INF/lib/HikariCP-7.0.2.jar",
+            "BOOT-INF/lib/spring-boot-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-hibernate-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jpa-4.1.1.jar",
+            "BOOT-INF/lib/jakarta.persistence-api-3.2.0.jar",
+            "BOOT-INF/lib/hibernate-core-7.4.5.Final.jar",
+            "BOOT-INF/lib/jakarta.transaction-api-2.0.1.jar",
+            "BOOT-INF/lib/hibernate-models-1.1.1.jar",
+            "BOOT-INF/lib/jaxb-runtime-4.0.9.jar",
+            "BOOT-INF/lib/jaxb-core-4.0.9.jar",
+            "BOOT-INF/lib/angus-activation-2.0.3.jar",
+            "BOOT-INF/lib/txw2-4.0.9.jar",
+            "BOOT-INF/lib/istack-commons-runtime-4.1.2.jar",
+            "BOOT-INF/lib/jakarta.inject-api-2.0.1.jar",
+            "BOOT-INF/lib/spring-orm-7.0.9.jar",
+            "BOOT-INF/lib/spring-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/antlr4-runtime-4.13.2.jar",
+            "BOOT-INF/lib/spring-aspects-7.0.9.jar",
+            "BOOT-INF/lib/aspectjweaver-1.9.25.1.jar",
+            "BOOT-INF/lib/spring-boot-jdbc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-sql-4.1.1.jar",
+            "BOOT-INF/lib/spring-jdbc-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
+            "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
+            "BOOT-INF/lib/flyway-core-12.4.0.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
+            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/postgresql-42.7.13.jar",
+            "BOOT-INF/lib/checker-qual-3.55.1.jar",
+            "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
+            "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
+            "BOOT-INF/lib/spring-web-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-webmvc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
+            "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
+            "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
+            "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
+            "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
+            "BOOT-INF/lib/classmate-1.7.3.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-health-4.1.1.jar",
+            "BOOT-INF/lib/micrometer-observation-1.17.1.jar",
+            "BOOT-INF/lib/jspecify-1.0.1.jar",
+            "BOOT-INF/lib/micrometer-commons-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-jakarta9-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-core-1.17.1.jar",
+            "BOOT-INF/lib/HdrHistogram-2.2.2.jar",
+            "BOOT-INF/lib/jakarta.xml.bind-api-4.0.5.jar",
+            "BOOT-INF/lib/jakarta.activation-api-2.1.4.jar",
+            "BOOT-INF/lib/byte-buddy-1.18.11.jar",
+            "BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jarmode-tools-4.1.1.jar"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "services/restaurantes-service",
+      "command": [
+        "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
+        "-B",
+        "-ntp",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "clean",
+        "verify"
+      ],
+      "startUTC": "2026-10-10T08:07:36.520752+00:00",
+      "exitCode": 0,
+      "totals": {
+        "tests": 34,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "classes": [
+        {
+          "name": "cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests",
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "jars": [
+        {
+          "file": "restaurantes-service-0.0.1-SNAPSHOT.jar",
+          "sha256": "163f378bb064b64968f929e59c3ebcbabbf0d750c0630f696c51a7e11d4c1bcb",
+          "libraries": [
+            "BOOT-INF/lib/",
+            "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
+            "BOOT-INF/lib/nimbus-jose-jwt-10.9.1.jar",
+            "BOOT-INF/lib/spring-boot-jackson-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-crypto-7.1.1.jar",
+            "BOOT-INF/lib/spring-aop-7.0.9.jar",
+            "BOOT-INF/lib/spring-beans-7.0.9.jar",
+            "BOOT-INF/lib/spring-context-7.0.9.jar",
+            "BOOT-INF/lib/spring-core-7.0.9.jar",
+            "BOOT-INF/lib/commons-logging-1.3.6.jar",
+            "BOOT-INF/lib/jspecify-1.0.1.jar",
+            "BOOT-INF/lib/spring-expression-7.0.9.jar",
+            "BOOT-INF/lib/micrometer-observation-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-commons-1.17.1.jar",
+            "BOOT-INF/lib/logback-classic-1.5.38.jar",
+            "BOOT-INF/lib/logback-core-1.5.38.jar",
+            "BOOT-INF/lib/log4j-to-slf4j-2.25.5.jar",
+            "BOOT-INF/lib/log4j-api-2.25.5.jar",
+            "BOOT-INF/lib/jul-to-slf4j-2.0.18.jar",
+            "BOOT-INF/lib/jakarta.annotation-api-3.0.0.jar",
+            "BOOT-INF/lib/snakeyaml-2.6.jar",
+            "BOOT-INF/lib/spring-boot-amqp-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-4.1.1.jar",
+            "BOOT-INF/lib/spring-messaging-7.0.9.jar",
+            "BOOT-INF/lib/spring-rabbit-4.1.1.jar",
+            "BOOT-INF/lib/spring-amqp-4.1.1.jar",
+            "BOOT-INF/lib/amqp-client-5.30.0.jar",
+            "BOOT-INF/lib/netty-transport-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-buffer-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-resolver-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-base-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-compression-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-protobuf-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-marshalling-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-handler-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-transport-native-unix-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/spring-tx-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-transaction-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-persistence-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/slf4j-api-2.0.18.jar",
+            "BOOT-INF/lib/commons-lang3-3.20.0.jar",
+            "BOOT-INF/lib/jackson-annotations-2.21.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
+            "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
+            "BOOT-INF/lib/spring-web-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-webmvc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
+            "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
+            "BOOT-INF/lib/HikariCP-7.0.2.jar",
+            "BOOT-INF/lib/spring-boot-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-hibernate-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jpa-4.1.1.jar",
+            "BOOT-INF/lib/jakarta.persistence-api-3.2.0.jar",
+            "BOOT-INF/lib/hibernate-core-7.4.5.Final.jar",
+            "BOOT-INF/lib/jakarta.transaction-api-2.0.1.jar",
+            "BOOT-INF/lib/hibernate-models-1.1.1.jar",
+            "BOOT-INF/lib/jaxb-runtime-4.0.9.jar",
+            "BOOT-INF/lib/jaxb-core-4.0.9.jar",
+            "BOOT-INF/lib/angus-activation-2.0.3.jar",
+            "BOOT-INF/lib/txw2-4.0.9.jar",
+            "BOOT-INF/lib/istack-commons-runtime-4.1.2.jar",
+            "BOOT-INF/lib/jakarta.inject-api-2.0.1.jar",
+            "BOOT-INF/lib/spring-orm-7.0.9.jar",
+            "BOOT-INF/lib/spring-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/antlr4-runtime-4.13.2.jar",
+            "BOOT-INF/lib/spring-aspects-7.0.9.jar",
+            "BOOT-INF/lib/aspectjweaver-1.9.25.1.jar",
+            "BOOT-INF/lib/spring-boot-jdbc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-sql-4.1.1.jar",
+            "BOOT-INF/lib/spring-jdbc-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
+            "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
+            "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
+            "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
+            "BOOT-INF/lib/classmate-1.7.3.jar",
+            "BOOT-INF/lib/postgresql-42.7.13.jar",
+            "BOOT-INF/lib/checker-qual-3.55.1.jar",
+            "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
+            "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
+            "BOOT-INF/lib/flyway-core-12.4.0.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
+            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-health-4.1.1.jar",
+            "BOOT-INF/lib/micrometer-jakarta9-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-core-1.17.1.jar",
+            "BOOT-INF/lib/HdrHistogram-2.2.2.jar",
+            "BOOT-INF/lib/jakarta.xml.bind-api-4.0.5.jar",
+            "BOOT-INF/lib/jakarta.activation-api-2.1.4.jar",
+            "BOOT-INF/lib/byte-buddy-1.18.11.jar",
+            "BOOT-INF/lib/springdoc-openapi-starter-webmvc-ui-3.1.1.jar",
+            "BOOT-INF/lib/springdoc-openapi-starter-webmvc-api-3.1.1.jar",
+            "BOOT-INF/lib/springdoc-openapi-starter-common-3.1.1.jar",
+            "BOOT-INF/lib/swagger-core-jakarta-2.2.55.jar",
+            "BOOT-INF/lib/swagger-annotations-jakarta-2.2.55.jar",
+            "BOOT-INF/lib/swagger-models-jakarta-2.2.55.jar",
+            "BOOT-INF/lib/jackson-databind-2.21.5.jar",
+            "BOOT-INF/lib/jackson-core-2.21.5.jar",
+            "BOOT-INF/lib/jackson-dataformat-yaml-2.21.5.jar",
+            "BOOT-INF/lib/jackson-datatype-jsr310-2.21.5.jar",
+            "BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
+            "BOOT-INF/lib/swagger-ui-5.32.14.jar",
+            "BOOT-INF/lib/webjars-locator-lite-1.1.4.jar",
+            "BOOT-INF/lib/spring-boot-jarmode-tools-4.1.1.jar"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "services/productos-service",
+      "command": [
+        "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
+        "-B",
+        "-ntp",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "clean",
+        "verify"
+      ],
+      "startUTC": "2026-10-10T08:08:19.274686+00:00",
+      "exitCode": 0,
+      "totals": {
+        "tests": 44,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "classes": [
+        {
+          "name": "cl.duoc.pedidos360.productos.ProductosConfigurationTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.productos.ProductosHttpRegressionTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.productos.ProductosQueryProcessorTests",
+          "tests": 13,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.productos.ProductosRabbitTests",
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "jars": [
+        {
+          "file": "productos-service-0.0.1-SNAPSHOT.jar",
+          "sha256": "3168a454188779ef69129fdf31966f5d8d9afafabbb96be85563201552d9e4bf",
+          "libraries": [
+            "BOOT-INF/lib/",
+            "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
+            "BOOT-INF/lib/nimbus-jose-jwt-10.9.1.jar",
+            "BOOT-INF/lib/spring-boot-jackson-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-crypto-7.1.1.jar",
+            "BOOT-INF/lib/spring-aop-7.0.9.jar",
+            "BOOT-INF/lib/spring-beans-7.0.9.jar",
+            "BOOT-INF/lib/spring-context-7.0.9.jar",
+            "BOOT-INF/lib/spring-core-7.0.9.jar",
+            "BOOT-INF/lib/commons-logging-1.3.6.jar",
+            "BOOT-INF/lib/jspecify-1.0.1.jar",
+            "BOOT-INF/lib/spring-expression-7.0.9.jar",
+            "BOOT-INF/lib/micrometer-observation-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-commons-1.17.1.jar",
+            "BOOT-INF/lib/logback-classic-1.5.38.jar",
+            "BOOT-INF/lib/logback-core-1.5.38.jar",
+            "BOOT-INF/lib/log4j-to-slf4j-2.25.5.jar",
+            "BOOT-INF/lib/log4j-api-2.25.5.jar",
+            "BOOT-INF/lib/jul-to-slf4j-2.0.18.jar",
+            "BOOT-INF/lib/jakarta.annotation-api-3.0.0.jar",
+            "BOOT-INF/lib/snakeyaml-2.6.jar",
+            "BOOT-INF/lib/spring-boot-amqp-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-4.1.1.jar",
+            "BOOT-INF/lib/spring-messaging-7.0.9.jar",
+            "BOOT-INF/lib/spring-rabbit-4.1.1.jar",
+            "BOOT-INF/lib/spring-amqp-4.1.1.jar",
+            "BOOT-INF/lib/amqp-client-5.30.0.jar",
+            "BOOT-INF/lib/netty-transport-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-buffer-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-resolver-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-base-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-compression-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-protobuf-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-marshalling-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-handler-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-transport-native-unix-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/spring-tx-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-transaction-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-persistence-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/slf4j-api-2.0.18.jar",
+            "BOOT-INF/lib/commons-lang3-3.20.0.jar",
+            "BOOT-INF/lib/jackson-annotations-2.21.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
+            "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
+            "BOOT-INF/lib/spring-web-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-webmvc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
+            "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
+            "BOOT-INF/lib/HikariCP-7.0.2.jar",
+            "BOOT-INF/lib/spring-boot-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-hibernate-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jpa-4.1.1.jar",
+            "BOOT-INF/lib/jakarta.persistence-api-3.2.0.jar",
+            "BOOT-INF/lib/hibernate-core-7.4.5.Final.jar",
+            "BOOT-INF/lib/jakarta.transaction-api-2.0.1.jar",
+            "BOOT-INF/lib/hibernate-models-1.1.1.jar",
+            "BOOT-INF/lib/jaxb-runtime-4.0.9.jar",
+            "BOOT-INF/lib/jaxb-core-4.0.9.jar",
+            "BOOT-INF/lib/angus-activation-2.0.3.jar",
+            "BOOT-INF/lib/txw2-4.0.9.jar",
+            "BOOT-INF/lib/istack-commons-runtime-4.1.2.jar",
+            "BOOT-INF/lib/jakarta.inject-api-2.0.1.jar",
+            "BOOT-INF/lib/spring-orm-7.0.9.jar",
+            "BOOT-INF/lib/spring-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/antlr4-runtime-4.13.2.jar",
+            "BOOT-INF/lib/spring-aspects-7.0.9.jar",
+            "BOOT-INF/lib/aspectjweaver-1.9.25.1.jar",
+            "BOOT-INF/lib/spring-boot-jdbc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-sql-4.1.1.jar",
+            "BOOT-INF/lib/spring-jdbc-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
+            "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
+            "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
+            "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
+            "BOOT-INF/lib/classmate-1.7.3.jar",
+            "BOOT-INF/lib/postgresql-42.7.13.jar",
+            "BOOT-INF/lib/checker-qual-3.55.1.jar",
+            "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
+            "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
+            "BOOT-INF/lib/flyway-core-12.4.0.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
+            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-health-4.1.1.jar",
+            "BOOT-INF/lib/micrometer-jakarta9-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-core-1.17.1.jar",
+            "BOOT-INF/lib/HdrHistogram-2.2.2.jar",
+            "BOOT-INF/lib/jakarta.xml.bind-api-4.0.5.jar",
+            "BOOT-INF/lib/jakarta.activation-api-2.1.4.jar",
+            "BOOT-INF/lib/byte-buddy-1.18.11.jar",
+            "BOOT-INF/lib/springdoc-openapi-starter-webmvc-ui-3.1.1.jar",
+            "BOOT-INF/lib/springdoc-openapi-starter-webmvc-api-3.1.1.jar",
+            "BOOT-INF/lib/springdoc-openapi-starter-common-3.1.1.jar",
+            "BOOT-INF/lib/swagger-core-jakarta-2.2.55.jar",
+            "BOOT-INF/lib/swagger-annotations-jakarta-2.2.55.jar",
+            "BOOT-INF/lib/swagger-models-jakarta-2.2.55.jar",
+            "BOOT-INF/lib/jackson-databind-2.21.5.jar",
+            "BOOT-INF/lib/jackson-core-2.21.5.jar",
+            "BOOT-INF/lib/jackson-dataformat-yaml-2.21.5.jar",
+            "BOOT-INF/lib/jackson-datatype-jsr310-2.21.5.jar",
+            "BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
+            "BOOT-INF/lib/swagger-ui-5.32.14.jar",
+            "BOOT-INF/lib/webjars-locator-lite-1.1.4.jar",
+            "BOOT-INF/lib/spring-boot-jarmode-tools-4.1.1.jar"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "services/carrito-service",
+      "command": [
+        "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
+        "-B",
+        "-ntp",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "clean",
+        "verify"
+      ],
+      "startUTC": "2026-10-10T08:08:58.413255+00:00",
+      "exitCode": 0,
+      "totals": {
+        "tests": 99,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "classes": [
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoApiTests",
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoApplicationTests",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoCatalogoApiTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
+          "tests": 26,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoConcurrenciaTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoEntraHttpTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoMigrationCompatibilityTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoRepositoryTests",
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoServiceTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.CarritoTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.LocalIdentityConfigurationTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.security.EntraJwtTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.carrito.security.LocalIdentityFilterTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "jars": [
+        {
+          "file": "carrito-service-0.0.1-SNAPSHOT.jar",
+          "sha256": "2908aaaf0f7aedd62d19a79a73408fe7e1b3787e0c42afaf523e4af861957618",
+          "libraries": [
+            "BOOT-INF/lib/",
+            "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
+            "BOOT-INF/lib/nimbus-jose-jwt-10.9.1.jar",
+            "BOOT-INF/lib/spring-boot-jackson-4.1.1.jar",
+            "BOOT-INF/lib/logback-classic-1.5.38.jar",
+            "BOOT-INF/lib/logback-core-1.5.38.jar",
+            "BOOT-INF/lib/log4j-to-slf4j-2.25.5.jar",
+            "BOOT-INF/lib/log4j-api-2.25.5.jar",
+            "BOOT-INF/lib/jul-to-slf4j-2.0.18.jar",
+            "BOOT-INF/lib/jakarta.annotation-api-3.0.0.jar",
+            "BOOT-INF/lib/snakeyaml-2.6.jar",
+            "BOOT-INF/lib/spring-boot-amqp-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-4.1.1.jar",
+            "BOOT-INF/lib/spring-context-7.0.9.jar",
+            "BOOT-INF/lib/spring-messaging-7.0.9.jar",
+            "BOOT-INF/lib/spring-rabbit-4.1.1.jar",
+            "BOOT-INF/lib/spring-amqp-4.1.1.jar",
+            "BOOT-INF/lib/amqp-client-5.30.0.jar",
+            "BOOT-INF/lib/netty-transport-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-buffer-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-resolver-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-base-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-compression-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-protobuf-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-marshalling-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-handler-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-transport-native-unix-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/spring-tx-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-transaction-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-persistence-4.1.1.jar",
+            "BOOT-INF/lib/slf4j-api-2.0.18.jar",
+            "BOOT-INF/lib/jackson-annotations-2.21.jar",
+            "BOOT-INF/lib/spring-boot-security-oauth2-resource-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-jose-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-crypto-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-resource-server-7.1.1.jar",
+            "BOOT-INF/lib/HikariCP-7.0.2.jar",
+            "BOOT-INF/lib/spring-boot-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-hibernate-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jpa-4.1.1.jar",
+            "BOOT-INF/lib/jakarta.persistence-api-3.2.0.jar",
+            "BOOT-INF/lib/hibernate-core-7.4.5.Final.jar",
+            "BOOT-INF/lib/jakarta.transaction-api-2.0.1.jar",
+            "BOOT-INF/lib/hibernate-models-1.1.1.jar",
+            "BOOT-INF/lib/jaxb-runtime-4.0.9.jar",
+            "BOOT-INF/lib/jaxb-core-4.0.9.jar",
+            "BOOT-INF/lib/angus-activation-2.0.3.jar",
+            "BOOT-INF/lib/txw2-4.0.9.jar",
+            "BOOT-INF/lib/istack-commons-runtime-4.1.2.jar",
+            "BOOT-INF/lib/jakarta.inject-api-2.0.1.jar",
+            "BOOT-INF/lib/spring-orm-7.0.9.jar",
+            "BOOT-INF/lib/spring-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/antlr4-runtime-4.13.2.jar",
+            "BOOT-INF/lib/spring-aspects-7.0.9.jar",
+            "BOOT-INF/lib/aspectjweaver-1.9.25.1.jar",
+            "BOOT-INF/lib/spring-boot-jdbc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-sql-4.1.1.jar",
+            "BOOT-INF/lib/spring-jdbc-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
+            "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
+            "BOOT-INF/lib/flyway-core-12.4.0.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
+            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/postgresql-42.7.13.jar",
+            "BOOT-INF/lib/checker-qual-3.55.1.jar",
+            "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
+            "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
+            "BOOT-INF/lib/spring-web-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-webmvc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
+            "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
+            "BOOT-INF/lib/spring-expression-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-security-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-config-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-web-7.1.1.jar",
+            "BOOT-INF/lib/spring-aop-7.0.9.jar",
+            "BOOT-INF/lib/spring-beans-7.0.9.jar",
+            "BOOT-INF/lib/spring-core-7.0.9.jar",
+            "BOOT-INF/lib/commons-logging-1.3.6.jar",
+            "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
+            "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
+            "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
+            "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
+            "BOOT-INF/lib/classmate-1.7.3.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-health-4.1.1.jar",
+            "BOOT-INF/lib/micrometer-observation-1.17.1.jar",
+            "BOOT-INF/lib/jspecify-1.0.1.jar",
+            "BOOT-INF/lib/micrometer-commons-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-jakarta9-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-core-1.17.1.jar",
+            "BOOT-INF/lib/HdrHistogram-2.2.2.jar",
+            "BOOT-INF/lib/jakarta.xml.bind-api-4.0.5.jar",
+            "BOOT-INF/lib/jakarta.activation-api-2.1.4.jar",
+            "BOOT-INF/lib/byte-buddy-1.18.11.jar",
+            "BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jarmode-tools-4.1.1.jar"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "services/pedidos-service",
+      "command": [
+        "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
+        "-B",
+        "-ntp",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "clean",
+        "verify"
+      ],
+      "startUTC": "2026-10-10T08:10:03.584786+00:00",
+      "exitCode": 0,
+      "totals": {
+        "tests": 152,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "classes": [
+        {
+          "name": "cl.duoc.pedidos360.pedidos.CarritoOutboxMigrationCompatibilityTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.CarritoPublisherIntegrationTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.CarritoSnapshotClientTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.CatalogoPedidosHttpTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.DelegadoHttpTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.EstadoPedidoTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.messaging.ConfirmacionConsumerRecoveryTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.PedidoAutorizacionTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.PedidoCarritoOutboxTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.PedidoConfirmacionPagoTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.PedidoInternoSeguridadHttpTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.PedidoRepositoryTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.PedidosApplicationTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.PedidoTenantIsolationTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.RabbitConsumerTests",
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.ReliabilityPolicyTests",
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.security.EntraJwtTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.security.SeguridadInternaTests",
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.security.TenantIdentityTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.TenantMigrationTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 1
+        }
+      ],
+      "jars": [
+        {
+          "file": "pedidos-service-0.0.1-SNAPSHOT.jar",
+          "sha256": "0057d745daec6a4a06f4f0f1bd9f2c652fe04dd75b6d88b8e0c16e7b6c2b65ec",
+          "libraries": [
+            "BOOT-INF/lib/",
+            "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
+            "BOOT-INF/lib/nimbus-jose-jwt-10.9.1.jar",
+            "BOOT-INF/lib/spring-boot-jackson-4.1.1.jar",
+            "BOOT-INF/lib/logback-classic-1.5.38.jar",
+            "BOOT-INF/lib/logback-core-1.5.38.jar",
+            "BOOT-INF/lib/log4j-to-slf4j-2.25.5.jar",
+            "BOOT-INF/lib/log4j-api-2.25.5.jar",
+            "BOOT-INF/lib/jul-to-slf4j-2.0.18.jar",
+            "BOOT-INF/lib/jakarta.annotation-api-3.0.0.jar",
+            "BOOT-INF/lib/snakeyaml-2.6.jar",
+            "BOOT-INF/lib/spring-boot-amqp-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-4.1.1.jar",
+            "BOOT-INF/lib/spring-context-7.0.9.jar",
+            "BOOT-INF/lib/spring-messaging-7.0.9.jar",
+            "BOOT-INF/lib/spring-rabbit-4.1.1.jar",
+            "BOOT-INF/lib/spring-amqp-4.1.1.jar",
+            "BOOT-INF/lib/amqp-client-5.30.0.jar",
+            "BOOT-INF/lib/netty-transport-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-buffer-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-resolver-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-base-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-compression-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-protobuf-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-marshalling-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-handler-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-transport-native-unix-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/spring-tx-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-transaction-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-persistence-4.1.1.jar",
+            "BOOT-INF/lib/slf4j-api-2.0.18.jar",
+            "BOOT-INF/lib/jackson-annotations-2.21.jar",
+            "BOOT-INF/lib/spring-boot-security-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-config-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-crypto-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-web-7.1.1.jar",
+            "BOOT-INF/lib/spring-expression-7.0.9.jar",
+            "BOOT-INF/lib/spring-aop-7.0.9.jar",
+            "BOOT-INF/lib/spring-beans-7.0.9.jar",
+            "BOOT-INF/lib/spring-core-7.0.9.jar",
+            "BOOT-INF/lib/commons-logging-1.3.6.jar",
+            "BOOT-INF/lib/spring-boot-security-oauth2-resource-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-jose-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-resource-server-7.1.1.jar",
+            "BOOT-INF/lib/HikariCP-7.0.2.jar",
+            "BOOT-INF/lib/spring-boot-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-hibernate-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jpa-4.1.1.jar",
+            "BOOT-INF/lib/jakarta.persistence-api-3.2.0.jar",
+            "BOOT-INF/lib/hibernate-core-7.4.5.Final.jar",
+            "BOOT-INF/lib/jakarta.transaction-api-2.0.1.jar",
+            "BOOT-INF/lib/hibernate-models-1.1.1.jar",
+            "BOOT-INF/lib/jaxb-runtime-4.0.9.jar",
+            "BOOT-INF/lib/jaxb-core-4.0.9.jar",
+            "BOOT-INF/lib/angus-activation-2.0.3.jar",
+            "BOOT-INF/lib/txw2-4.0.9.jar",
+            "BOOT-INF/lib/istack-commons-runtime-4.1.2.jar",
+            "BOOT-INF/lib/jakarta.inject-api-2.0.1.jar",
+            "BOOT-INF/lib/spring-orm-7.0.9.jar",
+            "BOOT-INF/lib/spring-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/antlr4-runtime-4.13.2.jar",
+            "BOOT-INF/lib/spring-aspects-7.0.9.jar",
+            "BOOT-INF/lib/aspectjweaver-1.9.25.1.jar",
+            "BOOT-INF/lib/spring-boot-jdbc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-sql-4.1.1.jar",
+            "BOOT-INF/lib/spring-jdbc-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
+            "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
+            "BOOT-INF/lib/flyway-core-12.4.0.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
+            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/postgresql-42.7.13.jar",
+            "BOOT-INF/lib/checker-qual-3.55.1.jar",
+            "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
+            "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
+            "BOOT-INF/lib/spring-web-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-webmvc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
+            "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
+            "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
+            "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
+            "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
+            "BOOT-INF/lib/classmate-1.7.3.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-health-4.1.1.jar",
+            "BOOT-INF/lib/micrometer-observation-1.17.1.jar",
+            "BOOT-INF/lib/jspecify-1.0.1.jar",
+            "BOOT-INF/lib/micrometer-commons-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-jakarta9-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-core-1.17.1.jar",
+            "BOOT-INF/lib/HdrHistogram-2.2.2.jar",
+            "BOOT-INF/lib/jakarta.xml.bind-api-4.0.5.jar",
+            "BOOT-INF/lib/jakarta.activation-api-2.1.4.jar",
+            "BOOT-INF/lib/byte-buddy-1.18.11.jar",
+            "BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jarmode-tools-4.1.1.jar"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "services/pagos-service",
+      "command": [
+        "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
+        "-B",
+        "-ntp",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "clean",
+        "verify"
+      ],
+      "startUTC": "2026-10-10T08:15:04.748254+00:00",
+      "exitCode": 0,
+      "totals": {
+        "tests": 197,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 1
+      },
+      "classes": [
+        {
+          "name": "cl.duoc.pedidos360.pagos.BffQueriesEndToEndTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 1
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests",
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.DelegadoHttpTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.messaging.PagosQueryConfigurationTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.OutboxIsolationTests",
+          "tests": 18,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagoAutorizacionTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagoConcurrenciaTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagoEstadosTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagoIdempotenciaTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagoRecuperacionTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagosApplicationTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagoServiceTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagosQueryProcessorTests",
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagosQueryRabbitTests",
+          "tests": 32,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PagoTenantIsolationTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PedidosRestClientTests",
+          "tests": 18,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.PurchaseRabbitIntegrationTests",
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.RabbitCoreTests",
+          "tests": 19,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.security.EntraJwtTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.security.TenantIdentityTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.pagos.TenantMigrationTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "jars": [
+        {
+          "file": "pagos-service-0.0.1-SNAPSHOT.jar",
+          "sha256": "96c3fa5d500d5d818dbaa28e76248d59008b372d2e9737d6ed548ff7b4cdb693",
+          "libraries": [
+            "BOOT-INF/lib/",
+            "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
+            "BOOT-INF/lib/nimbus-jose-jwt-10.9.1.jar",
+            "BOOT-INF/lib/spring-boot-jackson-4.1.1.jar",
+            "BOOT-INF/lib/logback-classic-1.5.38.jar",
+            "BOOT-INF/lib/logback-core-1.5.38.jar",
+            "BOOT-INF/lib/log4j-to-slf4j-2.25.5.jar",
+            "BOOT-INF/lib/log4j-api-2.25.5.jar",
+            "BOOT-INF/lib/jul-to-slf4j-2.0.18.jar",
+            "BOOT-INF/lib/jakarta.annotation-api-3.0.0.jar",
+            "BOOT-INF/lib/snakeyaml-2.6.jar",
+            "BOOT-INF/lib/spring-boot-amqp-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-4.1.1.jar",
+            "BOOT-INF/lib/spring-context-7.0.9.jar",
+            "BOOT-INF/lib/spring-messaging-7.0.9.jar",
+            "BOOT-INF/lib/spring-rabbit-4.1.1.jar",
+            "BOOT-INF/lib/spring-amqp-4.1.1.jar",
+            "BOOT-INF/lib/amqp-client-5.30.0.jar",
+            "BOOT-INF/lib/netty-transport-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-buffer-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-resolver-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-base-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-compression-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-protobuf-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-codec-marshalling-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-handler-4.2.17.Final.jar",
+            "BOOT-INF/lib/netty-transport-native-unix-common-4.2.17.Final.jar",
+            "BOOT-INF/lib/spring-tx-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-transaction-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-persistence-4.1.1.jar",
+            "BOOT-INF/lib/slf4j-api-2.0.18.jar",
+            "BOOT-INF/lib/jackson-annotations-2.21.jar",
+            "BOOT-INF/lib/spring-boot-security-oauth2-resource-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-jose-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-crypto-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-core-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-oauth2-resource-server-7.1.1.jar",
+            "BOOT-INF/lib/spring-boot-security-4.1.1.jar",
+            "BOOT-INF/lib/spring-security-config-7.1.1.jar",
+            "BOOT-INF/lib/spring-security-web-7.1.1.jar",
+            "BOOT-INF/lib/spring-expression-7.0.9.jar",
+            "BOOT-INF/lib/spring-aop-7.0.9.jar",
+            "BOOT-INF/lib/spring-beans-7.0.9.jar",
+            "BOOT-INF/lib/spring-core-7.0.9.jar",
+            "BOOT-INF/lib/commons-logging-1.3.6.jar",
+            "BOOT-INF/lib/HikariCP-7.0.2.jar",
+            "BOOT-INF/lib/spring-boot-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-data-commons-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-hibernate-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jpa-4.1.1.jar",
+            "BOOT-INF/lib/jakarta.persistence-api-3.2.0.jar",
+            "BOOT-INF/lib/hibernate-core-7.4.5.Final.jar",
+            "BOOT-INF/lib/jakarta.transaction-api-2.0.1.jar",
+            "BOOT-INF/lib/hibernate-models-1.1.1.jar",
+            "BOOT-INF/lib/jaxb-runtime-4.0.9.jar",
+            "BOOT-INF/lib/jaxb-core-4.0.9.jar",
+            "BOOT-INF/lib/angus-activation-2.0.3.jar",
+            "BOOT-INF/lib/txw2-4.0.9.jar",
+            "BOOT-INF/lib/istack-commons-runtime-4.1.2.jar",
+            "BOOT-INF/lib/jakarta.inject-api-2.0.1.jar",
+            "BOOT-INF/lib/spring-orm-7.0.9.jar",
+            "BOOT-INF/lib/spring-data-jpa-4.1.1.jar",
+            "BOOT-INF/lib/antlr4-runtime-4.13.2.jar",
+            "BOOT-INF/lib/spring-aspects-7.0.9.jar",
+            "BOOT-INF/lib/aspectjweaver-1.9.25.1.jar",
+            "BOOT-INF/lib/spring-boot-jdbc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-sql-4.1.1.jar",
+            "BOOT-INF/lib/spring-jdbc-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
+            "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
+            "BOOT-INF/lib/flyway-core-12.4.0.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
+            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/postgresql-42.7.13.jar",
+            "BOOT-INF/lib/checker-qual-3.55.1.jar",
+            "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
+            "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
+            "BOOT-INF/lib/spring-web-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-webmvc-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
+            "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
+            "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
+            "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
+            "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
+            "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
+            "BOOT-INF/lib/classmate-1.7.3.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-actuator-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-health-4.1.1.jar",
+            "BOOT-INF/lib/micrometer-observation-1.17.1.jar",
+            "BOOT-INF/lib/jspecify-1.0.1.jar",
+            "BOOT-INF/lib/micrometer-commons-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-jakarta9-1.17.1.jar",
+            "BOOT-INF/lib/micrometer-core-1.17.1.jar",
+            "BOOT-INF/lib/HdrHistogram-2.2.2.jar",
+            "BOOT-INF/lib/jakarta.xml.bind-api-4.0.5.jar",
+            "BOOT-INF/lib/jakarta.activation-api-2.1.4.jar",
+            "BOOT-INF/lib/byte-buddy-1.18.11.jar",
+            "BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
+            "BOOT-INF/lib/spring-boot-jarmode-tools-4.1.1.jar"
+          ]
+        }
+      ]
+    }
+  ],
+  "coveredAdvisories": [
+    {
+      "id": "GHSA-9xv2-5v5q-p794",
+      "cve": "CVE-2026-65905",
+      "source": "https://tomcat.apache.org/security-11.html"
+    },
+    {
+      "id": "GHSA-gcx9-497g-6cp6",
+      "cve": "CVE-2026-65182",
+      "source": "https://tomcat.apache.org/security-11.html"
+    },
+    {
+      "id": "GHSA-h3x4-894j-xpx5",
+      "cve": "CVE-2026-68525",
+      "source": "https://tomcat.apache.org/security-11.html"
+    }
+  ],
+  "remainingOriginalInventory": [
+    "GHSA-5m9f-rphj-c435",
+    "GHSA-5xwg-cfvj-gff5",
+    "GHSA-68mj-5wr7-6fgg",
+    "GHSA-6g32-pxv4-2wfj",
+    "GHSA-7822-rcf6-97fx",
+    "GHSA-7hhh-6rmp-j9qf",
+    "GHSA-93j5-89vc-pph4",
+    "GHSA-cqgh-8p3p-mx4m",
+    "GHSA-cxp5-3px4-pw24",
+    "GHSA-gx83-3vf8-gh7j",
+    "GHSA-h6w7-qmcm-q6xr",
+    "GHSA-jh4v-gfqj-7rhx",
+    "GHSA-p6pp-m3f8-5c89",
+    "GHSA-q4xh-88c3-wmh7",
+    "GHSA-qx7j-jv8m-fppr",
+    "GHSA-wjgm-6hv5-3cvf",
+    "GHSA-wv8q-qhhj-9h54"
+  ],
+  "osvRuntimeIDs": [
+    "GHSA-5m9f-rphj-c435",
+    "GHSA-5xwg-cfvj-gff5",
+    "GHSA-68mj-5wr7-6fgg",
+    "GHSA-6g32-pxv4-2wfj",
+    "GHSA-7822-rcf6-97fx",
+    "GHSA-7hhh-6rmp-j9qf",
+    "GHSA-93j5-89vc-pph4",
+    "GHSA-cqgh-8p3p-mx4m",
+    "GHSA-cxp5-3px4-pw24",
+    "GHSA-gx83-3vf8-gh7j",
+    "GHSA-h6w7-qmcm-q6xr",
+    "GHSA-jh4v-gfqj-7rhx",
+    "GHSA-p6pp-m3f8-5c89",
+    "GHSA-q4xh-88c3-wmh7",
+    "GHSA-qx7j-jv8m-fppr",
+    "GHSA-wjgm-6hv5-3cvf",
+    "GHSA-wv8q-qhhj-9h54"
+  ],
+  "osvCoordinates": 122,
+  "sha256": {
+    "C/bff-tests.log": "d1dd24397fdce4ef4d8f263be38a1b1ee4f144ea54a2603f8ed28466e98bfc5f",
+    "C/bff-tree.log": "c7572f807cc0e84182046a969663ada85826f34ea350fa535ca7640f56149179",
+    "C/bff-tree.txt": "738b02223ed61f7c926e476c34bbdc6a7d1052b52a683fb5f5e844ed7c75c236",
+    "C/carrito-service-tests.log": "1ff472e9807104089711f8423d2ff453109c5b6542ff91cbb9a5732910cd23e1",
+    "C/carrito-service-tree.log": "6b0b200690e4a56362d3e194578ca5d5920aa8a421107ae52a274273b8966c0f",
+    "C/carrito-service-tree.txt": "ca795cc11c542ab38db32643b10075c122b16d470638d323a9934aa45dbfeb31",
+    "C/final-results.json": "366661085ffa3c79ba593bb4cc6db75f414ecf9bf785856c967b22ae25538569",
+    "C/osv-runtime.json": "e31290495f92c3ff988e6097df42d086e7d280b4c09961955d8a2e6353a55140",
+    "C/p360-messaging-core-tests.log": "c82247697c8d928e4355560c692de477fb0c76d4296207a6606dbdf20f8aac8a",
+    "C/p360-messaging-core-tree.log": "958240999212bad28a12874b3f91431941a7dfbb4546d80f835486ff64753c0c",
+    "C/p360-messaging-core-tree.txt": "6d9e2a6f640d762a9569b842f0653a6b72d8516b0efd9224d60083f6aa266bc9",
+    "C/pagos-service-tests.log": "66db0c2c1f1560fac818b1bbd542edddae8a54c191eca2dea592cb5557c330c4",
+    "C/pagos-service-tree.log": "86ec7291a1a06f8a8f196ade7906aad2f8cb7030bf7731deff45c695864f5942",
+    "C/pagos-service-tree.txt": "2e1a70d8c68e6e7f8f12e6c2ff8061b9fca38481b13491461e6ec7b6ab55569f",
+    "C/pedidos-service-tests.log": "b21b912f645b9cfc084b02f855d4c4305bed2b45ea79c5793907bd90893e336a",
+    "C/pedidos-service-tree.log": "53c5fc5de9781742c7f9e93829d95052beb2d5f59db2f3ed157e8dca01cecea7",
+    "C/pedidos-service-tree.txt": "1d3dd98fcbadbe51d3381b6e7eed1b9ece905609c47e1de75bf60d3f72798d9f",
+    "C/productos-service-tests.log": "0f9e21f3be1d6a09df4207ecef4089c7d84066b274ee5d3954e83e3d6f17382b",
+    "C/productos-service-tree.log": "6d3fc4e61eeb3d76224ee42bf2a92272ed9e4d42cdda9735256ded178a04ead6",
+    "C/productos-service-tree.txt": "3e9513cd4344b7e491b3fda55d056b07a701b02e23095e24f1528312affa18dd",
+    "C/restaurantes-service-tests.log": "83768a2d033a1f5ac37bd532029640b3e43e5deedc332abc3de6fadcc319d3db",
+    "C/restaurantes-service-tree.log": "dd60f5cab92eb2b2871ee2606a893d96aed87720e47482820010c523bf924b48",
+    "C/restaurantes-service-tree.txt": "a75393fcaa31666c23c3bf2fa834233b4f21cc015316b3711febde956babbf75",
+    "C/results.json": "366661085ffa3c79ba593bb4cc6db75f414ecf9bf785856c967b22ae25538569",
+    "C/usuarios-service-tests.log": "0884e8b9aa8d46e18d2945aa291a9db972fc2632925587c043800059b05b425f",
+    "C/usuarios-service-tree.log": "8cdd98158bc4629797bdb07a51b87c9507f0da7998d9c4512333084c3a93de9f",
+    "C/usuarios-service-tree.txt": "a45afea8577c1911c4cbfe3dc31da291d8a1da5e75235598421876861419cf87"
+  },
+  "surefireSHA256": {
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.BffSecurityTests.xml": "4c7f4045c0e19b3fc1120f47c49971ad85e48e6d6dfca2fe96272d4fce638976",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.client.ComercioInternalIsolationTests.xml": "9a06099fadce9fb0d0195c5d038f9c9941f087d1beb8578daf7c14239d94a710",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.ConnectionConfigurationTests.xml": "c45b847d1a5006a83e7bd92bed4cbcca62becf5e9431e3165d2423ee61e7de31",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.JwtHttpTests.xml": "37a729b06d206f1f51e09b129264eb2047f3f7c0d76e486cf1b8097da7340e98",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffCatalogResponseBindingTests.xml": "38e799d04b8509ff2e189802b5a550e53bb979cf3a438d718bfc8dace1013cbc",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests.xml": "c48c2146899db760f1ce75b5ccd098595117a988a7c1243436d290025caeca6f",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests.xml": "b02ef4032d63914e6f66e67562059b1e7ed4a39633c1dda607c6021c0dabf716",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests.xml": "b120ed1bccb82075b920aa311ca52245fbee1453cb403811ca74ec251d9ceb49",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapterTests.xml": "777f1ddb09cbf543983d767ee018a5cc12c0ee3e57ffc9e72aba568a2ccfde0e",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffTemporalBarrierTests.xml": "2065848a416ac55a1a6fa45d8009e1377f0447eaec3a1e24043102308e062d27",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests.xml": "d9b04507d0c67030e45842b5e10fb0b9bf0df952792230cb9b41434112008c91",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.PedidosPagosDisabledTests.xml": "5e4a8dbfaf0b1a97608191838e5e761271f593519c400b0b41b0f664d3e372eb",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.security.EntraJwtTests.xml": "ff03ff42ee7298839a7ca3f223e4ab1b2bf7bd5195bc2ab09c6322807e800766",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoApiTests.xml": "5b651deeb3154d724c89bc4260c49db9363f3655061a9b5689a46dc47ebcca68",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoApplicationTests.xml": "adfc56dfe8da18a30e6ce19ddb6fdd9f278fe129076d37048512ca6aca62a366",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoCatalogoApiTests.xml": "f17aa481ba2a71db7f0a21ca506c50563d7055c03a32a5053d2226aa1f29d182",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests.xml": "f1f665fbfdd1bbfe0d7e8e3f55bb7f7d1419dff420ed3a79c835e2bae871b96c",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoConcurrenciaTests.xml": "4337aeb78f094d452a4f2eb0673d0e833889900a2d98026d5bc4dd2147bdd801",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoEntraHttpTests.xml": "684cf8b75c10c6623a3c17f53bb4578253dd7dc2f6e5334644011488c9d86631",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoMigrationCompatibilityTests.xml": "6f9d0bb405a1cac3977c7568357c65102043d1940876f809cf620ae1696bd1ba",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoRepositoryTests.xml": "8913607bc37c87b684306a73a9ebe1f5d8e36ec5f50c730de10be6e1d69695e3",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoServiceTests.xml": "646418954edb98266189bf99214e26b3800ec1be54f595746529256e8d158aa8",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoTests.xml": "83c2ae8a28850499448604130cb6c95c06dc22f781e3c119ee60a357b2d2af0c",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.LocalIdentityConfigurationTests.xml": "0b4e21a8c3ecb5d8f976346becbe32c1d594af3ebf8d2cc43c8b6a20c0d65e88",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.security.EntraJwtTests.xml": "c57a8a049831b25e7a00bde339c423f12dc08624df56904e7e5a7e4661525f9b",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.security.LocalIdentityFilterTests.xml": "be2a4ef8cc56e0b2d26bd47ad28d76e3bd543c48de518d4f1df3bc8050e8d9ea",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.BffQueriesEndToEndTests.xml": "4bc14cc3210f7174d859b2776d78e36557f49aed5e3b1625443f17d6c317fe25",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests.xml": "c399149b8380d9e5fe1a06dc7b53cfcfde83fe433deb2dfb436d0a255c707f05",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests.xml": "8b8a18b189e7c4b35d07a9e689a07a0913d9353ac2b70d445ba966a59f366c48",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.DelegadoHttpTests.xml": "cc15d5ed432c6d903b9bfda25594da062f2784a4200a8bf93d7ca52cc4cd4635",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.messaging.PagosQueryConfigurationTests.xml": "59f2f9a16509a530d9e9d136700c7fa7d5133bb6974be9a80234b5a5f6db13cc",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.OutboxIsolationTests.xml": "32eaaac528ec66bff1e8aad6fc4e1fc3a3c620cac21581449f2a5613f2d7d5ba",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoAutorizacionTests.xml": "2950cbfd81391e3400b3dffa7a1b5dd80233d487e2f00476a8cda15f8c4f0390",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoConcurrenciaTests.xml": "0b2cb893a48de32cc936c89515d8b330e503f9aa4554faaea5eb0efc1b293caa",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoEstadosTests.xml": "9973f73ae75c36f4a52cf528c753c362b8b8b438d7810c5701233eadddeeda39",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoIdempotenciaTests.xml": "7f09f0fbfb3dc84c2ea961fcc278727d8b3d303e933c7815b300929d09cc9998",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoRecuperacionTests.xml": "7c8f42cb4406011bf52309f93a1737be8229bf898984a4b49e8a41dd79abbb2d",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosApplicationTests.xml": "59f97eac2d2e835ceff6d117d81b0e6f99dc987414ed67cb72bebee359341d5e",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoServiceTests.xml": "6e5569c6a76808bc48f1d7be9174f7095cadd54c75d35bad7079a0c8d0cce513",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosQueryProcessorTests.xml": "1cc5ff0bdf2eac844bb03849a22fbe514fac4967b41c6f8da2ec7dcc4f80b635",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosQueryRabbitTests.xml": "244797b03b20c5433915f85414e568ea7842827239ee162ddb7c5df2a7d902d8",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoTenantIsolationTests.xml": "d89bd8a19d6b2b26a230d9e87c00158ec7c7254e1554d12344be7305465ef7d5",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PedidosRestClientTests.xml": "de39b2382c2d7eeeb629e6f0fefdfc2ef0962dbb40caad056b127f86c4a93831",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PurchaseRabbitIntegrationTests.xml": "bc8465b169d337417149c43631116f67528512c114f5d7349ef00b74325ac04a",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.RabbitCoreTests.xml": "a104ac07112ff30245863d77def22ff1f29b1fcc3de7b3b31ec1be33ba88495c",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.EntraJwtTests.xml": "8712f83f4f0ce8a9d220a7e942a1157498bbd19d6e0501c29c8577e85b916ba7",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.TenantIdentityTests.xml": "dadd573f7ec30f99c41d6a642f50c30b7414b1003597ac6c0f5563f78b7e49d7",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests.xml": "2f194be7b109ec67fbc66c77b6d6b28fed2ba9825415934036ae38c12ea2579d",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantMigrationTests.xml": "08b44c4262dfabe6a203d77011ae653b3662dda9d94e4c33548e32fea345b866",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CarritoOutboxMigrationCompatibilityTests.xml": "49797fcb2f23b2e750adc9be543baaa792711e3abf75d6ed8fd2676160e10574",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CarritoPublisherIntegrationTests.xml": "e7597543eb3b850aec94985b019b149c77433bc6aa1effd7d916ec89a3027022",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CarritoSnapshotClientTests.xml": "f633c8e9daa1097726ce9e7afde03cf6a0d0cfb24c43b7e746747fdba52fec81",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CatalogoPedidosHttpTests.xml": "e9b8096d6c080fcd3b42021a733e7a26e63dec87524f70e7bf04e7050b32f7ba",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.DelegadoHttpTests.xml": "51594a702051eaaaaf8d947551fa9194dff26a73f6bd9f3f179281a45a42f326",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.EstadoPedidoTests.xml": "3aa1630467dd9c34fa9acdc0bbd1dffe5d3be2da2bace14a5866807af146a98e",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.messaging.ConfirmacionConsumerRecoveryTests.xml": "bf5f070555bca373b8f3ce5f8f4ee975bee1974bd4f825f0dff7536446655c20",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoAutorizacionTests.xml": "c29cc78b8c471a9c93eda3a68bdf4232bd325ddfa8513d8e6a32cc0b9280599c",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoCarritoOutboxTests.xml": "3717f3a4a863fafeade9977a9993ee1c780b9f14669147f15638152380effbb6",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoConfirmacionPagoTests.xml": "a328911b547df45925ec6b724907953b476b1276dc670339ea41ffe99e4875cc",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoInternoSeguridadHttpTests.xml": "1c724ef4e47dfe143ef559685e3ba61eaaa16f5188d6feccbda41d244cb468c1",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoRepositoryTests.xml": "141173ca5ee6d83eb9c5b5e4bc0732cf89b1cbeb0ce6fca957413c230d1a5d75",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidosApplicationTests.xml": "a1ddf956e343055155668c80f6239ff35ea8e13e2cac38b688d55df1c0596e47",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoTenantIsolationTests.xml": "2a9bf34c34bbe34d7f9d732c547bd6e670946c37fc8f8f139958a1138588b6e8",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.RabbitConsumerTests.xml": "d1f3ee9dfddb27c78f58a864711d893735b023a0a7046a3e5b8bc36147d5b446",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.ReliabilityPolicyTests.xml": "5350821efa45723a7bec14a82a8a5952b99927ff663f79ae6263a8705c50e4a3",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.EntraJwtTests.xml": "7af07dd1875883a34ce04af970c50a587079a36ba1faa5e6c1dd12c54a82a045",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.SeguridadInternaTests.xml": "6a3f76e5522f4e54eb2597bac315e13b6fb073f0cf941c19a7fae31a5b98c2d9",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.TenantIdentityTests.xml": "bbe137ed99ab769e4d7e504e885645e5a197a8dde319fbe1e92793148ee3ea0d",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.TenantMigrationTests.xml": "5583475add75821625b41cf0685d576f5066505fb4d7ccf3ba43c39498bed7b4",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests.xml": "22883192ff8322292cad5adf2604f6f2a868faec67dfc6d245c4b19f6385a7e2",
+    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosConfigurationTests.xml": "97286e64855c6e83d93579c4926ee885a8f24e642c6a466fc358fd1e823972b6",
+    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosHttpRegressionTests.xml": "ff4e7369a7b760e09c94a02e51ad65fda49be7d92820ca471cb387ab2370a36d",
+    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosQueryProcessorTests.xml": "acca224eec8223081faa5a450233229ba479e4306eec5fbeb55d5703b94936e3",
+    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosRabbitTests.xml": "c3815483706512e9c8209e5eae866e547605de3000a140e27e79fb61a520e26b",
+    "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests.xml": "089d6c5ec5906ecc1f0edd1e0eed93d18c9ed2ec460875ec651b3dfa8366bdc4",
+    "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests.xml": "c45ce0a823c7e848c3d32fbbd9896de7d833f4968ad52813127b2f3828ef1801",
+    "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests.xml": "11a47c691b863f6b530f7a0643b748673b9e794b88010d83a5655a5051a886b5",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.JwtHttpTests.xml": "6256bf70a31ffa4bfb0ac2763091977c4ff6f12d73722be1cb9c7dd768034122",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests.xml": "7ba24283b31b9b50198fe8c19af6ea19b8756c5650f016e5e78c14afc2d10a63",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests.xml": "430d268e85d25af7fb2f404294af7476bcf47f0898a101e613985ac5779f58f4",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.EntraJwtTests.xml": "4fa0b7edb63876cbe994c92232adb9c2cae4914fe5770c1ac54b927c0091b709",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests.xml": "f9f03db3c9087893db2abe84f49801502b896522fd60ba518b69b87ca6a55a0b",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests.xml": "394db37fa0809326539c5bfbde158e7defd84d8655f297dcd084d674b32761dd",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests.xml": "8a14f84e503486d21f30d54cd1baca393d53ee2bb62c90a2cfe4780107a1418f",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml": "acdf16b8c1ec55651947862111780784d256d7ce3dffa9852d837e37a3296c61",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml": "83a54bd7d59e79fa2ec6c16c9ccca436ff51a92aac0c40c79d662226f77bb21d",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml": "0af8385eb66ad3a844e63202cc5b28fbf6337db6110993054c79a1be320e6f51",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml": "d6c7f0b32996ecdf510b15e9a8c585ea7207c27cd4ece6dcca1218b507fe3ef9",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CarritoCommandContractTests.xml": "3f789d2ab98e3c9772798a2006f371c197dcf14e887706c4bec9596e6846e207",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests.xml": "24d5aa5133948b5e07bd7265a8c9a031b2a19d581835b867d14e605b581442af",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml": "2239e1d88bd8a9c0b49e7fdaccd95dd7ab53e6ff84d95763038f290ff296e34a",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests.xml": "12bd59e32ce7a8cdcf0ea4b7bd61a12a6472b7df08bfb478b37925c921488222",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml": "cc1d03e7839194a5066ced2452359a9310d258d0cf891961214e1321b223416f",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml": "518f6cd4f3f8aa2083603be7efd335ac798d7aef65befe7c9947cc0dc5918c6e",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PagosIdentityProofTests.xml": "f2d98a69b680bb6c47a084f053c0a30883dfa55e30468fca71803a2a6ef41113",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml": "ee259a7ff1b799978482f5404921679c7b456e3ee41e222a6d962f37899821be",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests.xml": "603198dbf0fc85f802b0581224b5e0b3b5298b889a9d4a0e6b149993dbb809e1",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml": "60e9dec6b40a83c76bb42b849885d3005245b3e0ef8e7162d7ac8ab69206d157",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml": "ae25664739de1ba4506838987ee7744080eede0429e12b9fec88f7b04cecaf7f",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml": "7bff02b3d7eefa96acf452e70c568b72ac56e39731a690667acfb07343023203",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml": "a3652113ec63bce0513ce16700fdb3c6517c39bb2e797ab0260f28b924c24c0d",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml": "ee4b6c1b8af825a616eee1583f13f92df2af2eeddced329b7f9be73f4c18327d",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml": "3986d8b46666dd9019f57c897c9c0daafc0c1031e1d64291125361c5b72bb90d"
+  },
+  "awsOperations": false,
+  "ecrPublication": false,
+  "productionChanges": "Maven properties only",
+  "status": "READY FOR INDEPENDENT REVIEW",
+  "combinedEvidence": {
+    "report": "EP2-REMEDIATION-COMBINED.md",
+    "manifest": "EP2-REMEDIATION-COMBINED-tests.json",
+    "sha256": "e602e031770028075ade8ea1d63fb89990d0ad67cd19244c2a83a2da0ed50df6",
+    "sourceHeads": {
+      "A": "c593e8938034594000cde3c7b2bc1990fa3e35cb",
+      "B": "660b3cd00332eaac8255d83f6b306d3d11729011",
+      "C": "89852bd1aa4d0e357de5815c7e841e63a848f80d"
+    }
+  },
+  "buildWarnings": [
+    {
+      "log": "bff-tests.log",
+      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
+    },
+    {
+      "log": "bff-tests.log",
+      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
+    },
+    {
+      "log": "bff-tests.log",
+      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
+    },
+    {
+      "log": "bff-tests.log",
+      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
+    },
+    {
+      "log": "carrito-service-tests.log",
+      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
+    },
+    {
+      "log": "carrito-service-tests.log",
+      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
+    },
+    {
+      "log": "carrito-service-tests.log",
+      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
+    },
+    {
+      "log": "carrito-service-tests.log",
+      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
+    },
+    {
+      "log": "p360-messaging-core-tests.log",
+      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
+    },
+    {
+      "log": "p360-messaging-core-tests.log",
+      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
+    },
+    {
+      "log": "p360-messaging-core-tests.log",
+      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
+    },
+    {
+      "log": "p360-messaging-core-tests.log",
+      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
+    },
+    {
+      "log": "pagos-service-tests.log",
+      "message": "[WARNING] Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.001 s -- in cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests"
+    },
+    {
+      "log": "pagos-service-tests.log",
+      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
+    },
+    {
+      "log": "pagos-service-tests.log",
+      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
+    },
+    {
+      "log": "pagos-service-tests.log",
+      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
+    },
+    {
+      "log": "pagos-service-tests.log",
+      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
+    },
+    {
+      "log": "pedidos-service-tests.log",
+      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
+    },
+    {
+      "log": "pedidos-service-tests.log",
+      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
+    },
+    {
+      "log": "pedidos-service-tests.log",
+      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
+    },
+    {
+      "log": "pedidos-service-tests.log",
+      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
+    },
+    {
+      "log": "pedidos-service-tests.log",
+      "message": "[WARNING] Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0 s -- in cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests"
+    },
+    {
+      "log": "productos-service-tests.log",
+      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
+    },
+    {
+      "log": "productos-service-tests.log",
+      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
+    },
+    {
+      "log": "productos-service-tests.log",
+      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
+    },
+    {
+      "log": "productos-service-tests.log",
+      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
+    },
+    {
+      "log": "restaurantes-service-tests.log",
+      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
+    },
+    {
+      "log": "restaurantes-service-tests.log",
+      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
+    },
+    {
+      "log": "restaurantes-service-tests.log",
+      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
+    },
+    {
+      "log": "restaurantes-service-tests.log",
+      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
+    },
+    {
+      "log": "usuarios-service-tests.log",
+      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
+    },
+    {
+      "log": "usuarios-service-tests.log",
+      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
+    },
+    {
+      "log": "usuarios-service-tests.log",
+      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
+    },
+    {
+      "log": "usuarios-service-tests.log",
+      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
+    }
+  ],
+  "primaryEvidenceSHA256": {
+    "official-sources.json": "e2ced201ca5f38f94dde90fffc93188dc5845706304562087dbf7dbe0964cc1e",
+    "negative-controls.json": "337c4d225d02f3954afe01aa5119516cef26d478cd70ccae22aa468fd08db4d3"
+  }
+}

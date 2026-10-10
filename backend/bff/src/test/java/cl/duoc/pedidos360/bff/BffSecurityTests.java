@@ -40,4 +40,22 @@ class BffSecurityTests {
         assertThat(get("/login", null).statusCode()).isEqualTo(401);
         assertThat(get("/actuator/env", null).statusCode()).isEqualTo(401);
     }
+
+    @Test void forwardedHeadersCannotAuthenticateARequest() throws Exception {
+        var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/usuarios/me"))
+                .header("Forwarded", "for=127.0.0.1;proto=https;host=trusted.invalid")
+                .header("X-Forwarded-For", "127.0.0.1")
+                .header("X-Forwarded-Proto", "https")
+                .header("X-User-Id", "1").header("X-Roles", "ADMIN").GET().build();
+        var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        assertThat(response.statusCode()).isEqualTo(401);
+        assertThat(response.headers().firstValue("set-cookie")).isEmpty();
+    }
+
+    @Test void oversizedHeaderIsRejectedAndHealthStillWorks() throws Exception {
+        var request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/actuator/health"))
+                .header("X-Bounded-Test", "x".repeat(20000)).GET().build();
+        assertThat(client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode()).isEqualTo(400);
+        assertThat(get("/actuator/health", null).statusCode()).isEqualTo(200);
+    }
 }
