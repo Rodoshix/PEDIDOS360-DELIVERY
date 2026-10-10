@@ -32,4 +32,3 @@ class JacksonSecurityRegressionTests {
         @Override public void close() { }
     }
 }
-
