@@ -1,19 +1,31 @@
 {
+  "status": "READY FOR INDEPENDENT REVIEW",
   "base": "1e39a4c3a3d3e0d1abf589b47a752afc7147bb1f",
-  "branch": "codex/71-amqp-security",
+  "sourceHeads": {
+    "A": "c593e8938034594000cde3c7b2bc1990fa3e35cb",
+    "B": "660b3cd00332eaac8255d83f6b306d3d11729011",
+    "C": "89852bd1aa4d0e357de5815c7e841e63a848f80d"
+  },
   "properties": {
-    "rabbit-amqp-client.version": "5.37.0"
+    "rabbit-amqp-client.version": "5.37.0",
+    "jackson-bom.version": "3.1.7",
+    "jackson-2-bom.version": "2.21.7",
+    "tomcat.version": "11.0.26"
   },
   "sourceSHA256": {
-    "backend/bff/pom.xml": "3b735ae907c9d5aa738bc103551d8c1abfbe925cb7e886c71ca08ed735549738",
-    "backend/services/carrito-service/pom.xml": "11850192a0d5d63e12337c09c877ac09ec6dfcfe4bdde42fb259525807b6eb87",
-    "backend/services/pagos-service/pom.xml": "41b01f1df74de8674717fd067b31befd090f33f99ff3a9833605a257b598f1d1",
-    "backend/services/pedidos-service/pom.xml": "da078d42e01aac942d4077a6003819afe42a9e1750f301dcfea658c43c3165c1",
-    "backend/services/productos-service/pom.xml": "302a9e67e9688776408c17e5992235943c98d0459da8067d9b21af06ff8ac04c",
-    "backend/services/restaurantes-service/pom.xml": "432afe7c40cbc2ee418bbeb458d533dfc52b10474eddfb74aa6bf1d9d3adcb19",
-    "backend/services/usuarios-service/pom.xml": "f7a205aa9813aa607d9c77ea46274d108882f9d37d1113c7058cdb97538c204f",
-    "backend/shared/p360-messaging-core/pom.xml": "871e228d5c0ea4c9d1bfe238232becb8a6150d999b6c2304c18e9f9fa7f5beea",
-    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/AmqpClientSecurityRegressionTests.java": "2f925febdf7578b85eb24aaf98b3d08039c13cf24df39cbdf3e98ffe84e12de3"
+    "backend/bff/pom.xml": "3cb1a16ee5535e2975847da879aeb1a1144fc77f79ae0df36095f9716631c3e2",
+    "backend/bff/src/test/java/cl/duoc/pedidos360/bff/BffSecurityTests.java": "8937fab529a5a130f63d8234d359cdab11442467144e7d72213bd9ad4a468962",
+    "backend/services/carrito-service/pom.xml": "f93d8238dc053d42db93397bd20e286bb02e24f446b8ca56f9079fea18510dc7",
+    "backend/services/pagos-service/pom.xml": "c4552c94cfa16bedb0d87279a754e348ffad027bb42b3b5de8ba4968b8618b8b",
+    "backend/services/pedidos-service/pom.xml": "c29fcc72caa9b2025572849cb09c9ab091f96e04c12d8b7d2574c95344b5a8f6",
+    "backend/services/productos-service/pom.xml": "339575cca64699966aeb671451c9ca9676724fd8e42eb60bde91779c2571a550",
+    "backend/services/productos-service/src/test/java/cl/duoc/pedidos360/productos/ProductosHttpRegressionTests.java": "53cad9fa3b57a179753e7440060e2a9f2b6b986521edf9e9c67b835954bc136c",
+    "backend/services/restaurantes-service/pom.xml": "2ce6de67825d2aeafdb85eb72771644d83ef17ff9828e6166faefa6d134a8ce9",
+    "backend/services/restaurantes-service/src/test/java/cl/duoc/pedidos360/restaurantes/RestaurantesHttpRegressionTests.java": "ec53d1350942b8301e47f750a9900ebdd6593ea4c1254151af0181d03887be8b",
+    "backend/services/usuarios-service/pom.xml": "65e22d303863d17255093577cf0bd7822ef15016f3db4672926cf418a34e3c8c",
+    "backend/shared/p360-messaging-core/pom.xml": "bbd7eb4ab9d8607e19e3b9cfc1b5fe951f1294fc7ffb38fc037888f421794e70",
+    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/AmqpClientSecurityRegressionTests.java": "2f925febdf7578b85eb24aaf98b3d08039c13cf24df39cbdf3e98ffe84e12de3",
+    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/JacksonSecurityRegressionTests.java": "204b3e3f4c282db7e22f60434d4d482df64fb42a64c90469236d7005e9746a5f"
   },
   "modules": [
     {
@@ -22,14 +34,14 @@
         "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
         "-B",
         "-ntp",
-        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-combo-m2",
         "clean",
         "install"
       ],
-      "startUTC": "2026-10-10T07:38:56.000172+00:00",
+      "startUTC": "2026-10-10T07:55:05.897896+00:00",
       "exitCode": 0,
       "totals": {
-        "tests": 267,
+        "tests": 268,
         "failures": 0,
         "errors": 0,
         "skipped": 0
@@ -80,6 +92,13 @@
         {
           "name": "cl.duoc.pedidos360.messaging.IdentityProofTests",
           "tests": 48,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.JacksonSecurityRegressionTests",
+          "tests": 1,
           "failures": 0,
           "errors": 0,
           "skipped": 0
@@ -158,16 +177,9 @@
       "jars": [
         {
           "file": "p360-messaging-core-0.0.1-SNAPSHOT.jar",
-          "sha256": "fa5d8b600468c7c8f86360ab3bb3f6b07783a73e069a93d81b2662de7f795fe8",
+          "sha256": "4d7a14cfbad3ce952732545e30b9fd5f9b0fed1b8b5f3852f9121606d7368233",
           "libraries": []
         }
-      ],
-      "finalVerificationCommand": [
-        "mvn",
-        "-B",
-        "-ntp",
-        "-Dmaven.repo.local=C:/Users/Rodri/.codex/tmp/ep2-security-m2",
-        "verify"
       ]
     },
     {
@@ -176,14 +188,14 @@
         "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
         "-B",
         "-ntp",
-        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-combo-m2",
         "clean",
         "verify"
       ],
-      "startUTC": "2026-10-10T07:39:53.027698+00:00",
+      "startUTC": "2026-10-10T07:56:01.166830+00:00",
       "exitCode": 0,
       "totals": {
-        "tests": 203,
+        "tests": 205,
         "failures": 0,
         "errors": 0,
         "skipped": 0
@@ -191,7 +203,7 @@
       "classes": [
         {
           "name": "cl.duoc.pedidos360.bff.BffSecurityTests",
-          "tests": 4,
+          "tests": 6,
           "failures": 0,
           "errors": 0,
           "skipped": 0
@@ -284,16 +296,16 @@
       "jars": [
         {
           "file": "bff-0.0.1-SNAPSHOT.jar",
-          "sha256": "f84ac4eb60c483c115a50a2992261cc0f11627b64a4f42fb470d056a4bae540e",
+          "sha256": "73ef42a3955823f04911021788a11ae3593e76545f1284e7083a4fd0921d4d04",
           "libraries": [
             "BOOT-INF/lib/",
             "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
             "BOOT-INF/lib/nimbus-jose-jwt-10.9.1.jar",
             "BOOT-INF/lib/spring-boot-jackson-4.1.1.jar",
-            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
-            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.7.jar",
+            "BOOT-INF/lib/jackson-core-3.1.7.jar",
             "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-el-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
             "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
             "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
             "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
@@ -335,8 +347,8 @@
             "BOOT-INF/lib/spring-security-crypto-7.1.1.jar",
             "BOOT-INF/lib/spring-security-oauth2-core-7.1.1.jar",
             "BOOT-INF/lib/spring-security-oauth2-resource-server-7.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
-            "BOOT-INF/lib/tomcat-embed-websocket-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
             "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
             "BOOT-INF/lib/spring-web-7.0.9.jar",
@@ -374,11 +386,11 @@
         "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
         "-B",
         "-ntp",
-        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-combo-m2",
         "clean",
         "verify"
       ],
-      "startUTC": "2026-10-10T07:41:05.736827+00:00",
+      "startUTC": "2026-10-10T07:57:19.664793+00:00",
       "exitCode": 0,
       "totals": {
         "tests": 79,
@@ -461,7 +473,7 @@
       "jars": [
         {
           "file": "usuarios-service-0.0.1-SNAPSHOT.jar",
-          "sha256": "7d10aff15b65569b50bd9a2bbb91041d0d26044e06d9a0ed604e34ddd7d8fdab",
+          "sha256": "e1db0882c80b9b722aaf77c5a2339b2e6f12afa11dd06f1525ea2242feb07e56",
           "libraries": [
             "BOOT-INF/lib/",
             "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
@@ -538,13 +550,13 @@
             "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
             "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
             "BOOT-INF/lib/flyway-core-12.4.0.jar",
-            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
-            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.7.jar",
+            "BOOT-INF/lib/jackson-core-3.1.7.jar",
             "BOOT-INF/lib/postgresql-42.7.13.jar",
             "BOOT-INF/lib/checker-qual-3.55.1.jar",
             "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
-            "BOOT-INF/lib/tomcat-embed-websocket-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
             "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
             "BOOT-INF/lib/spring-web-7.0.9.jar",
@@ -552,7 +564,7 @@
             "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
             "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
             "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-el-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
             "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
             "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
             "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
@@ -583,14 +595,14 @@
         "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
         "-B",
         "-ntp",
-        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-combo-m2",
         "clean",
         "verify"
       ],
-      "startUTC": "2026-10-10T07:41:58.216715+00:00",
+      "startUTC": "2026-10-10T07:58:18.311538+00:00",
       "exitCode": 0,
       "totals": {
-        "tests": 34,
+        "tests": 35,
         "failures": 0,
         "errors": 0,
         "skipped": 0
@@ -605,7 +617,7 @@
         },
         {
           "name": "cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests",
-          "tests": 6,
+          "tests": 7,
           "failures": 0,
           "errors": 0,
           "skipped": 0
@@ -621,7 +633,7 @@
       "jars": [
         {
           "file": "restaurantes-service-0.0.1-SNAPSHOT.jar",
-          "sha256": "195a6da4c69dfde673fdda886a248650fde1b0ed97eed6b37363e34597ea972a",
+          "sha256": "690ab73602e3cca1cb753e0d5c56ec9f24f6f3a9bfd6effcdbdbd4715271a48d",
           "libraries": [
             "BOOT-INF/lib/",
             "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
@@ -669,8 +681,8 @@
             "BOOT-INF/lib/slf4j-api-2.0.18.jar",
             "BOOT-INF/lib/commons-lang3-3.20.0.jar",
             "BOOT-INF/lib/jackson-annotations-2.21.jar",
-            "BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
-            "BOOT-INF/lib/tomcat-embed-websocket-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
             "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
             "BOOT-INF/lib/spring-web-7.0.9.jar",
@@ -702,7 +714,7 @@
             "BOOT-INF/lib/spring-boot-sql-4.1.1.jar",
             "BOOT-INF/lib/spring-jdbc-7.0.9.jar",
             "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-el-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
             "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
             "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
             "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
@@ -712,8 +724,8 @@
             "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
             "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
             "BOOT-INF/lib/flyway-core-12.4.0.jar",
-            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
-            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.7.jar",
+            "BOOT-INF/lib/jackson-core-3.1.7.jar",
             "BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
@@ -731,10 +743,10 @@
             "BOOT-INF/lib/swagger-core-jakarta-2.2.55.jar",
             "BOOT-INF/lib/swagger-annotations-jakarta-2.2.55.jar",
             "BOOT-INF/lib/swagger-models-jakarta-2.2.55.jar",
-            "BOOT-INF/lib/jackson-databind-2.21.5.jar",
-            "BOOT-INF/lib/jackson-core-2.21.5.jar",
-            "BOOT-INF/lib/jackson-dataformat-yaml-2.21.5.jar",
-            "BOOT-INF/lib/jackson-datatype-jsr310-2.21.5.jar",
+            "BOOT-INF/lib/jackson-databind-2.21.7.jar",
+            "BOOT-INF/lib/jackson-core-2.21.7.jar",
+            "BOOT-INF/lib/jackson-dataformat-yaml-2.21.7.jar",
+            "BOOT-INF/lib/jackson-datatype-jsr310-2.21.7.jar",
             "BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
             "BOOT-INF/lib/swagger-ui-5.32.14.jar",
             "BOOT-INF/lib/webjars-locator-lite-1.1.4.jar",
@@ -749,14 +761,14 @@
         "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
         "-B",
         "-ntp",
-        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-combo-m2",
         "clean",
         "verify"
       ],
-      "startUTC": "2026-10-10T07:42:42.607327+00:00",
+      "startUTC": "2026-10-10T07:59:01.557279+00:00",
       "exitCode": 0,
       "totals": {
-        "tests": 44,
+        "tests": 45,
         "failures": 0,
         "errors": 0,
         "skipped": 0
@@ -771,7 +783,7 @@
         },
         {
           "name": "cl.duoc.pedidos360.productos.ProductosHttpRegressionTests",
-          "tests": 6,
+          "tests": 7,
           "failures": 0,
           "errors": 0,
           "skipped": 0
@@ -794,7 +806,7 @@
       "jars": [
         {
           "file": "productos-service-0.0.1-SNAPSHOT.jar",
-          "sha256": "d1c45496ed3f2feffa50c65897650e14ecffe7e2f1ff9898362f04c52b7f38d1",
+          "sha256": "a7158bc4e73f4cdb585d5971752e2e8832d000f6ab7944ad26a8aa0188acefe8",
           "libraries": [
             "BOOT-INF/lib/",
             "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
@@ -842,8 +854,8 @@
             "BOOT-INF/lib/slf4j-api-2.0.18.jar",
             "BOOT-INF/lib/commons-lang3-3.20.0.jar",
             "BOOT-INF/lib/jackson-annotations-2.21.jar",
-            "BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
-            "BOOT-INF/lib/tomcat-embed-websocket-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
             "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
             "BOOT-INF/lib/spring-web-7.0.9.jar",
@@ -875,7 +887,7 @@
             "BOOT-INF/lib/spring-boot-sql-4.1.1.jar",
             "BOOT-INF/lib/spring-jdbc-7.0.9.jar",
             "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-el-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
             "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
             "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
             "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
@@ -885,8 +897,8 @@
             "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
             "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
             "BOOT-INF/lib/flyway-core-12.4.0.jar",
-            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
-            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.7.jar",
+            "BOOT-INF/lib/jackson-core-3.1.7.jar",
             "BOOT-INF/lib/spring-boot-micrometer-metrics-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-micrometer-observation-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-actuator-autoconfigure-4.1.1.jar",
@@ -904,10 +916,10 @@
             "BOOT-INF/lib/swagger-core-jakarta-2.2.55.jar",
             "BOOT-INF/lib/swagger-annotations-jakarta-2.2.55.jar",
             "BOOT-INF/lib/swagger-models-jakarta-2.2.55.jar",
-            "BOOT-INF/lib/jackson-databind-2.21.5.jar",
-            "BOOT-INF/lib/jackson-core-2.21.5.jar",
-            "BOOT-INF/lib/jackson-dataformat-yaml-2.21.5.jar",
-            "BOOT-INF/lib/jackson-datatype-jsr310-2.21.5.jar",
+            "BOOT-INF/lib/jackson-databind-2.21.7.jar",
+            "BOOT-INF/lib/jackson-core-2.21.7.jar",
+            "BOOT-INF/lib/jackson-dataformat-yaml-2.21.7.jar",
+            "BOOT-INF/lib/jackson-datatype-jsr310-2.21.7.jar",
             "BOOT-INF/lib/spring-boot-web-server-4.1.1.jar",
             "BOOT-INF/lib/swagger-ui-5.32.14.jar",
             "BOOT-INF/lib/webjars-locator-lite-1.1.4.jar",
@@ -922,11 +934,11 @@
         "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
         "-B",
         "-ntp",
-        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-combo-m2",
         "clean",
         "verify"
       ],
-      "startUTC": "2026-10-10T07:43:21.965452+00:00",
+      "startUTC": "2026-10-10T07:59:40.663188+00:00",
       "exitCode": 0,
       "totals": {
         "tests": 99,
@@ -1030,7 +1042,7 @@
       "jars": [
         {
           "file": "carrito-service-0.0.1-SNAPSHOT.jar",
-          "sha256": "4ccf514e2ce2308f42cdaa11542d72801137394f710d678ea0f96d6feff0cf21",
+          "sha256": "aa78e0cac4c260bafbbf6e4a8f962b35db7844c143745e68da4178abb40ece8d",
           "libraries": [
             "BOOT-INF/lib/",
             "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
@@ -1099,13 +1111,13 @@
             "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
             "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
             "BOOT-INF/lib/flyway-core-12.4.0.jar",
-            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
-            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.7.jar",
+            "BOOT-INF/lib/jackson-core-3.1.7.jar",
             "BOOT-INF/lib/postgresql-42.7.13.jar",
             "BOOT-INF/lib/checker-qual-3.55.1.jar",
             "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
-            "BOOT-INF/lib/tomcat-embed-websocket-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
             "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
             "BOOT-INF/lib/spring-web-7.0.9.jar",
@@ -1121,7 +1133,7 @@
             "BOOT-INF/lib/spring-core-7.0.9.jar",
             "BOOT-INF/lib/commons-logging-1.3.6.jar",
             "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-el-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
             "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
             "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
             "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
@@ -1152,11 +1164,11 @@
         "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
         "-B",
         "-ntp",
-        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-combo-m2",
         "clean",
         "verify"
       ],
-      "startUTC": "2026-10-10T07:44:32.576639+00:00",
+      "startUTC": "2026-10-10T08:00:49.663657+00:00",
       "exitCode": 0,
       "totals": {
         "tests": 152,
@@ -1316,7 +1328,7 @@
       "jars": [
         {
           "file": "pedidos-service-0.0.1-SNAPSHOT.jar",
-          "sha256": "cba16c8d5879a64a306f2860cebd15deb3be37b3e8f8ee5e6b80b5e5bcced183",
+          "sha256": "b23104301779fc1b6042599c43baebd1a1c4c5d434fd6f82e96334e42facc662",
           "libraries": [
             "BOOT-INF/lib/",
             "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
@@ -1393,13 +1405,13 @@
             "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
             "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
             "BOOT-INF/lib/flyway-core-12.4.0.jar",
-            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
-            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.7.jar",
+            "BOOT-INF/lib/jackson-core-3.1.7.jar",
             "BOOT-INF/lib/postgresql-42.7.13.jar",
             "BOOT-INF/lib/checker-qual-3.55.1.jar",
             "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
-            "BOOT-INF/lib/tomcat-embed-websocket-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
             "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
             "BOOT-INF/lib/spring-web-7.0.9.jar",
@@ -1407,7 +1419,7 @@
             "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
             "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
             "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-el-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
             "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
             "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
             "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
@@ -1438,11 +1450,11 @@
         "C:\\Program Files\\Apache\\apache-maven-3.9.15\\bin\\mvn.cmd",
         "-B",
         "-ntp",
-        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-security-m2",
+        "-Dmaven.repo.local=C:\\Users\\Rodri\\.codex\\tmp\\ep2-combo-m2",
         "clean",
         "verify"
       ],
-      "startUTC": "2026-10-10T07:49:29.462951+00:00",
+      "startUTC": "2026-10-10T08:05:51.760259+00:00",
       "exitCode": 0,
       "totals": {
         "tests": 197,
@@ -1616,7 +1628,7 @@
       "jars": [
         {
           "file": "pagos-service-0.0.1-SNAPSHOT.jar",
-          "sha256": "90be516f26310abfe744e59bc059b937ab46a5a17e61a30efb7ec876d1312b0c",
+          "sha256": "1b41da3f913f212c1e224f2e7ba93b6e3fe5971521dcd5c7824c513b86f6da32",
           "libraries": [
             "BOOT-INF/lib/",
             "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
@@ -1693,13 +1705,13 @@
             "BOOT-INF/lib/spring-boot-flyway-4.1.1.jar",
             "BOOT-INF/lib/flyway-database-postgresql-12.4.0.jar",
             "BOOT-INF/lib/flyway-core-12.4.0.jar",
-            "BOOT-INF/lib/jackson-databind-3.1.5.jar",
-            "BOOT-INF/lib/jackson-core-3.1.5.jar",
+            "BOOT-INF/lib/jackson-databind-3.1.7.jar",
+            "BOOT-INF/lib/jackson-core-3.1.7.jar",
             "BOOT-INF/lib/postgresql-42.7.13.jar",
             "BOOT-INF/lib/checker-qual-3.55.1.jar",
             "BOOT-INF/lib/spring-boot-autoconfigure-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-core-11.0.24.jar",
-            "BOOT-INF/lib/tomcat-embed-websocket-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-core-11.0.26.jar",
+            "BOOT-INF/lib/tomcat-embed-websocket-11.0.26.jar",
             "BOOT-INF/lib/spring-boot-tomcat-4.1.1.jar",
             "BOOT-INF/lib/spring-boot-http-converter-4.1.1.jar",
             "BOOT-INF/lib/spring-web-7.0.9.jar",
@@ -1707,7 +1719,7 @@
             "BOOT-INF/lib/spring-boot-servlet-4.1.1.jar",
             "BOOT-INF/lib/spring-webmvc-7.0.9.jar",
             "BOOT-INF/lib/spring-boot-validation-4.1.1.jar",
-            "BOOT-INF/lib/tomcat-embed-el-11.0.24.jar",
+            "BOOT-INF/lib/tomcat-embed-el-11.0.26.jar",
             "BOOT-INF/lib/hibernate-validator-9.1.3.Final.jar",
             "BOOT-INF/lib/jakarta.validation-api-3.1.1.jar",
             "BOOT-INF/lib/jboss-logging-3.6.3.Final.jar",
@@ -1733,390 +1745,200 @@
       ]
     }
   ],
-  "coveredAdvisories": [
+  "totals": {
+    "tests": 1080,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 2
+  },
+  "osvRuntimeIDs": [],
+  "osvCoordinates": 122,
+  "mergeTree": [
     {
-      "id": "GHSA-5m9f-rphj-c435",
-      "cve": "CVE-2026-63336",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-5m9f-rphj-c435"
+      "pair": [
+        "A",
+        "B"
+      ],
+      "command": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "--merge-base=1e39a4c3a3d3e0d1abf589b47a752afc7147bb1f",
+        "c593e8938034594000cde3c7b2bc1990fa3e35cb",
+        "660b3cd00332eaac8255d83f6b306d3d11729011"
+      ],
+      "exitCode": 1
     },
     {
-      "id": "GHSA-5xwg-cfvj-gff5",
-      "cve": "CVE-2026-61634",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-5xwg-cfvj-gff5"
+      "pair": [
+        "A",
+        "C"
+      ],
+      "command": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "--merge-base=1e39a4c3a3d3e0d1abf589b47a752afc7147bb1f",
+        "c593e8938034594000cde3c7b2bc1990fa3e35cb",
+        "89852bd1aa4d0e357de5815c7e841e63a848f80d"
+      ],
+      "exitCode": 1
     },
     {
-      "id": "GHSA-68mj-5wr7-6fgg",
-      "cve": "CVE-2026-69219",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-68mj-5wr7-6fgg"
-    },
-    {
-      "id": "GHSA-6g32-pxv4-2wfj",
-      "cve": "CVE-2026-63337",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-6g32-pxv4-2wfj"
-    },
-    {
-      "id": "GHSA-7822-rcf6-97fx",
-      "cve": "CVE-2026-106122",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-7822-rcf6-97fx"
-    },
-    {
-      "id": "GHSA-93j5-89vc-pph4",
-      "cve": "CVE-2026-69220",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-93j5-89vc-pph4"
-    },
-    {
-      "id": "GHSA-cqgh-8p3p-mx4m",
-      "cve": "CVE-2026-106121",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-cqgh-8p3p-mx4m"
-    },
-    {
-      "id": "GHSA-h6w7-qmcm-q6xr",
-      "cve": "CVE-2026-106123",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-h6w7-qmcm-q6xr"
-    },
-    {
-      "id": "GHSA-jh4v-gfqj-7rhx",
-      "cve": "CVE-2026-75516",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-jh4v-gfqj-7rhx"
-    },
-    {
-      "id": "GHSA-qx7j-jv8m-fppr",
-      "cve": "CVE-2026-63335",
-      "source": "https://github.com/rabbitmq/rabbitmq-java-client/security/advisories/GHSA-qx7j-jv8m-fppr"
+      "pair": [
+        "B",
+        "C"
+      ],
+      "command": [
+        "git",
+        "merge-tree",
+        "--write-tree",
+        "--merge-base=1e39a4c3a3d3e0d1abf589b47a752afc7147bb1f",
+        "660b3cd00332eaac8255d83f6b306d3d11729011",
+        "89852bd1aa4d0e357de5815c7e841e63a848f80d"
+      ],
+      "exitCode": 1
     }
   ],
-  "remainingOriginalInventory": [
-    "GHSA-7hhh-6rmp-j9qf",
-    "GHSA-9xv2-5v5q-p794",
-    "GHSA-cxp5-3px4-pw24",
-    "GHSA-gcx9-497g-6cp6",
-    "GHSA-gx83-3vf8-gh7j",
-    "GHSA-h3x4-894j-xpx5",
-    "GHSA-p6pp-m3f8-5c89",
-    "GHSA-q4xh-88c3-wmh7",
-    "GHSA-wjgm-6hv5-3cvf",
-    "GHSA-wv8q-qhhj-9h54"
-  ],
-  "osvRuntimeIDs": [
-    "GHSA-7hhh-6rmp-j9qf",
-    "GHSA-9xv2-5v5q-p794",
-    "GHSA-cxp5-3px4-pw24",
-    "GHSA-gcx9-497g-6cp6",
-    "GHSA-gx83-3vf8-gh7j",
-    "GHSA-h3x4-894j-xpx5",
-    "GHSA-p6pp-m3f8-5c89",
-    "GHSA-q4xh-88c3-wmh7",
-    "GHSA-wjgm-6hv5-3cvf",
-    "GHSA-wv8q-qhhj-9h54"
-  ],
-  "osvCoordinates": 122,
-  "sha256": {
-    "A/bff-tests.log": "59ff46091fdf7c324421f182e24e7d3ee37fa64f5c94cb4e1ee49284104297f6",
-    "A/bff-tree.log": "778cad6fb1fc45c341545295c135418fee1ded34b34eff8aed7401b93fa1c157",
-    "A/bff-tree.txt": "54f755916980a423bd10ab1fc1d1ff996ae6245842fc719614b9b190cd6536df",
-    "A/build-warnings.json": "de783e56374ef0643293088490d2919f4c995ed36e6355b8524a45e546c9aa68",
-    "A/carrito-service-tests.log": "0b59433c0f2b0de4855e63d86638f0b049ddb807edc0e8351bc1929344fe4254",
-    "A/carrito-service-tree.log": "ed804d803d8b02d3453feada39e4ec9f228f2afe989e1a5204dbf9a57114075e",
-    "A/carrito-service-tree.txt": "a90b2fc0b0d0e99eb7171d4206d0d1c53d7305750a4b33486d1f6c37298c39ac",
-    "A/final-results.json": "a12531ef9110a59d1563c9a4c9534075887c8b791ba9479f25381e1bbff06485",
-    "A/osv-runtime.json": "bfefd635cbe7a72532e08cfc5e83d2f84d6916ea958c2c20fec5494d1dd13d8e",
-    "A/p360-messaging-core-final-tests.log": "19e75b2ac990ef8fd8c28f4510a06635783310f504ec74d7a57621dfd1650470",
-    "A/p360-messaging-core-tests.log": "7f956c4fa746cdb4cee44ab73e56814fdc0a218789c14453f8f47df45c8c52e1",
-    "A/p360-messaging-core-tree.log": "6e1f0fdbba78978ff6960a5ef018c0ec0e9b4321eb739370d8ec6f0e8575f7cb",
-    "A/p360-messaging-core-tree.txt": "a99e1cec0107c5ecee69217258d16f5dce7330ac12906afee202176756be73fe",
-    "A/pagos-service-tests.log": "c4c3a2b004bffc795b4a14e1db6a084780d10c1eefdc4e3384c3ab46054fab9a",
-    "A/pagos-service-tree.log": "6edbbb584ec3c92481941bf1fb151a78b4318b8c50f018b9359cdd6ec4d16c29",
-    "A/pagos-service-tree.txt": "27d255bf45997a3dc01daf46f304faae981d5a35c2c64e808928b778878a11eb",
-    "A/pedidos-service-tests.log": "1123f7c6a67f395cd6fa3a83027a2538088fc550a4482f1b5f8bfdc45296917f",
-    "A/pedidos-service-tree.log": "15b2892e5890f3c6507ff8a46bf97fa3472648fb0247ce4177401eeb291eb21b",
-    "A/pedidos-service-tree.txt": "32780eae34b507a6b5a25ba6e82a49a33c2f99d322c0c03f2febbb114b6f49b7",
-    "A/productos-service-tests.log": "8fb60abb2703583d4ab9fe0d715be096732fb3b35a73ef2c796e85ab1b8c9b5f",
-    "A/productos-service-tree.log": "c65e24090c16459f3f49b5e463df873c9b863f148e3db577fc1c2731f3958535",
-    "A/productos-service-tree.txt": "6c6dc94417a928bd764e7df4361cf710ce9d6223d33911f257c376975d6b979d",
-    "A/restaurantes-service-tests.log": "44d89cad9b9643691c9e7d63d6b6f2b58c6d14086fabd706949ae283e9584133",
-    "A/restaurantes-service-tree.log": "b0e48d9b77273d11a1761aee881298751feb0723b155d0a16181b55a037dcbed",
-    "A/restaurantes-service-tree.txt": "2cfeb7536b7e9d5c56dc0ad6fef0ec01b236d759a0c236f14b41376269758e0e",
-    "A/results.json": "d7354011f24151348cc4d0e9efe1ac9b5110437bf025ac0949605dbef9a26874",
-    "A/usuarios-service-tests.log": "f34aed1294cee3bf980391b70a17180ac724cc2fe1b35e824f890e7dae7357fc",
-    "A/usuarios-service-tree.log": "86b6ee666872f195dad6662f0bbf738f448316b56322f79f348f6c9e86d2d360",
-    "A/usuarios-service-tree.txt": "da5a422749e4460050685a7cc483063e849e176ce76f17ef229ee48e0159e67a"
+  "evidenceSHA256": {
+    "D/bff-tests.log": "bf1cc6af0c0b96b77c88d5f19d32cc3bd0cc44e913d89fa7e17fa91681fee6fa",
+    "D/bff-tree.log": "a38fe1fb22c10a990152fdaac27918c9f7a009354e69e01f26ea5efe307b6970",
+    "D/bff-tree.txt": "6b7c5fc6c5f9a484196c4c4926e2420868d84682e47bcbaebae0868fae278700",
+    "D/carrito-service-tests.log": "78e440ba602b464e1447b38ba70faf2c397b54f942f03fbd9ab760d84dfc6b54",
+    "D/carrito-service-tree.log": "37d1b004c391ebe0eae4c134aac99638032830efaecb07d330973bd5281efece",
+    "D/carrito-service-tree.txt": "5c68d316e7b8807108cfcd214cfe26e05975e0a0605d2b0870f078df780f7845",
+    "D/osv-runtime.json": "a7c949b92bf993d573fc01ff71cbe5cde286f24fb804600eb6d46f9eb8cd4561",
+    "D/p360-messaging-core-tests.log": "c8a8297e073f02fcda1431a644cc9c42dc1728158e3707ed3d9bc8e402731bec",
+    "D/p360-messaging-core-tree.log": "9242cb5f2c02fa4cfdb1928e117216fa630506bf31e006076a96ea8638a9578d",
+    "D/p360-messaging-core-tree.txt": "853bb9d8e2920e577878e591a9556a364e55b01a87b8bd5ba4f8b36186a62574",
+    "D/pagos-service-tests.log": "c7c7eac808292c359bc3070c183718b89e20010ea4b403686d39ef175f65c741",
+    "D/pagos-service-tree.log": "e5debd4e86a08c1cc1a0144367f0d3c19fe3b9902d6622b90d2fabb381cc392c",
+    "D/pagos-service-tree.txt": "c26d1971a02b65af33452d590581b72f8cf13c5628707b7c150022215a47fab1",
+    "D/pedidos-service-tests.log": "ba7e57d80f2840623c10094289926ab919ec484fb209a79ce2a2bd5108abd9bc",
+    "D/pedidos-service-tree.log": "16d3afc21f8a553ddc2932421d5f7c8def45c48f14474dc489ff1766681110bf",
+    "D/pedidos-service-tree.txt": "2b5f193efc3e19888d7af3db8e5de9ced3e07b3ab7c1c4593e08ef06579dfecb",
+    "D/productos-service-tests.log": "fa59f9a125f07cf7c01842982e5999c1f26d306c817e71d0d7424e16dbdc9da1",
+    "D/productos-service-tree.log": "9c833225413fbba2d3e2fbcf3bcb2d47a22e0133e58cd70b2f15a2342fdeab1d",
+    "D/productos-service-tree.txt": "72c07df0b642ba6b890cc57f4e59a8921148b526ac5d1f510c44efcb8af4297e",
+    "D/restaurantes-service-tests.log": "577862f18481b89b42d37a3a3510cf4aee89245181045f62c2a58eb369dd9f67",
+    "D/restaurantes-service-tree.log": "f4b1b544a7c2877c8e6b101907cfc5f58e1a4e34125c7066e563005236b0ec4c",
+    "D/restaurantes-service-tree.txt": "0b2343bfb3bb43f69a17a6f6d5347f7830e95f0f86992ce8f21a3dd76ec22b59",
+    "D/results.json": "57fa6fcbcc9ba64e02fd739e376a7928228f3860343862903b50d669d1a80b7d",
+    "D/usuarios-service-tests.log": "170e5608ba592e14e094887484fee0932bef936d45b65566aeb095e6b84bd697",
+    "D/usuarios-service-tree.log": "1b2e149cf3f74a45472d5036d91a27c8b2c3ef51a1401f92ae6403f277c0f94e",
+    "D/usuarios-service-tree.txt": "cd852a2558ab9132b5eddbcb888907ac21d866020b65548bb6b536750fb88d2a",
+    "AB-merge-tree.txt": "50a33a5416ff2f0115ed83eb44a97b069a9e8ae45935be6e344325f55414755c",
+    "AC-merge-tree.txt": "fef5ce4bdb6973a3f7658ea09d1b6230e62c7facfc98aa2fcd05d3e647309f6b",
+    "BC-merge-tree.txt": "8d1a248c67a89b30bad6a895ccd55bf7ec6dedbd4cd95dedf02076ae5a71f84f"
   },
   "surefireSHA256": {
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.BffSecurityTests.xml": "960216d0eb11cb3ac1aebc8b1527bfe296cdbd5827696bc022a18b1428b56c4f",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.client.ComercioInternalIsolationTests.xml": "2837acfc241ff041bfffb4d4ed886d95731d59ed961fdee55eeb9631bdabdac0",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.ConnectionConfigurationTests.xml": "c29f88387e6be8094f8dc38ab802678ef5a7a01575754248a704516510189f0f",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.JwtHttpTests.xml": "6bc6eb82ef55102c326f8ecb66bff4865cea8689562af5bcdcc2cb940763794d",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffCatalogResponseBindingTests.xml": "ed6853910e4478a1b139ad5e470d3b4450fe901cd795fb0bd214d3cc23411282",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests.xml": "e86eacded258f395277fe5ca770bf76711623f80f9816ea1c20de924b342a6ac",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests.xml": "f34fdf8bc7d2d5232a46e7c22fd598ad05acb4698e71fff29a1dc3be59044a51",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests.xml": "590c5930c45ab7ddcb411a3cd45d05b00901b982a02bf5a81af6834d8cc43bdd",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapterTests.xml": "92ee8a0ae9c2b8be86e81e8d02d1e56602d5f59eb118bba07b4f3561d5e7d13f",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffTemporalBarrierTests.xml": "fb771665bb81c76e1f2f8436f2f0ceaa68367ea834674f9f0ff2cc8905ff45b5",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests.xml": "62af819a5d86ca00f68f2e62fb6f5f3bfbc3fce9f24904934e6862b2d657eabc",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.PedidosPagosDisabledTests.xml": "268a3b07e0322b765725103fb515651d3068b7ec563488cad83652a1cf018a51",
-    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.security.EntraJwtTests.xml": "697320f0aec7ca1d6fa0a852528ec8c774d129b194f05617d1f38fecd9567096",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoApiTests.xml": "b35c02504ac22a242484c28ba5f04c9a7dc1a50c23aa37b7e3abcd8eb079f747",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoApplicationTests.xml": "f47d9df4e87c13a60a41b7ed7f48151aaa396eefd52bea670b714ffbea7f0502",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoCatalogoApiTests.xml": "92c47a15ba7bd8fb429b3e4c07b82a68a348067abc6e72560249f3a1dfe3197b",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests.xml": "414d59b8ed30bffb2c99cf8c3d78df349635ba74fcaceaebfb54320420ec3caf",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoConcurrenciaTests.xml": "c8071b8a5de9cc3d6c889f5c7c912e2c1a588b66da70a8c4e25e7c762e3615dd",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoEntraHttpTests.xml": "33ef25fa2d3fe163f71c6ba7125c7fe5c1fbd90af7ec7881b5725a6932dacaba",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoMigrationCompatibilityTests.xml": "6f9b47e3df25547fb096eb303bd1697bc8f1fe13de3054b39d1ea0fc2567c309",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoRepositoryTests.xml": "0e8d73d007de8d9cbd80f49118a04bbab9b89afab040b764ee5d2104e8637912",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoServiceTests.xml": "d5d838fdfa3e0b479a73d6150567f0c774aab313c9a0ac16510080c608a424ea",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoTests.xml": "91359acc10c8213666e7e01f83e859413bc7db2807cc2b9cc04bfc99305fdb75",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.LocalIdentityConfigurationTests.xml": "4be074fff506432073fab1a6dc76c272ea4c15f32e8bb8885e328a1080761d89",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.security.EntraJwtTests.xml": "b768d055728d3eac2ed9eed7d6a4640a944a6a5054ac297312fd50514ad588ef",
-    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.security.LocalIdentityFilterTests.xml": "46e62fa54900bcc251747cfe95ebd5bdcf4ac582c1e6559e91304c26f6f5aa7d",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.BffQueriesEndToEndTests.xml": "8c7bdc911f8b2dd4af01b9766a9f27ea91cdb6914072140e0a157a9b697d4403",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests.xml": "401deed932bfc10264de43b404cb9437d274bcdf451ec27385376d3032d863d1",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests.xml": "4d5ed873b9eda7e61f8a19d2571ecd6d41dc4cad3a7a76c14b325dc7e44a4b7f",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.DelegadoHttpTests.xml": "3a005c8ae8ae69495fd06f4383d61a035ee74a50ac5afae4dc22bc6fbaf83d7a",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.messaging.PagosQueryConfigurationTests.xml": "9e52c3ef9e4b02a41959c29ea2f192473d6aa4ac9036d001bc0111dc42e5055d",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.OutboxIsolationTests.xml": "fd3f6df7ee1a2198954a3d622d8da67712cebbb3ba465f0ca19f05918cebcd6e",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoAutorizacionTests.xml": "8d78d7b6cfdebb93ef8f75e12a2b113cf70a17dbfdec11242d7cadd5ef1b1c80",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoConcurrenciaTests.xml": "c1948b7b285586619abb284eddd7826cc1c630149ef193b136ed2ccbfb52f266",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoEstadosTests.xml": "94bc4650d07b9932cf2b9d9fc5d42109ad73fab4407a17ae7464883986e2bff1",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoIdempotenciaTests.xml": "2fbdaa8f4e291585d949870ed84ecbf5801f3957a91ee06f367ad083a432a0de",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoRecuperacionTests.xml": "517d09be5493c8112d0f8b0d1904058fbb94ee3b543c3014613825e465ef4ae6",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosApplicationTests.xml": "d17f56278534279fbd7aa1ff2299b34cc46540e829fcd99143e59df049b4465c",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoServiceTests.xml": "b6b7e5ede1f0025ce44d79acf6b5253cd92beb6960c08e5480482ff91b0045a3",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosQueryProcessorTests.xml": "a84f1bbe4ad3917b1c076612655125eec98595a799c2ca5b5365d4088ae698cc",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosQueryRabbitTests.xml": "aa88e85db249cd619ab3c88db0889297b8347b0d493c0516aaf357a2653a21c3",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoTenantIsolationTests.xml": "abc1841019b73827c2e405c581ed8e519e824b9b65f8e83f6f7f2e6f6dc88a3d",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PedidosRestClientTests.xml": "aa77ae017846f298950d038d96550ff1b522c5e3b49284ae1564cd5ac5a515fc",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PurchaseRabbitIntegrationTests.xml": "128073fbec82dfcfb38897be3f65ded276635037d6ab3b25ad5a8d477f086730",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.RabbitCoreTests.xml": "86019d19afd9780cb80166272f6a677fcf10e5c68da073a130aa39e1d234963d",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.EntraJwtTests.xml": "858480837e939d35a8240ff7affb5b28f9ed3fc26b910514dc4420f8ddb656ec",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.TenantIdentityTests.xml": "02dd0a43cce68ed2b841d61a00b883eef5983418f8d1407762b4c25c1ec521e5",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests.xml": "8a965b22fbbd534b18d3226be2ceca88ed9c13b24439306666ea755fa8d0ac83",
-    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantMigrationTests.xml": "516e9e418781de997f4c8acfc28eea5f1cc141ed3b9a111d6e44f0a18eb3bcf4",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CarritoOutboxMigrationCompatibilityTests.xml": "70a0394ce58d398411076566980d094160b2b884f52a1eda62884573b44639f1",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CarritoPublisherIntegrationTests.xml": "909241a97dd58db14b65e268d8254a1ca9ae397d692936fb16d2de870da5ec98",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CarritoSnapshotClientTests.xml": "2d84c0539e4b117959b684ba85c6d0ef17ddc7223d662422508fdf935f944135",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CatalogoPedidosHttpTests.xml": "b5ca31f7f73d66b7bf30919053e2fae8049746c66b9db47a699df55fa95a1e0b",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.DelegadoHttpTests.xml": "4c265254d4c1c07fe7818977ab8c6ba5428d3cdc1eb25311c72dab3096234b93",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.EstadoPedidoTests.xml": "feabcc801ed54c83ab600cb5755c6dd4b9ad9f066769eaaacc6b114cedb76f7c",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.messaging.ConfirmacionConsumerRecoveryTests.xml": "b1e9dd00e99335d77199d86d75b7763ffec6286006e5149baad68f5581be1750",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoAutorizacionTests.xml": "a7122fb630e2df9725bd7ee7394fd37a0a7c5de02769606697cf7d6dcfadf267",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoCarritoOutboxTests.xml": "1c62a978fcbc30aed8c92e54fb83f00173177657d85924c917fb84af7035d554",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoConfirmacionPagoTests.xml": "444f7732f5b16ef27bf792f7a2c4a417d658e7e6e54338e9b4b8db59c5a4120a",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoInternoSeguridadHttpTests.xml": "4793049f17d686cd0b5ccd4fe374021cfaebf641c3a2fe9bf2466304715463c3",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoRepositoryTests.xml": "16087cf62fc046b8251293eb3f5166b1f96cb490e31920d62347a1c55a405c8a",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidosApplicationTests.xml": "f87953d6432989ba9088720252d7ddb194fbf951b45504d1a0fc23bee945cef9",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoTenantIsolationTests.xml": "07841c86248f079158a8dcae8f752843fe3f1d2610a01a83de01388cfccb4b0f",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.RabbitConsumerTests.xml": "06e2b12168db7a9991603df29d0ed032afaa9e741ea4d4a027f4967f0e5f4201",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.ReliabilityPolicyTests.xml": "06b1df866c6533a4e1a5af3bece0f723209af262cde1013351c2423f299a2c71",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.EntraJwtTests.xml": "b10237b622e8f0f05b03be3f8ec7c343d06366c08c6e5c0729b6c1f73007a5c3",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.SeguridadInternaTests.xml": "c010b13c095c5de5fbd19d7c1c469b4db6cb544c595a1b8ad54973b4368ff552",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.TenantIdentityTests.xml": "3120e5b6969493ed26df9eeb761d1dc68a4c3044d12bb10de15e9dc4c5729576",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.TenantMigrationTests.xml": "871c04010ecbd6569510d58bd434b4dbbf65b3be9790c405892ee0d64ebdbe17",
-    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests.xml": "0c4279cc85a1f4d5a1308ffb605d28ea04a3820e91310d6093c00944152d7788",
-    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosConfigurationTests.xml": "99393560a63c42d622c3481bc2baf72d611e24f34583dde5eda56ea82c2a4c50",
-    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosHttpRegressionTests.xml": "9ad202d80b22eeaaafd4ee933dd48d59a411c56996336bbac5fbcaaf69490725",
-    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosQueryProcessorTests.xml": "fa28dc3950b97ed377ac758815798f38055bfb86e22fbc1817d086c98a16a1e4",
-    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosRabbitTests.xml": "55a3c86f74c3cf006b4beb29f7f7b2716f70f287a5376d6d20434998239af3a2",
-    "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests.xml": "aa975cb5b0b18fbab89398aa56d6cec81bebf8ac52cb3c695079d73804cb2175",
-    "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests.xml": "7e4e7e040a5200249e52770fc904c2c1f2dcc2be94eed8db9667305cc5674a98",
-    "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests.xml": "b20f83dd843c1628e7c615f98e2af69e2d67753bc73fa6cbe2198004f07956f0",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.JwtHttpTests.xml": "387be864444d0c30429aa40a2402c05269173b166e77c01bdbd279a05ae47da1",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests.xml": "054f8be4d6e114ae05b6342719f48e1e59c199a48061bf64502d118136759ef1",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests.xml": "76a07231ffae72af6c93525ff6aea38049c0653590e4107b81adc4616f950724",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.EntraJwtTests.xml": "34d29717dc23b0dd396fcb4759f831820fea2271c4f535b0873b09e32e8eb756",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests.xml": "1e70038ef707120ffa0d2582bb77930171a52f22807cbe22219f08e917928540",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests.xml": "576746d558f6d9235af3f6988ab683ada3636c4f9e4f90058b2a723c1608b2aa",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests.xml": "8a09d008ec26a1fb95596672568b66c958d2d5dbbf8ef9deb096f6de8828e6d3",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml": "cc86217e42dfc7c6ac834e896a3df35d1e774cafd6689899507e118d32821811",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml": "63abc25bf77725a1a89ea4e00aa139718f4c9cb2809d173775891508f9a12fc8",
-    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml": "f13c832f5eb616eef184f2539b2354fbeda8d33ddf6cb47fc96f70f23f94749c",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml": "2475cb202afd12e0e202b9922328ddfaf4185ca74fe20d164e6a02ef3a36365d",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.AmqpClientSecurityRegressionTests.xml": "17af43a77a88cc6084a2444d86f77c5e73ca2b6a4fc09559c8ff0ebcd8c6eec1",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CarritoCommandContractTests.xml": "2ae951e172e3fda32247f8a5addb579c10cac408ee66829be2ad2c809c13a9aa",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests.xml": "3c792246e6fbb8d4c2d85110e3e8f57ecad5f613a1dcf05807d36453ba77d838",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml": "c4ea0cb99139638b81385897598d7373f448cf90093cc220e0f152ec65e03c7a",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests.xml": "0aa9b15931be40e0bfd853df1b9408e01729e32ad66275d2babd0fdcd8d2afb2",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml": "545f03240a1836c899f8117762c52d6d5be3fec9997a0c3849cada5f1ea2e355",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml": "66e125ea93a05cd1bd8265c8dc8f4d12f2b739810d08ae287e2cbc8a5ada64b6",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PagosIdentityProofTests.xml": "fb01a2529145da957e0cd8bb4eb296f2e2918f55cc52a21a49d14fd0a2383c7d",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml": "62bc60cd5246a42ce6ac119e49215fb3d2e67577f095eb0df161cb3d0cb87d45",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests.xml": "4d6f9e63888f18e0691bc0ce57437f3865c87b7cfa5a8311bb05b91d01180f40",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml": "7ab3c66846f79f232b04d44692508af92ed1bce9d40c0a15c27848ee3213f352",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml": "5b905927d8912f062ef0c68d4cb6821c446671c014bba3a7e799bac9590d906e",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml": "a2b73dde79342154b9f24a22846d78b1d9a990c3c2f80ec0a31f5bfc048c463f",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml": "72bea8baab32d969d62cfb80de3d86f1662f929a61b29d106eec1dd5ee26bb77",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml": "26d92c12dadb799390e2ccc94dea3548f51dd3bf37dee5e376a6ef80cfeeacd1",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml": "0a46f121bb2395ddc5cde37d90123c676354643313045533edb90b9776fa5cbc"
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.BffSecurityTests.xml": "a548d30aec1f54440478a5400804d1047406b1b22926de001aa62295fdfa3e9b",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.client.ComercioInternalIsolationTests.xml": "b5191f2b1a6f257bd893fde2a09da15e13139c611030cf456217e3d2ae41cd2a",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.ConnectionConfigurationTests.xml": "eec3c43f87661adc0735f5852435867982e9716f6e6811d44724cee413b9af73",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.JwtHttpTests.xml": "2ea74677569ed6f9dfe72f73804d4147227535a957e5880f0fadaf1d0bd11a21",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffCatalogResponseBindingTests.xml": "6e4673a5bd3cbd9c77ed46a2b4e97cae250ad9e91977ba74be3e64d2e2d3b0c3",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffConsultasAdapterTests.xml": "406116c07c00c0d6a039b52d98cc29a8265daa3f4dcb5922eb7e0ff0eb2ff5ee",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityCorrectionTests.xml": "88cbdb4245fdb0aa1bd25cdf7953485037eeeb631f5c86d62a1f47f5f33d016e",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffIdentityProofTests.xml": "f0ec9d7da4a5dfacc882be7d50ed901722359e2343e38ab77e12160bd682b04d",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapterTests.xml": "56b082108901951eaa5ce1a5ee9755f667549561488f1c52ca138ee1095e7b0d",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.BffTemporalBarrierTests.xml": "1cc0083daaf9e580dc652eb11b084e4bcd69e602a153d9466e124ae7c82541ba",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.messaging.PendingCorrelationRegistryTests.xml": "edf621fd8a66276a0681dad527988bb80f084425ba8a9eb92d0125ebc8d22d92",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.PedidosPagosDisabledTests.xml": "fb066207a6c584507e80efd04019493ced397cd503ac6a0a0e22a4afbff71682",
+    "backend/bff/target/surefire-reports/TEST-cl.duoc.pedidos360.bff.security.EntraJwtTests.xml": "dd6ee1b4f57dc5061e63d933c291d48f76a846187abda321d150c28cc57be9eb",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoApiTests.xml": "6d72559578880f7e306db10efcf5a4e6bb5e1bb5b827453cca761b66cbe9ad07",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoApplicationTests.xml": "40886108acdd6789f0fb8baf9bafe416d31666ef7d5ebb82db66b8edcebc46ff",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoCatalogoApiTests.xml": "431264f0a83b0ffd4630d1dfb5e432593283b4561119bdd0dc8c8ca7bf5c0d1d",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests.xml": "b0d91094f52970654219b05a0bbdb7ce80adcb990b87c00b7f122f9d3cc70390",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoConcurrenciaTests.xml": "d848243edb08f7c0f26ceeb9faf35653cc5540a6b29f0b12d39270335d2c46dc",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoEntraHttpTests.xml": "dfe3dd13f49d5b82e8714e127295c559eb53e282418a36e0c817bbadbe36a7f2",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoMigrationCompatibilityTests.xml": "b7cd606055a5a8cc7b67688cb2681263088d49a31558acd37fb1236afd6f5870",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoRepositoryTests.xml": "54aa1468068d594806676c7030398f10d9fe6a61a6d9f2d9a1e7aa4911f591eb",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoServiceTests.xml": "8c8cf4410582a2b58437cee333d66327c4d72a94c77a6f64d411b2ed2ae4f060",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.CarritoTests.xml": "69b2320534caf7ca3a8c4ae9634c72d7f97cf2c79cb401e5775c8188b3c65476",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.LocalIdentityConfigurationTests.xml": "6a367e9c3169dc253a13985ff955caee7fce9213aa894202f1fa19123d096fb3",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.security.EntraJwtTests.xml": "44cef66f29cf947f8bda4627242a82267ce895867c992288ea78bab7ed6fa13c",
+    "backend/services/carrito-service/target/surefire-reports/TEST-cl.duoc.pedidos360.carrito.security.LocalIdentityFilterTests.xml": "004cc5f76758e12bb13814923ad30c2235edf6f063af0a3355765569e8a29c7e",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.BffQueriesEndToEndTests.xml": "9b1a1fc46e68c5846d31ba2f1abadae95219c9a072b6b2a181df32d79ecbcdb3",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests.xml": "4f04b0af004c666dd14030819c72894e6fae564f0e4f957bca8bd4a50a2b4d56",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.client.EntraWorkerTokenProviderTests.xml": "5a0b185346a1ff1775a25e479dbeaee6c3176c0b3dcdfe2b69fdf3cb2fa43af1",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.DelegadoHttpTests.xml": "2e6af35aa8bc15238e16b31f2698926abede9c5a84eb25b492b3548956bcc0dd",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.messaging.PagosQueryConfigurationTests.xml": "c311b3a5636ed60c226a259021b3ba01d0ddb9ce277997069b410806afd38576",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.OutboxIsolationTests.xml": "756434095aadf59ebd04acbeaaf581f80eb5303e8bc0d1c4bc840b426d02194e",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoAutorizacionTests.xml": "b9107be35f46dad56ec14e634ff8899f6534cf96b01dd1f7a18e01113db06304",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoConcurrenciaTests.xml": "522998500b88792fc002d95eb11632237c7563ec2f3bde3c64f41d77ac0bd923",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoEstadosTests.xml": "8da6cece3c178ae5db547d4c8eea514410924ada977be9e6320daa63e738dbab",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoIdempotenciaTests.xml": "98a9ccb3a503ae35a2f591e16bb41d0d78b99ca7298d0b981ca48f2db019007a",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoRecuperacionTests.xml": "90543bccc3352d01800e119904b4176b644dcd233a7a80b9dd96507dc5caa174",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosApplicationTests.xml": "2e91eb5cfc90f4f52f1570b1b25d8999b09e3c1e638a2cfead889f0954049d2d",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoServiceTests.xml": "07029bbbdcc1a2689758e0f4c114052bef16c126946eaee3e4dd4aa6f40ecd0c",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosQueryProcessorTests.xml": "d3a94dbaace494ffc23899e519c9625cd342e8ab37f520176de7025c630575ea",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagosQueryRabbitTests.xml": "e24f7900ddeecbfe43f9474a70db25b43824726e75857b0571ad30ffb433c556",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PagoTenantIsolationTests.xml": "31943216afd03248d6be0550345d4af822a33a8af2421576fc7019281b8a227a",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PedidosRestClientTests.xml": "c4ae6e13d44e08e11d62ed963498d2ea89c00208003151eab74086024e31558a",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.PurchaseRabbitIntegrationTests.xml": "582761e60a9fd2b04cf9667f3a0d84c7ed0aaf9692a436b6a5daf0fd3a49b48e",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.RabbitCoreTests.xml": "cb43682d15e46f3a573532f2c8f9a2d3003ec398c9d119160ec69d09f0a6e175",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.EntraJwtTests.xml": "f84f1096e91d6641255eb5fec6eed669e40d37eb9d9d6ae2093c897b16af73d3",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.security.TenantIdentityTests.xml": "c212250670270870a028e07c146cd9604628dc1a4c337c9d57cc6f3c75373871",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantLocalHttpEndToEndTests.xml": "da5e01feb9b336b6d6f6126142f1807535b814d9ad128ca0ac51ddbddba5bbe3",
+    "backend/services/pagos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pagos.TenantMigrationTests.xml": "21de89eb5bfbf9006005f6ddddc53115302d1fef1babbadd978114cbc2f9fcf7",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CarritoOutboxMigrationCompatibilityTests.xml": "a0ff016556afb0cf63306441ca9a83a61d34045e43490b00e6edb7b66e337cbb",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CarritoPublisherIntegrationTests.xml": "069ea5413725ccb476ddd08cf06a4f0119e39291a9331b274f279feff171d6d6",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CarritoSnapshotClientTests.xml": "33a02758bd2a5abc0a733750ab639847829be68e2ef88f324eb342599a4b8c72",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.CatalogoPedidosHttpTests.xml": "ccc4378034f9225d8f63ac251b8b9328b22469f3a32b30a295b9d3c499b2a1b2",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.DelegadoHttpTests.xml": "3ac894d163abf4533447478120f3f46666034b8b17b074eeefa07764dc47a7cf",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.EstadoPedidoTests.xml": "e4c65c7d404bc7b2ae5b163e00f39079dde90d6d045692de04390ae42e4c4177",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.messaging.ConfirmacionConsumerRecoveryTests.xml": "2e76e212eb2c3770d5892163094ea6bcd9bf0140c308b8891209d042311e76e1",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoAutorizacionTests.xml": "5947bc50f37eb5e66f8f691502c94b85e7943bb03b8da4be49bc472290018ce5",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoCarritoOutboxTests.xml": "27891ac0bb8a6c0469c820a8c35b949aed7358dde36b2cd13f4ad184a1031c5e",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoConfirmacionPagoTests.xml": "14758fba60b6af3beac81bf24c53b14fbebf343ace051136f594f929eddff8e1",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoInternoSeguridadHttpTests.xml": "a17fb6f44f1085e71b6e2cc4da0fcff5fd24ed90183cec692adb499def0bd26d",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoRepositoryTests.xml": "8e7ef5ea2399f2ae5cd4769c51300b419b87f4871fc55780b88c3ee4c33cc164",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidosApplicationTests.xml": "eed2738f03896e3d1eace98002f432471832a96f50b3a5dcc6d7e6076acea275",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.PedidoTenantIsolationTests.xml": "3f86b44f081612106ff8aa9e9782c0c260139f181c5885669b3759642a3df433",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.RabbitConsumerTests.xml": "54f0455fbe920b4af692cbee3bb4096169fb8cf48440c4063ae32880d8fc1bc7",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.ReliabilityPolicyTests.xml": "d865eeef1f2db51be30feffcf1ec0e22e2d0e389829a998a447248d39eda1621",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.EntraJwtTests.xml": "9ab0793248f4a088b30d4d59a713e58820123885580acc6e2012952a9f305beb",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.SeguridadInternaTests.xml": "a537c1e2b54e9461437e3d179cb5258679605293d4f2be785fb10d34b9a5d937",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.security.TenantIdentityTests.xml": "ef6097d61de41ee55a32da02544f1a397500fa344b31c628777ee70c7a440c16",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.TenantMigrationTests.xml": "a7f5bd3d2abd75da5bb4e2fd0caead5edd7aff760070f90b005e8721255333ac",
+    "backend/services/pedidos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests.xml": "a60bec9366f723b4da0e6f75b740cc8d86dc2fb1dd8300e81a40a6edd796f312",
+    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosConfigurationTests.xml": "a86e9df86d8b4777c92e87cfcb72dd97194796b80b090f8240b9629a947319ca",
+    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosHttpRegressionTests.xml": "aa203c96927a24c761343b2a0ec2088dcd9c47405701e25f8c82d3e2e4b1ded4",
+    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosQueryProcessorTests.xml": "d157640334fbe8934a7e6efda7539979f5e2405bbcbb92d9eea8568a56228f89",
+    "backend/services/productos-service/target/surefire-reports/TEST-cl.duoc.pedidos360.productos.ProductosRabbitTests.xml": "a80e37e4c0b821751d05ba4130e6dadab044b3ab7c8128c245a23e87eef45b77",
+    "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesConfigurationTests.xml": "a75608f1fb565fcb104e2656dca2abffc41ee18920fe8b6f049017cd80fb07be",
+    "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesHttpRegressionTests.xml": "409070961d69b321a7c5375e9cb16a2b3b107c0eee5e3bb7d04601fade95ef4d",
+    "backend/services/restaurantes-service/target/surefire-reports/TEST-cl.duoc.pedidos360.restaurantes.RestaurantesRabbitTests.xml": "705f56bf819fd517a49f3e6baeecf82f1e22a06a895510a4a042ae539ab07bbc",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.JwtHttpTests.xml": "ad7c288ef1db154f2b279e2d7f621a9920efcdbcb838aa76d12155bee5e07f50",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests.xml": "c9db4e25c8075352ccb88bd34a3c79e53c6d6eb7beb3fe6dd535bd859e6943df",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests.xml": "acb4c6bc189aad33ec98fced5a689e692009a650220a8a13781f74e75613b363",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.EntraJwtTests.xml": "2c6c434550c940f9df7c0378956a9726c1b0a956a898521e6d1a318793a4d7a5",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests.xml": "660f05586eed29323d0d28d31b11d0ca67236c13eff67fa17a907a72ffb29ffa",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests.xml": "90496a8d21ecf3d4c8f0de33b8675dbbeffff6589f747903b9b97933167430af",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests.xml": "e09ba516333fef90562720cd9192ce7614e20e261fa0aa1d78608ebab8b28ac9",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml": "ad00945f5d4da01c7e32f270df2c54d5874ae7737c1f80a9aef151a834d645f8",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml": "a2390203eca6e5587e319033cbf73794f538f06fdd337c6a0e1f6cba6116346c",
+    "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml": "641e9d0766fc1616b2519b0c5b321d4f84290b4c3b8a4607a884a4b023402b11",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml": "6be2d8fad349d3166283733a5744305cf34cf48569da819101e46e838bfc4f5c",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.AmqpClientSecurityRegressionTests.xml": "be53f8f04639621009a586c72ab62aae022342d2d6d921ad1c585a04a494bfb9",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CarritoCommandContractTests.xml": "808bcd827d5cb642f13d530936257cb1cbf21063430e47479095d59d1a8bd701",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests.xml": "dd847c04c331d9b315abddfa7fe37c542cc1b5a59e324d6d24b6a21b2b26e96f",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml": "975c32ee96c5afbf4c7bd04f70f7867eed27b55cfe22e08b139c668873be0abf",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests.xml": "bc9c8026255497be2a1cfc61d36c5ec5ec8ae7ebbf9e25ab1674bd1f1ca2e239",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml": "fd2105693215fa0cb6f26810ddecb6f50d2c38d86d458b120666567359af3506",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.JacksonSecurityRegressionTests.xml": "f83f1a1569629a4cd0446fac4017ee295f934cbfef4f3df9b79ae5cc69234319",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml": "3901686d0eccfa932a9f4e1cc454f3df2232aa68f97fb8407056e6a0f43e0c64",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PagosIdentityProofTests.xml": "89824ddd742b45310044cc2ffd37524fe3aad3c13e9305b5000e677c30d10f8f",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml": "088d4275842033e735fad90fadc22a8a7e2fadafe5f08fdd13712e69f61f758b",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests.xml": "134d215403c68f88dfc818952c536865b41714bcb7d277e87d431c8c81e6f840",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml": "4304a1cb0ea87aac1e353c13e28b41c9a883eddfa370d8e7e8b5077a9914b20c",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml": "6fe111048282cd3e5a3091e226f45b13ab2136018113924689b8548b2b3a33e3",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml": "5447680269de66d774bc40a4ebe7fcf6d7dcd76d8becf85c0e4136af20146714",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml": "35c23d468fdbe4075ef445cb4795dde22da1c67723c4b8081162d279e6145a05",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml": "b79db54b63d15ee218eb0fe2d1891279a50e79071b76f7dc2c024e10cad6b88b",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml": "095cd0178b6058f6f1dc9ec38045dca20914d4425f8bf819149e6e4ca19738d5"
   },
-  "awsOperations": false,
-  "ecrPublication": false,
-  "productionChanges": "Maven properties only",
-  "status": "READY FOR INDEPENDENT REVIEW",
-  "combinedEvidence": {
-    "report": "EP2-REMEDIATION-COMBINED.md",
-    "manifest": "EP2-REMEDIATION-COMBINED-tests.json",
-    "sha256": "e602e031770028075ade8ea1d63fb89990d0ad67cd19244c2a83a2da0ed50df6",
-    "sourceHeads": {
-      "A": "c593e8938034594000cde3c7b2bc1990fa3e35cb",
-      "B": "660b3cd00332eaac8255d83f6b306d3d11729011",
-      "C": "89852bd1aa4d0e357de5815c7e841e63a848f80d"
-    }
-  },
-  "buildWarnings": [
-    {
-      "log": "bff-tests.log",
-      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
-    },
-    {
-      "log": "bff-tests.log",
-      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
-    },
-    {
-      "log": "bff-tests.log",
-      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
-    },
-    {
-      "log": "bff-tests.log",
-      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
-    },
-    {
-      "log": "carrito-service-tests.log",
-      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
-    },
-    {
-      "log": "carrito-service-tests.log",
-      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
-    },
-    {
-      "log": "carrito-service-tests.log",
-      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
-    },
-    {
-      "log": "carrito-service-tests.log",
-      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
-    },
-    {
-      "log": "p360-messaging-core-final-tests.log",
-      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
-    },
-    {
-      "log": "p360-messaging-core-final-tests.log",
-      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
-    },
-    {
-      "log": "p360-messaging-core-final-tests.log",
-      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
-    },
-    {
-      "log": "p360-messaging-core-final-tests.log",
-      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
-    },
-    {
-      "log": "p360-messaging-core-tests.log",
-      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
-    },
-    {
-      "log": "p360-messaging-core-tests.log",
-      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
-    },
-    {
-      "log": "p360-messaging-core-tests.log",
-      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
-    },
-    {
-      "log": "p360-messaging-core-tests.log",
-      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
-    },
-    {
-      "log": "pagos-service-tests.log",
-      "message": "[WARNING] Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.001 s -- in cl.duoc.pedidos360.pagos.client.EntraWorkerLiveTests"
-    },
-    {
-      "log": "pagos-service-tests.log",
-      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
-    },
-    {
-      "log": "pagos-service-tests.log",
-      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
-    },
-    {
-      "log": "pagos-service-tests.log",
-      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
-    },
-    {
-      "log": "pagos-service-tests.log",
-      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
-    },
-    {
-      "log": "pedidos-service-tests.log",
-      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
-    },
-    {
-      "log": "pedidos-service-tests.log",
-      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
-    },
-    {
-      "log": "pedidos-service-tests.log",
-      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
-    },
-    {
-      "log": "pedidos-service-tests.log",
-      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
-    },
-    {
-      "log": "pedidos-service-tests.log",
-      "message": "[WARNING] Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0 s -- in cl.duoc.pedidos360.pedidos.WorkerEntraLiveTests"
-    },
-    {
-      "log": "productos-service-tests.log",
-      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
-    },
-    {
-      "log": "productos-service-tests.log",
-      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
-    },
-    {
-      "log": "productos-service-tests.log",
-      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
-    },
-    {
-      "log": "productos-service-tests.log",
-      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
-    },
-    {
-      "log": "restaurantes-service-tests.log",
-      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
-    },
-    {
-      "log": "restaurantes-service-tests.log",
-      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
-    },
-    {
-      "log": "restaurantes-service-tests.log",
-      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
-    },
-    {
-      "log": "restaurantes-service-tests.log",
-      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
-    },
-    {
-      "log": "usuarios-service-tests.log",
-      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
-    },
-    {
-      "log": "usuarios-service-tests.log",
-      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
-    },
-    {
-      "log": "usuarios-service-tests.log",
-      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
-    },
-    {
-      "log": "usuarios-service-tests.log",
-      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
-    }
-  ],
-  "primaryEvidenceSHA256": {
-    "official-sources.json": "e2ced201ca5f38f94dde90fffc93188dc5845706304562087dbf7dbe0964cc1e",
-    "negative-controls.json": "337c4d225d02f3954afe01aa5119516cef26d478cd70ccae22aa468fd08db4d3"
-  }
+  "aws": false,
+  "publishedImages": false,
+  "developModified": false
 }
