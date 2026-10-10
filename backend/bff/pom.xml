@@ -4,6 +4,8 @@
   <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.1.1</version><relativePath/></parent>
   <groupId>cl.duoc.pedidos360</groupId><artifactId>bff</artifactId><version>0.0.1-SNAPSHOT</version>
   <properties>
+        <rabbit-amqp-client.version>5.37.0</rabbit-amqp-client.version>
+        <jackson-bom.version>3.1.7</jackson-bom.version>
         <tomcat.version>11.0.26</tomcat.version>
 <java.version>21</java.version></properties>
   <dependencies>
