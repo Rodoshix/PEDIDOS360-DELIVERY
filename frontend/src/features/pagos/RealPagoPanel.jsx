@@ -6,6 +6,10 @@ import { createPagoHttpAdapter } from './pagoHttpAdapter.js'
 import { ETIQUETAS_ESTADO_PAGO, ETIQUETAS_METODO, METODOS_PAGO, validatePagoDraft } from './pagoOperaciones.js'
 import { ROUTE_PATHS } from '../../routes/routePaths.js'
 import './pagos.css'
+import '../pedidos/clientCommerce.css'
+import Badge from '../../components/ui/Badge.jsx'
+import LoadingState from '../../components/feedback/LoadingState.jsx'
+import { Alert } from '../../components/feedback/Feedback.jsx'
 
 const clp = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 
@@ -64,43 +68,46 @@ export default function RealPagoPanel({ pedidoId }) {
 
   const pago = state.pago
   const error = state.error
-  return <div className="pagos-section" aria-busy={busy}>
-    {state.status === 'loading' && <p role="status">Consultando el pago del pedido…</p>}
-    {state.status === 'saving' && <p role="status">Registrando el pago…</p>}
-    {state.status === 'empty' && <p role="status">Este pedido todavía no tiene pagos registrados. Elige un método para registrar el primero.</p>}
+  return <div className="pagos-section client-commerce" aria-busy={busy}>
+    {state.status === 'loading' && <LoadingState label="Consultando el pago del pedido…" compact />}
+    {state.status === 'saving' && <LoadingState label="Registrando el pago…" compact />}
+    {state.status === 'empty' && <Alert tone="warning">Este pedido todavía no tiene pagos registrados. Elige un método para registrar el primero.</Alert>}
     {error && <div ref={errorRender} tabIndex={-1} role="alert" className="pagos-error">
       <p>{error.message}</p>
+      {state.operation === 'write' && intento && <p>La respuesta no confirma un pago nuevo. El reintento explícito conserva la clave del intento original.</p>}
       {state.operation === 'load' && error.code === 'LOAD_FAILED'
-        && <button type="button" className="button button--secondary" disabled={busy}
+        && <button type="button" className="ui-button ui-button--secondary" disabled={busy}
           onClick={() => controller.load(id)}>Reintentar consulta</button>}
-      {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
+      {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="ui-button ui-button--primary" disabled={busy}
         onClick={() => authorizeApi(destination)}>Continuar con Microsoft</button>}
-      {error.code === 'UNAUTHORIZED' && <button type="button" className="button button--primary" disabled={busy}
+      {error.code === 'UNAUTHORIZED' && <button type="button" className="ui-button ui-button--primary" disabled={busy}
         onClick={() => login(destination)}>Volver a iniciar sesión</button>}
       {state.operation === 'write' && intento
-        && <button type="button" className="button button--secondary" disabled={busy} onClick={() => {
+        && <button type="button" className="ui-button ui-button--secondary" disabled={busy} onClick={() => {
           return controller.registrar({ pedidoId: intento.pedidoId, metodo: intento.metodo }, { idempotencyKey: intento.key })
             .then(aplicado => { if (aplicado) setIntento(null) })
         }}>Reintentar pago</button>}
     </div>}
     {pago ? <section className="pagos-card" aria-labelledby="pago-resultado">
-      <h2 id="pago-resultado">Pago #{pago.pagoId}</h2>
-      <p>Pedido #{pago.pedidoId} · {clp.format(pago.monto)}</p>
-      <p>Método: {ETIQUETAS_METODO[pago.metodo]} · Estado: <span className="pagos-estado">{ETIQUETAS_ESTADO_PAGO[pago.estado]}</span></p>
+      <div className="commerce-order__heading"><h2 id="pago-resultado">Pago #{pago.pagoId}</h2>
+        <Badge tone={pago.estado === 'APROBADO' ? 'success' : pago.estado === 'RECHAZADO' ? 'danger' : 'warning'}>{ETIQUETAS_ESTADO_PAGO[pago.estado]}</Badge></div>
+      <p>Pedido #{pago.pedidoId}</p>
+      <div className="commerce-total-row"><span>Monto</span><strong>{clp.format(pago.monto)}</strong></div>
+      <p>Método: {ETIQUETAS_METODO[pago.metodo]}</p>
       {pago.estado === 'PENDIENTE' && <p>El cobro en efectivo se registra al entregar el pedido.</p>}
-      {pago.estado === 'RECHAZADO' && <button type="button" className="button button--primary" disabled={busy}
+      {pago.estado === 'RECHAZADO' && <button type="button" className="ui-button ui-button--primary" disabled={busy}
         onClick={() => { setIntento(null); controller.nuevoIntento(); setMetodo('TARJETA') }}>
         Elegir otro método
       </button>}
       <div className="pagos-actions">
-        <Link className="button button--secondary" to={ROUTE_PATHS.pedidoDetalle.replace(':id', pago.pedidoId)}>Ver pedido</Link>
-        <Link className="button button--secondary" to={ROUTE_PATHS.misPedidos}>Ir a mis pedidos</Link>
+        <Link className="ui-button ui-button--secondary" to={ROUTE_PATHS.pedidoDetalle.replace(':id', pago.pedidoId)}>Ver pedido</Link>
+        <Link className="ui-button ui-button--secondary" to={ROUTE_PATHS.misPedidos}>Ir a mis pedidos</Link>
       </div>
     </section> : !error && (
       <form className="pagos-card" onSubmit={registrar} noValidate>
         <h2>Registrar pago</h2>
         <p>Pedido #{id}</p>
-        <fieldset disabled={busy}>
+        <fieldset className="commerce-methods" disabled={busy} aria-describedby={errores.metodo ? 'pago-metodo-error' : undefined}>
           <legend>Método de pago</legend>
           {METODOS_PAGO.map(opcion => <label key={opcion}>
             <input type="radio" name="metodo" value={opcion} checked={metodo === opcion}
@@ -108,10 +115,10 @@ export default function RealPagoPanel({ pedidoId }) {
             {ETIQUETAS_METODO[opcion]}
           </label>)}
         </fieldset>
-        {errores.metodo && <p role="alert" className="pagos-error">{errores.metodo}</p>}
+        {errores.metodo && <p id="pago-metodo-error" role="alert" className="pagos-error">{errores.metodo}</p>}
         <div className="pagos-actions">
-          <button type="submit" className="button button--primary" disabled={busy}>{busy ? 'Registrando…' : 'Pagar'}</button>
-          <Link className="button button--secondary" to={ROUTE_PATHS.misPedidos}>Cancelar</Link>
+          <button type="submit" className="ui-button ui-button--primary" disabled={busy}>{busy ? 'Registrando…' : 'Pagar'}</button>
+          <Link className="ui-button ui-button--secondary" to={ROUTE_PATHS.misPedidos}>Cancelar</Link>
         </div>
       </form>)}
   </div>

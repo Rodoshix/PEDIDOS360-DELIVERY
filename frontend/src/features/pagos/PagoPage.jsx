@@ -9,7 +9,6 @@ export default function PagoPage() {
   const key = JSON.stringify([account.tenantId, account.homeAccountId, account.localAccountId, pedidoId])
   return (
     <section className="container pagos-section">
-      <p className="eyebrow">Pago del pedido</p>
       <h1>Pagar pedido</h1>
       <p>Registra el pago de tu pedido.</p>
       <RealPagoPanel key={key} pedidoId={pedidoId} />

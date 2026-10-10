@@ -4,10 +4,15 @@ export function createPreviewApi() {
   const users = new Map()
   let restaurants = [{ id: 1, nombre: 'Burger House de prueba', descripcion: 'Catálogo ficticio para revisión visual.', direccion: 'Calle de prueba 123', estado: 'ABIERTO' }]
   let products = [{ id: 1, restauranteId: 1, nombre: 'Hamburguesa de prueba', descripcion: 'Producto ficticio.', precio: 6990, categoria: 'Principal', disponible: true }]
+  const commerceScenarios = ['commerce-empty', 'commerce-approved', 'commerce-pending', 'commerce-rejected', 'commerce-uncertain-order', 'commerce-uncertain-payment', 'commerce-delete-error']
+  const sampleOrder = key => ({ pedidoId: key === 'B' ? 800 : 700, usuarioId: key === 'B' ? 2 : 1, restauranteId: 1,
+    direccionEntrega: 'Dirección ficticia de entrega 123', estado: 'CREADO', moneda: 'CLP', total: 16970, fechaCreacion: '2026-10-09T12:00:00Z',
+    lineas: [{ lineaId: 1, productoId: 1, cantidad: 2, precioUnitario: 6990, subtotal: 13980 }, { lineaId: 2, productoId: 2, cantidad: 1, precioUnitario: 2990, subtotal: 2990 }] })
   function user(key) {
     if (!users.has(key)) users.set(key, {
       profile: { id: key === 'B' ? 2 : 1, nombre: key === 'B' ? 'Bea' : 'Alex', apellido: 'Ejemplo', email: `${key.toLowerCase()}@example.test`, telefono: null,
         activo: true, creadoEn: '2026-09-10T12:00:00Z', actualizadoEn: '2026-09-10T12:00:00Z' },
+      orders: [sampleOrder(key)], payments: new Map(),
       items: [{ productoId: 1, nombre: 'Hamburguesa de prueba', cantidad: 2, precioUnitario: 6990, subtotal: 13980 },
         { productoId: 2, nombre: 'Papas de prueba', cantidad: 1, precioUnitario: 2990, subtotal: 2990 }], version: 0,
     })
@@ -16,7 +21,7 @@ export function createPreviewApi() {
   return async function middleware(req, res, next) {
     if (req.url === '/__preview/scenario' && req.method === 'POST') {
       let text = ''; for await (const chunk of req) text += chunk
-      if (!['normal', 'empty', 'error', 'slow', 'catalog-empty-products', 'catalog-unavailable', 'catalog-denied'].includes(text)) { res.statusCode = 400; res.end(); return }
+      if (!['normal', 'empty', 'error', 'slow', 'catalog-empty-products', 'catalog-unavailable', 'catalog-denied', ...commerceScenarios].includes(text)) { res.statusCode = 400; res.end(); return }
       scenario = text; users.clear(); res.statusCode = 204; res.end(); return
     }
     if (!req.url?.startsWith('/api/')) return next()
@@ -26,6 +31,50 @@ export function createPreviewApi() {
     if (req.url === '/api/restaurantes/admin/acceso') return send(key === 'A' ? 204 : 403)
     if (scenario === 'slow') await new Promise(resolve => setTimeout(resolve, 1500))
     if (scenario === 'error') return send(503, {})
+    // Respuestas ficticias de contratos ya existentes. Solo lecturas o clicks explícitos;
+    // sin pedidos/pagos reales y fuera del build de producción.
+    if (req.method === 'GET' && req.url === '/api/pedidos/me') return send(200, scenario === 'commerce-empty' ? [] : state.orders)
+    const orderId = req.url.match(/^\/api\/pedidos\/(\d+)$/)?.[1]
+    if (orderId && req.method === 'GET') {
+      const order = state.orders.find(row => row.pedidoId === Number(orderId))
+      return order ? send(200, order) : send(404, {})
+    }
+    const paymentOrder = req.url.match(/^\/api\/pagos\/pedido\/(\d+)$/)?.[1]
+    if (paymentOrder && req.method === 'GET') {
+      const order = state.orders.find(row => row.pedidoId === Number(paymentOrder))
+      if (!order) return send(404, {})
+      const existing = [...state.payments.values()].filter(row => row.pedidoId === order.pedidoId)
+      if (existing.length) return send(200, existing)
+      const status = { 'commerce-approved': 'APROBADO', 'commerce-pending': 'PENDIENTE', 'commerce-rejected': 'RECHAZADO' }[scenario]
+      return send(200, status ? [{ pagoId: 901, pedidoId: order.pedidoId, usuarioId: state.profile.id, monto: order.total,
+        moneda: 'CLP', metodo: status === 'PENDIENTE' ? 'EFECTIVO' : 'TARJETA', estado: status, fecha: '2026-10-09T12:00:00Z' }] : [])
+    }
+    if (req.method === 'POST' && ['/api/pedidos', '/api/pagos'].includes(req.url)) {
+      let text = ''; for await (const chunk of req) text += chunk
+      try {
+        const body = JSON.parse(text)
+        if (req.url === '/api/pedidos') {
+          if (scenario === 'commerce-uncertain-order') return send(503, {})
+          if (!body.direccionEntrega?.trim() || !body.items?.length) return send(400, {})
+          const lineas = body.items.map((item, index) => {
+            const cartItem = state.items.find(row => row.productoId === item.productoId)
+            if (!cartItem) throw new Error('fixture item')
+            return { lineaId: index + 1, productoId: item.productoId, cantidad: item.cantidad,
+              precioUnitario: cartItem.precioUnitario, subtotal: cartItem.precioUnitario * item.cantidad }
+          })
+          const order = { ...sampleOrder(key), pedidoId: Math.max(...state.orders.map(row => row.pedidoId)) + 1,
+            direccionEntrega: body.direccionEntrega, lineas, total: lineas.reduce((sum, row) => sum + row.subtotal, 0) }
+          state.orders.push(order); return send(201, order)
+        }
+        if (scenario === 'commerce-uncertain-payment') return send(503, {})
+        const order = state.orders.find(row => row.pedidoId === body.pedidoId), idempotencyKey = req.headers['idempotency-key']
+        if (!order || !idempotencyKey || !['TARJETA', 'EFECTIVO'].includes(body.metodo)) return send(400, {})
+        if (state.payments.has(idempotencyKey)) return send(201, state.payments.get(idempotencyKey))
+        const payment = { pagoId: 902 + state.payments.size, pedidoId: order.pedidoId, usuarioId: state.profile.id, monto: order.total,
+          moneda: 'CLP', metodo: body.metodo, estado: body.metodo === 'EFECTIVO' ? 'PENDIENTE' : 'APROBADO', fecha: '2026-10-09T12:00:00Z' }
+        state.payments.set(idempotencyKey, payment); return send(201, payment)
+      } catch { return send(400, {}) }
+    }
     if (scenario === 'catalog-denied' && /^\/api\/(restaurantes|productos)/.test(req.url)) return send(403, {})
     const catalog = req.url.match(/^\/api\/(restaurantes|productos)(?:\/(\d+))?(?:\/disponibilidad\?disponible=(true|false))?$/)
     const restaurantProducts = req.url.match(/^\/api\/productos\/restaurante\/(\d+)$/)
@@ -52,7 +101,7 @@ export function createPreviewApi() {
       catch { return send(400, {}) }
     }
     if (scenario === 'empty') state.items = []
-    if (req.url === '/api/carrito' && req.method === 'DELETE') { state.items = []; state.version++; return send(204) }
+    if (req.url === '/api/carrito' && req.method === 'DELETE') { if (scenario === 'commerce-delete-error') return send(503, {}); state.items = []; state.version++; return send(204) }
     if (req.url === '/api/carrito/items' && req.method === 'POST') {
       let text = ''; for await (const chunk of req) text += chunk
       try {

@@ -1,0 +1,336 @@
+{
+  "kind": "LOCAL_BROWSER_FIXTURES_NOT_BACKEND_E2E",
+  "keyboard": "EFECTIVO Space; Tab a Pagar; Enter. Dirección + Tab: foco visible 2px.",
+  "screenshots": [
+    {
+      "file": "history-desktop.jpg",
+      "expected": "Pedido #700",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- complementary \"Menú de Pedidos360\":\n  - link \"Pedidos360, ir al inicio\":\n    - /url: /\n    - generic: Pedidos360\n  - paragraph: Tu espacio\n  - navigation \"Navegación principal\":\n    - link \"Inicio\":\n      - /url: /\n      - generic: Inicio\n    - link \"Restaurantes\":\n      - /url: /restaurantes\n      - generic: Restaurantes\n    - link \"Carrito\":\n      - /url: /carrito\n      - generic: Carrito\n    - link \"Mis pedidos\" [active]:\n      - /url: /mis-pedidos\n      - generic: Mis pedidos\n    - link \"Mi cuenta\":\n      - /url: /mi-cuenta\n      - generic: Mi cuenta\n    - link \"Administrar restaurantes\":\n      - /url: /admin/restaurantes\n      - generic: Administrar restaurantes\n    - link \"Administrar productos\":\n      - /url: /admin/productos\n      - generic: Administrar productos\n  - paragraph: Elige, pide y disfruta.\n  - button \"Contraer menú\" [expanded]:\n    - text: Contraer menú\n- banner:\n  - generic: Mis pedidos\n  - region \"Sesión de Microsoft\":\n    - strong: Cuenta de prueba A\n    - generic: cuenta-a@example.test\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Mis pedidos\" [level=1]\n  - paragraph: Revisa el historial y el estado de tus pedidos.\n  - list \"Tus pedidos\":\n    - 'heading \"Pedido #700\" [level=2]'\n    - generic: Creado\n    - paragraph: 09-10-2026, 9:00 a. m.\n    - paragraph: Dirección ficticia de entrega 123\n    - strong: $16.970\n    - button \"Ver detalle del pedido 700\": Ver detalle\n    - generic: En curso\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 1265,
+        "width": 1280
+      },
+      "logs": []
+    },
+    {
+      "file": "detail-desktop.jpg",
+      "expected": "Ir al pago",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- complementary \"Menú de Pedidos360\":\n  - link \"Pedidos360, ir al inicio\":\n    - /url: /\n    - generic: Pedidos360\n  - paragraph: Tu espacio\n  - navigation \"Navegación principal\":\n    - link \"Inicio\":\n      - /url: /\n      - generic: Inicio\n    - link \"Restaurantes\":\n      - /url: /restaurantes\n      - generic: Restaurantes\n    - link \"Carrito\":\n      - /url: /carrito\n      - generic: Carrito\n    - link \"Mis pedidos\":\n      - /url: /mis-pedidos\n      - generic: Mis pedidos\n    - link \"Mi cuenta\":\n      - /url: /mi-cuenta\n      - generic: Mi cuenta\n    - link \"Administrar restaurantes\":\n      - /url: /admin/restaurantes\n      - generic: Administrar restaurantes\n    - link \"Administrar productos\":\n      - /url: /admin/productos\n      - generic: Administrar productos\n  - paragraph: Elige, pide y disfruta.\n  - button \"Contraer menú\" [expanded]:\n    - text: Contraer menú\n- banner:\n  - generic: Detalle del pedido\n  - region \"Sesión de Microsoft\":\n    - strong: Cuenta de prueba A\n    - generic: cuenta-a@example.test\n    - button \"Cerrar sesión\"\n- main:\n  - 'heading \"Pedido #700\" [level=1]'\n  - 'region \"Pedido #700\"':\n    - 'heading \"Pedido #700\" [level=2]'\n    - generic: Creado\n    - paragraph: 09-10-2026, 9:00 a. m.\n    - heading \"Dirección de entrega\" [level=3]\n    - paragraph: Dirección ficticia de entrega 123\n    - heading \"Productos del pedido\" [level=3]\n    - list:\n      - strong: \"Producto #1\"\n      - paragraph: \"Cantidad: 2 · Precio unitario: $6.990\"\n      - strong: $13.980\n      - strong: \"Producto #2\"\n      - paragraph: \"Cantidad: 1 · Precio unitario: $2.990\"\n      - strong: $2.990\n    - generic: Total\n    - strong: $16.970\n  - link \"Volver a mis pedidos\":\n    - /url: /mis-pedidos\n  - link \"Ir al pago\":\n    - /url: /pago/700\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 1265,
+        "width": 1280
+      },
+      "logs": []
+    },
+    {
+      "file": "detail-mobile-390.jpg",
+      "expected": "Ir al pago",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Detalle del pedido\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - 'heading \"Pedido #700\" [level=1]'\n  - 'region \"Pedido #700\"':\n    - 'heading \"Pedido #700\" [level=2]'\n    - generic: Creado\n    - paragraph: 09-10-2026, 9:00 a. m.\n    - heading \"Dirección de entrega\" [level=3]\n    - paragraph: Dirección ficticia de entrega 123\n    - heading \"Productos del pedido\" [level=3]\n    - list:\n      - strong: \"Producto #1\"\n      - paragraph: \"Cantidad: 2 · Precio unitario: $6.990\"\n      - strong: $13.980\n      - strong: \"Producto #2\"\n      - paragraph: \"Cantidad: 1 · Precio unitario: $2.990\"\n      - strong: $2.990\n    - generic: Total\n    - strong: $16.970\n  - link \"Volver a mis pedidos\":\n    - /url: /mis-pedidos\n  - link \"Ir al pago\":\n    - /url: /pago/700\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "detail-mobile-320.jpg",
+      "expected": "Ir al pago",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Detalle del pedido\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - 'heading \"Pedido #700\" [level=1]'\n  - 'region \"Pedido #700\"':\n    - 'heading \"Pedido #700\" [level=2]'\n    - generic: Creado\n    - paragraph: 09-10-2026, 9:00 a. m.\n    - heading \"Dirección de entrega\" [level=3]\n    - paragraph: Dirección ficticia de entrega 123\n    - heading \"Productos del pedido\" [level=3]\n    - list:\n      - strong: \"Producto #1\"\n      - paragraph: \"Cantidad: 2 · Precio unitario: $6.990\"\n      - strong: $13.980\n      - strong: \"Producto #2\"\n      - paragraph: \"Cantidad: 1 · Precio unitario: $2.990\"\n      - strong: $2.990\n    - generic: Total\n    - strong: $16.970\n  - link \"Volver a mis pedidos\":\n    - /url: /mis-pedidos\n  - link \"Ir al pago\":\n    - /url: /pago/700\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 305,
+        "width": 320
+      },
+      "logs": []
+    },
+    {
+      "file": "payment-empty-mobile.jpg",
+      "expected": "Registrar pago",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Pago\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Pagar pedido\" [level=1]\n  - paragraph: Registra el pago de tu pedido.\n  - status: Este pedido todavía no tiene pagos registrados. Elige un método para registrar el primero.\n  - heading \"Registrar pago\" [level=2]\n  - paragraph: \"Pedido #700\"\n  - group \"Método de pago\":\n    - generic: Método de pago\n    - radio \"Tarjeta\" [checked]\n    - text: Tarjeta\n    - radio \"Efectivo\"\n    - text: Efectivo\n  - button \"Pagar\"\n  - link \"Cancelar\":\n    - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 305,
+        "width": 320
+      },
+      "logs": []
+    },
+    {
+      "file": "payment-empty-desktop.jpg",
+      "expected": "Registrar pago",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- complementary \"Menú de Pedidos360\":\n  - link \"Pedidos360, ir al inicio\":\n    - /url: /\n    - generic: Pedidos360\n  - paragraph: Tu espacio\n  - navigation \"Navegación principal\":\n    - link \"Inicio\":\n      - /url: /\n      - generic: Inicio\n    - link \"Restaurantes\":\n      - /url: /restaurantes\n      - generic: Restaurantes\n    - link \"Carrito\":\n      - /url: /carrito\n      - generic: Carrito\n    - link \"Mis pedidos\":\n      - /url: /mis-pedidos\n      - generic: Mis pedidos\n    - link \"Mi cuenta\":\n      - /url: /mi-cuenta\n      - generic: Mi cuenta\n    - link \"Administrar restaurantes\":\n      - /url: /admin/restaurantes\n      - generic: Administrar restaurantes\n    - link \"Administrar productos\":\n      - /url: /admin/productos\n      - generic: Administrar productos\n  - paragraph: Elige, pide y disfruta.\n  - button \"Contraer menú\" [expanded]:\n    - text: Contraer menú\n- banner:\n  - generic: Pago\n  - region \"Sesión de Microsoft\":\n    - strong: Cuenta de prueba A\n    - generic: cuenta-a@example.test\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Pagar pedido\" [level=1]\n  - paragraph: Registra el pago de tu pedido.\n  - status: Este pedido todavía no tiene pagos registrados. Elige un método para registrar el primero.\n  - heading \"Registrar pago\" [level=2]\n  - paragraph: \"Pedido #700\"\n  - group \"Método de pago\":\n    - generic: Método de pago\n    - radio \"Tarjeta\" [checked]\n    - text: Tarjeta\n    - radio \"Efectivo\"\n    - text: Efectivo\n  - button \"Pagar\"\n  - link \"Cancelar\":\n    - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 1265,
+        "width": 1280
+      },
+      "logs": []
+    },
+    {
+      "file": "payment-pending-desktop.jpg",
+      "expected": "Pendiente de cobro",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- complementary \"Menú de Pedidos360\":\n  - link \"Pedidos360, ir al inicio\":\n    - /url: /\n    - generic: Pedidos360\n  - paragraph: Tu espacio\n  - navigation \"Navegación principal\":\n    - link \"Inicio\":\n      - /url: /\n      - generic: Inicio\n    - link \"Restaurantes\":\n      - /url: /restaurantes\n      - generic: Restaurantes\n    - link \"Carrito\":\n      - /url: /carrito\n      - generic: Carrito\n    - link \"Mis pedidos\":\n      - /url: /mis-pedidos\n      - generic: Mis pedidos\n    - link \"Mi cuenta\":\n      - /url: /mi-cuenta\n      - generic: Mi cuenta\n    - link \"Administrar restaurantes\":\n      - /url: /admin/restaurantes\n      - generic: Administrar restaurantes\n    - link \"Administrar productos\":\n      - /url: /admin/productos\n      - generic: Administrar productos\n  - paragraph: Elige, pide y disfruta.\n  - button \"Contraer menú\" [expanded]:\n    - text: Contraer menú\n- banner:\n  - generic: Pago\n  - region \"Sesión de Microsoft\":\n    - strong: Cuenta de prueba A\n    - generic: cuenta-a@example.test\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Pagar pedido\" [level=1]\n  - paragraph: Registra el pago de tu pedido.\n  - 'region \"Pago #902\"':\n    - 'heading \"Pago #902\" [level=2]'\n    - generic: Pendiente de cobro\n    - paragraph: \"Pedido #700\"\n    - generic: Monto\n    - strong: $16.970\n    - paragraph: \"Método: Efectivo\"\n    - paragraph: El cobro en efectivo se registra al entregar el pedido.\n    - link \"Ver pedido\":\n      - /url: /pedidos/700\n    - link \"Ir a mis pedidos\":\n      - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 1265,
+        "width": 1280
+      },
+      "logs": []
+    },
+    {
+      "file": "payment-pending-mobile.jpg",
+      "expected": "Pendiente de cobro",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Pago\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Pagar pedido\" [level=1]\n  - paragraph: Registra el pago de tu pedido.\n  - 'region \"Pago #902\"':\n    - 'heading \"Pago #902\" [level=2]'\n    - generic: Pendiente de cobro\n    - paragraph: \"Pedido #700\"\n    - generic: Monto\n    - strong: $16.970\n    - paragraph: \"Método: Efectivo\"\n    - paragraph: El cobro en efectivo se registra al entregar el pedido.\n    - link \"Ver pedido\":\n      - /url: /pedidos/700\n    - link \"Ir a mis pedidos\":\n      - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "payment-approved-mobile.jpg",
+      "expected": "Aprobado",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Pago\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Pagar pedido\" [level=1]\n  - paragraph: Registra el pago de tu pedido.\n  - 'region \"Pago #901\"':\n    - 'heading \"Pago #901\" [level=2]'\n    - generic: Aprobado\n    - paragraph: \"Pedido #700\"\n    - generic: Monto\n    - strong: $16.970\n    - paragraph: \"Método: Tarjeta\"\n    - link \"Ver pedido\":\n      - /url: /pedidos/700\n    - link \"Ir a mis pedidos\":\n      - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "payment-rejected-mobile.jpg",
+      "expected": "Rechazado",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Pago\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Pagar pedido\" [level=1]\n  - paragraph: Registra el pago de tu pedido.\n  - 'region \"Pago #901\"':\n    - 'heading \"Pago #901\" [level=2]'\n    - generic: Rechazado\n    - paragraph: \"Pedido #700\"\n    - generic: Monto\n    - strong: $16.970\n    - paragraph: \"Método: Tarjeta\"\n    - button \"Elegir otro método\"\n    - link \"Ver pedido\":\n      - /url: /pedidos/700\n    - link \"Ir a mis pedidos\":\n      - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "payment-uncertain-mobile.jpg",
+      "expected": "El reintento explícito conserva",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Pago\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Pagar pedido\" [level=1]\n  - paragraph: Registra el pago de tu pedido.\n  - alert [active]:\n    - paragraph: No se pudo registrar el pago. Inténtalo de nuevo.\n    - paragraph: La respuesta no confirma un pago nuevo. El reintento explícito conserva la clave del intento original.\n    - button \"Reintentar pago\"\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": "alert",
+        "outline": "rgb(185, 28, 28) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "checkout-desktop.jpg",
+      "expected": "Dirección de entrega",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- complementary \"Menú de Pedidos360\":\n  - link \"Pedidos360, ir al inicio\":\n    - /url: /\n    - generic: Pedidos360\n  - paragraph: Tu espacio\n  - navigation \"Navegación principal\":\n    - link \"Inicio\":\n      - /url: /\n      - generic: Inicio\n    - link \"Restaurantes\":\n      - /url: /restaurantes\n      - generic: Restaurantes\n    - link \"Carrito\":\n      - /url: /carrito\n      - generic: Carrito\n    - link \"Mis pedidos\":\n      - /url: /mis-pedidos\n      - generic: Mis pedidos\n    - link \"Mi cuenta\":\n      - /url: /mi-cuenta\n      - generic: Mi cuenta\n    - link \"Administrar restaurantes\":\n      - /url: /admin/restaurantes\n      - generic: Administrar restaurantes\n    - link \"Administrar productos\":\n      - /url: /admin/productos\n      - generic: Administrar productos\n  - paragraph: Elige, pide y disfruta.\n  - button \"Contraer menú\" [expanded]:\n    - text: Contraer menú\n- banner:\n  - generic: Confirmar pedido\n  - region \"Sesión de Microsoft\":\n    - strong: Cuenta de prueba A\n    - generic: cuenta-a@example.test\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Confirmar pedido\" [level=1]\n  - paragraph: Revisa los datos de entrega y confirma tu pedido.\n  - heading \"Datos de entrega\" [level=2]\n  - paragraph: \"Restaurante #1 · 2 producto(s) · Total $16.970\"\n  - text: Dirección de entrega\n  - textbox \"Dirección de entrega\"\n  - heading \"Productos del carrito\" [level=3]\n  - list \"Productos del carrito\":\n    - generic: Hamburguesa de prueba × 2\n    - generic: $13.980\n    - generic: Papas de prueba × 1\n    - generic: $2.990\n  - generic: Total\n  - strong: $16.970\n  - button \"Confirmar pedido\"\n  - link \"Volver al carrito\":\n    - /url: /carrito\n  - paragraph: Al confirmar se crea el pedido y luego se vacía el carrito. Ante un error no se crea un segundo pedido.\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 1265,
+        "width": 1280
+      },
+      "logs": []
+    },
+    {
+      "file": "checkout-mobile-320.jpg",
+      "expected": "Dirección ficticia 123",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Confirmar pedido\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Confirmar pedido\" [level=1]\n  - paragraph: Revisa los datos de entrega y confirma tu pedido.\n  - heading \"Datos de entrega\" [level=2]\n  - paragraph: \"Restaurante #1 · 2 producto(s) · Total $16.970\"\n  - text: Dirección de entrega\n  - textbox \"Dirección de entrega\": Dirección ficticia 123\n  - heading \"Productos del carrito\" [level=3]\n  - list \"Productos del carrito\":\n    - generic: Hamburguesa de prueba × 2\n    - generic: $13.980\n    - generic: Papas de prueba × 1\n    - generic: $2.990\n  - generic: Total\n  - strong: $16.970\n  - button \"Confirmar pedido\" [active]\n  - link \"Volver al carrito\":\n    - /url: /carrito\n  - paragraph: Al confirmar se crea el pedido y luego se vacía el carrito. Ante un error no se crea un segundo pedido.\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(154, 52, 18) solid 2px",
+        "scroll": 305,
+        "width": 320
+      },
+      "logs": []
+    },
+    {
+      "file": "checkout-created-delete-error.jpg",
+      "expected": "Reintentar vaciar carrito",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Confirmar pedido\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Confirmar pedido\" [level=1]\n  - paragraph: Revisa los datos de entrega y confirma tu pedido.\n  - 'heading \"Pedido #701 creado\" [level=2]'\n  - paragraph: Total $16.970. Tu pedido ya está registrado; no se creará otro.\n  - alert [active]:\n    - paragraph: El pedido se creó, pero no se pudo vaciar el carrito. Los productos siguen ahí.\n    - button \"Reintentar vaciar carrito\"\n  - link \"Ir al pago\":\n    - /url: /pago/701\n  - link \"Ver mis pedidos\":\n    - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": "alert",
+        "outline": "rgb(154, 52, 18) solid 2px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "checkout-created-http.jpg",
+      "expected": "Carrito vaciado.",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Confirmar pedido\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Confirmar pedido\" [level=1]\n  - paragraph: Revisa los datos de entrega y confirma tu pedido.\n  - 'heading \"Pedido #701 creado\" [level=2]'\n  - paragraph: Total $16.970. Tu pedido ya está registrado; no se creará otro.\n  - status: Carrito vaciado.\n  - link \"Ir al pago\":\n    - /url: /pago/701\n  - link \"Ver mis pedidos\":\n    - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "checkout-uncertain-desktop.jpg",
+      "expected": "Resultado incierto al crear el pedido",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- complementary \"Menú de Pedidos360\":\n  - link \"Pedidos360, ir al inicio\":\n    - /url: /\n    - generic: Pedidos360\n  - paragraph: Tu espacio\n  - navigation \"Navegación principal\":\n    - link \"Inicio\":\n      - /url: /\n      - generic: Inicio\n    - link \"Restaurantes\":\n      - /url: /restaurantes\n      - generic: Restaurantes\n    - link \"Carrito\":\n      - /url: /carrito\n      - generic: Carrito\n    - link \"Mis pedidos\":\n      - /url: /mis-pedidos\n      - generic: Mis pedidos\n    - link \"Mi cuenta\":\n      - /url: /mi-cuenta\n      - generic: Mi cuenta\n    - link \"Administrar restaurantes\":\n      - /url: /admin/restaurantes\n      - generic: Administrar restaurantes\n    - link \"Administrar productos\":\n      - /url: /admin/productos\n      - generic: Administrar productos\n  - paragraph: Elige, pide y disfruta.\n  - button \"Contraer menú\" [expanded]:\n    - text: Contraer menú\n- banner:\n  - generic: Confirmar pedido\n  - region \"Sesión de Microsoft\":\n    - strong: Cuenta de prueba A\n    - generic: cuenta-a@example.test\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Confirmar pedido\" [level=1]\n  - paragraph: Revisa los datos de entrega y confirma tu pedido.\n  - alert [active]:\n    - heading \"Resultado incierto al crear el pedido\" [level=2]\n    - paragraph:\n      - text: No se pudo confirmar la respuesta del servidor. El pedido\n      - strong: puede haberse creado\n      - text: \". Para evitar duplicados, no se enviará otro pedido: revisa tu historial para reconciliar.\"\n    - link \"Ver mis pedidos\":\n      - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": "alert",
+        "outline": "rgb(185, 28, 28) none 3px",
+        "scroll": 1265,
+        "width": 1280
+      },
+      "logs": []
+    },
+    {
+      "file": "checkout-uncertain-mobile.jpg",
+      "expected": "Resultado incierto al crear el pedido",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Confirmar pedido\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Confirmar pedido\" [level=1]\n  - paragraph: Revisa los datos de entrega y confirma tu pedido.\n  - alert [active]:\n    - heading \"Resultado incierto al crear el pedido\" [level=2]\n    - paragraph:\n      - text: No se pudo confirmar la respuesta del servidor. El pedido\n      - strong: puede haberse creado\n      - text: \". Para evitar duplicados, no se enviará otro pedido: revisa tu historial para reconciliar.\"\n    - link \"Ver mis pedidos\":\n      - /url: /mis-pedidos\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": "alert",
+        "outline": "rgb(185, 28, 28) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "history-empty-mobile.jpg",
+      "expected": "Todavía no tienes pedidos.",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Mis pedidos\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Mis pedidos\" [level=1]\n  - paragraph: Revisa el historial y el estado de tus pedidos.\n  - status:\n    - heading \"Todavía no tienes pedidos.\" [level=2]\n    - generic: Explora los restaurantes para crear uno.\n    - link \"Explorar restaurantes\":\n      - /url: /restaurantes\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "history-empty-desktop.jpg",
+      "expected": "Todavía no tienes pedidos.",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- complementary \"Menú de Pedidos360\":\n  - link \"Pedidos360, ir al inicio\":\n    - /url: /\n    - generic: Pedidos360\n  - paragraph: Tu espacio\n  - navigation \"Navegación principal\":\n    - link \"Inicio\":\n      - /url: /\n      - generic: Inicio\n    - link \"Restaurantes\":\n      - /url: /restaurantes\n      - generic: Restaurantes\n    - link \"Carrito\":\n      - /url: /carrito\n      - generic: Carrito\n    - link \"Mis pedidos\":\n      - /url: /mis-pedidos\n      - generic: Mis pedidos\n    - link \"Mi cuenta\":\n      - /url: /mi-cuenta\n      - generic: Mi cuenta\n    - link \"Administrar restaurantes\":\n      - /url: /admin/restaurantes\n      - generic: Administrar restaurantes\n    - link \"Administrar productos\":\n      - /url: /admin/productos\n      - generic: Administrar productos\n  - paragraph: Elige, pide y disfruta.\n  - button \"Contraer menú\" [expanded]:\n    - text: Contraer menú\n- banner:\n  - generic: Mis pedidos\n  - region \"Sesión de Microsoft\":\n    - strong: Cuenta de prueba A\n    - generic: cuenta-a@example.test\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Mis pedidos\" [level=1]\n  - paragraph: Revisa el historial y el estado de tus pedidos.\n  - status:\n    - heading \"Todavía no tienes pedidos.\" [level=2]\n    - generic: Explora los restaurantes para crear uno.\n    - link \"Explorar restaurantes\":\n      - /url: /restaurantes\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 1265,
+        "width": 1280
+      },
+      "logs": []
+    },
+    {
+      "file": "history-error-desktop.jpg",
+      "expected": "No se pudieron consultar tus pedidos.",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- complementary \"Menú de Pedidos360\":\n  - link \"Pedidos360, ir al inicio\":\n    - /url: /\n    - generic: Pedidos360\n  - paragraph: Tu espacio\n  - navigation \"Navegación principal\":\n    - link \"Inicio\":\n      - /url: /\n      - generic: Inicio\n    - link \"Restaurantes\":\n      - /url: /restaurantes\n      - generic: Restaurantes\n    - link \"Carrito\":\n      - /url: /carrito\n      - generic: Carrito\n    - link \"Mis pedidos\":\n      - /url: /mis-pedidos\n      - generic: Mis pedidos\n    - link \"Mi cuenta\":\n      - /url: /mi-cuenta\n      - generic: Mi cuenta\n    - link \"Administrar restaurantes\":\n      - /url: /admin/restaurantes\n      - generic: Administrar restaurantes\n    - link \"Administrar productos\":\n      - /url: /admin/productos\n      - generic: Administrar productos\n  - paragraph: Elige, pide y disfruta.\n  - button \"Contraer menú\" [expanded]:\n    - text: Contraer menú\n- banner:\n  - generic: Mis pedidos\n  - region \"Sesión de Microsoft\":\n    - strong: Cuenta de prueba A\n    - generic: cuenta-a@example.test\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Mis pedidos\" [level=1]\n  - paragraph: Revisa el historial y el estado de tus pedidos.\n  - alert [active]:\n    - paragraph: No se pudieron consultar tus pedidos. Puedes reintentar la consulta.\n    - button \"Reintentar consulta\"\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": "alert",
+        "outline": "rgb(185, 28, 28) none 3px",
+        "scroll": 1265,
+        "width": 1280
+      },
+      "logs": []
+    },
+    {
+      "file": "history-loading-mobile.jpg",
+      "expected": "Consultando tus pedidos…",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Mis pedidos\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Mis pedidos\" [level=1]\n  - paragraph: Revisa el historial y el estado de tus pedidos.\n  - status: Consultando tus pedidos…\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "true"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    },
+    {
+      "file": "history-mobile.jpg",
+      "expected": "Pedido #700",
+      "dom": "- paragraph: \"Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.\"\n- button \"Cambiar cuenta de prueba\"\n- button \"normal\"\n- button \"empty\"\n- button \"error\"\n- button \"slow\"\n- link \"Saltar al contenido\":\n  - /url: \"#contenido-principal\"\n- banner:\n  - button \"Abrir menú de navegación\":\n  - generic: Mis pedidos\n  - region \"Sesión de Microsoft\":\n    - button \"Cerrar sesión\"\n- main:\n  - heading \"Mis pedidos\" [level=1]\n  - paragraph: Revisa el historial y el estado de tus pedidos.\n  - list \"Tus pedidos\":\n    - 'heading \"Pedido #700\" [level=2]'\n    - generic: Creado\n    - paragraph: 09-10-2026, 9:00 a. m.\n    - paragraph: Dirección ficticia de entrega 123\n    - strong: $16.970\n    - button \"Ver detalle del pedido 700\": Ver detalle\n    - generic: En curso\n- contentinfo:\n  - generic: Pedidos360 Delivery\n  - generic: Proyecto académico",
+      "metrics": {
+        "busy": [
+          "false"
+        ],
+        "focusRole": null,
+        "outline": "rgb(31, 41, 35) none 3px",
+        "scroll": 375,
+        "width": 390
+      },
+      "logs": []
+    }
+  ]
+}
