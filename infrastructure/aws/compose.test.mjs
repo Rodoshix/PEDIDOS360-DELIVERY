@@ -128,7 +128,9 @@ test('all Java builds install the checkout core before packaging, without a deve
     const recipe = readFileSync(`${build.context}/Dockerfile`, 'utf8')
     assert.ok(recipe.includes('COPY --from=messaging-core pom.xml /messaging-core/pom.xml'), name)
     assert.ok(recipe.includes('COPY --from=messaging-core src/main /messaging-core/src/main'), name)
-    assert.ok(recipe.indexOf('-f /messaging-core/pom.xml -Dmaven.test.skip=true install') < recipe.indexOf('-Dmaven.test.skip=true package'), name)
+    const install = recipe.indexOf('-f /messaging-core/pom.xml -Dmaven.test.skip=true install')
+    const packaging = recipe.indexOf('-Dmaven.test.skip=true package')
+    assert.ok(install >= 0 && packaging > install, name)
     assert.ok(!/COPY[^\n]*\.m2/.test(recipe), name)
   }
   const ignore = readFileSync(new URL('../../backend/shared/p360-messaging-core/.dockerignore', import.meta.url), 'utf8')
