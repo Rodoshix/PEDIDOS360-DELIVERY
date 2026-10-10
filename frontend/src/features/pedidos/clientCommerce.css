@@ -1,0 +1,37 @@
+.client-commerce { display: grid; gap: var(--space-6); min-width: 0; }
+.client-commerce .pedidos-card, .client-commerce .pagos-card { padding: var(--space-6); border-radius: var(--radius-lg); background: var(--color-surface); border: 1px solid var(--color-border); min-width: 0; }
+.client-commerce h2 { margin: 0 0 var(--space-3); font-size: var(--text-lg); }
+.client-commerce h3 { margin: var(--space-6) 0 var(--space-2); font-size: var(--text-base); }
+.client-commerce p { line-height: 1.6; overflow-wrap: anywhere; }
+.client-commerce .pedidos-notice, .client-commerce .commerce-date { color: var(--color-text-muted); font-size: var(--text-sm); }
+.client-commerce .ui-button { min-height: 44px; white-space: normal; text-align: center; }
+.client-commerce .ui-input { width: 100%; box-sizing: border-box; min-height: 44px; }
+.client-commerce label:has(> .ui-input) { display: grid; gap: var(--space-2); font-weight: 600; margin: var(--space-6) 0 var(--space-3); }
+.client-commerce .pedidos-actions, .client-commerce .pagos-actions { align-items: center; gap: var(--space-3); }
+.client-commerce .pedidos-error, .client-commerce .pagos-error { border: 0; border-radius: var(--radius-md); background: var(--color-danger-soft); color: var(--color-danger); }
+.client-commerce .pedidos-error p, .client-commerce .pagos-error p { margin-top: 0; }
+.commerce-lines { list-style: none; margin: 0; padding: 0; }
+.commerce-lines > li { display: flex; justify-content: space-between; align-items: start; gap: var(--space-4); padding: var(--space-4) 0; border-bottom: 1px solid var(--color-border); overflow-wrap: anywhere; }
+.commerce-lines > li > div { min-width: 0; }
+.commerce-lines p { margin: var(--space-1) 0 0; color: var(--color-text-muted); font-size: var(--text-sm); }
+.commerce-total, .commerce-total-row { font-variant-numeric: tabular-nums; }
+.commerce-total-row { display: flex; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-6); font-size: var(--text-lg); }
+.commerce-order { padding: var(--space-6) 0; border-bottom: 1px solid var(--color-border); }
+.commerce-order:first-child { padding-top: 0; }
+.commerce-order__heading, .commerce-order__footer { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); }
+.commerce-order__heading h2 { margin: 0; }
+.commerce-address { max-width: 65ch; }
+.client-commerce .commerce-methods { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin: var(--space-4) 0; padding: 0; border: 0; }
+.commerce-methods legend { font-weight: 600; margin-bottom: var(--space-3); }
+.commerce-methods label { display: flex; align-items: center; gap: var(--space-3); min-height: 44px; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-3); cursor: pointer; }
+.commerce-methods label:has(input:checked) { border-color: var(--color-primary); background: var(--color-primary-soft); }
+.commerce-methods input { accent-color: var(--color-primary); width: 20px; height: 20px; flex-shrink: 0; }
+.commerce-methods:disabled label { cursor: default; opacity: .65; }
+.client-commerce .ui-alert { overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  .client-commerce .pedidos-card, .client-commerce .pagos-card { padding: var(--space-4); }
+  .client-commerce .pedidos-actions, .client-commerce .pagos-actions { flex-direction: column; align-items: stretch; }
+  .client-commerce .pedidos-actions > *, .client-commerce .pagos-actions > * { width: 100%; box-sizing: border-box; }
+  .client-commerce .commerce-methods { grid-template-columns: 1fr; }
+  .commerce-lines > li { flex-wrap: wrap; }
+}

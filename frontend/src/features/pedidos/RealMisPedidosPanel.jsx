@@ -1,9 +1,12 @@
-import { useEffect, useState, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
 import { useAuthSession } from '../../auth/useAuthSession.js'
 import { createPedidoController } from './pedidoService.js'
 import { createPedidoHttpAdapter, pedidoFailure } from './pedidoHttpAdapter.js'
-import { ResumenPedido } from './PedidoResumen.jsx'
+import { ClientPedidoSummary } from './ClientPedidoView.jsx'
+import LoadingState from '../../components/feedback/LoadingState.jsx'
+import { EmptyState } from '../../components/feedback/Feedback.jsx'
+import './clientCommerce.css'
 import { ROUTE_PATHS } from '../../routes/routePaths.js'
 import './pedidos.css'
 
@@ -34,24 +37,26 @@ export default function RealMisPedidosPanel() {
 
   const busy = sessionBusy || ['idle', 'loading'].includes(state.status)
   const error = state.error
+  const errorRender = useRef(null)
+  useEffect(() => { if (error) errorRender.current?.focus() }, [error])
   const loadFailed = state.status === 'error' && state.operation === 'load'
 
   const pedidos = state.pedidos
-  return <div aria-busy={busy} className="pedidos-section">
-    {state.status === 'loading' && <p role="status">Consultando tus pedidos…</p>}
-    {error && <div role="alert" className="pedidos-error">
+  return <div aria-busy={busy} className="pedidos-section client-commerce">
+    {state.status === 'loading' && <LoadingState label="Consultando tus pedidos…" compact />}
+    {error && <div ref={errorRender} tabIndex={-1} role="alert" className="pedidos-error ui-alert ui-alert--danger">
       <p>{error.message}</p>
-      {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
+      {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="ui-button ui-button--primary" disabled={busy}
         onClick={() => authorizeApi(destination)}>Continuar con Microsoft</button>}
-      {error.code === 'UNAUTHORIZED' && <button type="button" className="button button--primary" disabled={busy}
+      {error.code === 'UNAUTHORIZED' && <button type="button" className="ui-button ui-button--primary" disabled={busy}
         onClick={() => login(destination)}>Volver a iniciar sesión</button>}
       {loadFailed && !['INTERACTION_REQUIRED', 'UNAUTHORIZED'].includes(error.code)
-        && <button type="button" className="button button--secondary" disabled={busy} onClick={() => controller.load()}>Reintentar consulta</button>}
+        && <button type="button" className="ui-button ui-button--secondary" disabled={busy} onClick={() => controller.load()}>Reintentar consulta</button>}
     </div>}
     {pedidos && !loadFailed && (pedidos.length === 0
-      ? <p className="pedidos-card">Todavía no tienes pedidos. Explora los restaurantes para crear uno.</p>
-      : <ul className="pedidos-list">
-        {pedidos.map(pedido => <ResumenPedido key={pedido.pedidoId} pedido={pedido}
+      ? <div role="status"><EmptyState title="Todavía no tienes pedidos." action={<Link to={ROUTE_PATHS.restaurantes}>Explorar restaurantes</Link>}>Explora los restaurantes para crear uno.</EmptyState></div>
+      : <ul className="pedidos-list" aria-label="Tus pedidos">
+        {pedidos.map(pedido => <ClientPedidoSummary key={pedido.pedidoId} pedido={pedido}
           onVerDetalle={id => navigate(ROUTE_PATHS.pedidoDetalle.replace(':id', id))} />)}
       </ul>)}
     {!pedidos && !error && !busy && <p><Link to={ROUTE_PATHS.restaurantes}>Explorar restaurantes</Link></p>}
