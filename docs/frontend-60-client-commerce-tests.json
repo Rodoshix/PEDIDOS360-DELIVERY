@@ -106,13 +106,13 @@
     },
     {
       "path": "docs/evidence/60-client-commerce/build-http.log",
-      "sha256": "0b5866f82b9bb2ac96601a49f6d6d4aa2d0997da1f370b2561ab8dd8b5140b25",
-      "bytes": 2217
+      "sha256": "6604e31578cd24b02500eeae429672a477242176be53df085400b4c16782c48b",
+      "bytes": 2188
     },
     {
       "path": "docs/evidence/60-client-commerce/build-rabbitmq.log",
-      "sha256": "956f9cb9fa0540739ce4506b34beba147d13a53179630ac0c0a45610a41037d0",
-      "bytes": 2257
+      "sha256": "810dbee0153ab656aa56c556169aa6c677114e33f93b1fadb73d52728092be3a",
+      "bytes": 2228
     },
     {
       "path": "docs/evidence/60-client-commerce/checkout-created-delete-error.jpg",
@@ -161,13 +161,13 @@
     },
     {
       "path": "docs/evidence/60-client-commerce/focused.log",
-      "sha256": "07b01176f14b341906caa5e2dc6ca1d73b7992c09bafe61cba875584ce9b1ca9",
-      "bytes": 7078
+      "sha256": "5355b4235a6446a7d5746c0347cbd9bfed94ed67e1d1e3cb665ef3cf46163904",
+      "bytes": 6858
     },
     {
       "path": "docs/evidence/60-client-commerce/frontend.log",
-      "sha256": "40e2337c407bac5230f5beb48c1f6c757b45e87a1f7029bff1119b8512992fe6",
-      "bytes": 54829
+      "sha256": "cf44f301059301d2752d40c8f1dd44f87153f96317eac217e68659746ba99d57",
+      "bytes": 53297
     },
     {
       "path": "docs/evidence/60-client-commerce/history-desktop.jpg",
@@ -201,8 +201,8 @@
     },
     {
       "path": "docs/evidence/60-client-commerce/lint.log",
-      "sha256": "110aae6032e48b061350c5b8aed3121ff02d3c1ca4c26ec24633f8f0e46cb884",
-      "bytes": 48
+      "sha256": "458134f267f94ed7e03b3ef9e6ad3ff543b33faaaae99645e71e0738bc2f6006",
+      "bytes": 43
     },
     {
       "path": "docs/evidence/60-client-commerce/payment-approved-mobile.jpg",

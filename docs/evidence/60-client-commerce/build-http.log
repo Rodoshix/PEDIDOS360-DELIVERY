@@ -21,7 +21,7 @@ computing gzip size...
 ../../../ChatGPT/Pedidos360 Delivery/evidence/issue60-phase6-client-20261009/build-http/assets/index-BReqIu-4.js                       623.12 kB │ gzip: 176.51 kB
 
 ✓ built in 486ms
-[plugin builtin:vite-reporter] 
+[plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
