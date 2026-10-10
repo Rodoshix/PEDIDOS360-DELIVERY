@@ -135,60 +135,34 @@ no demuestra inaccesibilidad desde Internet en EC2 con IPv4 pública.
 No abrir 22, 4369, 5672, 15671, 15672 o 25672. RabbitAdmin no está incluido
 en estos modelos ni se habilita DELETE; su perfil privado sigue fuera del corte.
 
-## PROPUESTO — instalación y migración incremental
+## PROPUESTO — instalación, transición y rollback
 
-1. Revisión y aprobación separada del PR, reglas SG, ventana, imágenes,
-   distribución de certificados/secretos y roles DB. No ejecutar esta lista
-   por el solo hecho de aprobar los artefactos.
-2. Inventariar versiones realmente desplegadas y Flyway: arrancar imágenes
-   EP2 puede ejecutar migraciones pendientes. No iniciar aplicaciones nuevas
-   contra RDS antes de autorizar y acreditar el estado de esquema, rol
-   migrador separado, rol runtime y funciones SECURITY DEFINER de PR #94.
-3. Instalar Docker en B únicamente con autorización futura. Preparar archivos
-   por host, pull de imágenes inmutables y material mínimo; no arrancar
-   aplicaciones/workers. Verificar SAN, CA, permisos de lectura y RDS desde B.
-4. Acreditar respaldo recuperable, salud y montaje EBS del broker A, rutas
-   actuales y capacidad. Mantener dirección de entrada/frontend/MSAL.
-5. Retirar tráfico y drenar solicitudes en ventana autorizada. Registrar pagos
-   pendientes y outbox por metadatos agregados sin exportar payload/JWS.
-   No reenviar eventos históricos, renovar deadlines ni convertir modo.
-6. Detener ordenadamente las cuatro aplicaciones antiguas de A; verificar
-   ausencia real de procesos, conexiones y jobs. No hay réplica sombra de
-   Pagos: reconciliador 30 s, confirmación síncrona y outbox hacen inseguro
-   asumir que idempotencia permite cualquier solapamiento. Conservar los
-   contenedores/imágenes para rollback, sin --remove-orphans indiscriminado.
-7. Arrancar Restaurantes/Productos B; comprobar salud. Actualizar A con
-   aliases remotos y arrancar Usuarios/Pedidos según dependencias. Arrancar
-   Carrito/Pagos B tras salud local Productos y salud HTTPS remota Usuarios/
-   Pedidos. Luego BFF/frontend A. depends_on solo cubre dependencias locales;
-   esperar y verificar explícitamente las remotas antes de aceptar tráfico.
-8. Verificar todos los controles siguientes y reabrir tráfico solo si pasan.
-   Mantener un único proceso activo por servicio, HTTP y todas las flags
-   EP2 inactivas. RabbitMQ no se recrea para este movimiento HTTP.
+La secuencia original genérica queda reemplazada por
+[AWS-MULTIHOST-TRANSITION.md](AWS-MULTIHOST-TRANSITION.md). Detalla comandos
+por etapa, traslado separado de catálogo/carrito/Pagos, puertas de avance,
+recuperación y matriz de imágenes/Flyway/roles. No se ejecutó en AWS.
 
-Reinicio futuro: Docker no ordena hosts. Probar arranque tras pérdida de A
-y de B; healthchecks locales no demuestran dependencia remota sana.
-Evitar restart automático de los contenedores antiguos detenidos y documentar
-qué proyecto es dueño de cada servicio. Un apagado no confirma por sí mismo
-ausencia de una operación pendiente; drenar, verificar y conservar evidencia.
+El ensayo local demuestra que up con el mismo proyecto puede recrear los
+servicios incluidos y conservar huérfanos ACTIVOS. Por eso se prohíben
+--remove-orphans, COMPOSE_REMOVE_ORPHANS=true, down y cambios de proyecto A.
+Pagos A se detiene y verifica al comienzo de la ventana, antes de arrancar
+cualquier copia B. Los contenedores retirados se conservan detenidos; los
+servicios recreados requieren imágenes y modelo previo para rollback.
 
-### Rollback
-
-Retirar tráfico. Detener primero servicios B y verificar ausencia de jobs;
-después restaurar configuración y arranque monohost A con imágenes/esquema
-compatibles y las mismas garantías tenant. Nunca ejecutar las dos copias de
-Pagos ni degradar autorización para recuperar conectividad. Restaurar URLs
-y resolver salud antes de tráfico. No restaurar DB/EBS ni downgrade de
-migraciones automáticamente; corrupción o incompatibilidad de esquema exige
-detener la recuperación y nueva decisión. El rollback conserva HTTP,
-idempotencia, provenance y outbox; no elimina recibos ni publica históricos.
+El broker permanece fuera de todos los comandos de corte HTTP. La variante
+compose.broker-host-a.yml es exclusivamente futura: no incluirla ni aplicar
+su puerto o bridge durante el traslado. Las imágenes realmente desplegadas,
+los digests candidatos y los checksums/owners/grants reales RDS siguen sin
+acreditar. No arrancar un runtime candidato con migraciones pendientes.
 
 ## Pruebas y evidencia
 
-Ejecutadas localmente: 9 regresiones nuevas de configuración y 20 existentes
+Ejecutadas localmente: 12 regresiones de configuración, un caso integrado
+de transición Compose con sleepers sintéticos y 20 existentes
 de preparación AWS. Estas últimas incluyen keytool real con certificados y
-secretos sintéticos temporales. Docker Compose config analiza modelos; no
-arranca contenedores, listeners, PostgreSQL o RabbitMQ. Ninguna es una prueba
+secretos sintéticos temporales. Docker Compose config analiza modelos. Solo el ensayo de transición arranca
+contenedores sintéticos en proyectos aleatorios; no aplicaciones, listeners,
+PostgreSQL o RabbitMQ. Ninguna es una prueba
 E2E AWS, de carga multihost, partición de red o Entra live. No se reejecutaron
 suites de negocio/frontend porque no se modificó código ni contratos.
 
@@ -197,6 +171,7 @@ Reproducción desde raíz (Docker Compose y Python; Node/JDK para suite previa):
 ```text
 python -B infrastructure/aws/multihost.py check
 python -B -m unittest discover -s infrastructure/aws -p test_multihost.py -v
+python -B -m unittest discover -s infrastructure/aws -p test_multihost_transition.py -v
 node --test infrastructure/aws/deployment.test.mjs infrastructure/aws/compose.test.mjs infrastructure/aws/transfer-worker.test.mjs infrastructure/aws/ep2-prepared.test.mjs
 git diff --check
 ```

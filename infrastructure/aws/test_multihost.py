@@ -61,6 +61,41 @@ class MultihostTests(unittest.TestCase):
         self.assertIn("p360-rabbitmq=" + ENV["HOST_A_PRIVATE_IP"], b["pagos"]["extra_hosts"])
         self.assertEqual(b["pagos"]["environment"]["PEDIDOS_SERVICE_URL"], "https://pedidos:8085")
 
+    def test_local_names_never_shadowed_by_remote_hosts(self):
+        for host in ("a", "b"):
+            model = self.models[f"compose.host-{host}.yml"]
+            for service in model["services"].values():
+                self.assertFalse(set(service["extra_hosts"]) & set(module.GROUPS[host]))
+                if "environment" in service:
+                    self.assertIn("services", service["networks"])
+                    self.assertIn("egress", service["networks"])
+            self.assertTrue(model["networks"]["services"]["internal"])
+            self.assertFalse(model["networks"]["egress"].get("internal", False))
+
+    def test_cross_host_dependencies_and_exact_sg_port_contract(self):
+        a = self.resolved["compose.host-a.yml"]["services"]
+        b = self.resolved["compose.host-b.yml"]["services"]
+        expected_a = {"frontend": 8080, "bff": 8443, "usuarios": 8081, "pedidos": 8085}
+        expected_b = {"restaurantes": 8082, "productos": 8083, "carrito": 8084, "pagos": 8086}
+        for services, expected in ((a, expected_a), (b, expected_b)):
+            for name, port in expected.items():
+                self.assertEqual([int(p["published"]) for p in services[name]["ports"]], [port])
+        for name, port in expected_b.items():
+            self.assertEqual(a["bff"]["environment"][name.upper() + "_SERVICE_URL"], f"https://{name}:{port}")
+        self.assertEqual(a["pedidos"]["environment"]["PRODUCTOS_SERVICE_URL"], "https://productos:8083")
+        self.assertEqual(b["pagos"]["environment"]["USUARIOS_SERVICE_URL"], "https://usuarios:8081")
+        self.assertEqual(b["carrito"]["environment"]["PRODUCTOS_SERVICE_URL"], "https://productos:8083")
+
+    def test_project_service_identity_and_existing_network_definitions(self):
+        model = self.models["compose.host-a.yml"]
+        self.assertEqual(model["name"], self.base["name"])
+        for key in ("services", "egress"):
+            original = dict(self.base["networks"][key])
+            original["name"] = self.base["name"] + "_" + key
+            self.assertEqual(model["networks"][key], original)
+        for name in module.GROUPS["a"]:
+            self.assertEqual(model["services"][name].get("container_name"), self.base["services"][name].get("container_name"))
+
     def test_only_private_bindings_and_no_management_distribution(self):
         for file, model in self.resolved.items():
             ip = ENV["HOST_B_PRIVATE_IP"] if "host-b" in file else ENV["HOST_A_PRIVATE_IP"]
