@@ -20,6 +20,8 @@
     <description>Microservicio de productos de Pedidos360</description>
 
     <properties>
+        <rabbit-amqp-client.version>5.37.0</rabbit-amqp-client.version>
+
         <java.version>21</java.version>
     </properties>
 
