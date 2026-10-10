@@ -1,0 +1,155 @@
+{
+  "name": "pedidos360-ep2-broker",
+  "networks": {
+    "backend": {
+      "external": true,
+      "name": "pedidos360-aws_services"
+    },
+    "broker-access": {
+      "name": "pedidos360-ep2-broker_access"
+    }
+  },
+  "services": {
+    "rabbitmq": {
+      "cpu_shares": 512,
+      "entrypoint": [
+        "/bin/sh",
+        "/ep2/bootstrap.sh"
+      ],
+      "environment": {
+        "EP2_EXECUTION_SCOPE": "${EP2_EXECUTION_SCOPE:?required}",
+        "EP2_EXPECTED_FS_ID": "${EP2_EXPECTED_FS_ID:-REPLACE_AFTER_APPROVED_MOUNT}",
+        "PEDIDOS360_COORDINATION_MODE": "HTTP",
+        "PEDIDOS360_DECLARE_TOPOLOGY": "false",
+        "PEDIDOS360_RELAY_MODE": "DISABLED",
+        "PEDIDOS360_RELIABILITY_PLATFORM_READY": "false",
+        "RABBITMQ_NODENAME": "rabbit@p360-rabbitmq",
+        "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS": "+S 2:2"
+      },
+      "healthcheck": {
+        "interval": "30s",
+        "retries": 5,
+        "start_period": "60s",
+        "test": [
+          "CMD-SHELL",
+          "rabbitmq-diagnostics -q ping && rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_local_alarms"
+        ],
+        "timeout": "15s"
+      },
+      "hostname": "p360-rabbitmq",
+      "image": "rabbitmq:4.1.8-management-alpine@sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "3",
+          "max-size": "10m"
+        }
+      },
+      "mem_limit": "768m",
+      "networks": {
+        "backend": {
+          "aliases": [
+            "p360-rabbitmq"
+          ]
+        },
+        "broker-access": {}
+      },
+      "pids_limit": 256,
+      "ports": [
+        {
+          "host_ip": "${HOST_A_PRIVATE_IP:?private host A address required}",
+          "protocol": "tcp",
+          "published": "5671",
+          "target": 5671
+        }
+      ],
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "stop_grace_period": "90s",
+      "volumes": [
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "source": "${RABBITMQ_DATA_DIR:?dedicated EBS required}",
+          "target": "/var/lib/rabbitmq",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${EP2_PRIVATE_DIR:?private material required}/tls/ca.pem",
+          "target": "/run/ep2/tls/ca.pem",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${EP2_PRIVATE_DIR}/tls/server.pem",
+          "target": "/run/ep2/tls/server.pem",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${EP2_PRIVATE_DIR}/tls/server-key.pem",
+          "target": "/run/ep2/tls/server-key.pem",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${EP2_PRIVATE_DIR}/secrets/BOOTSTRAP_PASSWORD",
+          "target": "/run/ep2/secrets/BOOTSTRAP_PASSWORD",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${EP2_PRIVATE_DIR}/secrets/ERLANG_COOKIE",
+          "target": "/run/ep2/secrets/ERLANG_COOKIE",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "./rabbitmq/rabbitmq.conf",
+          "target": "/etc/rabbitmq/rabbitmq.conf",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "./rabbitmq/enabled_plugins",
+          "target": "/etc/rabbitmq/enabled_plugins",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "./rabbitmq/bootstrap.sh",
+          "target": "/ep2/bootstrap.sh",
+          "type": "bind"
+        }
+      ]
+    }
+  }
+}

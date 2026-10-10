@@ -1,0 +1,65 @@
+{
+  "generatedAtUtc": "2026-10-10T05:00:46.540981+00:00",
+  "base": "3d2913c06ecc31c6029792cf837250773d10aa8b",
+  "branch": "codex/71-multihost-preparation",
+  "python": "3.11.9",
+  "dockerCompose": "5.1.3",
+  "suites": [
+    {
+      "command": "python -B -m unittest discover -s infrastructure/aws -p test_multihost.py -v",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "kind": "static Docker Compose parsing, synthetic public environment, no daemon start"
+    },
+    {
+      "command": "node --test infrastructure/aws/deployment.test.mjs infrastructure/aws/compose.test.mjs infrastructure/aws/transfer-worker.test.mjs infrastructure/aws/ep2-prepared.test.mjs",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "kind": "local configuration and keytool/crypto fixtures, no AWS deployment"
+    }
+  ],
+  "checks": {
+    "canonicalGeneration": "PASS",
+    "awsReadOnlyMetadata": "two running t3.large, SSM Online, B egress only 443, RDS ingress A only"
+  },
+  "notExecuted": [
+    "cross-host TLS handshake",
+    "multihost functional E2E",
+    "Entra live",
+    "RabbitMQ or PostgreSQL runtime tests",
+    "load test",
+    "operational rollback",
+    "Docker installation or AWS deployment",
+    "business and frontend suites"
+  ],
+  "limitations": [
+    "SG changes pending authorization",
+    "TLS and least material provisioning pending",
+    "runtime/migrator roles and SECURITY DEFINER ownership not proven on RDS",
+    "no dual Pagos worker instances during migration",
+    "broker private access bridge is proposed, not applied",
+    "no global durable query terminality or automatic HA"
+  ],
+  "sha256": {
+    "infrastructure/aws/multihost.py": "c0aace6211f68a1fa24003dc720ab3299ad2209595b7c691bb1b69632e96099e",
+    "infrastructure/aws/test_multihost.py": "0ddd3b9c4264998dc9525fff3c27cae06771901ad976ae74fa1d0a1292720f7a",
+    "infrastructure/aws/compose.host-a.yml": "04dc532c3a99381949646d9b2e14714ea359961303bfb0afb1186d20e157473b",
+    "infrastructure/aws/compose.host-b.yml": "2c1c77c04c3b3cd702145665f788276f89687817480ba92fa6459fd04961096d",
+    "infrastructure/aws/compose.broker-host-a.yml": "896b268b73144f58ac1429fdfeccc8f36a87d6974ec7e212b9cf44ffa90c02f9",
+    "infrastructure/aws/multihost.env.example": "4f9809ab485248303b41d631421b602e9b538454d0a6040d70481d5f13296765",
+    "docs/ep2/AWS-MULTIHOST-PREPARATION.md": "73fa92262866a4d18e697626335919890596a834ea8052638661f37881263f07",
+    "infrastructure/aws/compose.yml": "b94cbb36c2ccbdc5f526cabfc24877828a410835721a39439c3849521a2096dd",
+    "infrastructure/aws/compose.ep2-prepared.yml": "ffedd13d1596c264d27af00b54fb42fc564c465dfdf08a3ec1b2712cbdeb2217",
+    "infrastructure/aws/rabbitmq/compose.rabbitmq.yml": "8d052ee8c15213574d1c35bc10dba259fb54703dd4280e4168f381ef1450794d",
+    "infrastructure/aws/rabbitmq/bootstrap.sh": "aa47c249871d49563046d34ba50feea035ab0d265d7bd527bad027ebccab0870",
+    "infrastructure/aws/compose.test.mjs": "c01370347514a20ee721da2c204a7e5a7d01e3f90425f59b81298319fca96cf8",
+    "infrastructure/aws/deployment.test.mjs": "a311ba1b6358ad4da89936098ff1f31f33b20e76f4b8e4f6d74393dd1090bfb0",
+    "infrastructure/aws/transfer-worker.test.mjs": "a6d8e49c655cc47fcafd102c16e606151a140c91182bb3f4e6217c80d4e67803",
+    "infrastructure/aws/ep2-prepared.test.mjs": "7f6f8acb5cfe20370140d83e9b10af55fa3808b5327ecc87481ae16f513fcd6d",
+    "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/service/ReconciliacionConfiguration.java": "4172f8e996159ba3831e35a36f3ccbd9044e45e5968e3e71c6a4b7474e85ce19",
+    "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/service/PagoService.java": "afc4bba1a3bf0cdf610b619fad48d571b3b54bc80a6121fc2e2fa8390df9198a"
+  },
+  "hashBasis": "SHA-256 of Git index blob bytes; independent of checkout CRLF conversion. Reproduce with git show :path before commit or git show HEAD:path after commit."
+}
