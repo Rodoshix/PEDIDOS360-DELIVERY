@@ -97,18 +97,23 @@ ancladas escapadas. Permisos por recurso/exchange, no por routing key de direct 
 | Usuario | Vhost | configure | write | read |
 |---|---|---|---|---|
 | p360-bootstrap | pedidos360 | ^p360\. | ^p360\. | ^p360\. |
-| p360-bootstrap | pedidos360-admin-demo | ^demo\. | ^demo\. | ^demo\. |
+| p360-bootstrap | pedidos360-admin-demo | ^(demo\.|p360\.demo\.) | ^(demo\.|p360\.demo\.) | ^(demo\.|p360\.demo\.) |
 | p360-pagos-publisher | pedidos360 | ^$ | p360.pedidos.commands | ^$ |
 | p360-pedidos-consumer | pedidos360 | ^$ | p360.pedidos.retry | p360.pedidos.confirmacion.q |
 | p360-bff | pedidos360 | ^$ | p360.queries | p360.bff.consultas.respuestas.q |
 | p360-pedidos-carrito-publisher | pedidos360 | ^$ | p360.commands | ^$ |
-| p360-usuarios-consumer | pedidos360 | ^$ | p360.retry / amq.default | p360.usuarios.consultas.q |
-| p360-restaurantes-consumer | pedidos360 | ^$ | p360.retry / amq.default | p360.restaurantes.consultas.q |
-| p360-productos-consumer | pedidos360 | ^$ | p360.retry / amq.default | p360.productos.consultas.q |
-| p360-pagos-consumer | pedidos360 | ^$ | p360.retry / amq.default | p360.pagos.consultas.q |
-| p360-carrito-consumer | pedidos360 | ^$ | p360.retry | p360.carrito.vaciado.q |
+| p360-usuarios-consumer | pedidos360 | ^$ | p360.retry / amq.default / p360.dlx | p360.usuarios.consultas.q |
+| p360-restaurantes-consumer | pedidos360 | ^$ | p360.retry / amq.default / p360.dlx | p360.restaurantes.consultas.q |
+| p360-productos-consumer | pedidos360 | ^$ | p360.retry / amq.default / p360.dlx | p360.productos.consultas.q |
+| p360-pagos-consumer | pedidos360 | ^$ | p360.retry / amq.default / p360.dlx | p360.pagos.consultas.q |
+| p360-carrito-consumer | pedidos360 | ^$ | p360.retry / p360.dlx | p360.carrito.vaciado.q |
 | p360-replay | pedidos360 | ^$ | p360.pedidos.commands / p360.commands | Solo las 6 DLQ |
-| p360-admin-demo | pedidos360-admin-demo | ^demo\. | ^demo\. | ^demo\. |
+| p360-admin-demo | pedidos360-admin-demo | p360.demo. + nombre válido | p360.demo. + nombre válido | p360.demo. + nombre válido |
+
+La regex exacta del sandbox de aplicación es `^p360\.demo\.[A-Za-z0-9][A-Za-z0-9._-]{0,99}$`.
+Bootstrap conserva `demo.` únicamente por compatibilidad con sondas históricas.
+Los permisos actuales de #71 se contrastan con `test_accounts.py` y broker TLS real;
+esto no actualiza los resultados históricos de #69.
 
 Las cuatro consultas tienen permiso amq.default para responder; RabbitMQ autoriza el
 exchange, no permite restringir replyTo por nombre de queue mediante este permiso.

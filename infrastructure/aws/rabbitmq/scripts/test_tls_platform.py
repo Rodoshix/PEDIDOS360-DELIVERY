@@ -50,6 +50,32 @@ base.resources = resources
 
 
 class TlsPlatformTests(base.PlatformTests):
+    def test_18_pagos_carrito_exact_permissions_with_real_broker(self):
+        for user, domain, operation in [('p360-pagos-consumer', 'pagos', 'consultas'),
+                                         ('p360-carrito-consumer', 'carrito', 'vaciado')]:
+            with self.subTest(user=user):
+                identity = base.publish('p360.dlx', 'pago.consultar.failed' if domain == 'pagos'
+                                        else 'carrito.vaciar-por-pedido.failed', user=user)
+                base.receive(f'p360.{domain}.{operation}.dlq', identity)
+                with connection(user) as conn:
+                    with self.assertRaises(pika.exceptions.ChannelClosedByBroker) as denied:
+                        conn.channel().exchange_declare('p360.unnecessary', exchange_type='direct')
+                    self.assertEqual(403, denied.exception.reply_code)
+                with self.assertRaises(pika.exceptions.ChannelClosedByBroker) as denied:
+                    base.publish('p360.pedidos.commands', 'pedido.confirmar.v1', user=user)
+                self.assertEqual(403, denied.exception.reply_code)
+                with connection(user) as conn:
+                    with self.assertRaises(pika.exceptions.ChannelClosedByBroker) as denied:
+                        conn.channel().basic_get(base.MAIN)
+                    self.assertEqual(403, denied.exception.reply_code)
+
+    def test_19_sandbox_rejects_legacy_and_invalid_names(self):
+        for name in ['demo.old', 'p360.demo.-bad', 'p360.demo.bad@name', 'amq.topic']:
+            with self.subTest(name=name), connection('p360-admin-demo', p.SANDBOX) as conn:
+                with self.assertRaises(pika.exceptions.ChannelClosedByBroker) as denied:
+                    conn.channel().exchange_declare(name, exchange_type='direct', durable=True)
+                self.assertEqual(403, denied.exception.reply_code)
+
     def test_11_persistent_message_survives_container_stop_start(self):
         identity = base.publish('p360.pedidos.dlx', 'pedido.confirmar.failed')
         subprocess.run(tools.compose('stop', '-t', '30', 'rabbitmq'), check=True)

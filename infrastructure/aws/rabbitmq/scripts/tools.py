@@ -101,15 +101,22 @@ def preflight():
     ssl.create_default_context(cafile=str(tls / 'ca.pem'))
     import platform_source as p
     secrets = Path(os.environ['EP2_PRIVATE_DIR']) / 'secrets'
-    for f in {a[1] for a in p.accounts()} | {'ERLANG_COOKIE', 'PEDIDOS360_ACTOR_SECRET', 'PEDIDOS360_ACTOR_KEY_ID'}:
+    # Broker credentials are independent of BFF/Usuarios signing identities.
+    for f in {a[1] for a in p.accounts()} | {'ERLANG_COOKIE'}:
         if not (secrets / f).is_file() or not (secrets / f).stat().st_size:
             raise ValueError('Private file absent: ' + f)
         value = (secrets / f).read_text(encoding='utf-8').strip()
-        minimum = 1 if f == 'PEDIDOS360_ACTOR_KEY_ID' else 32 if f == 'PEDIDOS360_ACTOR_SECRET' else 24
+        minimum = 24
         if len(value) < minimum or '\n' in value:
             raise ValueError('Invalid private file: ' + f)
         if os.environ['EP2_EXECUTION_SCOPE'] == 'AWS_APPROVED' and (secrets / f).stat().st_mode & 0o007:
             raise ValueError('Private file cannot have world permissions: ' + f)
+    # Required before any startup probe. Errors never echo key content.
+    checked = subprocess.run(['node', str(ROOT / 'scripts/identity_check.mjs'),
+                              str(Path(os.environ['EP2_PRIVATE_DIR']) / 'identity')],
+                             capture_output=True, text=True)
+    if checked.returncode:
+        raise ValueError('ES256/IdentityProof configuration invalid or incomplete')
     identity = run(['docker', 'run', '--rm', '--network', 'none', '--entrypoint', 'sh', IMAGE,
                     '-c', 'printf "%s:%s" "$(id -u rabbitmq)" "$(id -g rabbitmq)"'])
     # Image is inspected, not guessed. Run as that identity to test host mounts.

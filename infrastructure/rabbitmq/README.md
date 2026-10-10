@@ -17,4 +17,6 @@ $env:EP2_PLATFORM_TESTS='1' # Solo broker dedicado, vacío y sin consumers funci
 
 No se eliminan ni purgan colas. Las pruebas consumen/ACK exclusivamente mensajes
 de prueba; nunca ejecutarlas sobre datos compartidos. Conservan el volumen.
-El sandbox conserva `demo.platform` / `demo.platform.q` como evidencia independiente.
+Las pruebas de la aplicación usan `p360.demo.platform` / `p360.demo.platform.q`.
+Bootstrap conserva también `demo.` para las sondas históricas de mantenimiento;
+la cuenta RabbitAdmin solamente admite el prefijo contractual `p360.demo.`.

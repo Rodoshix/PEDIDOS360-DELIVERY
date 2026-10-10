@@ -83,7 +83,8 @@ def inventory():
 def accounts():
     # No configure permission for applications: pre-provision; Spring dynamic=false.
     result = [('p360-bootstrap', 'BOOTSTRAP_PASSWORD', BUSINESS, '^p360\\.', '^p360\\.', '^p360\\.', 'administrator'),
-              ('p360-bootstrap', 'BOOTSTRAP_PASSWORD', SANDBOX, '^demo\\.', '^demo\\.', '^demo\\.', 'administrator'),
+              # Retain legacy maintenance probes; application sandbox uses only p360.demo.
+              ('p360-bootstrap', 'BOOTSTRAP_PASSWORD', SANDBOX, '^(demo\\.|p360\\.demo\\.)', '^(demo\\.|p360\\.demo\\.)', '^(demo\\.|p360\\.demo\\.)', 'administrator'),
               ('p360-pagos-publisher', 'PAGOS_PUBLISHER_PASSWORD', BUSINESS, DENY, exact('p360.pedidos.commands'), DENY, ''),
               ('p360-pedidos-consumer', 'PEDIDOS_CONSUMER_PASSWORD', BUSINESS, DENY,
                exact('p360.pedidos.retry'), exact('p360.pedidos.confirmacion.q'), ''),
@@ -92,12 +93,14 @@ def accounts():
                exact('p360.commands'), DENY, ''),
               ('p360-replay', 'REPLAY_PASSWORD', BUSINESS, DENY,
                exact('p360.pedidos.commands', 'p360.commands'), exact(*[q['name'] for q in inventory()['queues'] if q['name'].endswith('.dlq')]), ''),
-              ('p360-admin-demo', 'ADMIN_DEMO_PASSWORD', SANDBOX, '^demo\\.', '^demo\\.', '^demo\\.', 'management')]
+              ('p360-admin-demo', 'ADMIN_DEMO_PASSWORD', SANDBOX,
+               '^p360\\.demo\\.[A-Za-z0-9][A-Za-z0-9._-]{0,99}$',
+               '^p360\\.demo\\.[A-Za-z0-9][A-Za-z0-9._-]{0,99}$',
+               '^p360\\.demo\\.[A-Za-z0-9][A-Za-z0-9._-]{0,99}$', 'management')]
     for domain, operation, _, _ in DOMAINS:
         writes = ['p360.retry'] + ([] if domain == 'carrito' else ['amq.default'])
-        # #78/#79/#80: shared query handlers use confirmed publication for DLQ handoff.
-        if domain in ('usuarios', 'restaurantes', 'productos'):
-            writes.append('p360.dlx')
+        # Each query/Cart consumer performs a confirmed diagnostic DLQ handoff.
+        writes.append('p360.dlx')
         result.append((f'p360-{domain}-consumer', domain.upper() + '_CONSUMER_PASSWORD', BUSINESS,
                        DENY, exact(*writes), exact(f'p360.{domain}.{operation}.q'), ''))
     return result
