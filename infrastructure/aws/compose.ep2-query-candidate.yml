@@ -1,0 +1,25 @@
+# Reviewed candidate, NOT loaded by current Compose or .env.
+# Apply only in the approved window, with provisioned ES256 keys and TLS.
+services:
+  bff:
+    environment:
+      PEDIDOS360_RELAY_MODE: ACTIVE
+      PEDIDOS360_IDENTITY_PROOF_ENABLED: "true"
+      BFF_QUERY_USUARIOS_MODE: RABBITMQ
+      BFF_QUERY_RESTAURANTES_MODE: RABBITMQ
+      BFF_QUERY_PRODUCTOS_MODE: RABBITMQ
+      BFF_QUERY_PAGOS_MODE: RABBITMQ
+  usuarios:
+    environment:
+      PEDIDOS360_RELAY_MODE: ACTIVE
+      PEDIDOS360_IDENTITY_PROOF_ENABLED: "true"
+  restaurantes:
+    environment:
+      PEDIDOS360_RELAY_MODE: ACTIVE
+  productos:
+    environment:
+      PEDIDOS360_RELAY_MODE: ACTIVE
+  pagos:
+    environment:
+      PEDIDOS360_RELAY_MODE: ACTIVE
+      PEDIDOS360_IDENTITY_PROOF_ENABLED: "true"
