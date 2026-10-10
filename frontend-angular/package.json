@@ -1,0 +1,6 @@
+{
+  "name": "pedidos360-angular", "version": "0.8.0", "private": true,
+  "scripts": {"start":"ng serve --host localhost", "build":"ng build", "test":"ng test --watch=false", "configure":"node tools/configure.mjs", "lint":"tsc --noEmit -p tsconfig.app.json"},
+  "dependencies": {"@angular/common":"21.2.25","@angular/compiler":"21.2.25","@angular/core":"21.2.25","@angular/forms":"21.2.25","@angular/platform-browser":"21.2.25","@angular/router":"21.2.25","@azure/msal-browser":"5.25.0","rxjs":"7.8.2","tslib":"2.8.1"},
+  "devDependencies": {"@angular/build":"21.2.26","@angular/cli":"21.2.26","@angular/compiler-cli":"21.2.25","typescript":"5.9.3","vitest":"4.1.11","@vitest/browser-playwright":"4.1.11","jsdom":"28.1.0"}
+}

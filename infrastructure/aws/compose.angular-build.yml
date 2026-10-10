@@ -1,0 +1,14 @@
+# Optional LOCAL build overlay only. Does not select or activate an AWS deployment.
+# React remains the default compose.build.yml artifact and rollback source.
+services:
+  frontend:
+    build:
+      context: ../../frontend-angular
+      dockerfile: Dockerfile
+      args:
+        P360_API_BASE_URL: ${PUBLIC_API_BASE_URL:?Configura PUBLIC_API_BASE_URL}
+        P360_ENTRA_CLIENT_ID: ${ENTRA_FRONTEND_CLIENT_ID:?Configura ENTRA_FRONTEND_CLIENT_ID}
+        P360_ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:?Configura ENTRA_TENANT_ID}
+        P360_ENTRA_REDIRECT_URI: ${FRONTEND_ORIGIN:?Configura FRONTEND_ORIGIN}
+        P360_ENTRA_API_SCOPE: api://${ENTRA_API_CLIENT_ID:?Configura ENTRA_API_CLIENT_ID}/access_as_user
+        P360_CHECKOUT_MODE: HTTP

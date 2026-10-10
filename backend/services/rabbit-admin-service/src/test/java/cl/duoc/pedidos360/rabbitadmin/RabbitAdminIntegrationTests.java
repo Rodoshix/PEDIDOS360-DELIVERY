@@ -109,6 +109,63 @@ class RabbitAdminIntegrationTests {
         assertThat(call("DELETE","/exchanges/"+e,null).statusCode()).isEqualTo(204);
         assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200);
     }
+    String disposable() throws Exception {
+        String q="p360.demo.disposable."+UUID.randomUUID();
+        assertThat(call("PUT","/queues/"+q,"{\"durable\":false,\"disposable\":true}").statusCode()).isEqualTo(200);
+        return q;
+    }
+    @Test void disposableEmptyQueueCanBeDeletedButNotByClient() throws Exception {
+        String q=disposable();
+        assertThat(request("DELETE","/queues/"+q,null,token(Map.of("roles",List.of("CLIENTE")))).statusCode()).isEqualTo(403);
+        assertThat(request("DELETE","/queues/"+q,null,null).statusCode()).isEqualTo(401);
+        assertThat(request("DELETE","/queues/"+q,null,token(Map.of("scp","wrong"))).statusCode()).isEqualTo(403);
+        assertThat(call("GET","/queues/"+q,null).statusCode()).isEqualTo(200);
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(204);
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(409);
+    }
+    @Test void exclusiveOwnershipPreventsUnacknowledgedDeliveriesAndConsumers() throws Exception {
+        String q=disposable();
+        try(var connection=cf.createConnection()) {
+            try(var channel=connection.createChannel(false)) {
+                assertThatThrownBy(() -> channel.basicGet(q,false)).isInstanceOf(java.io.IOException.class);
+            }
+            try(var channel=connection.createChannel(false)) {
+                assertThatThrownBy(() -> channel.basicConsume(q,false,(tag,msg)->{},tag->{})).isInstanceOf(java.io.IOException.class);
+            }
+        }
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(204);
+    }
+    @Test void messagesArrivingAfterEmptyReadBlockDisposableDeleteWithoutLoss() throws Exception {
+        String q=disposable(),e=exchange("direct"),binding=bind(q,e);
+        assertThat(JSON.readTree(call("GET","/queues/"+q,null).body()).path("messages").intValue()).isZero();
+        new RabbitTemplate(cf).convertAndSend(e,"key","retained");
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> assertThat(JSON.readTree(call("GET","/queues/"+q,null).body()).path("messages").intValue()).isEqualTo(1));
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(409);
+        assertThat(JSON.readTree(call("GET","/queues/"+q,null).body()).path("messages").intValue()).isEqualTo(1);
+        assertThat(call("DELETE","/bindings/"+binding,null).statusCode()).isEqualTo(204);
+        assertThat(call("DELETE","/exchanges/"+e,null).statusCode()).isEqualTo(204);
+        // Deliberately leave this ephemeral queue owned and its message intact. No purge.
+    }
+    @Test void disposableMustBeExplicitNonDurableAndOwnedByThisProcess() throws Exception {
+        String q="p360.demo.disposable."+UUID.randomUUID();
+        for(String body:List.of("{\"durable\":true,\"disposable\":true}","{\"durable\":true}","{\"durable\":false}"))
+            assertThat(call("PUT","/queues/"+q,body).statusCode()).isEqualTo(400);
+        assertThat(call("PUT","/queues/"+name(),"{\"durable\":false,\"disposable\":true}").statusCode()).isEqualTo(400);
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(409);
+        try(var connection=cf.createConnection();var channel=connection.createChannel(false)) {
+            channel.queueDeclare(q,true,false,false,null);
+            assertThat(call("PUT","/queues/"+q,"{\"durable\":false,\"disposable\":true}").statusCode()).isEqualTo(409);
+            assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(409);
+            assertThat(channel.queueDeclarePassive(q)).isNotNull();
+        }
+    }
+    @ParameterizedTest @ValueSource(strings={"direct","topic","fanout"})
+    void disposableBindingsAndExchangesRoundTrip(String type) throws Exception {
+        String q=disposable(),e=exchange(type),id=bind(q,e);
+        assertThat(call("DELETE","/bindings/"+id,null).statusCode()).isEqualTo(204);
+        assertThat(call("DELETE","/queues/"+q,null).statusCode()).isEqualTo(204);
+        assertThat(call("DELETE","/exchanges/"+e,null).statusCode()).isEqualTo(204);
+    }
     @Test void emptyQueueDeletionIsForbiddenWithStableSanitizedResponse() throws Exception {
         String q=queue();
         var result=call("DELETE","/queues/"+q,null);

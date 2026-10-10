@@ -4,8 +4,11 @@ import jakarta.validation.constraints.*;
 
 public final class AdminDtos {
     private AdminDtos() {}
-    // Fixed durable, non-exclusive, non-auto-delete resources; no client AMQP arguments.
-    public record QueueRequest(@NotNull @AssertTrue Boolean durable) {}
+    // Existing durable queues remain protected. Disposable queues explicitly opt into
+    // connection-scoped lifetime; they are not a storage mechanism for business data.
+    public record QueueRequest(@NotNull Boolean durable, Boolean disposable) {
+        public QueueRequest(Boolean durable) { this(durable, false); }
+    }
     public record ExchangeRequest(@NotNull @Pattern(regexp="direct|topic|fanout") String type,
                                   @NotNull @AssertTrue Boolean durable) {}
     public record BindingRequest(@NotNull @Pattern(regexp=SandboxRules.NAME) String queue,

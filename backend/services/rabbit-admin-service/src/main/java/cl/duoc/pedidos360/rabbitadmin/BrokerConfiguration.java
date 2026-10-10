@@ -18,6 +18,8 @@ public class BrokerConfiguration {
         client.setPort(env.getRequiredProperty("rabbit-admin.port",Integer.class));
         client.setVirtualHost(SandboxRules.VHOST); // Never a caller-selected/configurable vhost.
         client.setUsername(user); client.setPassword(password);
+        // Exclusive demo ownership must not be silently recreated on another connection.
+        client.setAutomaticRecoveryEnabled(false);
         client.setConnectionTimeout(2000); client.setHandshakeTimeout(2000); client.setChannelRpcTimeout(3000);
         if (env.getProperty("rabbit-admin.tls",Boolean.class,false)) {
             client.useSslProtocol(javax.net.ssl.SSLContext.getDefault()); client.enableHostnameVerification();

@@ -15,10 +15,16 @@ import static cl.duoc.pedidos360.rabbitadmin.AdminDtos.*;
 @Service
 public class RabbitAdminService {
     private final RabbitAdmin admin;
-    public RabbitAdminService(RabbitAdmin admin) { this.admin=admin; }
+    private final DisposableQueues disposable;
+    public RabbitAdminService(RabbitAdmin admin, DisposableQueues disposable) { this.admin=admin; this.disposable=disposable; }
     public QueueResult putQueue(String name, QueueRequest request) {
         SandboxRules.name(name);
-        if (request==null || !Boolean.TRUE.equals(request.durable())) throw AdminFailure.validation();
+        if (request==null || request.durable()==null) throw AdminFailure.validation();
+        if (Boolean.TRUE.equals(request.disposable())) {
+            if (request.durable() || !DisposableQueues.namespace(name)) throw AdminFailure.validation();
+            return call("PUT_DISPOSABLE_QUEUE",name,() -> disposable.create(name));
+        }
+        if (!request.durable() || DisposableQueues.namespace(name)) throw AdminFailure.validation();
         return call("PUT_QUEUE",name,() -> {
             admin.declareQueue(new Queue(name,true,false,false,Map.of("x-queue-type","classic")));
             return readQueue(name);
@@ -29,6 +35,7 @@ public class RabbitAdminService {
         return call("GET_QUEUE",name,() -> readQueue(name));
     }
     private QueueResult readQueue(String name) {
+        if (DisposableQueues.namespace(name)) return disposable.read(name);
         // RabbitAdmin.getQueueInfo suppresses failures as null. Preserve broker error codes instead.
         return admin.getRabbitTemplate().execute(c -> {
             var q=c.queueDeclarePassive(name);
@@ -37,8 +44,10 @@ public class RabbitAdminService {
     }
     public void deleteQueue(String name) {
         SandboxRules.name(name);
-        // Fixed policy: counters and conditional queue.delete do not protect pending ACKs.
-        call("DELETE_QUEUE",name,() -> { throw AdminFailure.queueDeletionDisabled(); });
+        call("DELETE_QUEUE",name,() -> {
+            if (!DisposableQueues.namespace(name)) throw AdminFailure.queueDeletionDisabled();
+            disposable.delete(name); return null;
+        });
     }
     public ExchangeResult putExchange(String name, ExchangeRequest request) {
         SandboxRules.name(name);
@@ -59,13 +68,18 @@ public class RabbitAdminService {
     public BindingResult putBinding(BindingRequest request) {
         validate(request);
         return call("PUT_BINDING",request.exchange(),() -> {
-            admin.declareBinding(binding(request));
+            if (DisposableQueues.namespace(request.queue())) disposable.bind(request,false);
+            else admin.declareBinding(binding(request));
             return new BindingResult(encode(request));
         });
     }
     public void deleteBinding(String id) {
         BindingRequest request=decode(id); validate(request);
-        call("DELETE_BINDING",request.exchange(),() -> { admin.removeBinding(binding(request)); return null; });
+        call("DELETE_BINDING",request.exchange(),() -> {
+            if (DisposableQueues.namespace(request.queue())) disposable.bind(request,true);
+            else admin.getRabbitTemplate().execute(c -> { c.queueUnbind(request.queue(),request.exchange(),request.routingKey()); return null; });
+            return null;
+        });
     }
     private static void validate(BindingRequest request) {
         if (request==null) throw AdminFailure.validation();

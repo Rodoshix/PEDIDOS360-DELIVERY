@@ -7,7 +7,7 @@ import org.springframework.mock.env.MockEnvironment;
 class ConfigurationTests {
     @Test void queueDeletionIsBlockedInServiceWithoutAnyAmqpInteraction() {
         var admin=org.mockito.Mockito.mock(org.springframework.amqp.rabbit.core.RabbitAdmin.class);
-        var service=new RabbitAdminService(admin);
+        var service=new RabbitAdminService(admin,org.mockito.Mockito.mock(DisposableQueues.class));
         assertThatThrownBy(() -> service.deleteQueue("p360.demo.allowed"))
             .isInstanceOf(AdminFailure.class)
             .hasMessage("Eliminación de queues deshabilitada por política de seguridad.")
