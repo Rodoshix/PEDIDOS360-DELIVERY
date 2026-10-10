@@ -1,0 +1,122 @@
+{
+  "generatedAtUtc": "2026-10-10T05:24:16.938923+00:00",
+  "base": "3d2913c06ecc31c6029792cf837250773d10aa8b",
+  "branch": "codex/71-multihost-preparation",
+  "python": "3.11.9",
+  "dockerCompose": "5.1.3",
+  "suites": [
+    {
+      "command": "python -B -m unittest discover -s infrastructure/aws -p test_multihost.py -v",
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "kind": "static Docker Compose parsing, synthetic public environment, no daemon start"
+    },
+    {
+      "command": "node --test infrastructure/aws/deployment.test.mjs infrastructure/aws/compose.test.mjs infrastructure/aws/transfer-worker.test.mjs infrastructure/aws/ep2-prepared.test.mjs",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "kind": "local configuration and keytool/crypto fixtures, no AWS deployment"
+    },
+    {
+      "command": "python -B -m unittest discover -s infrastructure/aws -p test_multihost_transition.py -v",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "durationSeconds": 36.165,
+      "kind": "real local Compose 5.1.3 lifecycle of cached synthetic sleepers; no services, credentials, business data or AWS connections",
+      "demonstrated": [
+        "running orphans preserved until explicit stop",
+        "included service recreated rather than cloned",
+        "existing network ID preserved",
+        "stopped orphan IDs retained",
+        "no simultaneous old/new worker in controlled sequence",
+        "stop B before restart A rollback",
+        "synthetic broker sentinel untouched"
+      ],
+      "notDemonstrated": [
+        "real application shutdown",
+        "host reboot/supervisors",
+        "cross-host TLS",
+        "SG/NACL connectivity",
+        "database integrity"
+      ]
+    }
+  ],
+  "checks": {
+    "canonicalGeneration": "PASS",
+    "awsReadOnlyMetadata": "two running t3.large, SSM Online, B egress only 443, RDS ingress A only",
+    "currentCorrectionAwsQueries": "NONE; no mutations or SSM commands",
+    "isolatedFixtureCleanup": "PASS; test finally removed only random fixture projects/networks",
+    "imagesAndRds": "deployed image digests, candidate ECR provenance, Flyway history/checksums and RDS grants/owners NOT VERIFIED; approval gates documented"
+  },
+  "notExecuted": [
+    "cross-host TLS handshake",
+    "multihost functional E2E",
+    "Entra live",
+    "RabbitMQ or PostgreSQL runtime tests",
+    "load test",
+    "operational rollback",
+    "business and frontend suites",
+    "Docker installation on Host B",
+    "AWS deployment"
+  ],
+  "limitations": [
+    "SG changes pending authorization",
+    "TLS and least material provisioning pending",
+    "runtime/migrator roles and SECURITY DEFINER ownership not proven on RDS",
+    "no dual Pagos worker instances during migration",
+    "broker private access bridge is proposed, not applied",
+    "no global durable query terminality or automatic HA"
+  ],
+  "sha256": {
+    "infrastructure/aws/multihost.py": "c0aace6211f68a1fa24003dc720ab3299ad2209595b7c691bb1b69632e96099e",
+    "infrastructure/aws/test_multihost.py": "4d1f89a4ef56b005f776da0ce3a994b76d375e28b64aab33b0c9e1bbd0e3c788",
+    "infrastructure/aws/compose.host-a.yml": "04dc532c3a99381949646d9b2e14714ea359961303bfb0afb1186d20e157473b",
+    "infrastructure/aws/compose.host-b.yml": "2c1c77c04c3b3cd702145665f788276f89687817480ba92fa6459fd04961096d",
+    "infrastructure/aws/compose.broker-host-a.yml": "896b268b73144f58ac1429fdfeccc8f36a87d6974ec7e212b9cf44ffa90c02f9",
+    "infrastructure/aws/multihost.env.example": "4f9809ab485248303b41d631421b602e9b538454d0a6040d70481d5f13296765",
+    "docs/ep2/AWS-MULTIHOST-PREPARATION.md": "6bd2d5fc0a2ffdf3ae88b2e917cf47c17f8577dd7928079b2ffa3da2f16e655d",
+    "infrastructure/aws/compose.yml": "b94cbb36c2ccbdc5f526cabfc24877828a410835721a39439c3849521a2096dd",
+    "infrastructure/aws/compose.ep2-prepared.yml": "ffedd13d1596c264d27af00b54fb42fc564c465dfdf08a3ec1b2712cbdeb2217",
+    "infrastructure/aws/rabbitmq/compose.rabbitmq.yml": "8d052ee8c15213574d1c35bc10dba259fb54703dd4280e4168f381ef1450794d",
+    "infrastructure/aws/rabbitmq/bootstrap.sh": "aa47c249871d49563046d34ba50feea035ab0d265d7bd527bad027ebccab0870",
+    "infrastructure/aws/compose.test.mjs": "c01370347514a20ee721da2c204a7e5a7d01e3f90425f59b81298319fca96cf8",
+    "infrastructure/aws/deployment.test.mjs": "a311ba1b6358ad4da89936098ff1f31f33b20e76f4b8e4f6d74393dd1090bfb0",
+    "infrastructure/aws/transfer-worker.test.mjs": "a6d8e49c655cc47fcafd102c16e606151a140c91182bb3f4e6217c80d4e67803",
+    "infrastructure/aws/ep2-prepared.test.mjs": "7f6f8acb5cfe20370140d83e9b10af55fa3808b5327ecc87481ae16f513fcd6d",
+    "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/service/ReconciliacionConfiguration.java": "4172f8e996159ba3831e35a36f3ccbd9044e45e5968e3e71c6a4b7474e85ce19",
+    "backend/services/pagos-service/src/main/java/cl/duoc/pedidos360/pagos/service/PagoService.java": "afc4bba1a3bf0cdf610b619fad48d571b3b54bc80a6121fc2e2fa8390df9198a",
+    "docs/ep2/AWS-MULTIHOST-TRANSITION.md": "36489ed37546501f03a7cc3a7cf801de66bfc585e5addeba39e7e7b98626887d",
+    "infrastructure/aws/test_multihost_transition.py": "1ef06965ec243d451ab218d9dc7a53b97e78831d4b2a0c1b87ac669f20e24856",
+    "backend/services/usuarios-service/src/main/resources/application.yml": "752776b07ce23adc38130de2a6a84a61815e8edc633374fbcddd1e1d7c917882",
+    "backend/services/usuarios-service/src/main/resources/db/migration/V1__crear_usuarios.sql": "73705976eec415837afc5d52c5260393318a22be114da238b399e9ad8e9e04e6",
+    "backend/services/restaurantes-service/src/main/resources/application.yml": "a4977f1a2ffed2b6f80ae603b39373f1bb2c00988efd2269323ff57b6099a9f9",
+    "backend/services/restaurantes-service/src/main/resources/db/migration/V1__crear_tabla_restaurantes.sql": "3c3de8e0d29d8117823228097dd46ec3d9be06599075e2af0e5eebc6c9873e4c",
+    "backend/services/restaurantes-service/src/main/resources/db/migration/V2__insertar_restaurantes_iniciales.sql": "ae43eed67ce7c5bd722f68531b4b8de4f8afef9b43fc0b3fe0b94978662e9d28",
+    "backend/services/productos-service/src/main/resources/application.yml": "f2ccfaac90a568f9ea4836582671f7af6aec5ec6e8461fddbf89b7e2cbe94584",
+    "backend/services/productos-service/src/main/resources/db/migration/V1__crear_tabla_productos.sql": "a74b9768ff72ad8b1d7e26e1830c25d03d42344914ae0c13b686e11857c2234a",
+    "backend/services/productos-service/src/main/resources/db/migration/V2__insertar_productos_iniciales.sql": "2954ac4029e6379dc0fc1f80c8d6ad95b2e590783803de8aec3ec54fcb71af1d",
+    "backend/services/productos-service/src/main/resources/db/migration/V3__completar_datos_demostracion.sql": "b52cee8ea6d2df8594d412ddc67364e9016702348968b4d9b9af600633e48f56",
+    "backend/services/carrito-service/src/main/resources/application.yml": "b310e9a013cc29fa50d9efbaf1cd044278307013a7d532f0fd09d0ce40b59f1f",
+    "backend/services/carrito-service/src/main/resources/db/migration/V1__crear_carritos.sql": "b482ada49c1c670f5b74cf5b4130ca89fcfd1d55e9269912a1eeabc8ac661fb7",
+    "backend/services/carrito-service/src/main/resources/db/migration/V2__vaciado_por_pedido.sql": "8674ac69e9d4382924970dcfb605a2313ad0c24eb513da16bbad5b50a01d3599",
+    "backend/services/pedidos-service/src/main/resources/application.yml": "8567f377e54af0cd3b73e3aa6febd9507a9389a30377b3a2925bd74fbd5451c0",
+    "backend/services/pedidos-service/src/main/resources/db/migration/V1__crear_pedidos.sql": "83f2cbc3198118b4c29435bad8305883d9e101ec9a72e70da699d723c7332085",
+    "backend/services/pedidos-service/src/main/resources/db/migration/V2__aislamiento_tenant.sql": "73bd365dfd58fcccc2434aceb760c156c89613f50b0a1be148eb81612a7ec26f",
+    "backend/services/pedidos-service/src/main/resources/db/migration/V3__carrito_vaciado_outbox.sql": "0b57d8f6269f96a176c599086691bf6c67f5bccf38c2ebda4a96e2d50fd8fb70",
+    "backend/services/pagos-service/src/main/resources/application.yml": "1f11be244fb945764d781ba476eb6ed12fb0c87e11f91875c8d15e1ffad572bb",
+    "backend/services/pagos-service/src/main/resources/db/migration/V1__crear_pagos.sql": "aff9c8fbf971886f01076a0da736c552a3d179f47eae34dc9bc2dde466130ea2",
+    "backend/services/pagos-service/src/main/resources/db/migration/V2__unicidad_y_confirmacion.sql": "69b7deb9c6ba16982b68fa11ca0150b62d57e798b3df74d9c90958b84ef20e06",
+    "backend/services/pagos-service/src/main/resources/db/migration/V3__confirmacion_outbox.sql": "407c8fb9f1791a32e0f28a070bc80a4c6166a4a0a45e87153b087f272511f741",
+    "backend/services/pagos-service/src/main/resources/db/migration/V4__aislamiento_tenant.sql": "3b77e6b0dd9c83c2edc9f988fd23b4decac69b94703fd1826921214ebba91a02"
+  },
+  "hashBasis": "SHA-256 of Git index blob bytes; independent of checkout CRLF conversion. Reproduce with git show :path before commit or git show HEAD:path after commit.",
+  "priorValidation": {
+    "head": "83337745908374b266ec39e534624cb76e65a05f",
+    "generatedAtUtc": "2026-10-10T05:00:46.540981+00:00",
+    "passed": 29,
+    "kind": "initial static/local fixture validation; AWS metadata observations belong to that phase"
+  }
+}
