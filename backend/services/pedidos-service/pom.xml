@@ -15,6 +15,7 @@
     <name>pedidos-service</name>
     <description>Servicio de pedidos de Pedidos360</description>
     <properties>
+        <rabbit-amqp-client.version>5.37.0</rabbit-amqp-client.version>
         <jackson-bom.version>3.1.7</jackson-bom.version>
 
         <java.version>21</java.version>
