@@ -60,7 +60,7 @@
     },
     {
       "file": "denied.png",
-      "sha256": "a8c77b8dfeadbea72d45765a95af3ea4f46d08040befa6c74d2914697c8b9278"
+      "sha256": "6a8ef493cf8fe2e9ac25d11b3c4594ec6499f3a120868e1e9d5fc9e094017a1f"
     },
     {
       "file": "desktop.png",
@@ -72,11 +72,11 @@
     },
     {
       "file": "empty-restaurants.png",
-      "sha256": "a8c77b8dfeadbea72d45765a95af3ea4f46d08040befa6c74d2914697c8b9278"
+      "sha256": "fd1f98674d816f596ab93c4a73975a1e3ac842ef871c6df197fe5c67c4137c21"
     },
     {
       "file": "error.png",
-      "sha256": "a8c77b8dfeadbea72d45765a95af3ea4f46d08040befa6c74d2914697c8b9278"
+      "sha256": "6bc6dc9eb8b482f85bca635f2ad58051b5020705e6933354d3a00892632a767e"
     },
     {
       "file": "focused.log",
@@ -146,5 +146,68 @@
     "no Entra live/backend/broker/PostgreSQL/AWS",
     "chunk >500 kB warning retained",
     "not screen-reader certification"
-  ]
+  ],
+  "evidence_correction": {
+    "audited_head": "c47c32d42cc0706f7a129e407692ab1637b08bd5",
+    "date": "2026-10-09",
+    "original_sha256": "a8c77b8dfeadbea72d45765a95af3ea4f46d08040befa6c74d2914697c8b9278",
+    "original_dimensions": "305x972",
+    "originals_backup": "recheck-originals/",
+    "repository_directory": "docs/evidence/60-client-catalog",
+    "capture_encoding": "JPEG bytes returned by browser API; legacy .png names retained without image editing",
+    "viewport": "1280x900",
+    "waits": [
+      "scenario-specific message visible",
+      "client-catalog aria-busy=false"
+    ],
+    "http": [
+      {
+        "scenario": "empty",
+        "activation_status": 204,
+        "path": "/api/restaurantes",
+        "status": 200,
+        "body": "[]"
+      },
+      {
+        "scenario": "error",
+        "activation_status": 204,
+        "path": "/api/restaurantes",
+        "status": 503,
+        "body": "{}"
+      },
+      {
+        "scenario": "catalog-denied",
+        "activation_status": 204,
+        "path": "/api/restaurantes",
+        "status": 403,
+        "body": "{}"
+      }
+    ],
+    "unexpected_javascript_errors": 0,
+    "test_suites_rerun": false,
+    "historical_results_unchanged": true,
+    "captures": [
+      {
+        "file": "empty-restaurants.png",
+        "sha256": "fd1f98674d816f596ab93c4a73975a1e3ac842ef871c6df197fe5c67c4137c21",
+        "width": 1265,
+        "height": 889,
+        "format": "Jpeg"
+      },
+      {
+        "file": "error.png",
+        "sha256": "6bc6dc9eb8b482f85bca635f2ad58051b5020705e6933354d3a00892632a767e",
+        "width": 1265,
+        "height": 889,
+        "format": "Jpeg"
+      },
+      {
+        "file": "denied.png",
+        "sha256": "6a8ef493cf8fe2e9ac25d11b3c4594ec6499f3a120868e1e9d5fc9e094017a1f",
+        "width": 1265,
+        "height": 889,
+        "format": "Jpeg"
+      }
+    ]
+  }
 }

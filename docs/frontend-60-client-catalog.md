@@ -74,3 +74,27 @@ No se ejecutaron Entra live, servicios backend reales, PostgreSQL, RabbitMQ ni A
 Ambos builds conservan aviso de chunk principal >500 kB (~622 kB minificado). No se introduce una optimización de bundle fuera del alcance. No hay dependencias nuevas ni cambios de coordinación. Los requisitos operativos de #70/#71/#72 siguen pendientes en sus tareas; esta rama no los ejecuta ni los declara resueltos.
 
 Sin merge, cierre de issues, fase 6, cambios de backend/administración/Checkout o activaciones. Esperar auditoría independiente.
+
+## Recheck documental — capturas de vacío, 503 y 403
+
+HEAD investigado: `c47c32d42cc0706f7a129e407692ab1637b08bd5`. Se comprobó el directorio real, el SHA-256 y el contenido visual de las tres imágenes originales. Eran idénticas byte a byte (23 225 bytes, 305×972), con hash común `a8c77b8dfeadbea72d45765a95af3ea4f46d08040befa6c74d2914697c8b9278`. Mostraban un encuadre recortado común: texto del banco, navegación y comienzo del título; ninguno incluía el mensaje del escenario. No sirven como evidencia diferenciada.
+
+La causa comprobada es un fallo del procedimiento de captura y su validación: se aceptaron imágenes de una región común sin comprobar que el estado específico apareciera en los píxeles guardados. El manifiesto calculó correctamente los hashes de esos archivos incorrectos; no fue una transcripción errónea del hash. El DOM distinto observado en la ejecución original no validaba por sí solo la imagen guardada. No hay evidencia suficiente para atribuir el comportamiento interno a un caché de la herramienta o a una copia de archivos; no se presenta esa hipótesis como hecho. La reproducción siguiente descarta que las fixtures terminen legítimamente en el mismo estado funcional.
+
+Sin cambiar fixtures o código se inició `npm run preview:ui`, se activó cada escenario mediante `POST /__preview/scenario` (204), se comprobó `GET /api/restaurantes`, y se pulsó **Actualizar catálogo**. Antes de cada captura nueva se esperó explícitamente al mensaje específico visible y a `.client-catalog[aria-busy="false"]`. Se inspeccionó cada imagen resultante y el registro del navegador: cero warnings/errores JavaScript registrados. Se usó screenshot de viewport, sin fullPage, con override 1280×900; los bytes devueltos tienen 1265×889. Los nombres históricos `.png` se conservan, pero los bytes que entrega la API del navegador son JPEG tanto en los originales como en las sustituciones; no se convirtieron ni retocaron las imágenes.
+
+| Archivo | Escenario / respuesta simulada | Estado visible final | SHA-256 nuevo |
+| --- | --- | --- | --- |
+| `empty-restaurants.png` | `empty`: 200, `[]` | No hay restaurantes disponibles. | `fd1f98674d816f596ab93c4a73975a1e3ac842ef871c6df197fe5c67c4137c21` |
+| `error.png` | `error`: 503, `{}` | No se pudo consultar el servicio. Puedes reintentar la consulta. | `6bc6dc9eb8b482f85bca635f2ad58051b5020705e6933354d3a00892632a767e` |
+| `denied.png` | `catalog-denied`: 403, `{}` | No tienes permiso para acceder o modificar estos datos. | `6a8ef493cf8fe2e9ac25d11b3c4594ec6499f3a120868e1e9d5fc9e094017a1f` |
+
+Los originales están preservados en `recheck-originals/` del directorio local de evidencia. Las sustituciones se guardaron allí y se añadieron al directorio versionado `docs/evidence/60-client-catalog/`, para permitir revisión directa en el PR. El manifiesto actualiza exclusivamente sus tres entradas de hash y añade la trazabilidad de esta corrección. Las demás capturas, fuentes, logs y resultados históricos se conservan.
+
+![Vacío confirmado: 200 y lista vacía](evidence/60-client-catalog/empty-restaurants.png)
+
+![Error confirmado: 503](evidence/60-client-catalog/error.png)
+
+![Acceso denegado confirmado: 403](evidence/60-client-catalog/denied.png)
+
+No se reejecutaron las 240 pruebas: solo cambia evidencia/documentación, sin diferencias en componentes, controllers, adaptadores, fixtures, backend o tests. Los 240 PASS y 41 focalizados siguen siendo resultados históricos de la implementación auditada, no nuevas ejecuciones. No se detectó un defecto funcional en estos tres escenarios. Banco ficticio, sin Entra live/AWS/backend real. Estado: READY FOR INDEPENDENT RECHECK; PR #103 debe permanecer OPEN / DRAFT.
