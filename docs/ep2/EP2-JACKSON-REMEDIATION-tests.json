@@ -14,7 +14,7 @@
     "backend/services/restaurantes-service/pom.xml": "978226a6407baa68e4192cdb1312fde4c67fb729fd098533b64a34e1d32e942c",
     "backend/services/usuarios-service/pom.xml": "e32b69c753716081cf0c32c156099d3ae6e57a27c40c6c214739a947f73caf08",
     "backend/shared/p360-messaging-core/pom.xml": "3737b7913bfbf061233e9e47302d6f3b388eabb8ae700ccadc48f620f898f3a3",
-    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/JacksonSecurityRegressionTests.java": "204b3e3f4c282db7e22f60434d4d482df64fb42a64c90469236d7005e9746a5f",
+    "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/JacksonSecurityRegressionTests.java": "0648c91100964118c7ed3171b145e566db24607883451a30b8fb470568e0c8a7",
     "backend/services/restaurantes-service/src/test/java/cl/duoc/pedidos360/restaurantes/RestaurantesHttpRegressionTests.java": "ec53d1350942b8301e47f750a9900ebdd6593ea4c1254151af0181d03887be8b",
     "backend/services/productos-service/src/test/java/cl/duoc/pedidos360/productos/ProductosHttpRegressionTests.java": "53cad9fa3b57a179753e7440060e2a9f2b6b986521edf9e9c67b835954bc136c"
   },
@@ -164,6 +164,13 @@
           "sha256": "dbb9277b44a4f74b0bcd2825e35bb074c306365c6448f3d2b26303b5c3fc8187",
           "libraries": []
         }
+      ],
+      "finalVerificationCommand": [
+        "mvn",
+        "-B",
+        "-ntp",
+        "-Dmaven.repo.local=C:/Users/Rodri/.codex/tmp/ep2-security-m2",
+        "verify"
       ]
     },
     {
@@ -1804,8 +1811,9 @@
     "B/carrito-service-tests.log": "421e94334900fdf0d1bd426f27fefe3c4c8dbf914310515626fbe1d46a143905",
     "B/carrito-service-tree.log": "d7eb9089b46ad63688f5164b837565c83678a3200c1290879aaa5e920472a6ed",
     "B/carrito-service-tree.txt": "ad8eda3b3abfec7a55e611889ccab503f1cdcf9d72e48ba4dd0d82ec4225de00",
-    "B/final-results.json": "b33640c94743e4c5b070d5f7b054c89a40509a1eba9cf0d5bd7d92f8277950da",
+    "B/final-results.json": "ca769864c52bafb23eb499589d8a6af48d097f6dd4d363eed2ff84e6c8bb50da",
     "B/osv-runtime.json": "030dfb097399a5858edbed482cccbb031345a893c7127c38dc6f54baf61e1702",
+    "B/p360-messaging-core-final-tests.log": "eab96e138c296e42d96d1d0ee3a97a6cde4290172aa4c17e8003468da126c273",
     "B/p360-messaging-core-tests.log": "5a50c7fb07f8b732463a7a3c101aacefed40aa14f51cfabc1a94fdc9db3bfd91",
     "B/p360-messaging-core-tree.log": "227077c50694fcfeb581368deef6c0fce29cfe345cf900d8e5e053f63f0f8ad9",
     "B/p360-messaging-core-tree.txt": "7f6381d1754dd855a69b32264ad058055812d02eed74fb8885650af05dd493e3",
@@ -1914,23 +1922,23 @@
     "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml": "975eb906b1471c67e1a650d4054bfafd2fc85750c66adb670ffd19d02121039c",
     "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml": "41d6971556651fc2047c9de87631172c33a4cc48f21943e5c2bd50e68fcba38d",
     "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml": "84e34e684aff230a378a9be1950e885fc13acdcd4386e754f5b486e03efd1b7e",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml": "6cb8e23ee9a21e73987fa34988ab666270c9d38cdbd3d0f22260d9912d160278",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CarritoCommandContractTests.xml": "b06094a97439b71e89e36757f3d9eec541c223fc4693285b0d49186d438e96a6",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests.xml": "d450a52b0715fc4547121812626f76e93064908e7617904b148fcf1c8ce67401",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml": "7ab8136c5e5981768739aa72caf72a5a83346e0486d5114e87de32be6034603c",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests.xml": "845d66494b6f4dc97595e0f22b47d4c2984cd56d46c642a3132217c865fa0584",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml": "561e23cdfbbe21b13917fcb6950a7b4e780168861967d40e8c74a77b3439108c",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.JacksonSecurityRegressionTests.xml": "eac3d4eee54d57e4c8d821791192e99d9624d572a16682a447d504725c3d9717",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml": "c62cb63b7892494b42ed08643ba65ce45d518b46781d52ad2c9a63eaad57774b",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PagosIdentityProofTests.xml": "d3025fbccd9403d28da41e99614edceab7b4308bf29240cd5ca36e8c331de04b",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml": "610d6cdb2659262c3e81be432afd8cdfffa1a372886aa7acf1994ee922bdc432",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests.xml": "871c7e15693d8c118a011bf31f7edd9f5d0eb6dc0f4643a0186e81324fbce0d3",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml": "e3d7a0e3883a9601b6b39cfaab0c1b7df0a0973cfd2692f1f6c06f2dbf2e667e",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml": "d0795e09054e0307027eb2e23cc739336a0afbc0fba7d506e7ece3d303cc4dbf",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml": "5ceebe103201255f124a3cbe3d2b3129c05d568c9ad4285bdcdbac00870d9f15",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml": "e059062eaf13a6ab7f818b2ef3381f6e0644fcfed270a493bd312ee463bcaecf",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml": "3923ed772e5a3cda0a1db0e86b933eef43ec924df0d4390f7804ff9fa8249f38",
-    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml": "d18b713211976570a0388bf9229889869bba2f2a0b38e2ed6fc380041f500a1f"
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml": "4be9057d630c38adc7eac3eb9c40f9d998576bd37fc58710b8bcf65922662e40",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CarritoCommandContractTests.xml": "adecd436ae647c128ed3f1f71a5e351a9135d506098f24f314e7d9ec5fe6ac81",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests.xml": "455ff1a3ed0b730fcc178e493ad637c98f25ea525ee5a7f97eee865882d0f1dd",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml": "93112547757115e03fac77026ece580032a32d57bb3c5c77bdb58c9c29595e2e",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests.xml": "572e6229ff0cc80a36db572b9ce90723d8a18a98ac44e596182b8491910f5a7f",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml": "d533e0f0e3169b959e6cf0353d0ff097bdfb82a4b5390a8fe57629bb353fa245",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.JacksonSecurityRegressionTests.xml": "15715fa62688f665cdc0071e500fc49ddeb615f9bf88720c6bdb07c4d6196c0f",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml": "580831a6e0ce278591ac7bfaa8dd51cd13db9b82bf732562a222db33d06493d5",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PagosIdentityProofTests.xml": "599d79374cb6cbfa51ca4f9967a808c38a0fff3aad81592284ef97d0901b69b0",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml": "6c706503cdec882dcca0dd03b766a18b4c961b10c0080a6b7f28c2873be3dd5c",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests.xml": "be1dfbe60c6f1ad9f57b6a3b908029b71acabaf4a4b688f331e64e3f697d709f",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml": "cf48e9ef9022f096f8f37ec384628a40b4d744a586bd51dea9d402799cb6cada",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml": "e6432d85f93384728d5c90358d4e97eebf2643bc485650d5f7f8daf9b8f6f46a",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml": "7c48743b7591229d841f0bc1730464a37f3073bfdd7b835cc0097f350bdeef05",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml": "abb704f027e9b6491bd18a86ced17440da23adb452bae0519e5a37886a902f70",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml": "7c671b14dbf7301e59e9faf0cd9a658e4e76ab83cc98c14cc636c5be0c6ea69a",
+    "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml": "c324c84e1ce7fec4c4fdcc3cc382939503e22e37a0d586f4ff63808db8178077"
   },
   "awsOperations": false,
   "ecrPublication": false,
@@ -1977,6 +1985,22 @@
     },
     {
       "log": "carrito-service-tests.log",
+      "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
+    },
+    {
+      "log": "p360-messaging-core-final-tests.log",
+      "message": "WARNING: A Java agent has been loaded dynamically (<test-agent>)"
+    },
+    {
+      "log": "p360-messaging-core-final-tests.log",
+      "message": "WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning"
+    },
+    {
+      "log": "p360-messaging-core-final-tests.log",
+      "message": "WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information"
+    },
+    {
+      "log": "p360-messaging-core-final-tests.log",
       "message": "WARNING: Dynamic loading of agents will be disallowed by default in a future release"
     },
     {

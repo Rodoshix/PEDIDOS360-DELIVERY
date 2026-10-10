@@ -54,3 +54,5 @@ Los tres Draft se crearon antes de probar la composición conjunta. [Resultado c
 Persisten requisitos operativos de TLS/CA, claves, permisos DLX, roles RDS runtime/migrador y corte coordinado. HTTP predeterminado y artefactos EP2 inactivos conservados. Sin terminalidad durable global nueva. No hubo cambios AWS/ECR, certificados, permisos, flags o issues.
 
 Evidencia reproducible local: `operational-evidence/EP2-REMEDIATION-2026-10-10/B`. Hashes y composición en `EP2-JACKSON-REMEDIATION-tests.json`; fuentes oficiales y controles negativos preservados fuera del repo. Revisar independientemente antes de cualquier integración.
+
+Control final de formato: se eliminó una línea vacía adicional al EOF de JacksonSecurityRegressionTests.java para superar git diff --check. Se repitió la suite completa de core (266 casos correctos). La prueba combinada conserva el archivo previo, idéntico salvo ese whitespace; sus hashes originales permanecen en el manifiesto combinado. No se reejecutaron las siete aplicaciones por este cambio sin efecto funcional.
