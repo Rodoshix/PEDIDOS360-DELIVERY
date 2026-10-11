@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-11T00:44:33.4344049-03:00",
+  "base": "f6a9540e5db9890a7716184b917c718d35a21de6",
+  "branch": "codex/identity-proof-deadline-observability",
+  "scope": "Diagnostic logging only: expired Usuarios IdentityProofException",
+  "commands": [
+    {
+      "cwd": "backend/shared/p360-messaging-core",
+      "command": "mvn -B \"-Dtest=IdentityProofDeadlineLoggingTests\" test",
+      "exitCode": 0,
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "countedWithinCore": true
+    },
+    {
+      "cwd": "backend/shared/p360-messaging-core",
+      "command": "mvn -B install",
+      "exitCode": 0,
+      "durationSeconds": 47.018,
+      "completedAt": "2026-10-11T00:41:29-03:00"
+    },
+    {
+      "cwd": "backend/services/usuarios-service",
+      "command": "mvn -B verify",
+      "exitCode": 0,
+      "durationSeconds": 49.049,
+      "completedAt": "2026-10-11T00:43:52-03:00"
+    }
+  ],
+  "modules": [
+    {
+      "module": "backend/shared/p360-messaging-core",
+      "tests": 286,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": [
+        {
+          "name": "cl.duoc.pedidos360.messaging.ActorSecurityTests",
+          "tests": 29,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "1.914",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ActorSecurityTests.xml",
+          "reportSha256": "cd9d1ae32317eada7c203404df040cbcca6f6a3e3f57f8058e5aee4463a4fc5b"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.AmqpClientSecurityRegressionTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.016",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.AmqpClientSecurityRegressionTests.xml",
+          "reportSha256": "8afd0d88fecd3133813b6f38e41f3cfb64b17c9a92106d918b8c5b983643eba7"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.CarritoCommandContractTests",
+          "tests": 16,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.094",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CarritoCommandContractTests.xml",
+          "reportSha256": "77a89ef40f71213ca30859eadd6f8daff4d8857a06c952479c3bba86df5ce868"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.058",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.CatalogResponseSchemaTests.xml",
+          "reportSha256": "8bbe9593d46387848ac715d5da010947a7e9816680db4e549f033e65f4b48d18"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.ClasificacionFallosTest",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.128",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.ClasificacionFallosTest.xml",
+          "reportSha256": "3419f7f7129018bb00f8d40e7048d4225993f7e2d4d4027c04ccb64d2e7f3d60"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests",
+          "tests": 24,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "6.887",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.GuardedQueryReliabilityTests.xml",
+          "reportSha256": "7c8381bc143b11e43b4a28a0fb33f8d97ec1f2a6ee7ceab61b4582ee840b6f84"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.IdentityProofDeadlineLoggingTests",
+          "tests": 18,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.109",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.IdentityProofDeadlineLoggingTests.xml",
+          "reportSha256": "dff8c62d5a85a07f813723dfaf7fd49dc2a1b0196c01d4138cce68d574b0fa1a"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.IdentityProofTests",
+          "tests": 48,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.353",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.IdentityProofTests.xml",
+          "reportSha256": "d23e22e4bf7f125b106e5c644c6ff2fe4926c7d86d9912ad0652318fced05e4c"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.JacksonSecurityRegressionTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.016",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.JacksonSecurityRegressionTests.xml",
+          "reportSha256": "087af5c5618438fd7c06a10b612a852260e668e7fa63f716e3d3c74278acd8fb"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.MessagingContractTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.168",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.MessagingContractTests.xml",
+          "reportSha256": "2fc4a261daed8c8299842b250799bc967854278610f64ccbc068ab0a99898472"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.PagosIdentityProofTests",
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.066",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PagosIdentityProofTests.xml",
+          "reportSha256": "f02915f69d23d330301663a563f3dc9896e4ad434c20e6ae155b62951297c6ed"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.PlatformCompatibilityTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "11.243",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.PlatformCompatibilityTests.xml",
+          "reportSha256": "406e2928070c723b392c140ef4c32cc88bc427dce37f7f3ec4225c23e3ebfbb1"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.003",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryDeadlineGuardTests.xml",
+          "reportSha256": "f2f198a2be7edcf8bc10b66a5c5db7f892dbf28c189c951356b0294537f28575"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.QueryMessagingFlowTests",
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "11.126",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.QueryMessagingFlowTests.xml",
+          "reportSha256": "07dc58ed01c6df42e03d84c8f48f9d7c76708a0b30a8633e2c78ae64402ec210"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.RecoveryRealTests",
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "6.178",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RecoveryRealTests.xml",
+          "reportSha256": "e170c5e40e5484e366919219078ad8d7059dcd60d54654cbcefd1c9a5d7707a1"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests",
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "1.164",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.relay.QueryConsumerRecoveryTests.xml",
+          "reportSha256": "049a4e9e5e442acd9009bd3aa72bfdfe7fe94092df8604c2da14eadbdd6198f5"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.RelayReliabilityTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.497",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RelayReliabilityTests.xml",
+          "reportSha256": "5d5e8c8a2b013d4b7f40a5cb4aa67a28a83b7be4ee58c9a54f3a9de1536090d0"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests",
+          "tests": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.066",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.RequestPublisherBudgetCorrectionTests.xml",
+          "reportSha256": "ac80194fbd4ae04ad7338e7fa1b8c8f69fa1e041f7aef3a1e999cb91c7bc07ed"
+        },
+        {
+          "name": "cl.duoc.pedidos360.messaging.SettlementPublicationTests",
+          "tests": 38,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "1.401",
+          "report": "backend/shared/p360-messaging-core/target/surefire-reports/TEST-cl.duoc.pedidos360.messaging.SettlementPublicationTests.xml",
+          "reportSha256": "f1c84aac8df3ffb3840e4b7ffdb27f805ce87c86b6165306f8e74f026e30ec9a"
+        }
+      ]
+    },
+    {
+      "module": "backend/services/usuarios-service",
+      "tests": 79,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": [
+        {
+          "name": "cl.duoc.pedidos360.usuarios.JwtHttpTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "8.896",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.JwtHttpTests.xml",
+          "reportSha256": "59791fc1b18912c226b732191235c541a0abc2dc77f71591ed020b2d37558e8c"
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.067",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.LocalIdentityConfigurationTests.xml",
+          "reportSha256": "a35e0d86fd5ad4d905be66d9ab8a0f49e791b68f9bad904796c23c4ef5be7a51"
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.626",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.messaging.UsuariosIdentityProofTests.xml",
+          "reportSha256": "3675002bb5d249bd1caf355c30c6261d2e66b7e409cc9cbcb1cd99c912a86706"
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.security.EntraJwtTests",
+          "tests": 17,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.188",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.EntraJwtTests.xml",
+          "reportSha256": "8659a58ddab6e4bb15d175a10c59445ebd4668b2fe2c84bb1fde3db603d16917"
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests",
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "0.032",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.security.LocalIdentityFilterTests.xml",
+          "reportSha256": "5324c7cda4535e2e689b0990e14da509ee71c08d00ce130da124f94fd0a9f360"
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "3.148",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioAdminApiTests.xml",
+          "reportSha256": "605081516b8629e94163404f9c68dd092026e52c4f46fce2fedbd50a6ae16618"
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests",
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "2.325",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioClienteApiTests.xml",
+          "reportSha256": "9aed3f51297144661c732fbf99ffac9c5157a49eabfcdabf72ef440c856c9a74"
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests",
+          "tests": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "1.769",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuarioRepositoryTests.xml",
+          "reportSha256": "8414e0671fe799bc99fbb6495569323e9b06f85f4f4d89d39a33267fdf000b85"
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuariosApplicationTests",
+          "tests": 2,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "1.791",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosApplicationTests.xml",
+          "reportSha256": "8e25c4830530cf4f81f140b4f6054a0a975c4ab27ce4180ea12792a165095829"
+        },
+        {
+          "name": "cl.duoc.pedidos360.usuarios.UsuariosRabbitTests",
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "seconds": "22.177",
+          "report": "backend/services/usuarios-service/target/surefire-reports/TEST-cl.duoc.pedidos360.usuarios.UsuariosRabbitTests.xml",
+          "reportSha256": "df7f912800f757d1dc64be8b4aecf57e01eb23215bd460f9830be1fc924e748b"
+        }
+      ]
+    }
+  ],
+  "distinctTests": 365,
+  "sources": [
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryFailureHandler.java",
+      "sha256": "45686018831214a7e895a58886b77ceb61a462452cc534b6c6f3410cedc3409a"
+    },
+    {
+      "path": "backend/shared/p360-messaging-core/src/test/java/cl/duoc/pedidos360/messaging/IdentityProofDeadlineLoggingTests.java",
+      "sha256": "9ead4c233f72ab8db0b84d039e4b7cff2fa3b250627b8ffcf1486d58e0134513"
+    }
+  ],
+  "unchangedSources": [
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofException.java",
+      "sha256": "42ff17e74aa140b9b50ee5d2f1b62f66e0feb1e8024f8d503e76eab2d2b411bd",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofVerifier.java",
+      "sha256": "aaa6d5ba8ee9eebaa4591002cf6f3aebc1d1f72e5bf960035dd0b50bf2c69079",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/actor/ActorContextSigner.java",
+      "sha256": "e7165fccd64ef86af50c8c17a8335a226a4e811e344004a4c755f26ce26a5655",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryConsumer.java",
+      "sha256": "21baa7533b5f5b29afa3375d227cda12cb2ffd1c1b0ec615b0d5edfa2451ba26",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/HandoffPublisher.java",
+      "sha256": "02b5ad4277cbba93fb76089972265276db1d0fe0cf059392ff0ebb6b6d4b4843",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryReplyPublisher.java",
+      "sha256": "ef498b60a8647cfbef52f6103f076bdf85def5f900f9d3b9ab09fe99f7c83403",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/relay/QueryDeadlineGuard.java",
+      "sha256": "7feda2a74eca137186be9d3613cb0dd0bf1cf76fce7ffe87f589bd6241f92d06",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofCodec.java",
+      "sha256": "b723108faf99bb2b6cd74a323749832e5de18684fbac3010067dac2bde70a7f5",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "backend/shared/p360-messaging-core/src/main/java/cl/duoc/pedidos360/messaging/identity/IdentityProofKeys.java",
+      "sha256": "00793d8bc174c01083742454384965fc015dc4aa9cc2301671a92eb232cc0c4e",
+      "unchangedFromBase": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "backend/shared/p360-messaging-core/target/p360-messaging-core-0.0.1-SNAPSHOT.jar",
+      "sha256": "24b152a471e3d85217a473f4b881d61176874dfd7a5bac21f57fc0e848524afb"
+    },
+    {
+      "path": "backend/services/usuarios-service/target/usuarios-service-0.0.1-SNAPSHOT.jar",
+      "sha256": "cff353b0b0be80e0bfb5db5654abc3d6bd2dbe8300688580455f689f766e001a",
+      "embeddedCoreEntry": "BOOT-INF/lib/p360-messaging-core-0.0.1-SNAPSHOT.jar",
+      "embeddedCoreSha256": "24b152a471e3d85217a473f4b881d61176874dfd7a5bac21f57fc0e848524afb",
+      "matchesTestedCore": true
+    }
+  ],
+  "evidenceKinds": {
+    "newLoggingTests": "18 unit cases with Logback ListAppender, Mockito, fixed clock and synthetic sentinel; transport injected.",
+    "existingCoreIntegration": "Local RabbitMQ Testcontainers. QueryMessagingFlowTests, RecoveryRealTests and PlatformCompatibilityTests use real broker; injected failure paths are not real network partitions.",
+    "existingUsuariosIntegration": "UsuariosRabbitTests: 25 cases, real Spring listener plus disposable RabbitMQ 4.1.8 and PostgreSQL 17. Transient DB errors are injected into the service; no real RDS failure.",
+    "authentication": "Local generated JWT/JWK and identity fixtures; no Microsoft Entra live session tested."
+  },
+  "notExecuted": [
+    "AWS deployment or query activation",
+    "Live Entra authentication",
+    "Production IdentityProof rejection reproduction",
+    "Other service or BFF full suites (no changes there)"
+  ],
+  "operationalState": "No AWS operations; no deployment, ECR publication, activation, merge or develop modifications.",
+  "sensitiveEvidencePolicy": "Only suite names, counts and hashes extracted from Surefire XML. Raw XML/system-out and full logs are not versioned."
+}

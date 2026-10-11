@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.MessageProperties;
 
 import cl.duoc.pedidos360.messaging.MessagingProperties;
+import cl.duoc.pedidos360.messaging.Domain;
 import cl.duoc.pedidos360.messaging.QueryTopology;
 import cl.duoc.pedidos360.messaging.actor.ActorContextException;
 import cl.duoc.pedidos360.messaging.envelope.EnvelopeException;
 import cl.duoc.pedidos360.messaging.envelope.QueryBusinessException;
 import cl.duoc.pedidos360.messaging.envelope.QueryResponse;
 import cl.duoc.pedidos360.messaging.envelope.RequestEnvelope;
+import cl.duoc.pedidos360.messaging.identity.IdentityProofException;
 
 /**
  * Politica de fallos simple de las consultas.
@@ -100,8 +102,14 @@ public final class QueryFailureHandler {
         if (fallo instanceof HandoffFailureException publication && publication.resultadoIncierto())
             return Resultado.SIN_CONFIRMAR;
         if (plazoVencido || envelope.vencido(respuestas.ahora()) || guard != null && guard.exhausted()) {
-            log.error("Consulta messageId={} correlationId={} plazo vencido: no se ejecuta ni se reintenta; {}",
-                    messageIdSeguro(envelope), correlationId, fallo.getClass().getSimpleName());
+            if (topology.domain() == Domain.USUARIOS && fallo instanceof IdentityProofException identity) {
+                // Enum cerrado, sin mensaje ni throwable. El timestamp lo aporta el logger existente.
+                log.error("Consulta messageId={} correlationId={} plazo vencido: no se ejecuta ni se reintenta; IdentityProofException reason={}",
+                        messageIdSeguro(envelope), correlationIdSeguro(correlationId), identity.reason());
+            } else {
+                log.error("Consulta messageId={} correlationId={} plazo vencido: no se ejecuta ni se reintenta; {}",
+                        messageIdSeguro(envelope), correlationId, fallo.getClass().getSimpleName());
+            }
             return transferir(envelope, retryCount, fallo, Destino.DLQ, original, guard);
         }
         if (respondeAlSolicitante(fallo)) {
@@ -210,5 +218,16 @@ public final class QueryFailureHandler {
 
     private static String messageIdSeguro(RequestEnvelope envelope) {
         return envelope == null || envelope.messageId() == null ? "DESCONOCIDO" : envelope.messageId().toString();
+    }
+
+    /** Solo para el diagnostico nuevo: no emitir contenido libre de una correlacion malformada. */
+    private static String correlationIdSeguro(String value) {
+        if (value == null) return "DESCONOCIDO";
+        try {
+            String uuid = java.util.UUID.fromString(value).toString();
+            return uuid.equals(value) ? uuid : "DESCONOCIDO";
+        } catch (IllegalArgumentException invalid) {
+            return "DESCONOCIDO";
+        }
     }
 }
