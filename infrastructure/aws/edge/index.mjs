@@ -1,6 +1,72 @@
 import fs from 'node:fs'
 import http from 'node:http'
 import https from 'node:https'
+import { createHash, timingSafeEqual } from 'node:crypto'
+import { isIP } from 'node:net'
+
+const admissionKeys = ['tenantId', 'objectId', 'sourceIp', 'tokenSha256', 'expiresAt', 'routes']
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+// Ceiling only. Each window still needs an exact, smaller route list; no wildcards.
+const academicRoute = /^(?:GET \/api\/(?:usuarios\/me|restaurantes|productos\/restaurante\/[1-9][0-9]*(?:\/disponibles)?|carrito|pedidos\/(?:me|[1-9][0-9]*))|POST \/api\/(?:carrito\/items|pedidos)|(?:PUT|DELETE) \/api\/carrito\/items\/[1-9][0-9]*|DELETE \/api\/carrito)$/
+
+export function admissionFromEnvironment(env) {
+  const known = new Set(['EP2_ADMISSION_ENABLED', 'EP2_ADMISSION_TENANT_ID', 'EP2_ADMISSION_OBJECT_ID',
+    'EP2_ADMISSION_SOURCE_IP', 'EP2_ADMISSION_TOKEN_SHA256', 'EP2_ADMISSION_EXPIRES_AT', 'EP2_ADMISSION_ROUTES'])
+  if (Object.keys(env).some(key => key.startsWith('EP2_ADMISSION_') && !known.has(key))) throw new Error('Invalid admission configuration')
+  return {
+    enabled: env.EP2_ADMISSION_ENABLED,
+    tenantId: env.EP2_ADMISSION_TENANT_ID, objectId: env.EP2_ADMISSION_OBJECT_ID,
+    sourceIp: env.EP2_ADMISSION_SOURCE_IP, tokenSha256: env.EP2_ADMISSION_TOKEN_SHA256,
+    expiresAt: env.EP2_ADMISSION_EXPIRES_AT, routes: env.EP2_ADMISSION_ROUTES,
+  }
+}
+
+function admissionGuard(config = {}, now) {
+  if (Object.keys(config).some(key => key !== 'enabled' && !admissionKeys.includes(key))) throw new Error('Invalid admission configuration')
+  const enabled = config.enabled ?? 'false'
+  if (enabled === 'false') {
+    // Leftover window selectors must not silently turn into public admission.
+    if (admissionKeys.some(key => config[key] !== undefined)) throw new Error('Invalid admission configuration')
+    return null
+  }
+  if (enabled !== 'true' || !uuid.test(config.tenantId ?? '') || !uuid.test(config.objectId ?? '')
+    || !isIP(config.sourceIp ?? '') || !/^[0-9a-f]{64}$/.test(config.tokenSha256 ?? '')
+    || typeof config.expiresAt !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(config.expiresAt)) throw new Error('Invalid admission configuration')
+  const deadline = Date.parse(config.expiresAt)
+  const started = now()
+  if (!Number.isFinite(started) || !Number.isFinite(deadline) || new Date(deadline).toISOString() !== config.expiresAt.replace('Z', '.000Z')
+    || deadline <= started || deadline - started > 30 * 60 * 1000) throw new Error('Invalid admission configuration')
+  const routes = typeof config.routes === 'string' ? JSON.parse(config.routes) : null
+  if (!Array.isArray(routes) || routes.length === 0 || routes.length > 16
+    || routes.some(route => typeof route !== 'string' || !academicRoute.test(route))
+    || new Set(routes).size !== routes.length) throw new Error('Invalid admission configuration')
+  const allowed = new Set(routes)
+  const { tenantId, objectId, sourceIp } = config
+  const fingerprint = Buffer.from(config.tokenSha256, 'hex')
+  return (event, headers, isApi, method, path) => {
+    const time = now()
+    if (!Number.isFinite(time) || time < started || time >= deadline) return 503
+    if (!isApi) {
+      // Only public static resources needed to load/login; never a proxy path.
+      return ['GET', 'HEAD'].includes(method) && (path === '/' || path === '/index.html'
+        || /^\/assets\/[A-Za-z0-9_-]+\.(?:js|css|woff2|png|svg|jpg|webp)$/.test(path)) ? 0 : 403
+    }
+    const jwt = event.requestContext.authorizer?.jwt
+    const claims = jwt?.claims
+    if (!claims || !/^Bearer [^\s,]+$/i.test(headers.authorization ?? '')) return 401
+    let roles = claims.roles
+    if (typeof roles === 'string') {
+      try { roles = JSON.parse(roles) } catch { return 403 }
+    }
+    if (claims.tid !== tenantId || claims.oid !== objectId || !Array.isArray(roles)
+      || roles.length !== 1 || roles[0] !== 'CLIENTE'
+      || typeof claims.scp !== 'string' || !claims.scp.split(' ').includes('access_as_user')
+      || event.requestContext.http.sourceIp !== sourceIp
+      || (event.rawQueryString ?? '') !== '' || !allowed.has(`${method} ${path}`)) return 403
+    const actual = createHash('sha256').update(headers.authorization.slice(7), 'utf8').digest()
+    return timingSafeEqual(actual, fingerprint) ? 0 : 403
+  }
+}
 
 const maxRequest = 1024 * 1024
 const maxResponse = 4 * 1024 * 1024
@@ -27,10 +93,11 @@ function send(options, body) {
   })
 }
 
-export function createHandler({ host, apiId, origin, ca, transport = send }) {
+export function createHandler({ host, apiId, origin, ca, transport = send, admission, now = Date.now }) {
   if (!/^172\.31\.(?:\d{1,3})\.(?:\d{1,3})$/.test(host) || host.split('.').some(n => Number(n) > 255)) throw new Error('Private EC2 address required')
   if (!/^[a-z0-9]+$/.test(apiId) || origin !== `https://${apiId}.execute-api.us-east-1.amazonaws.com`) throw new Error('Expected Academy API origin')
   if (!ca?.includes('-----BEGIN CERTIFICATE-----')) throw new Error('BFF certificate required')
+  const guard = admissionGuard(admission, now)
   return async event => {
     try {
       if (event?.version !== '2.0' || event.requestContext?.apiId !== apiId) return problem(403)
@@ -45,6 +112,8 @@ export function createHandler({ host, apiId, origin, ca, transport = send }) {
         headers[key] = value
       }
       if (isApi && headers.origin && headers.origin !== origin) return problem(403)
+      const denied = guard?.(event, headers, isApi, method, rawPath)
+      if (denied) return problem(denied)
       let upstreamPath = rawPath
       const forwarded = { accept: headers.accept || '*/*', 'accept-encoding': 'identity' }
       if (isApi) {
@@ -92,7 +161,7 @@ let liveHandler
 export async function handler(event) {
   // No request bodies, credentials, headers or upstream exceptions are logged.
   try {
-    liveHandler ??= createHandler({ host: process.env.EC2_PRIVATE_IP, apiId: process.env.API_ID, origin: process.env.PUBLIC_ORIGIN, ca: fs.readFileSync(new URL('./bff.crt', import.meta.url), 'utf8') })
+    liveHandler ??= createHandler({ host: process.env.EC2_PRIVATE_IP, apiId: process.env.API_ID, origin: process.env.PUBLIC_ORIGIN, ca: fs.readFileSync(new URL('./bff.crt', import.meta.url), 'utf8'), admission: admissionFromEnvironment(process.env) })
     return await liveHandler(event)
   } catch { return problem(503) }
 }
