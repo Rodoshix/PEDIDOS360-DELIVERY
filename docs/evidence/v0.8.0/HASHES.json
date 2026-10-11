@@ -1,77 +1,77 @@
 [
   {
     "path": ".gitattributes",
-    "sha256": "ba3d4e0a92188305f7cb5ff36e521d8e5df81a0cf5bc64028d9c86834e5096c0",
-    "bytes": 15
+    "sha256": "a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9",
+    "bytes": 14
   },
   {
     "path": "aws-cierre-http.json",
-    "sha256": "11f96fb340f4f3996ba3b7d5c850d9c06699b35161b88c101df34037e26b1cad",
-    "bytes": 578
+    "sha256": "f692bcb6efa953d1e07e191812d4cfaae3139fe1f0263c39357b058020b6899b",
+    "bytes": 560
   },
   {
     "path": "aws-head500.json",
-    "sha256": "831cfd528a704f2e8c44233eb7da16b3d5cfb11dceb52aab473342ea1c81066e",
-    "bytes": 800
+    "sha256": "de2f1d1f9ad27792e65e47df5a89f2d3d2c1a2e16729cbce348d2e47c8e725e3",
+    "bytes": 771
   },
   {
     "path": "aws-pago-pedido.json",
-    "sha256": "75a40e6e5af1127aff1490843dc1bb47d6002916162495f7df5fcf6f24465630",
-    "bytes": 809
+    "sha256": "8cc87d3d4c32fa5024faf7d0abe6084268e3e28c4e132e2dcf70b86aaa13fa2c",
+    "bytes": 778
   },
   {
     "path": "aws-pagos-consulta.json",
-    "sha256": "4b1493fcbcede70d66e4f515361842de5b2e7995f9291fc3972ffe9d0452fde8",
-    "bytes": 1038
+    "sha256": "b7daefa8a4addbbb7399e0786f7a139ff4297a5b48eb1fa01b3220616ac52d54",
+    "bytes": 1005
   },
   {
     "path": "aws-productos.json",
-    "sha256": "d7b935624794fbf624f2f79e8655e981a0d50a452cb8ee04c79e2d79f93b4724",
-    "bytes": 664
+    "sha256": "88c14622c9ae94cfa70e5ebefa46a66d3c44f41c90a60b53195e73d0daef867c",
+    "bytes": 644
   },
   {
     "path": "aws-recuperacion-get.json",
-    "sha256": "15bd3c3c2a9ae115896d5b8989ac7a49a4030ced237e9ad616a54abe52d8ab7b",
-    "bytes": 693
+    "sha256": "fcfd32986fbce5c1e5075de21e65411d726a2e6fd440069610d08eabd3a1661a",
+    "bytes": 665
   },
   {
     "path": "aws-usuarios-restaurantes.json",
-    "sha256": "aa34de48f8e4cfa1912810227f9cdd558c6c43a39129f736877da45066a3c28f",
-    "bytes": 821
+    "sha256": "cc7baf15bda1a428fe0b9bf8b2cd6f4917317e025646dbe43a5f45df7d9b5057",
+    "bytes": 798
   },
   {
     "path": "local-carrito-candidata.json",
-    "sha256": "4c2139728b55d3c528a91879a250e570df7b8b84e94c4fed819b2819b23ee77b",
-    "bytes": 817
+    "sha256": "b12be28f16bde47373e16c70c632599ae6a78f64b8cc57ae84fab5cb907d4e18",
+    "bytes": 790
   },
   {
     "path": "local-compose.json",
-    "sha256": "30618a59e41e8ddcdbd221d1c1fe423903b3fa66866bcce2ee5645487a845271",
-    "bytes": 537
+    "sha256": "fb341e74baf6b4b7edf1ca36502e1619160c4680652fa31f561c29196f411187",
+    "bytes": 522
   },
   {
     "path": "local-integracion.json",
-    "sha256": "62324134d694318d1e45f4faf0aefe7e8aae3191b5c87ae49681e17d66e14eb8",
-    "bytes": 2450
+    "sha256": "6ba78708f058277d21a175edc6fadad65698066b05e7ba7922a031af6ff315cb",
+    "bytes": 2381
   },
   {
     "path": "PROCEDENCIA.json",
-    "sha256": "4e4c5b1d1722427c306de24180b6214f951e4094b8f97b56f6525db35dfb743c",
-    "bytes": 3531
+    "sha256": "d12c9d05b551ba3a677a36cebbc9fd7b9dcda08cc64b8a1f6f96d78a9309ddc8",
+    "bytes": 3465
   },
   {
     "path": "README.md",
-    "sha256": "862ae3b68a06e5ed45b3a6b573d6bcc6ea7a0940af6d10c6deeee5140d8f7c99",
-    "bytes": 2841
+    "sha256": "f0f65d49b46a4dbb843a280877e632f2eff94e3e10aff79197c632f9de60eb5f",
+    "bytes": 2806
   },
   {
     "path": "reproduce-local.ps1",
-    "sha256": "2b05d0a11cd35b097065fd66cc27779a0407cbfdfe064d0e8f3995a58e6f8d12",
-    "bytes": 1583
+    "sha256": "7bc0e479eeda4a73e2a144dc2f699348b66c40491a477a2004107571e100d129",
+    "bytes": 1559
   },
   {
     "path": "verify-evidence.py",
-    "sha256": "e2363ed8fe48a33ee201d90cd6d1125fb493f6bef4456332a9f4eaac6496bb95",
-    "bytes": 627
+    "sha256": "95d7d95355c85032f268408a69caae734a62e4e21b2ef6c2aa92ff01f296248a",
+    "bytes": 613
   }
 ]
