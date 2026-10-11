@@ -86,4 +86,38 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <!-- Only the real BFF HTTP test needs its separately built classes. -->
+        <profile>
+            <id>bff-http-integration</id>
+            <dependencies>
+                <dependency>
+                    <groupId>cl.duoc.pedidos360</groupId>
+                    <artifactId>bff</artifactId>
+                    <version>0.0.1-SNAPSHOT</version>
+                    <classifier>classes</classifier>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <id>bff-http-test-source</id>
+                                <phase>generate-test-sources</phase>
+                                <goals><goal>add-test-source</goal></goals>
+                                <configuration>
+                                    <sources><source>src/bff-http-test/java</source></sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -10,6 +10,7 @@ import cl.duoc.pedidos360.carrito.entity.Carrito;
 import cl.duoc.pedidos360.carrito.exception.ApiException;
 import cl.duoc.pedidos360.carrito.repository.CarritoRepository;
 import cl.duoc.pedidos360.carrito.security.IdentidadActual;
+import cl.duoc.pedidos360.messaging.command.CarritoCommandProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,14 @@ public class CarritoService {
     private final CarritoRepository carritos;
     private final IdentidadActual identidad;
     private final ObjectProvider<CatalogoProductos> catalogos;
+    private final CarritoCommandProperties coordinacion;
 
-    public CarritoService(CarritoRepository carritos, IdentidadActual identidad, ObjectProvider<CatalogoProductos> catalogos) {
+    public CarritoService(CarritoRepository carritos, IdentidadActual identidad, ObjectProvider<CatalogoProductos> catalogos,
+            CarritoCommandProperties coordinacion) {
         this.carritos = carritos;
         this.identidad = identidad;
         this.catalogos = catalogos;
+        this.coordinacion = coordinacion;
     }
 
     private Optional<Carrito> buscarPropio() {
@@ -72,6 +76,10 @@ public class CarritoService {
 
     @Transactional
     public void vaciar() {
+        identidad.obtener();
+        if (coordinacion.mode() == CarritoCommandProperties.Mode.RABBITMQ) {
+            throw new ApiException(HttpStatus.CONFLICT, "El vaciado completo del carrito se coordina por mensajería.");
+        }
         buscarPropio().ifPresent(carrito -> {
             carrito.vaciar();
             carritos.flush();

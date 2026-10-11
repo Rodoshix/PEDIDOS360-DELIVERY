@@ -10,6 +10,7 @@ import cl.duoc.pedidos360.carrito.security.IdentidadActual;
 import cl.duoc.pedidos360.carrito.security.IdentidadUsuario;
 import cl.duoc.pedidos360.carrito.service.CarritoService;
 import cl.duoc.pedidos360.carrito.service.CatalogoProductos;
+import cl.duoc.pedidos360.messaging.command.CarritoCommandProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.http.HttpStatus;
@@ -23,13 +24,18 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class CarritoServiceTests {
+    private CarritoCommandProperties http() {
+        var config = mock(CarritoCommandProperties.class);
+        when(config.mode()).thenReturn(CarritoCommandProperties.Mode.HTTP);
+        return config;
+    }
     @Test
     void sinAdaptadorNoInventaPreciosNiGuardaDatos() {
         var repository = mock(CarritoRepository.class);
         var identidad = mock(IdentidadActual.class);
         when(identidad.obtener()).thenReturn(new IdentidadUsuario(UUID.randomUUID(), UUID.randomUUID(), Set.of(IdentidadUsuario.Rol.CLIENTE)));
         var beans = new DefaultListableBeanFactory();
-        var service = new CarritoService(repository, identidad, beans.getBeanProvider(CatalogoProductos.class));
+        var service = new CarritoService(repository, identidad, beans.getBeanProvider(CatalogoProductos.class), http());
         assertThatThrownBy(() -> service.agregar(new AgregarProductoRequest(101L, 1)))
                 .isInstanceOfSatisfying(ApiException.class, error -> {
                     assertThat(error.getStatus()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
@@ -46,7 +52,7 @@ class CarritoServiceTests {
             var catalogo = mock(CatalogoProductos.class);
             var beans = new DefaultListableBeanFactory();
             beans.registerSingleton("catalogo", catalogo);
-            var service = new CarritoService(repository, new IdentidadActual(), beans.getBeanProvider(CatalogoProductos.class));
+            var service = new CarritoService(repository, new IdentidadActual(), beans.getBeanProvider(CatalogoProductos.class), http());
             assertThatThrownBy(service::obtener).isInstanceOf(AuthenticationCredentialsNotFoundException.class);
             assertThatThrownBy(() -> service.agregar(new AgregarProductoRequest(101L, 1))).isInstanceOf(AuthenticationCredentialsNotFoundException.class);
             assertThatThrownBy(service::vaciar).isInstanceOf(AuthenticationCredentialsNotFoundException.class);
