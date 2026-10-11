@@ -16,9 +16,11 @@ services:
   restaurantes:
     environment:
       PEDIDOS360_RELAY_MODE: ACTIVE
+      ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:?Configura ENTRA_TENANT_ID}
   productos:
     environment:
       PEDIDOS360_RELAY_MODE: ACTIVE
+      ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:?Configura ENTRA_TENANT_ID}
   pagos:
     environment:
       PEDIDOS360_RELAY_MODE: ACTIVE
