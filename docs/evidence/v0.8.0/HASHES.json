@@ -1,5 +1,10 @@
 [
   {
+    "path": ".gitattributes",
+    "sha256": "ba3d4e0a92188305f7cb5ff36e521d8e5df81a0cf5bc64028d9c86834e5096c0",
+    "bytes": 15
+  },
+  {
     "path": "aws-cierre-http.json",
     "sha256": "11f96fb340f4f3996ba3b7d5c850d9c06699b35161b88c101df34037e26b1cad",
     "bytes": 578
