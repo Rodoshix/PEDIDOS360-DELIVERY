@@ -1,0 +1,72 @@
+[
+  {
+    "path": "aws-cierre-http.json",
+    "sha256": "11f96fb340f4f3996ba3b7d5c850d9c06699b35161b88c101df34037e26b1cad",
+    "bytes": 578
+  },
+  {
+    "path": "aws-head500.json",
+    "sha256": "831cfd528a704f2e8c44233eb7da16b3d5cfb11dceb52aab473342ea1c81066e",
+    "bytes": 800
+  },
+  {
+    "path": "aws-pago-pedido.json",
+    "sha256": "75a40e6e5af1127aff1490843dc1bb47d6002916162495f7df5fcf6f24465630",
+    "bytes": 809
+  },
+  {
+    "path": "aws-pagos-consulta.json",
+    "sha256": "4b1493fcbcede70d66e4f515361842de5b2e7995f9291fc3972ffe9d0452fde8",
+    "bytes": 1038
+  },
+  {
+    "path": "aws-productos.json",
+    "sha256": "d7b935624794fbf624f2f79e8655e981a0d50a452cb8ee04c79e2d79f93b4724",
+    "bytes": 664
+  },
+  {
+    "path": "aws-recuperacion-get.json",
+    "sha256": "15bd3c3c2a9ae115896d5b8989ac7a49a4030ced237e9ad616a54abe52d8ab7b",
+    "bytes": 693
+  },
+  {
+    "path": "aws-usuarios-restaurantes.json",
+    "sha256": "aa34de48f8e4cfa1912810227f9cdd558c6c43a39129f736877da45066a3c28f",
+    "bytes": 821
+  },
+  {
+    "path": "local-carrito-candidata.json",
+    "sha256": "4c2139728b55d3c528a91879a250e570df7b8b84e94c4fed819b2819b23ee77b",
+    "bytes": 817
+  },
+  {
+    "path": "local-compose.json",
+    "sha256": "30618a59e41e8ddcdbd221d1c1fe423903b3fa66866bcce2ee5645487a845271",
+    "bytes": 537
+  },
+  {
+    "path": "local-integracion.json",
+    "sha256": "62324134d694318d1e45f4faf0aefe7e8aae3191b5c87ae49681e17d66e14eb8",
+    "bytes": 2450
+  },
+  {
+    "path": "PROCEDENCIA.json",
+    "sha256": "4e4c5b1d1722427c306de24180b6214f951e4094b8f97b56f6525db35dfb743c",
+    "bytes": 3531
+  },
+  {
+    "path": "README.md",
+    "sha256": "862ae3b68a06e5ed45b3a6b573d6bcc6ea7a0940af6d10c6deeee5140d8f7c99",
+    "bytes": 2841
+  },
+  {
+    "path": "reproduce-local.ps1",
+    "sha256": "2b05d0a11cd35b097065fd66cc27779a0407cbfdfe064d0e8f3995a58e6f8d12",
+    "bytes": 1583
+  },
+  {
+    "path": "verify-evidence.py",
+    "sha256": "e2363ed8fe48a33ee201d90cd6d1125fb493f6bef4456332a9f4eaac6496bb95",
+    "bytes": 627
+  }
+]

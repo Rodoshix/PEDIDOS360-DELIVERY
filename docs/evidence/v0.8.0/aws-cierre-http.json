@@ -1,0 +1,18 @@
+{
+  "scope": "AWS_HISTORICAL",
+  "observedAtUTC": "2026-10-11T22:24:27.605040Z",
+  "applicationsHealthy": 8,
+  "rabbitmqHealthy": true,
+  "recovery": "spontaneous after Academy restart; no corrective restart performed",
+  "rdsReadOnlyTLS": "verify-full",
+  "apiManager": "MAINTENANCE",
+  "queryModes": "HTTP",
+  "pagoPedidoMode": "HTTP",
+  "pedidoCarritoMode": "HTTP",
+  "pendingCartOutbox": 0,
+  "cartReceipts": 0,
+  "uncertainWork": 0,
+  "paymentOutboxPublished": 1,
+  "protectedSnapshotsUnchanged": true,
+  "freshPreflightPerformedForThisDelivery": false
+}

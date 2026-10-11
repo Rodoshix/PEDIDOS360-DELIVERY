@@ -1,0 +1,33 @@
+{
+  "path": "/api/pagos/2",
+  "method": "GET",
+  "startedAtUTC": "2026-10-11T05:13:16.497Z",
+  "completedAtUTC": "2026-10-11T05:13:18.387Z",
+  "durationMs": 1890,
+  "httpStatus": 200,
+  "contractValid": true,
+  "pagoId": 2,
+  "metodo": "EFECTIVO",
+  "estado": "PENDIENTE",
+  "backend": {
+    "usuarios": {
+      "atUTC": "2026-10-11T05:13:17.942065195Z",
+      "messageId": "5d537bd8-f3a5-4ece-a527-643efd212aa0",
+      "correlationId": "0248cad9-aea4-41cc-8662-67ab1cf574cf",
+      "retryCount": 0,
+      "stage": "SETTLEMENT",
+      "settlement": "RESPONDIDA_ACK"
+    },
+    "pagos": {
+      "atUTC": "2026-10-11T05:13:18.206741999Z",
+      "messageId": "6e9700c1-1c6b-4e35-b8b1-a06827bb01ef",
+      "correlationId": "c4073b74-6a56-4c9e-9df5-86ba26e2fff7",
+      "retryCount": 0,
+      "stage": "SETTLEMENT",
+      "settlement": "RESPONDIDA_ACK"
+    }
+  },
+  "evidenceSHA256": "5c2f1697d78ab994617d5f11fba9353b2892d110c07935bb71faeb4bddf32f13",
+  "ownerTenantGuardsAccepted": true,
+  "noNewDLQ": true
+}

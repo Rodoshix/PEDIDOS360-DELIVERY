@@ -1,0 +1,15 @@
+{
+  "scope": "LOCAL_COMPOSE_CONFIG_ONLY",
+  "fixtures": "synthetic; no AWS credentials or private files loaded",
+  "scenarios": [
+    "HTTP-compatible migrated roles",
+    "Pago→Pedido candidate only",
+    "query candidate only"
+  ],
+  "checks": "PASS",
+  "modelsSHA256": {
+    "http": "0910a56b2f930e3b700521d96845e512eb097692f3eeb04edcb3e5fa2793137d",
+    "pago": "105d6e8e85a4093acd5d147ae86587a147691461d4772a99e248de9664b27a56",
+    "query": "be892cf9c5bcd02241e78084d7881ccecfabcd9abba7770d846506c896e1ac6e"
+  }
+}

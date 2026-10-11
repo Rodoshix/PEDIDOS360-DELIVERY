@@ -1,0 +1,69 @@
+{
+  "scope": "LOCAL_ONLY",
+  "combinedSourceTreeBeforeDocs": "df20dd7c06685038c8d22c14d46d21af135ec5a3",
+  "mavenRepository": "initially empty private repository",
+  "maven": [
+    {
+      "suite": "cl.duoc.pedidos360.messaging.IdentityProofDeadlineLoggingTests",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reportSHA256": "c137515f40b6981a36acb35a34da52958f1bb264cbf013ef01d68b24e1fd87e7"
+    },
+    {
+      "suite": "cl.duoc.pedidos360.carrito.CarritoAckLoggingTests",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reportSHA256": "d897a9f1d53ea814f500c4185361567f7f1bfb73f502f825cd105137015e56e2"
+    },
+    {
+      "suite": "cl.duoc.pedidos360.carrito.CarritoCommandIntegrationTests",
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reportSHA256": "fe6ceee6717a48c094d3e1223d2ce310d999543275dad7035e979a222e7dc0ab"
+    },
+    {
+      "suite": "cl.duoc.pedidos360.carrito.CarritoRabbitHttpGuardTests",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reportSHA256": "c2116293fc45be8ee45165829e36341d1504b0adf82c52d30c538bf0c32f9210"
+    },
+    {
+      "suite": "cl.duoc.pedidos360.carrito.CarritoServiceTests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "reportSHA256": "a8fedbeeaf514d027af0f62b8b386d8c99c2ceba7dadbdff85154c444be577d1"
+    }
+  ],
+  "mavenTotal": 59,
+  "edgeTests": 16,
+  "composeTests": 15,
+  "allFailures": 0,
+  "allSkipped": 0,
+  "dockerBeforeExit": 1,
+  "dockerBeforeCause": "missing bff:jar:classes:0.0.1-SNAPSHOT test dependency despite maven.test.skip=true",
+  "dockerAfterExit": 0,
+  "coldCacheIds": [
+    "p360-v080-cold-20261011-01",
+    "p360-v080-cold-20261011-02"
+  ],
+  "dockerSource": "PR115 with test-profile fix, not combined release image",
+  "dockerPlatform": "linux/amd64",
+  "dockerUser": "10001:10001",
+  "dockerLocalImageId": "sha256:6d80ce6bf1d59bb03d68210475691aaa5512c22fe4fd06b292ec1dbaa4943eff",
+  "artifactHasBffClassesOrTests": false,
+  "carritoJarSHA256": "684cb3869c5dc5f56a5a11838a8337d08611d1d84c6f24b2fbfca5e1be141c2e",
+  "productionJavaAndDockerfileChangedByFix": false,
+  "httpTestMovedWithoutChangeSHA256": "3a98d2420107a656b0db48f21d7c3aedc2503d0ae795f08ea0914b32bd7e8cd1",
+  "awsExecuted": false,
+  "imagesPublished": false
+}

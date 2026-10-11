@@ -1,0 +1,20 @@
+{
+  "path": "/api/productos/restaurante/1/disponibles",
+  "method": "GET",
+  "startedAtUTC": "2026-10-11T05:12:39.911Z",
+  "completedAtUTC": "2026-10-11T05:12:43.916Z",
+  "durationMs": 4005,
+  "httpStatus": 200,
+  "contractValid": true,
+  "productCount": 4,
+  "backend": {
+    "atUTC": "2026-10-11T05:12:43.708653962Z",
+    "messageId": "2655e626-c204-4476-92c3-f6c62da8f54e",
+    "correlationId": "b393f291-8abe-4dc3-ba40-1521477e4163",
+    "retryCount": 0,
+    "stage": "SETTLEMENT",
+    "settlement": "RESPONDIDA_ACK"
+  },
+  "evidenceSHA256": "47ad427355a0ed8e7348eacbb6ec3c4f1748d8289f040bf5c42a0ef54c376b95",
+  "paymentGatePassed": true
+}
