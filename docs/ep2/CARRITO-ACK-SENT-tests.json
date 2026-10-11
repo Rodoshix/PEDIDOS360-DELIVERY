@@ -1,0 +1,42 @@
+{
+  "environment": "LOCAL_DISPOSABLE_POSTGRES_RABBITMQ_NO_AWS",
+  "base": "549e9748c99afcaca3c0a41c2a0aeafdc9ea6a8c",
+  "tests": 41,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "classes": [
+    {
+      "class": "CarritoAckLoggingTests",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "fe8c65069ba61cf9c33c48959e369d6081141569553326b1dd667c071c8798a6"
+    },
+    {
+      "class": "CarritoCommandIntegrationTests",
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "19f394de13edb7b4c8cc5f54e6634ed7448e418570c68f28a473be157bb4e54d"
+    },
+    {
+      "class": "CarritoRabbitHttpGuardTests",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "117ac4621f5d8fea3dd3aa2ba6e27edc7882e4fabc4b537c1d7d6f811c093497"
+    },
+    {
+      "class": "CarritoServiceTests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "xmlSha256": "3c9ff6a531ceabcda4ca37e3cc47b68d42b2fcd2a0db98b9e47b911949b4bfc7"
+    }
+  ]
+}

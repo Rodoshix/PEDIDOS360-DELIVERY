@@ -109,7 +109,11 @@ public class CarritoCommandListener {
       handoff(m, channel, true);
       return;
     }
-    ack(m, channel);
+    if (ack(m, channel)) {
+      // Client-side ACK invocation only; AMQP does not confirm receipt of basicAck.
+      org.slf4j.LoggerFactory.getLogger(getClass())
+          .info("messageId={} result={} ACK_SENT", command.messageId(), result);
+    }
   }
 
   private void diagnostic(Message m, Channel channel) {
@@ -145,11 +149,13 @@ public class CarritoCommandListener {
     ack(m, channel); // ACK failure does not initiate another publication here.
   }
 
-  private void ack(Message m, Channel c) {
+  private boolean ack(Message m, Channel c) {
     try {
       c.basicAck(m.getMessageProperties().getDeliveryTag(), false);
+      return true;
     } catch (Exception uncertain) {
       recover();
+      return false;
     }
   }
 
