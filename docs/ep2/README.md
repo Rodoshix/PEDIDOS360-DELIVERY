@@ -1,7 +1,7 @@
 # Pedidos360 — Evaluación Parcial 2 (EP2)
 
 Preparación de seguridad PR 2: [prueba de identidad firmada por Usuarios](IDENTITY-PROOF-PR2.md).
-Firma/verificación deshabilitadas por defecto; consumer Pagos y corte siguen pendientes.
+Defaults HTTP y activaciones temporales: ver [cierre vigente v0.8.0](CIERRE-V080.md) e [índice portable](../evidence/v0.8.0/README.md). Las notas de preparación siguientes son históricas; no equivalen a aceptación AWS de todas las etapas.
 
 ## Objetivo
 
@@ -36,7 +36,7 @@ Semántica que debe preservarse:
 - `EFECTIVO / PENDIENTE` también solicita confirmar el pedido.
 - `CONFIRMADO` significa que el pedido puede continuar su operación.
 - `CONFIRMADO` no implica necesariamente que el dinero ya fue cobrado.
-- Registro de pago y autorización conservan HTTP público. Cuatro consultas tendrán request/reply interno tras el corte de #70; hoy siguen HTTP.
+- Registro de pago y autorización conservan HTTP público. Las cuatro consultas request/reply fueron acreditadas en ventanas AWS. El estado recuperado conserva HTTP compatible; Pago→Pedido acredita el evento, pero el POST CLIENTE devolvió 502 sin causa. Pedido→Carrito sigue pendiente AWS.
 
 ## Responsables
 

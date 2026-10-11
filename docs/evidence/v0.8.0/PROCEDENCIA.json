@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-11",
+  "publication": "sanitized facts only; originals not distributed",
+  "artifacts": [
+    {
+      "artifact": "aws-productos.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "operational-evidence/PRODUCTOS-PAGOS-FINAL-2026-10-11/PRODUCTOS-RESULT.json",
+      "originalSHA256": "52e3314e0c7f4114164f01cdd2e5678d87e871b820beae49e9b56e374e36ecfd"
+    },
+    {
+      "artifact": "aws-pagos-consulta.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "operational-evidence/PRODUCTOS-PAGOS-FINAL-2026-10-11/PAGOS-RESULT.json",
+      "originalSHA256": "bc22de1c2fb4bc025c55b57a7c83c135baab2db8f05bfa95bbfdcd715c65065e"
+    },
+    {
+      "artifact": "aws-recuperacion-get.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "operational-evidence/PAGO-PEDIDO-RECUPERACION-GET-2026-10-11/HTTP-GET-EVIDENCE.json",
+      "originalSHA256": "880c35acc33239f7077233d56f623ec15787b893100f33113920ed815256ea39"
+    },
+    {
+      "artifact": "aws-usuarios-restaurantes.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "CIERRE-ACADEMICO-EP2-2026-10-11/INFORME-CIERRE.md",
+      "originalSHA256": "16c54ba37751501bd978e917833f0ae60c5ab72ee516c5afb42df4d1acbfbc97"
+    },
+    {
+      "artifact": "aws-pago-pedido.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "operational-evidence/PAGO-PEDIDO-CONTINUACION-WATCHER-FINAL-2026-10-11/RESULTADO.md",
+      "originalSHA256": "b21def895ff07d4994f1884f16100409ff7f05c7d0c5a70a3e1c8ca087fdb755"
+    },
+    {
+      "artifact": "aws-cierre-http.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "HOST-A-SALUD-DIAGNOSTICO-2026-10-11/DIAGNOSTICO.md",
+      "originalSHA256": "0d929fab9e9de8c88ccbd03500e7fcb66d056f6b0977dd3feaff54548512e446"
+    },
+    {
+      "artifact": "aws-head500.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "API-LAMBDA-HEAD500-FINAL-2026-10-11/DIAGNOSTICO.md",
+      "originalSHA256": "c527accc1658de997c3b3bf6ca70ce6148c9320ecca7233e27719456026dbc53"
+    },
+    {
+      "artifact": "local-carrito-candidata.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "ARTEFACTOS-PEDIDO-CARRITO-FINAL-2026-10-11/IMAGE-TESTS.json",
+      "originalSHA256": "87da777f47266efbdd6e2540aaa2815293866b5e6d169ffd5edf827fbfe9f604"
+    },
+    {
+      "artifact": "local-integracion.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "INTEGRACION-LOCAL-V080-2026-10-11/VALIDATION-RESULT.json",
+      "originalSHA256": "62324134d694318d1e45f4faf0aefe7e8aae3191b5c87ae49681e17d66e14eb8"
+    },
+    {
+      "artifact": "local-compose.json",
+      "transformation": "allowlisted structured facts; original retained in private custody",
+      "sourceIdentifier": "INTEGRACION-LOCAL-V080-2026-10-11/compose-result.json",
+      "originalSHA256": "ab908289d0e04fa92b659dea48dcaff36b83746f92048474c4726d1abac7a379"
+    }
+  ]
+}

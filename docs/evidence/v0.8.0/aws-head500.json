@@ -1,0 +1,29 @@
+{
+  "scope": "AWS_HISTORICAL",
+  "method": "HEAD",
+  "path": "/",
+  "startedAtUTC": "2026-10-11T22:04:15.662957Z",
+  "status": 500,
+  "requestId": "FGYrBgkZoAMEbzA=",
+  "cause": "NOT_ACCREDITED",
+  "apiMinute": {
+    "count": 1,
+    "5xx": 1,
+    "4xx": 0,
+    "integrationLatencyMs": 84
+  },
+  "lambdaMinute": {
+    "errors": 1,
+    "throttles": 0,
+    "invocations": null,
+    "duration": null,
+    "concurrentExecutions": null
+  },
+  "limits": [
+    "metrics aggregated by minute do not prove request-specific cause",
+    "no matching Lambda log returned; absence is not proof of non-execution",
+    "Host A stopped 21 seconds before HEAD; causal relationship not demonstrated",
+    "distinct incident from payment POST 502"
+  ],
+  "bootstrapSessionPrepared": false
+}

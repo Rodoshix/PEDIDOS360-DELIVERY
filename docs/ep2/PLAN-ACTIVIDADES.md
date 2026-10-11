@@ -2,6 +2,19 @@
 
 > El seguimiento oficial de EP2 se realiza mediante GitHub Issues, Pull Requests, este plan versionado y ramas de trabajo por integrante cuando corresponda.
 
+## Corte de aceptación al 11-10-2026
+
+| Etapa | Estado técnico del cierre |
+|---|---|
+| Consultas de cuatro dominios | Acreditadas AWS; actualmente HTTP compatible |
+| Pago→Pedido | Evento y persistencia acreditados AWS; POST CLIENTE parcial por 502 |
+| Pedido→Carrito | Implementado/local; pendiente aceptación funcional AWS |
+| Gate Edge y ACK_SENT | #116/#117 Draft, probados localmente, no desplegados |
+| Admin / clúster demo | Evidencia local; DELETE queue deshabilitado por seguridad; no afirmar cumplimiento integral cloud |
+| Integración/release | #113–#117 Draft; validación conjunta local y documentación de cierre preparadas, sin merge/tag/release |
+
+Este corte distingue aceptación de ejecución e integración Git; no edita estados de Issues. [Matriz actual](CIERRE-V080.md). La tabla inicial siguiente se conserva como histórica.
+
 ## Estados sugeridos
 
 ```text
@@ -13,7 +26,7 @@ Testing
 Done
 ```
 
-## Actividades
+## Actividades históricas de planificación
 
 | Issue | Actividad | Responsable | Dependencias | Estado inicial |
 |---|---|---|---|---|

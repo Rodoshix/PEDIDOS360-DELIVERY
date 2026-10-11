@@ -1,0 +1,23 @@
+{
+  "scope": "AWS_HISTORICAL",
+  "date": "2026-10-11",
+  "queries": [
+    {
+      "domain": "Usuarios",
+      "messageId": "021584aa-70b6-4873-90c4-24d0a8138b78",
+      "correlationId": "86ff21e9-0150-4db8-99cc-87f5291b7446",
+      "settlement": "RESPONDIDA_ACK",
+      "retryCount": 0
+    },
+    {
+      "domain": "Restaurantes",
+      "messageId": "62ff1d2a-6588-4797-883d-3f242761b61b",
+      "correlationId": "68f23162-0c4c-4ed4-a240-45264152f41c",
+      "settlement": "RESPONDIDA_ACK",
+      "retryCount": 0
+    }
+  ],
+  "httpStatus": "not captured directly in these historical records; do not infer 200",
+  "restaurantLimit": "two distinct queries occurred; not redelivery of same message",
+  "provenanceLimit": "extract from consolidated report; underlying raw records retained privately"
+}

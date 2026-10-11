@@ -1,0 +1,31 @@
+{
+  "scope": "AWS_HISTORICAL",
+  "date": "2026-10-11",
+  "httpPostStatus": 502,
+  "httpErrorCause": "NOT_ACCREDITED",
+  "pedido": {
+    "id": 4,
+    "estado": "CONFIRMADO",
+    "version": 1
+  },
+  "pago": {
+    "id": 3,
+    "metodo": "EFECTIVO",
+    "estado": "PENDIENTE"
+  },
+  "outbox": {
+    "count": 1,
+    "state": "PUBLISHED",
+    "attempts": 1,
+    "messageId": "81249c6a-f545-45ab-bc6a-9e8eee20c567"
+  },
+  "publisherAtUTC": "2026-10-11T07:34:23.344009585Z",
+  "consumerAckAtUTC": "2026-10-11T07:34:23.470506237Z",
+  "transitionAtUTC": "2026-10-11T07:34:23.412057Z",
+  "duplicates": false,
+  "newDLQ": false,
+  "protectedOrder3Payment2Preserved": true,
+  "deliberateSecondPostIdempotencyTest": false,
+  "businessEventAccredited": true,
+  "fullClientAcceptance": false
+}

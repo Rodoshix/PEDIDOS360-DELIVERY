@@ -1,0 +1,27 @@
+{
+  "scope": "LOCAL_ONLY",
+  "candidatePublishedPreviously": true,
+  "deployed": false,
+  "awsFunctionalAcceptance": false,
+  "source": "f6a9540 + CarritoService #115 + CarritoCommandListener #117; base POM",
+  "digest": "sha256:166afeeb0a43c4635f0fa404d74176394707b4a3a11c5e03667ea366722b11b7",
+  "startup": [
+    {
+      "mode": "HTTP",
+      "healthy": true,
+      "unauthenticatedDelete": 401,
+      "consumers": 0
+    },
+    {
+      "mode": "RABBITMQ",
+      "healthy": true,
+      "unauthenticatedDelete": 401,
+      "consumers": 1
+    }
+  ],
+  "businessRows": 0,
+  "receipts": 0,
+  "guardBytecodeMatchesTestedPR": true,
+  "ackListenerBytecodeMatchesTestedPR": true,
+  "ackMeaning": "ACK_SENT proves basicAck returned without exception on AMQP client, not broker-confirmed receipt"
+}

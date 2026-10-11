@@ -1,0 +1,28 @@
+[
+  {
+    "action": "readOrder",
+    "method": "GET",
+    "path": "/api/pedidos/4",
+    "startedAtUTC": "2026-10-11T07:51:26.846Z",
+    "completedAtUTC": "2026-10-11T07:51:31.931Z",
+    "durationMs": 5085,
+    "httpStatus": 200,
+    "contractValid": true,
+    "pedidoId": 4,
+    "estadoPedido": "CONFIRMADO"
+  },
+  {
+    "action": "readPayment",
+    "method": "GET",
+    "path": "/api/pagos/3",
+    "startedAtUTC": "2026-10-11T07:52:08.638Z",
+    "completedAtUTC": "2026-10-11T07:52:09.728Z",
+    "durationMs": 1091,
+    "httpStatus": 200,
+    "contractValid": true,
+    "pedidoId": 4,
+    "pagoId": 3,
+    "metodo": "EFECTIVO",
+    "estadoPago": "PENDIENTE"
+  }
+]
