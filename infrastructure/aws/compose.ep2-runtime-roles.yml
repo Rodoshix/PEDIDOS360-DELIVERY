@@ -1,0 +1,28 @@
+# Candidate only: add after approved migrations and runtime-role verification.
+# Existing schemas are never migrated by application runtime credentials.
+services:
+  carrito:
+    environment:
+      SPRING_FLYWAY_ENABLED: "false"
+      DB_USERNAME: ${CARRITO_RUNTIME_ROLE:?verified non-owner runtime role required}
+    secrets:
+      - source: carrito_runtime_password
+        target: spring.datasource.password
+  pedidos:
+    environment:
+      SPRING_FLYWAY_ENABLED: "false"
+      DB_USERNAME: ${PEDIDOS_RUNTIME_ROLE:?verified non-owner runtime role required}
+    secrets:
+      - source: pedidos_runtime_password
+        target: spring.datasource.password
+  pagos:
+    environment:
+      SPRING_FLYWAY_ENABLED: "false"
+      DB_USERNAME: ${PAGOS_RUNTIME_ROLE:?verified non-owner runtime role required}
+    secrets:
+      - source: pagos_runtime_password
+        target: spring.datasource.password
+secrets:
+  carrito_runtime_password: {file: "${AWS_SECRETS_DIR:?private directory required}/carrito_runtime_password"}
+  pedidos_runtime_password: {file: "${AWS_SECRETS_DIR:?private directory required}/pedidos_runtime_password"}
+  pagos_runtime_password: {file: "${AWS_SECRETS_DIR:?private directory required}/pagos_runtime_password"}

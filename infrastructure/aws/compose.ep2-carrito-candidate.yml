@@ -1,0 +1,13 @@
+# Last stage only, after verified retirement of all HTTP checkout clients.
+# FRONTEND_RABBIT_IMAGE is a published digest of the separately validated React build.
+services:
+  frontend:
+    image: ${FRONTEND_RABBIT_IMAGE:?verified React RABBITMQ digest required}
+  pedidos:
+    environment:
+      PEDIDOS_CARRITO_MODE: RABBITMQ
+      PEDIDOS_CARRITO_PLATFORM_READY: "true"
+  carrito:
+    environment:
+      CARRITO_PEDIDOS_MODE: RABBITMQ
+      CARRITO_PEDIDOS_PLATFORM_READY: "true"
