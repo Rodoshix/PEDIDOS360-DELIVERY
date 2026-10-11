@@ -2,8 +2,10 @@ package cl.duoc.pedidos360.pedidos.security;
 
 import java.util.Set;
 
-public record IdentidadUsuario(Long usuarioId, Set<Rol> roles) {
+public record IdentidadUsuario(java.util.UUID tenantId, Long usuarioId, Set<Rol> roles) {
     public IdentidadUsuario {
+        if (tenantId == null || usuarioId == null || usuarioId < 1 || roles == null || roles.isEmpty())
+            throw new IllegalArgumentException("Identidad incompleta.");
         roles = Set.copyOf(roles);
     }
 

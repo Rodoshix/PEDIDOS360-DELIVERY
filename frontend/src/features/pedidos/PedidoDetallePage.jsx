@@ -9,7 +9,6 @@ export default function PedidoDetallePage() {
   const key = JSON.stringify([account.tenantId, account.homeAccountId, account.localAccountId, id])
   return (
     <section className="container pedidos-section">
-      <p className="eyebrow">Detalle del pedido</p>
       <h1>Pedido #{id}</h1>
       <RealPedidoDetallePanel key={key} pedidoId={id} />
     </section>

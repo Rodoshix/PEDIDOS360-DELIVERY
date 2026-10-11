@@ -5,6 +5,14 @@ import { AuthSessionContext } from '../../src/auth/useAuthSession.js'
 import { ApiAccessError } from '../../src/auth/ApiAccessError.js'
 import AppRouter from '../../src/routes/AppRouter.jsx'
 import '../../src/styles/global.css'
+import '../../src/styles/system.css'
+
+let previewIdentity = 'A'
+const mockApi = document.getElementById('root')?.dataset.mockApi === 'true'
+if (mockApi) {
+  const { configureApiAuthentication } = await import('../../src/services/httpClient.js')
+  configureApiAuthentication({ getAccessToken: async () => `preview-only-${previewIdentity}` })
+}
 
 export default function ProfilePreview({ initialRoute = '/mi-cuenta?tab=datos#contacto' }) {
   const [identity, setIdentity] = useState('A')
@@ -23,7 +31,10 @@ export default function ProfilePreview({ initialRoute = '/mi-cuenta?tab=datos#co
     <>
       <div className="container" style={{ paddingBlock: 16 }}>
         <p>Banco visual de pruebas: sesión ficticia, sin conexión a Microsoft ni al backend.</p>
-        <button type="button" onClick={() => setIdentity(identity === 'A' ? 'B' : 'A')}>Cambiar cuenta de prueba</button>
+        <button type="button" onClick={() => { previewIdentity = identity === 'A' ? 'B' : 'A'; setIdentity(previewIdentity) }}>Cambiar cuenta de prueba</button>
+        {mockApi && <div className="preview-scenarios">{['normal', 'empty', 'error', 'slow'].map(scenario => <button key={scenario} type="button" onClick={async () => {
+          await fetch('/__preview/scenario', { method: 'POST', body: scenario }); window.location.reload()
+        }}>{scenario}</button>)}</div>}
       </div>
       <AuthSessionContext.Provider value={session}>
         <MemoryRouter initialEntries={[initialRoute]}><AppRouter /></MemoryRouter>

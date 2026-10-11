@@ -1,0 +1,11 @@
+{
+  "base": "f6a9540e5db9890a7716184b917c718d35a21de6",
+  "environment": "LOCAL_MOCK_TRANSPORT_VALIDATED_GATEWAY_CONTEXT_FIXTURES_NO_AWS",
+  "command": "node --test infrastructure/aws/edge/index.test.mjs infrastructure/aws/edge/admission.test.mjs",
+  "tests": 16,
+  "passed": 16,
+  "failures": 0,
+  "sourceSha256": "d3ecd432aa6f7cfab36262207f3baea295555cf04e6e915cd0e7dd84261289ad",
+  "testSha256": "82ed14fec2f7e33bf4b6cd2140261f688251c1f0ee7e1b4c7fffedb8d8df8258",
+  "deployedComparison": "Existing preserved deployed source equals base after CRLF/LF normalization; no fresh AWS read"
+}

@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import({PostgresTestConfiguration.class, PedidosStubConfiguration.class})
 class PagoConcurrenciaTests {
 
-    private static final IdentidadUsuario USUARIO = new IdentidadUsuario(10L, Set.of(Rol.CLIENTE));
+    private static final IdentidadUsuario USUARIO = new IdentidadUsuario(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 10L, Set.of(Rol.CLIENTE));
 
     @Autowired
     private PagoService pagos;
@@ -53,7 +53,7 @@ class PagoConcurrenciaTests {
         Callable<Boolean> insertar = () -> {
             barrera.await();
             try {
-                repositorio.saveAndFlush(new Pago(PedidosClientStub.PEDIDO_EXISTENTE, 10L, 13980L, "CLP",
+                repositorio.saveAndFlush(new Pago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), PedidosClientStub.PEDIDO_EXISTENTE, 10L, 13980L, "CLP",
                         MetodoPago.TARJETA, EstadoPago.APROBADO, "clave-" + UUID.randomUUID()));
                 return true;
             } catch (DataIntegrityViolationException error) {
@@ -124,7 +124,7 @@ class PagoConcurrenciaTests {
     }
 
     private long activos() {
-        return repositorio.findByPedidoId(PedidosClientStub.PEDIDO_EXISTENTE).stream()
+        return repositorio.findByTenantIdAndPedidoId(USUARIO.tenantId(),PedidosClientStub.PEDIDO_EXISTENTE).stream()
                 .filter(Pago::estaActivo)
                 .count();
     }

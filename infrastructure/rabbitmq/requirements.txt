@@ -1,0 +1,2 @@
+# Infra validation/bootstrap only; no dependency added to business services.
+pika==1.3.2

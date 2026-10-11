@@ -11,7 +11,7 @@ class PagoEstadosTests {
 
     @Test
     void tarjetaAprobadaEsFinalYActiva() {
-        Pago pago = new Pago(500L, 10L, 13980L, "CLP", MetodoPago.TARJETA,
+        Pago pago = new Pago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 500L, 10L, 13980L, "CLP", MetodoPago.TARJETA,
                 EstadoPago.APROBADO, "clave-1");
         assertThat(pago.estaActivo()).isTrue();
         assertThat(EstadoPago.APROBADO.esFinal()).isTrue();
@@ -19,7 +19,7 @@ class PagoEstadosTests {
 
     @Test
     void efectivoPendienteEsActivoYNoFinal() {
-        Pago pago = new Pago(500L, 10L, 13980L, "CLP", MetodoPago.EFECTIVO,
+        Pago pago = new Pago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 500L, 10L, 13980L, "CLP", MetodoPago.EFECTIVO,
                 EstadoPago.PENDIENTE, "clave-2");
         assertThat(pago.estaActivo()).isTrue();
         assertThat(EstadoPago.PENDIENTE.esFinal()).isFalse();
@@ -27,7 +27,7 @@ class PagoEstadosTests {
 
     @Test
     void aprobarYRechazarCambianElEstado() {
-        Pago pago = new Pago(500L, 10L, 13980L, "CLP", MetodoPago.EFECTIVO,
+        Pago pago = new Pago(java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), 500L, 10L, 13980L, "CLP", MetodoPago.EFECTIVO,
                 EstadoPago.PENDIENTE, "clave-3");
         pago.aprobar();
         assertThat(pago.getEstado()).isEqualTo(EstadoPago.APROBADO);

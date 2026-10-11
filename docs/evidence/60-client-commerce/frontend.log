@@ -1,0 +1,1532 @@
+
+> pedidos360-frontend@0.0.0 test
+> node --test
+
+TAP version 13
+# Subtest: configuración, proveedor MSAL y Axios entregan únicamente el access token a la API local
+ok 1 - configuración, proveedor MSAL y Axios entregan únicamente el access token a la API local
+  ---
+  duration_ms: 44.1851
+  type: 'test'
+  ...
+# Subtest: consentimiento pendiente en MSAL llega como error controlado de Axios sin tráfico HTTP
+ok 2 - consentimiento pendiente en MSAL llega como error controlado de Axios sin tráfico HTTP
+  ---
+  duration_ms: 2.6834
+  type: 'test'
+  ...
+# Subtest: 401 y 403 con el proveedor conectado no repiten adquisición ni petición
+ok 3 - 401 y 403 con el proveedor conectado no repiten adquisición ni petición
+  ---
+  duration_ms: 18.99
+  type: 'test'
+  ...
+# Subtest: envía Bearer a la API y no expone credenciales en la respuesta Axios
+ok 4 - envía Bearer a la API y no expone credenciales en la respuesta Axios
+  ---
+  duration_ms: 8.5677
+  type: 'test'
+  ...
+# Subtest: bloquea destinos ajenos y prefijos parecidos antes de adquirir el token
+ok 5 - bloquea destinos ajenos y prefijos parecidos antes de adquirir el token
+  ---
+  duration_ms: 4.564
+  type: 'test'
+  ...
+# Subtest: peticiones públicas explícitas no adquieren ni envían Authorization
+ok 6 - peticiones públicas explícitas no adquieren ni envían Authorization
+  ---
+  duration_ms: 4.8912
+  type: 'test'
+  ...
+# Subtest: 401 y 403 no reintentan, no redirigen y no propagan configuración o cuerpo del error
+ok 7 - 401 y 403 no reintentan, no redirigen y no propagan configuración o cuerpo del error
+  ---
+  duration_ms: 18.4168
+  type: 'test'
+  ...
+# Subtest: no sigue redirecciones HTTP ni siquiera dentro del mismo origen
+ok 8 - no sigue redirecciones HTTP ni siquiera dentro del mismo origen
+  ---
+  duration_ms: 7.7665
+  type: 'test'
+  ...
+# Subtest: un fallo de token detiene la petición antes de llegar a la red
+ok 9 - un fallo de token detiene la petición antes de llegar a la red
+  ---
+  duration_ms: 1.2313
+  type: 'test'
+  ...
+# Subtest: respeta cancelación antes y después de esperar el token
+ok 10 - respeta cancelación antes y después de esperar el token
+  ---
+  duration_ms: 3.2942
+  type: 'test'
+  ...
+# Subtest: revisa el destino después de transformRequest e impide sobrescribir el adaptador
+ok 11 - revisa el destino después de transformRequest e impide sobrescribir el adaptador
+  ---
+  duration_ms: 10.8926
+  type: 'test'
+  ...
+# Subtest: rechaza configuración insegura y admite prefijo relativo del mismo origen
+ok 12 - rechaza configuración insegura y admite prefijo relativo del mismo origen
+  ---
+  duration_ms: 4.9433
+  type: 'test'
+  ...
+# Subtest: fallos de red y timeout producen errores controlados sin credenciales
+ok 13 - fallos de red y timeout producen errores controlados sin credenciales
+  ---
+  duration_ms: 1.8717
+  type: 'test'
+  ...
+# Subtest: solicita únicamente el ámbito de la API y omite renovación con iframe
+ok 14 - solicita únicamente el ámbito de la API y omite renovación con iframe
+  ---
+  duration_ms: 1.9744
+  type: 'test'
+  ...
+# Subtest: no adquiere tokens sin cuenta activa o para otro directorio
+ok 15 - no adquiere tokens sin cuenta activa o para otro directorio
+  ---
+  duration_ms: 0.6887
+  type: 'test'
+  ...
+# Subtest: peticiones concurrentes comparten la adquisición pero no se guarda otra caché de tokens
+ok 16 - peticiones concurrentes comparten la adquisición pero no se guarda otra caché de tokens
+  ---
+  duration_ms: 0.2656
+  type: 'test'
+  ...
+# Subtest: cambiar de cuenta o iniciar logout descarta el token pendiente
+ok 17 - cambiar de cuenta o iniciar logout descarta el token pendiente
+  ---
+  duration_ms: 0.3005
+  type: 'test'
+  ...
+# Subtest: una interacción activa bloquea nuevas peticiones
+ok 18 - una interacción activa bloquea nuevas peticiones
+  ---
+  duration_ms: 2.1308
+  type: 'test'
+  ...
+# Subtest: necesidad de consentimiento no abre Microsoft ni filtra mensajes crudos
+ok 19 - necesidad de consentimiento no abre Microsoft ni filtra mensajes crudos
+  ---
+  duration_ms: 0.4819
+  type: 'test'
+  ...
+# Subtest: rechaza ID token, token vencido, cuenta distinta y permisos ajenos
+ok 20 - rechaza ID token, token vencido, cuenta distinta y permisos ajenos
+  ---
+  duration_ms: 0.729
+  type: 'test'
+  ...
+# Subtest: errores desconocidos se simplifican y permiten reintentar manualmente
+ok 21 - errores desconocidos se simplifican y permiten reintentar manualmente
+  ---
+  duration_ms: 0.3212
+  type: 'test'
+  ...
+# Subtest: el botón explícito solicita el ámbito de la API y conserva una clave de retorno
+ok 22 - el botón explícito solicita el ámbito de la API y conserva una clave de retorno
+  ---
+  duration_ms: 0.6268
+  type: 'test'
+  ...
+# Subtest: configura un directorio específico, la SPA y únicamente el ámbito de nuestra API
+ok 23 - configura un directorio específico, la SPA y únicamente el ámbito de nuestra API
+  ---
+  duration_ms: 3.1004
+  type: 'test'
+  ...
+# Subtest: rechaza VITE_ENTRA_CLIENT_ID ausente o vacía sin exponer su contenido
+ok 24 - rechaza VITE_ENTRA_CLIENT_ID ausente o vacía sin exponer su contenido
+  ---
+  duration_ms: 0.6178
+  type: 'test'
+  ...
+# Subtest: rechaza VITE_ENTRA_TENANT_ID ausente o vacía sin exponer su contenido
+ok 25 - rechaza VITE_ENTRA_TENANT_ID ausente o vacía sin exponer su contenido
+  ---
+  duration_ms: 0.2037
+  type: 'test'
+  ...
+# Subtest: rechaza VITE_ENTRA_REDIRECT_URI ausente o vacía sin exponer su contenido
+ok 26 - rechaza VITE_ENTRA_REDIRECT_URI ausente o vacía sin exponer su contenido
+  ---
+  duration_ms: 0.1892
+  type: 'test'
+  ...
+# Subtest: rechaza VITE_ENTRA_API_SCOPE ausente o vacía sin exponer su contenido
+ok 27 - rechaza VITE_ENTRA_API_SCOPE ausente o vacía sin exponer su contenido
+  ---
+  duration_ms: 0.2472
+  type: 'test'
+  ...
+# Subtest: rechaza identificadores inválidos y autoridades multitenant
+ok 28 - rechaza identificadores inválidos y autoridades multitenant
+  ---
+  duration_ms: 0.2456
+  type: 'test'
+  ...
+# Subtest: acepta HTTPS para despliegue y elimina espacios de las variables
+ok 29 - acepta HTTPS para despliegue y elimina espacios de las variables
+  ---
+  duration_ms: 0.3624
+  type: 'test'
+  ...
+# Subtest: rechaza redirecciones inseguras, relativas o con datos adicionales
+ok 30 - rechaza redirecciones inseguras, relativas o con datos adicionales
+  ---
+  duration_ms: 0.3137
+  type: 'test'
+  ...
+# Subtest: rechaza abrir el frontend desde otro origen o puerto
+ok 31 - rechaza abrir el frontend desde otro origen o puerto
+  ---
+  duration_ms: 0.3804
+  type: 'test'
+  ...
+# Subtest: rechaza Graph, múltiples ámbitos, default y el ID del frontend como recurso
+ok 32 - rechaza Graph, múltiples ámbitos, default y el ID del frontend como recurso
+  ---
+  duration_ms: 0.5332
+  type: 'test'
+  ...
+# Subtest: no modifica las variables de entrada
+ok 33 - no modifica las variables de entrada
+  ---
+  duration_ms: 0.2949
+  type: 'test'
+  ...
+# Subtest: carrito de ejemplo respeta los campos del DTO y sus totales enteros
+ok 34 - carrito de ejemplo respeta los campos del DTO y sus totales enteros
+  ---
+  duration_ms: 2.5851
+  type: 'test'
+  ...
+# Subtest: ejemplos y líneas son nuevos por llamada, sin compartir datos entre cuentas
+ok 35 - ejemplos y líneas son nuevos por llamada, sin compartir datos entre cuentas
+  ---
+  duration_ms: 2.384
+  type: 'test'
+  ...
+# Subtest: el ejemplo vacío coincide con CarritoResponse.vacio
+ok 36 - el ejemplo vacío coincide con CarritoResponse.vacio
+  ---
+  duration_ms: 0.1655
+  type: 'test'
+  ...
+# Subtest: CLP no redondea decimales inválidos ni acepta montos negativos o inseguros
+ok 37 - CLP no redondea decimales inválidos ni acepta montos negativos o inseguros
+  ---
+  duration_ms: 1.2959
+  type: 'test'
+  ...
+# Subtest: carrito HTTP consulta y proyecta solo campos válidos; POST y PUT no incluyen identidad ni precios
+ok 38 - carrito HTTP consulta y proyecta solo campos válidos; POST y PUT no incluyen identidad ni precios
+  ---
+  duration_ms: 4.226
+  type: 'test'
+  ...
+# Subtest: lectura HTTP 401 no inventa carrito vacío
+ok 39 - lectura HTTP 401 no inventa carrito vacío
+  ---
+  duration_ms: 1.1856
+  type: 'test'
+  ...
+# Subtest: lectura HTTP 403 no inventa carrito vacío
+ok 40 - lectura HTTP 403 no inventa carrito vacío
+  ---
+  duration_ms: 0.1915
+  type: 'test'
+  ...
+# Subtest: lectura HTTP 404 no inventa carrito vacío
+ok 41 - lectura HTTP 404 no inventa carrito vacío
+  ---
+  duration_ms: 0.1637
+  type: 'test'
+  ...
+# Subtest: lectura HTTP 409 no inventa carrito vacío
+ok 42 - lectura HTTP 409 no inventa carrito vacío
+  ---
+  duration_ms: 0.2692
+  type: 'test'
+  ...
+# Subtest: lectura HTTP 500 no inventa carrito vacío
+ok 43 - lectura HTTP 500 no inventa carrito vacío
+  ---
+  duration_ms: 0.2571
+  type: 'test'
+  ...
+# Subtest: DELETE se ejecuta una vez y consulta el resultado; si falla la consulta bloquea nuevas escrituras
+ok 44 - DELETE se ejecuta una vez y consulta el resultado; si falla la consulta bloquea nuevas escrituras
+  ---
+  duration_ms: 0.5962
+  type: 'test'
+  ...
+# Subtest: escritura incierta conserva carrito y exige lectura antes de repetir sin filtrar causas
+ok 45 - escritura incierta conserva carrito y exige lectura antes de repetir sin filtrar causas
+  ---
+  duration_ms: 0.7798
+  type: 'test'
+  ...
+# Subtest: cancelar sesión ignora respuestas tardías del adaptador real
+ok 46 - cancelar sesión ignora respuestas tardías del adaptador real
+  ---
+  duration_ms: 0.5451
+  type: 'test'
+  ...
+# Subtest: catálogo usa rutas fijas, valida asociación y excluye campos desconocidos
+ok 47 - catálogo usa rutas fijas, valida asociación y excluye campos desconocidos
+  ---
+  duration_ms: 1.666
+  type: 'test'
+  ...
+# Subtest: respuesta malformada tras escritura obliga a reconciliar, no habilita otro POST
+ok 48 - respuesta malformada tras escritura obliga a reconciliar, no habilita otro POST
+  ---
+  duration_ms: 0.3272
+  type: 'test'
+  ...
+# Subtest: cantidad admite límites enteros pero rechaza vacíos, decimales, exponentes y tipos ajenos
+ok 49 - cantidad admite límites enteros pero rechaza vacíos, decimales, exponentes y tipos ajenos
+  ---
+  duration_ms: 1.6929
+  type: 'test'
+  ...
+# Subtest: no crea un carrito implícito cuando aún no se ha elegido un ejemplo
+ok 50 - no crea un carrito implícito cuando aún no se ha elegido un ejemplo
+  ---
+  duration_ms: 0.3669
+  type: 'test'
+  ...
+# Subtest: agregar al vacío fija restaurante y copia solo campos conocidos
+ok 51 - agregar al vacío fija restaurante y copia solo campos conocidos
+  ---
+  duration_ms: 1.7446
+  type: 'test'
+  ...
+# Subtest: agregar un repetido suma y actualiza nombre/precio sin duplicar ni mutar
+ok 52 - agregar un repetido suma y actualiza nombre/precio sin duplicar ni mutar
+  ---
+  duration_ms: 0.3843
+  type: 'test'
+  ...
+# Subtest: sumar sobre 99 rechaza toda la operación sin actualizar precio ni cantidades
+ok 53 - sumar sobre 99 rechaza toda la operación sin actualizar precio ni cantidades
+  ---
+  duration_ms: 0.257
+  type: 'test'
+  ...
+# Subtest: otro restaurante e indisponible no vacían ni modifican el carrito
+ok 54 - otro restaurante e indisponible no vacían ni modifican el carrito
+  ---
+  duration_ms: 0.2292
+  type: 'test'
+  ...
+# Subtest: valida IDs, nombre y precio del producto antes de modificar
+ok 55 - valida IDs, nombre y precio del producto antes de modificar
+  ---
+  duration_ms: 0.3789
+  type: 'test'
+  ...
+# Subtest: hasta 50 productos diferentes; permite sumar un existente pero rechaza el 51
+ok 56 - hasta 50 productos diferentes; permite sumar un existente pero rechaza el 51
+  ---
+  duration_ms: 1.7692
+  type: 'test'
+  ...
+# Subtest: totales máximos CLP permanecen enteros exactos y precio cero está permitido
+ok 57 - totales máximos CLP permanecen enteros exactos y precio cero está permitido
+  ---
+  duration_ms: 0.7532
+  type: 'test'
+  ...
+# Subtest: cambiar cantidad conserva el precio y normaliza subtotales sin mutar
+ok 58 - cambiar cantidad conserva el precio y normaliza subtotales sin mutar
+  ---
+  duration_ms: 0.4036
+  type: 'test'
+  ...
+# Subtest: cambiar o eliminar una línea inexistente falla sin mutar
+ok 59 - cambiar o eliminar una línea inexistente falla sin mutar
+  ---
+  duration_ms: 0.312
+  type: 'test'
+  ...
+# Subtest: eliminar la última línea libera el restaurante sin eliminar ID del carrito
+ok 60 - eliminar la última línea libera el restaurante sin eliminar ID del carrito
+  ---
+  duration_ms: 0.1571
+  type: 'test'
+  ...
+# Subtest: vaciar conserva identidad del carrito, libera restaurante y no afecta original
+ok 61 - vaciar conserva identidad del carrito, libera restaurante y no afecta original
+  ---
+  duration_ms: 0.0928
+  type: 'test'
+  ...
+# Subtest: sin adaptador no carga ejemplos ni habilita operaciones
+ok 62 - sin adaptador no carga ejemplos ni habilita operaciones
+  ---
+  duration_ms: 1.4786
+  type: 'test'
+  ...
+# Subtest: carga informa loading, bloquea doble consulta y publica DTO seguro e inmutable
+ok 63 - carga informa loading, bloquea doble consulta y publica DTO seguro e inmutable
+  ---
+  duration_ms: 2.6079
+  type: 'test'
+  ...
+# Subtest: vacío requiere un DTO explícito; null y fallos no inventan ausencia
+ok 64 - vacío requiere un DTO explícito; null y fallos no inventan ausencia
+  ---
+  duration_ms: 8.9489
+  type: 'test'
+  ...
+# Subtest: consulta falla una vez y solo se recupera al reintentar explícitamente
+ok 65 - consulta falla una vez y solo se recupera al reintentar explícitamente
+  ---
+  duration_ms: 13.8777
+  type: 'test'
+  ...
+# Subtest: payload de operaciones solo contiene tipo, producto y cantidad permitidos
+ok 66 - payload de operaciones solo contiene tipo, producto y cantidad permitidos
+  ---
+  duration_ms: 2.0905
+  type: 'test'
+  ...
+# Subtest: comandos inválidos se bloquean antes del adaptador, conservando el carrito
+ok 67 - comandos inválidos se bloquean antes del adaptador, conservando el carrito
+  ---
+  duration_ms: 0.6061
+  type: 'test'
+  ...
+# Subtest: bloqueo inmediato evita doble escritura y consulta mientras se escribe
+ok 68 - bloqueo inmediato evita doble escritura y consulta mientras se escribe
+  ---
+  duration_ms: 0.4763
+  type: 'test'
+  ...
+# Subtest: write-error: add conserva datos y permite un reintento manual
+ok 69 - write-error: add conserva datos y permite un reintento manual
+  ---
+  duration_ms: 41.8925
+  type: 'test'
+  ...
+# Subtest: write-error: quantity conserva datos y permite un reintento manual
+ok 70 - write-error: quantity conserva datos y permite un reintento manual
+  ---
+  duration_ms: 45.2254
+  type: 'test'
+  ...
+# Subtest: write-error: remove conserva datos y permite un reintento manual
+ok 71 - write-error: remove conserva datos y permite un reintento manual
+  ---
+  duration_ms: 62.9391
+  type: 'test'
+  ...
+# Subtest: write-error: clear conserva datos y permite un reintento manual
+ok 72 - write-error: clear conserva datos y permite un reintento manual
+  ---
+  duration_ms: 68.543
+  type: 'test'
+  ...
+# Subtest: conflict: add conserva datos y permite un reintento manual
+ok 73 - conflict: add conserva datos y permite un reintento manual
+  ---
+  duration_ms: 39.3824
+  type: 'test'
+  ...
+# Subtest: conflict: quantity conserva datos y permite un reintento manual
+ok 74 - conflict: quantity conserva datos y permite un reintento manual
+  ---
+  duration_ms: 67.3552
+  type: 'test'
+  ...
+# Subtest: conflict: remove conserva datos y permite un reintento manual
+ok 75 - conflict: remove conserva datos y permite un reintento manual
+  ---
+  duration_ms: 60.8543
+  type: 'test'
+  ...
+# Subtest: conflict: clear conserva datos y permite un reintento manual
+ok 76 - conflict: clear conserva datos y permite un reintento manual
+  ---
+  duration_ms: 60.7154
+  type: 'test'
+  ...
+# Subtest: acceso denegado impide consultar/crear y nunca produce carrito vacío
+ok 77 - acceso denegado impide consultar/crear y nunca produce carrito vacío
+  ---
+  duration_ms: 12.3237
+  type: 'test'
+  ...
+# Subtest: valida metadatos, líneas únicas, cantidades, precios, subtotales y total de respuesta
+ok 78 - valida metadatos, líneas únicas, cantidades, precios, subtotales y total de respuesta
+  ---
+  duration_ms: 3.8678
+  type: 'test'
+  ...
+# Subtest: respuesta de escritura inválida no reemplaza el carrito ni publica éxito
+ok 79 - respuesta de escritura inválida no reemplaza el carrito ni publica éxito
+  ---
+  duration_ms: 1.2347
+  type: 'test'
+  ...
+# Subtest: mensajes crudos, causas y códigos heredados no se exponen
+ok 80 - mensajes crudos, causas y códigos heredados no se exponen
+  ---
+  duration_ms: 0.5787
+  type: 'test'
+  ...
+# Subtest: respuesta de cuenta anterior se ignora aunque el adaptador no respete abort
+ok 81 - respuesta de cuenta anterior se ignora aunque el adaptador no respete abort
+  ---
+  duration_ms: 0.2426
+  type: 'test'
+  ...
+# Subtest: salir durante escritura cancela la publicación de éxito tardía
+ok 82 - salir durante escritura cancela la publicación de éxito tardía
+  ---
+  duration_ms: 0.2098
+  type: 'test'
+  ...
+# Subtest: abortar antes de escribir no modifica el adaptador ni consume el fallo de una vez
+ok 83 - abortar antes de escribir no modifica el adaptador ni consume el fallo de una vez
+  ---
+  duration_ms: 5.8648
+  type: 'test'
+  ...
+# Subtest: instancias y respuestas de adaptadores no comparten líneas
+ok 84 - instancias y respuestas de adaptadores no comparten líneas
+  ---
+  duration_ms: 47.3075
+  type: 'test'
+  ...
+# Subtest: restricciones del catálogo se conservan como errores seguros sin cambios
+ok 85 - restricciones del catálogo se conservan como errores seguros sin cambios
+  ---
+  duration_ms: 46.254
+  type: 'test'
+  ...
+# Subtest: validación coincide con DTO: nombre/estado obligatorios, dirección opcional, límites de texto
+ok 86 - validación coincide con DTO: nombre/estado obligatorios, dirección opcional, límites de texto
+  ---
+  duration_ms: 1.8325
+  type: 'test'
+  ...
+# Subtest: producto valida asociación, categoría, disponibilidad y precio decimal persistible
+ok 87 - producto valida asociación, categoría, disponibilidad y precio decimal persistible
+  ---
+  duration_ms: 0.743
+  type: 'test'
+  ...
+# Subtest: adapter usa BFF para listar, detalle, alta, edición y desactivación sin enviar identidad o ID del body
+ok 88 - adapter usa BFF para listar, detalle, alta, edición y desactivación sin enviar identidad o ID del body
+  ---
+  duration_ms: 0.9431
+  type: 'test'
+  ...
+# Subtest: productos filtra por restaurante y usa query booleana para disponibilidad
+ok 89 - productos filtra por restaurante y usa query booleana para disponibilidad
+  ---
+  duration_ms: 0.5266
+  type: 'test'
+  ...
+# Subtest: errores de autorización no filtran respuesta ni reintentan escrituras
+ok 90 - errores de autorización no filtran respuesta ni reintentan escrituras
+  ---
+  duration_ms: 1.7753
+  type: 'test'
+  ...
+# Subtest: respuestas inválidas y IDs no válidos no se presentan como catálogo
+ok 91 - respuestas inválidas y IDs no válidos no se presentan como catálogo
+  ---
+  duration_ms: 0.4838
+  type: 'test'
+  ...
+# Subtest: controller expone carga, vacío y error de consulta sin conservar autorización implícita para escribir
+ok 92 - controller expone carga, vacío y error de consulta sin conservar autorización implícita para escribir
+  ---
+  duration_ms: 0.8252
+  type: 'test'
+  ...
+# Subtest: doble envío solo escribe una vez; error exige consulta nueva y conserva borrador en el consumidor
+ok 93 - doble envío solo escribe una vez; error exige consulta nueva y conserva borrador en el consumidor
+  ---
+  duration_ms: 0.4082
+  type: 'test'
+  ...
+# Subtest: respuesta de filtro anterior no sobrescribe filtro nuevo; dispose aborta peticiones y notificaciones
+ok 94 - respuesta de filtro anterior no sobrescribe filtro nuevo; dispose aborta peticiones y notificaciones
+  ---
+  duration_ms: 0.8421
+  type: 'test'
+  ...
+# Subtest: modo de checkout predeterminado y valores estrictos
+ok 95 - modo de checkout predeterminado y valores estrictos
+  ---
+  duration_ms: 1.0156
+  type: 'test'
+  ...
+# Subtest: HTTP conserva DELETE tras 201 y reintenta solo DELETE sin POST duplicado
+ok 96 - HTTP conserva DELETE tras 201 y reintenta solo DELETE sin POST duplicado
+  ---
+  duration_ms: 1004.0645
+  type: 'test'
+  ...
+# Subtest: HTTP exitoso mantiene anuncio de vaciado tras DELETE
+ok 97 - HTTP exitoso mantiene anuncio de vaciado tras DELETE
+  ---
+  duration_ms: 369.7558
+  type: 'test'
+  ...
+# Subtest: RabbitMQ solo registra, consulta cambios posteriores y nunca borra ni repite POST
+ok 98 - RabbitMQ solo registra, consulta cambios posteriores y nunca borra ni repite POST
+  ---
+  duration_ms: 297.5261
+  type: 'test'
+  ...
+# Subtest: Catálogo: selección conserva asociación, precio CLP, disponibilidad y unidad agregada
+ok 99 - Catálogo: selección conserva asociación, precio CLP, disponibilidad y unidad agregada
+  ---
+  duration_ms: 1084.5302
+  type: 'test'
+  ...
+# Subtest: Catálogo: restaurante cerrado impide agregar aunque el producto esté disponible
+ok 100 - Catálogo: restaurante cerrado impide agregar aunque el producto esté disponible
+  ---
+  duration_ms: 362.1042
+  type: 'test'
+  ...
+# Subtest: Catálogo: distingue restaurantes vacíos de productos vacíos
+ok 101 - Catálogo: distingue restaurantes vacíos de productos vacíos
+  ---
+  duration_ms: 512.7319
+  type: 'test'
+  ...
+# Subtest: Catálogo: error 503 con foco y recuperación de lectura sin agregar
+ok 102 - Catálogo: error 503 con foco y recuperación de lectura sin agregar
+  ---
+  duration_ms: 216.7049
+  type: 'test'
+  ...
+# Subtest: Catálogo: error API_TIMEOUT con foco y recuperación de lectura sin agregar
+ok 103 - Catálogo: error API_TIMEOUT con foco y recuperación de lectura sin agregar
+  ---
+  duration_ms: 203.1087
+  type: 'test'
+  ...
+# Subtest: Catálogo: error 403 con foco y recuperación de lectura sin agregar
+ok 104 - Catálogo: error 403 con foco y recuperación de lectura sin agregar
+  ---
+  duration_ms: 188.4719
+  type: 'test'
+  ...
+# Subtest: Checkout: UI etiquetada, POST único y DELETE exclusivo tras 201
+ok 105 - Checkout: UI etiquetada, POST único y DELETE exclusivo tras 201
+  ---
+  duration_ms: 1064.113
+  type: 'test'
+  ...
+# Subtest: Checkout: incertidumbre anuncia bloqueo, foco y nunca repite POST
+ok 106 - Checkout: incertidumbre anuncia bloqueo, foco y nunca repite POST
+  ---
+  duration_ms: 398.311
+  type: 'test'
+  ...
+# Subtest: Checkout RabbitMQ: 201 no anuncia vaciado, no DELETE ni otro pedido
+ok 107 - Checkout RabbitMQ: 201 no anuncia vaciado, no DELETE ni otro pedido
+  ---
+  duration_ms: 308.4687
+  type: 'test'
+  ...
+# Subtest: Pago: EFECTIVO conserva selección, un POST y estado pendiente
+ok 108 - Pago: EFECTIVO conserva selección, un POST y estado pendiente
+  ---
+  duration_ms: 262.448
+  type: 'test'
+  ...
+# Subtest: Pago incierto: reintento explícito mantiene clave y no genera cobro automático
+ok 109 - Pago incierto: reintento explícito mantiene clave y no genera cobro automático
+  ---
+  duration_ms: 231.2919
+  type: 'test'
+  ...
+# Subtest: Pago: presentación APROBADO, monto y acción existente
+ok 110 - Pago: presentación APROBADO, monto y acción existente
+  ---
+  duration_ms: 219.5758
+  type: 'test'
+  ...
+# Subtest: Pago: presentación PENDIENTE, monto y acción existente
+ok 111 - Pago: presentación PENDIENTE, monto y acción existente
+  ---
+  duration_ms: 216.6701
+  type: 'test'
+  ...
+# Subtest: Pago: presentación RECHAZADO, monto y acción existente
+ok 112 - Pago: presentación RECHAZADO, monto y acción existente
+  ---
+  duration_ms: 218.1201
+  type: 'test'
+  ...
+# Subtest: history: lectura propia, navegación y ausencia de acciones ADMIN
+ok 113 - history: lectura propia, navegación y ausencia de acciones ADMIN
+  ---
+  duration_ms: 231.7792
+  type: 'test'
+  ...
+# Subtest: detail: lectura propia, navegación y ausencia de acciones ADMIN
+ok 114 - detail: lectura propia, navegación y ausencia de acciones ADMIN
+  ---
+  duration_ms: 218.0762
+  type: 'test'
+  ...
+# Subtest: Historial vacío conserva acceso al catálogo sin escrituras
+ok 115 - Historial vacío conserva acceso al catálogo sin escrituras
+  ---
+  duration_ms: 217.9511
+  type: 'test'
+  ...
+# Subtest: history: 503 con foco y recuperación GET
+ok 116 - history: 503 con foco y recuperación GET
+  ---
+  duration_ms: 231.8603
+  type: 'test'
+  ...
+# Subtest: detail: 503 con foco y recuperación GET
+ok 117 - detail: 503 con foco y recuperación GET
+  ---
+  duration_ms: 233.6329
+  type: 'test'
+  ...
+# Subtest: crear: la respuesta válida se proyecta y no envía usuarioId
+ok 118 - crear: la respuesta válida se proyecta y no envía usuarioId
+  ---
+  duration_ms: 1.8186
+  type: 'test'
+  ...
+# Subtest: crear: dos envíos simultáneos solo producen un POST
+ok 119 - crear: dos envíos simultáneos solo producen un POST
+  ---
+  duration_ms: 0.358
+  type: 'test'
+  ...
+# Subtest: crear: un fallo de red es un resultado incierto, no un éxito
+ok 120 - crear: un fallo de red es un resultado incierto, no un éxito
+  ---
+  duration_ms: 0.4015
+  type: 'test'
+  ...
+# Subtest: crear: un 400 de validación es un fallo definitivo (no incierto)
+ok 121 - crear: un 400 de validación es un fallo definitivo (no incierto)
+  ---
+  duration_ms: 0.4235
+  type: 'test'
+  ...
+# Subtest: RESULTADO INCIERTO: el servidor crea pero se pierde la respuesta; no hay un segundo POST
+ok 122 - RESULTADO INCIERTO: el servidor crea pero se pierde la respuesta; no hay un segundo POST
+  ---
+  duration_ms: 0.2649
+  type: 'test'
+  ...
+# Subtest: build Docker rechaza variables ausentes sin cargar el .env.local del host
+ok 123 - build Docker rechaza variables ausentes sin cargar el .env.local del host
+  ---
+  duration_ms: 97.9691
+  type: 'test'
+  ...
+# Subtest: build Docker rechaza configuración inválida sin imprimir sus valores
+ok 124 - build Docker rechaza configuración inválida sin imprimir sus valores
+  ---
+  duration_ms: 78.0131
+  type: 'test'
+  ...
+# Subtest: build Docker acepta el formato público sin autenticar ni mostrar identificadores
+ok 125 - build Docker acepta el formato público sin autenticar ni mostrar identificadores
+  ---
+  duration_ms: 90.2656
+  type: 'test'
+  ...
+# Subtest: build Docker permite preparar RabbitMQ sin activar servicios
+ok 126 - build Docker permite preparar RabbitMQ sin activar servicios
+  ---
+  duration_ms: 116.1405
+  type: 'test'
+  ...
+# Subtest: build Docker rechaza modo desconocido sin fallback a HTTP
+ok 127 - build Docker rechaza modo desconocido sin fallback a HTTP
+  ---
+  duration_ms: 92.6319
+  type: 'test'
+  ...
+# Subtest: lista HTTP vacía es ausencia de pago, no un error
+ok 128 - lista HTTP vacía es ausencia de pago, no un error
+  ---
+  duration_ms: 1.0863
+  type: 'test'
+  ...
+# Subtest: un error NOT_FOUND real se conserva
+ok 129 - un error NOT_FOUND real se conserva
+  ---
+  duration_ms: 0.3441
+  type: 'test'
+  ...
+# Subtest: una respuesta inválida no se interpreta como lista vacía
+ok 130 - una respuesta inválida no se interpreta como lista vacía
+  ---
+  duration_ms: 0.2658
+  type: 'test'
+  ...
+# Subtest: null al registrar sigue siendo error, no ausencia de pago
+ok 131 - null al registrar sigue siendo error, no ausencia de pago
+  ---
+  duration_ms: 0.3219
+  type: 'test'
+  ...
+# Subtest: producción incluye consulta de perfil real y excluye adaptadores y paneles simulados
+ok 132 - producción incluye consulta de perfil real y excluye adaptadores y paneles simulados
+  ---
+  duration_ms: 1195.0248
+  type: 'test'
+  ...
+# Subtest: cada ejemplo de perfil es independiente y solo contiene campos de UsuarioResponse
+ok 133 - cada ejemplo de perfil es independiente y solo contiene campos de UsuarioResponse
+  ---
+  duration_ms: 1.3652
+  type: 'test'
+  ...
+# Subtest: un perfil nuevo empieza vacío, sin deducir datos de identidad
+ok 134 - un perfil nuevo empieza vacío, sin deducir datos de identidad
+  ---
+  duration_ms: 2.5817
+  type: 'test'
+  ...
+# Subtest: el borrador es una copia editable y no altera el perfil original
+ok 135 - el borrador es una copia editable y no altera el perfil original
+  ---
+  duration_ms: 0.2687
+  type: 'test'
+  ...
+# Subtest: normaliza espacios, email y teléfono vacío sin incluir campos privilegiados
+ok 136 - normaliza espacios, email y teléfono vacío sin incluir campos privilegiados
+  ---
+  duration_ms: 0.4368
+  type: 'test'
+  ...
+# Subtest: conserva formato y prefijo del teléfono, solo recorta extremos
+ok 137 - conserva formato y prefijo del teléfono, solo recorta extremos
+  ---
+  duration_ms: 0.3995
+  type: 'test'
+  ...
+# Subtest: rechaza los tres campos obligatorios vacíos, pero no exige teléfono
+ok 138 - rechaza los tres campos obligatorios vacíos, pero no exige teléfono
+  ---
+  duration_ms: 0.4172
+  type: 'test'
+  ...
+# Subtest: comprueba el formato básico del email sin imponer un dominio de Microsoft
+ok 139 - comprueba el formato básico del email sin imponer un dominio de Microsoft
+  ---
+  duration_ms: 0.4528
+  type: 'test'
+  ...
+# Subtest: respeta el límite de nombre (100) sobre el valor normalizado
+ok 140 - respeta el límite de nombre (100) sobre el valor normalizado
+  ---
+  duration_ms: 0.1667
+  type: 'test'
+  ...
+# Subtest: respeta el límite de apellido (100) sobre el valor normalizado
+ok 141 - respeta el límite de apellido (100) sobre el valor normalizado
+  ---
+  duration_ms: 0.099
+  type: 'test'
+  ...
+# Subtest: respeta el límite de email (254) sobre el valor normalizado
+ok 142 - respeta el límite de email (254) sobre el valor normalizado
+  ---
+  duration_ms: 0.4437
+  type: 'test'
+  ...
+# Subtest: respeta el límite de telefono (30) sobre el valor normalizado
+ok 143 - respeta el límite de telefono (30) sobre el valor normalizado
+  ---
+  duration_ms: 0.4922
+  type: 'test'
+  ...
+# Subtest: tipos inesperados no se convierten en datos de perfil
+ok 144 - tipos inesperados no se convierten en datos de perfil
+  ---
+  duration_ms: 0.2749
+  type: 'test'
+  ...
+# Subtest: detecta cambios pendientes y vuelve a limpio al restaurar el valor original
+ok 145 - detecta cambios pendientes y vuelve a limpio al restaurar el valor original
+  ---
+  duration_ms: 0.2067
+  type: 'test'
+  ...
+# Subtest: perfil HTTP consulta /usuarios/me con señal y proyecta solamente datos de perfil
+ok 146 - perfil HTTP consulta /usuarios/me con señal y proyecta solamente datos de perfil
+  ---
+  duration_ms: 2.4931
+  type: 'test'
+  ...
+# Subtest: solo un 404 HTTP controlado representa ausencia
+ok 147 - solo un 404 HTTP controlado representa ausencia
+  ---
+  duration_ms: 0.4036
+  type: 'test'
+  ...
+# Subtest: perfil HTTP no transforma API_UNAUTHORIZED en perfil ausente ni habilita escritura
+ok 148 - perfil HTTP no transforma API_UNAUTHORIZED en perfil ausente ni habilita escritura
+  ---
+  duration_ms: 0.4161
+  type: 'test'
+  ...
+# Subtest: perfil HTTP no transforma API_FORBIDDEN en perfil ausente ni habilita escritura
+ok 149 - perfil HTTP no transforma API_FORBIDDEN en perfil ausente ni habilita escritura
+  ---
+  duration_ms: 0.1889
+  type: 'test'
+  ...
+# Subtest: perfil HTTP no transforma API_ERROR en perfil ausente ni habilita escritura
+ok 150 - perfil HTTP no transforma API_ERROR en perfil ausente ni habilita escritura
+  ---
+  duration_ms: 0.1713
+  type: 'test'
+  ...
+# Subtest: perfil HTTP no transforma API_NETWORK en perfil ausente ni habilita escritura
+ok 151 - perfil HTTP no transforma API_NETWORK en perfil ausente ni habilita escritura
+  ---
+  duration_ms: 0.1599
+  type: 'test'
+  ...
+# Subtest: perfil HTTP no transforma INTERACTION_REQUIRED en perfil ausente ni habilita escritura
+ok 152 - perfil HTTP no transforma INTERACTION_REQUIRED en perfil ausente ni habilita escritura
+  ---
+  duration_ms: 0.1901
+  type: 'test'
+  ...
+# Subtest: perfil HTTP no transforma SESSION_CHANGED en perfil ausente ni habilita escritura
+ok 153 - perfil HTTP no transforma SESSION_CHANGED en perfil ausente ni habilita escritura
+  ---
+  duration_ms: 1.0749
+  type: 'test'
+  ...
+# Subtest: respuestas vacías o inválidas no habilitan creación
+ok 154 - respuestas vacías o inválidas no habilitan creación
+  ---
+  duration_ms: 0.8018
+  type: 'test'
+  ...
+# Subtest: al cambiar cuenta se aborta la consulta y se ignora una respuesta tardía
+ok 155 - al cambiar cuenta se aborta la consulta y se ignora una respuesta tardía
+  ---
+  duration_ms: 0.6782
+  type: 'test'
+  ...
+# Subtest: errores desconocidos no filtran contenido y no se reintentan automáticamente
+ok 156 - errores desconocidos no filtran contenido y no se reintentan automáticamente
+  ---
+  duration_ms: 0.4686
+  type: 'test'
+  ...
+# Subtest: rechaza guardar antes de consultar sin hacer escrituras HTTP
+ok 157 - rechaza guardar antes de consultar sin hacer escrituras HTTP
+  ---
+  duration_ms: 0.818
+  type: 'test'
+  ...
+# Subtest: 404 seguido de crear usa POST 201 y luego edita por ID del servidor, nunca del draft
+ok 158 - 404 seguido de crear usa POST 201 y luego edita por ID del servidor, nunca del draft
+  ---
+  duration_ms: 0.6333
+  type: 'test'
+  ...
+# Subtest: perfil existente actualiza con PUT 200 y conserva el perfil proyectado
+ok 159 - perfil existente actualiza con PUT 200 y conserva el perfil proyectado
+  ---
+  duration_ms: 0.4386
+  type: 'test'
+  ...
+# Subtest: guardado HTTP 400 conserva perfil anterior y no repite la escritura
+ok 160 - guardado HTTP 400 conserva perfil anterior y no repite la escritura
+  ---
+  duration_ms: 0.354
+  type: 'test'
+  ...
+# Subtest: guardado HTTP 401 conserva perfil anterior y no repite la escritura
+ok 161 - guardado HTTP 401 conserva perfil anterior y no repite la escritura
+  ---
+  duration_ms: 0.1694
+  type: 'test'
+  ...
+# Subtest: guardado HTTP 403 conserva perfil anterior y no repite la escritura
+ok 162 - guardado HTTP 403 conserva perfil anterior y no repite la escritura
+  ---
+  duration_ms: 0.1917
+  type: 'test'
+  ...
+# Subtest: guardado HTTP 404 conserva perfil anterior y no repite la escritura
+ok 163 - guardado HTTP 404 conserva perfil anterior y no repite la escritura
+  ---
+  duration_ms: 0.1796
+  type: 'test'
+  ...
+# Subtest: guardado HTTP 409 conserva perfil anterior y no repite la escritura
+ok 164 - guardado HTTP 409 conserva perfil anterior y no repite la escritura
+  ---
+  duration_ms: 0.1903
+  type: 'test'
+  ...
+# Subtest: guardado HTTP 502 conserva perfil anterior y no repite la escritura
+ok 165 - guardado HTTP 502 conserva perfil anterior y no repite la escritura
+  ---
+  duration_ms: 0.1483
+  type: 'test'
+  ...
+# Subtest: guardado HTTP 504 conserva perfil anterior y no repite la escritura
+ok 166 - guardado HTTP 504 conserva perfil anterior y no repite la escritura
+  ---
+  duration_ms: 0.1939
+  type: 'test'
+  ...
+# Subtest: doble clic inmediato produce una escritura y cancelar descarta resultado tardío
+ok 167 - doble clic inmediato produce una escritura y cancelar descarta resultado tardío
+  ---
+  duration_ms: 0.3312
+  type: 'test'
+  ...
+# Subtest: perfil inactivo o draft inválido no realiza escritura
+ok 168 - perfil inactivo o draft inválido no realiza escritura
+  ---
+  duration_ms: 0.2379
+  type: 'test'
+  ...
+# Subtest: respuesta PUT con otro ID y POST sin 201 no se aceptan como éxito
+ok 169 - respuesta PUT con otro ID y POST sin 201 no se aceptan como éxito
+  ---
+  duration_ms: 0.2489
+  type: 'test'
+  ...
+# Subtest: no consulta por sí solo ni usa un perfil de respaldo sin adaptador
+ok 170 - no consulta por sí solo ni usa un perfil de respaldo sin adaptador
+  ---
+  duration_ms: 1.6274
+  type: 'test'
+  ...
+# Subtest: consulta pasa por loading y publica un perfil inmutable de campos conocidos
+ok 171 - consulta pasa por loading y publica un perfil inmutable de campos conocidos
+  ---
+  duration_ms: 1.1684
+  type: 'test'
+  ...
+# Subtest: ausencia explícita devuelve empty, mientras que una excepción no representa ausencia
+ok 172 - ausencia explícita devuelve empty, mientras que una excepción no representa ausencia
+  ---
+  duration_ms: 5.7215
+  type: 'test'
+  ...
+# Subtest: consulta que falla una vez permite reintento explícito, no automático
+ok 173 - consulta que falla una vez permite reintento explícito, no automático
+  ---
+  duration_ms: 6.0502
+  type: 'test'
+  ...
+# Subtest: creación y edición envían solo el payload permitido y normalizado
+ok 174 - creación y edición envían solo el payload permitido y normalizado
+  ---
+  duration_ms: 0.8118
+  type: 'test'
+  ...
+# Subtest: doble envío durante saving realiza una única escritura
+ok 175 - doble envío durante saving realiza una única escritura
+  ---
+  duration_ms: 0.4279
+  type: 'test'
+  ...
+# Subtest: save-error: conserva el perfil anterior y permite reintentar el mismo borrador
+ok 176 - save-error: conserva el perfil anterior y permite reintentar el mismo borrador
+  ---
+  duration_ms: 47.0094
+  type: 'test'
+  ...
+# Subtest: conflict: conserva el perfil anterior y permite reintentar el mismo borrador
+ok 177 - conflict: conserva el perfil anterior y permite reintentar el mismo borrador
+  ---
+  duration_ms: 45.0467
+  type: 'test'
+  ...
+# Subtest: datos inválidos no llegan al adaptador y cancelar limpia el error, no el perfil
+ok 178 - datos inválidos no llegan al adaptador y cancelar limpia el error, no el perfil
+  ---
+  duration_ms: 0.8139
+  type: 'test'
+  ...
+# Subtest: rechaza respuestas incompletas o inválidas sin reemplazar el perfil previo
+ok 179 - rechaza respuestas incompletas o inválidas sin reemplazar el perfil previo
+  ---
+  duration_ms: 0.8377
+  type: 'test'
+  ...
+# Subtest: errores conocidos manipulados también se sustituyen por mensajes seguros
+ok 180 - errores conocidos manipulados también se sustituyen por mensajes seguros
+  ---
+  duration_ms: 0.3401
+  type: 'test'
+  ...
+# Subtest: una respuesta tardía de la cuenta anterior no reemplaza la nueva, aunque ignore abort
+ok 181 - una respuesta tardía de la cuenta anterior no reemplaza la nueva, aunque ignore abort
+  ---
+  duration_ms: 1.2672
+  type: 'test'
+  ...
+# Subtest: al abandonar la pantalla, el guardado tardío no publica éxito
+ok 182 - al abandonar la pantalla, el guardado tardío no publica éxito
+  ---
+  duration_ms: 0.2279
+  type: 'test'
+  ...
+# Subtest: cancelar el adaptador durante la espera no escribe ni consume un fallo simulado
+ok 183 - cancelar el adaptador durante la espera no escribe ni consume un fallo simulado
+  ---
+  duration_ms: 12.2988
+  type: 'test'
+  ...
+# Subtest: instancias del adaptador no comparten perfiles y sus respuestas son copias
+ok 184 - instancias del adaptador no comparten perfiles y sus respuestas son copias
+  ---
+  duration_ms: 64.1057
+  type: 'test'
+  ...
+# Subtest: acceso denegado no se convierte en perfil vacío e inactivo no permite guardar
+ok 185 - acceso denegado no se convierte en perfil vacío e inactivo no permite guardar
+  ---
+  duration_ms: 33.3969
+  type: 'test'
+  ...
+# Subtest: solo admite los escenarios de prueba declarados
+ok 186 - solo admite los escenarios de prueba declarados
+  ---
+  duration_ms: 0.4764
+  type: 'test'
+  ...
+# Subtest: limpiar un error de consulta no inventa ausencia ni habilita guardar
+ok 187 - limpiar un error de consulta no inventa ausencia ni habilita guardar
+  ---
+  duration_ms: 2.6611
+  type: 'test'
+  ...
+# Subtest: códigos desconocidos o heredados no se usan como mensajes de error
+ok 188 - códigos desconocidos o heredados no se usan como mensajes de error
+  ---
+  duration_ms: 0.9418
+  type: 'test'
+  ...
+# Subtest: pago: GET 503, foco y recuperación sin escrituras
+ok 189 - pago: GET 503, foco y recuperación sin escrituras
+  ---
+  duration_ms: 951.5226
+  type: 'test'
+  ...
+# Subtest: checkout: GET 503, foco y recuperación sin escrituras
+ok 190 - checkout: GET 503, foco y recuperación sin escrituras
+  ---
+  duration_ms: 371.5366
+  type: 'test'
+  ...
+# Subtest: pago: GET timeout, foco y recuperación sin escrituras
+ok 191 - pago: GET timeout, foco y recuperación sin escrituras
+  ---
+  duration_ms: 265.9294
+  type: 'test'
+  ...
+# Subtest: checkout: GET timeout, foco y recuperación sin escrituras
+ok 192 - checkout: GET timeout, foco y recuperación sin escrituras
+  ---
+  duration_ms: 247.7011
+  type: 'test'
+  ...
+# Subtest: Pago: recuperación de lectura conserva la clave de un POST incierto y no genera otro pago
+ok 193 - Pago: recuperación de lectura conserva la clave de un POST incierto y no genera otro pago
+  ---
+  duration_ms: 202.5366
+  type: 'test'
+  ...
+# Subtest: conserva ruta interna, consulta y fragmento
+ok 194 - conserva ruta interna, consulta y fragmento
+  ---
+  duration_ms: 1.2225
+  type: 'test'
+  ...
+# Subtest: rechaza destinos externos, ambiguos o malformados
+ok 195 - rechaza destinos externos, ambiguos o malformados
+  ---
+  duration_ms: 0.4505
+  type: 'test'
+  ...
+# Subtest: no conserva parámetros de respuestas de autenticación
+ok 196 - no conserva parámetros de respuestas de autenticación
+  ---
+  duration_ms: 0.3647
+  type: 'test'
+  ...
+# Subtest: login envía solo una clave opaca a MSAL; el destino queda en la pestaña
+ok 197 - login envía solo una clave opaca a MSAL; el destino queda en la pestaña
+  ---
+  duration_ms: 0.5696
+  type: 'test'
+  ...
+# Subtest: solo una respuesta válida del directorio devuelve un destino de retorno
+ok 198 - solo una respuesta válida del directorio devuelve un destino de retorno
+  ---
+  duration_ms: 1.1832
+  type: 'test'
+  ...
+# Subtest: el destino se consume una vez y rechaza claves incorrectas o vencidas
+ok 199 - el destino se consume una vez y rechaza claves incorrectas o vencidas
+  ---
+  duration_ms: 0.2805
+  type: 'test'
+  ...
+# Subtest: un almacenamiento bloqueado no inicia una redirección sin guardar el destino
+ok 200 - un almacenamiento bloqueado no inicia una redirección sin guardar el destino
+  ---
+  duration_ms: 0.4454
+  type: 'test'
+  ...
+# Subtest: recarga normal, logout y cancelación no restauran destinos anteriores
+ok 201 - recarga normal, logout y cancelación no restauran destinos anteriores
+  ---
+  duration_ms: 0.4722
+  type: 'test'
+  ...
+# Subtest: logout limpia cualquier destino guardado antes de salir
+ok 202 - logout limpia cualquier destino guardado antes de salir
+  ---
+  duration_ms: 0.5473
+  type: 'test'
+  ...
+# Subtest: el retorno reemplaza el historial antes de montar rutas; sin respuesta no navega
+ok 203 - el retorno reemplaza el historial antes de montar rutas; sin respuesta no navega
+  ---
+  duration_ms: 0.4562
+  type: 'test'
+  ...
+# Subtest: Inicio y 404 siguen siendo públicos
+ok 204 - Inicio y 404 siguen siendo públicos
+  ---
+  duration_ms: 1425.9856
+  type: 'test'
+  ...
+# Subtest: enlace directo privado sin sesión muestra acceso, nunca el contenido privado
+ok 205 - enlace directo privado sin sesión muestra acceso, nunca el contenido privado
+  ---
+  duration_ms: 5.3014
+  type: 'test'
+  ...
+# Subtest: mientras MSAL está ocupado no monta la vista privada ni ofrece otro login
+ok 206 - mientras MSAL está ocupado no monta la vista privada ni ofrece otro login
+  ---
+  duration_ms: 5.0858
+  type: 'test'
+  ...
+# Subtest: con sesión la ruta monta su contenido y salir vuelve a bloquearlo
+ok 207 - con sesión la ruta monta su contenido y salir vuelve a bloquearlo
+  ---
+  duration_ms: 12.6106
+  type: 'test'
+  ...
+# Subtest: una cancelación presenta el error sin ocultar la opción de reintentar
+ok 208 - una cancelación presenta el error sin ocultar la opción de reintentar
+  ---
+  duration_ms: 4.9355
+  type: 'test'
+  ...
+# Subtest: separa la identidad Microsoft del perfil, sin deducir datos ni cargar el ejemplo
+ok 209 - separa la identidad Microsoft del perfil, sin deducir datos ni cargar el ejemplo
+  ---
+  duration_ms: 7.0174
+  type: 'test'
+  ...
+# Subtest: sin modo demo no ofrece ejemplos ni afirma que falta un perfil en Usuarios
+ok 210 - sin modo demo no ofrece ejemplos ni afirma que falta un perfil en Usuarios
+  ---
+  duration_ms: 1.4268
+  type: 'test'
+  ...
+# Subtest: el panel de producción solo informa integración pendiente, sin acciones simuladas
+ok 211 - el panel de producción solo informa integración pendiente, sin acciones simuladas
+  ---
+  duration_ms: 0.6981
+  type: 'test'
+  ...
+# Subtest: el modo demo empieza vacío y exige una acción explícita
+ok 212 - el modo demo empieza vacío y exige una acción explícita
+  ---
+  duration_ms: 1.5185
+  type: 'test'
+  ...
+# Subtest: presenta el perfil de solo lectura, teléfono opcional y estado inactivo
+ok 213 - presenta el perfil de solo lectura, teléfono opcional y estado inactivo
+  ---
+  duration_ms: 1.0306
+  type: 'test'
+  ...
+# Subtest: el texto del perfil se escapa sin interpretarlo como HTML
+ok 214 - el texto del perfil se escapa sin interpretarlo como HTML
+  ---
+  duration_ms: 0.5034
+  type: 'test'
+  ...
+# Subtest: el formulario nuevo etiqueta cuatro campos, límites, obligatoriedad y simulación
+ok 215 - el formulario nuevo etiqueta cuatro campos, límites, obligatoriedad y simulación
+  ---
+  duration_ms: 2.4947
+  type: 'test'
+  ...
+# Subtest: el formulario real del bloque 1 no afirma guardar y tiene el submit deshabilitado
+ok 216 - el formulario real del bloque 1 no afirma guardar y tiene el submit deshabilitado
+  ---
+  duration_ms: 1.0392
+  type: 'test'
+  ...
+# Subtest: formulario real permite crear y editar sin presentarlo como simulación
+ok 217 - formulario real permite crear y editar sin presentarlo como simulación
+  ---
+  duration_ms: 1.9727
+  type: 'test'
+  ...
+# Subtest: la edición precarga solo los campos del perfil, sin aplicar durante el render
+ok 218 - la edición precarga solo los campos del perfil, sin aplicar durante el render
+  ---
+  duration_ms: 0.6897
+  type: 'test'
+  ...
+# Subtest: durante el guardado marca el formulario ocupado y bloquea campos, aplicar y cancelar
+ok 219 - durante el guardado marca el formulario ocupado y bloquea campos, aplicar y cancelar
+  ---
+  duration_ms: 0.6095
+  type: 'test'
+  ...
+# Subtest: Carrito aparece en navegación sin revelar contenido privado al abrir un enlace directo
+ok 220 - Carrito aparece en navegación sin revelar contenido privado al abrir un enlace directo
+  ---
+  duration_ms: 5.4464
+  type: 'test'
+  ...
+# Subtest: Carrito espera la sesión y con cuenta no deduce que esté vacío ni inventa productos
+ok 221 - Carrito espera la sesión y con cuenta no deduce que esté vacío ni inventa productos
+  ---
+  duration_ms: 12.5333
+  type: 'test'
+  ...
+# Subtest: el simulador de Carrito no carga ejemplos por sí solo
+ok 222 - el simulador de Carrito no carga ejemplos por sí solo
+  ---
+  duration_ms: 1.6687
+  type: 'test'
+  ...
+# Subtest: el resumen presenta cantidades y montos CLP sin exponer IDs ni ofrecer checkout
+ok 223 - el resumen presenta cantidades y montos CLP sin exponer IDs ni ofrecer checkout
+  ---
+  duration_ms: 1.672
+  type: 'test'
+  ...
+# Subtest: un ejemplo vacío se identifica como simulado y muestra cero sin deducir datos reales
+ok 224 - un ejemplo vacío se identifica como simulado y muestra cero sin deducir datos reales
+  ---
+  duration_ms: 0.5914
+  type: 'test'
+  ...
+# Subtest: edición de cantidad está etiquetada y bloqueada durante confirmación
+ok 225 - edición de cantidad está etiquetada y bloqueada durante confirmación
+  ---
+  duration_ms: 1.6861
+  type: 'test'
+  ...
+# Subtest: catálogo muestra productos ficticios de dos restaurantes e indisponible sin enviar al render
+ok 226 - catálogo muestra productos ficticios de dos restaurantes e indisponible sin enviar al render
+  ---
+  duration_ms: 1.3345
+  type: 'test'
+  ...
+# Subtest: formularios del carrito informan operación en curso sin anunciar éxito
+ok 227 - formularios del carrito informan operación en curso sin anunciar éxito
+  ---
+  duration_ms: 1.6701
+  type: 'test'
+  ...
+# Subtest: los campos de varias líneas y catálogo tienen IDs únicos, etiquetas y ayudas enlazadas
+ok 228 - los campos de varias líneas y catálogo tienen IDs únicos, etiquetas y ayudas enlazadas
+  ---
+  duration_ms: 2.0852
+  type: 'test'
+  ...
+# Subtest: carrito vacío editable no presenta acciones de líneas ni dispara callbacks al renderizar
+ok 229 - carrito vacío editable no presenta acciones de líneas ni dispara callbacks al renderizar
+  ---
+  duration_ms: 0.4571
+  type: 'test'
+  ...
+# Subtest: sin cuenta en caché no inventa una sesión
+ok 230 - sin cuenta en caché no inventa una sesión
+  ---
+  duration_ms: 1.8404
+  type: 'test'
+  ...
+# Subtest: restaura la única cuenta del directorio y conserva la selección explícita entre varias
+ok 231 - restaura la única cuenta del directorio y conserva la selección explícita entre varias
+  ---
+  duration_ms: 0.2244
+  type: 'test'
+  ...
+# Subtest: varias cuentas sin selección requieren elegir; no se usa la primera
+ok 232 - varias cuentas sin selección requieren elegir; no se usa la primera
+  ---
+  duration_ms: 0.1608
+  type: 'test'
+  ...
+# Subtest: filtra cuentas de otros directorios
+ok 233 - filtra cuentas de otros directorios
+  ---
+  duration_ms: 0.1476
+  type: 'test'
+  ...
+# Subtest: al volver de Microsoft establece la cuenta devuelta como activa
+ok 234 - al volver de Microsoft establece la cuenta devuelta como activa
+  ---
+  duration_ms: 0.9884
+  type: 'test'
+  ...
+# Subtest: la recarga restaura una cuenta única y limpia una selección eliminada
+ok 235 - la recarga restaura una cuenta única y limpia una selección eliminada
+  ---
+  duration_ms: 0.3044
+  type: 'test'
+  ...
+# Subtest: rechaza la respuesta de otro directorio sin activar esa identidad
+ok 236 - rechaza la respuesta de otro directorio sin activar esa identidad
+  ---
+  duration_ms: 0.2596
+  type: 'test'
+  ...
+# Subtest: muestra cancelación al procesar el retorno y no filtra el mensaje de Entra
+ok 237 - muestra cancelación al procesar el retorno y no filtra el mensaje de Entra
+  ---
+  duration_ms: 0.1919
+  type: 'test'
+  ...
+# Subtest: login solicita selección de cuenta y permisos de identidad, sin Graph ni roles inventados
+ok 238 - login solicita selección de cuenta y permisos de identidad, sin Graph ni roles inventados
+  ---
+  duration_ms: 0.4387
+  type: 'test'
+  ...
+# Subtest: doble clic no dispara dos operaciones y permite reintentar después
+ok 239 - doble clic no dispara dos operaciones y permite reintentar después
+  ---
+  duration_ms: 0.3821
+  type: 'test'
+  ...
+# Subtest: logout se dirige a la cuenta activa y no actúa sin cuenta
+ok 240 - logout se dirige a la cuenta activa y no actúa sin cuenta
+  ---
+  duration_ms: 0.5475
+  type: 'test'
+  ...
+# Subtest: un fallo libera el botón y muestra error seguro sin reintento automático
+ok 241 - un fallo libera el botón y muestra error seguro sin reintento automático
+  ---
+  duration_ms: 0.3031
+  type: 'test'
+  ...
+# Subtest: error de logout no afirma que la sesión de Microsoft esté cerrada
+ok 242 - error de logout no afirma que la sesión de Microsoft esté cerrada
+  ---
+  duration_ms: 0.2625
+  type: 'test'
+  ...
+# Subtest: errores desconocidos y operación en curso producen mensajes controlados
+ok 243 - errores desconocidos y operación en curso producen mensajes controlados
+  ---
+  duration_ms: 0.1004
+  type: 'test'
+  ...
+# Subtest: navegación administrativa solo se muestra tras autorización del BFF, nunca por nombre de cuenta
+ok 244 - navegación administrativa solo se muestra tras autorización del BFF, nunca por nombre de cuenta
+  ---
+  duration_ms: 1032.9765
+  type: 'test'
+  ...
+# Subtest: formulario administrativo conserva labels, límites y bloqueo mientras guarda; errores permiten reconciliar
+ok 245 - formulario administrativo conserva labels, límites y bloqueo mientras guarda; errores permiten reconciliar
+  ---
+  duration_ms: 2.2749
+  type: 'test'
+  ...
+# Subtest: botón base no envía un formulario implícitamente y bloquea interacción durante loading
+ok 246 - botón base no envía un formulario implícitamente y bloquea interacción durante loading
+  ---
+  duration_ms: 0.4506
+  type: 'test'
+  ...
+# Subtest: campo une etiqueta, ayudas previas y error sin modificar valor ni validación
+ok 247 - campo une etiqueta, ayudas previas y error sin modificar valor ni validación
+  ---
+  duration_ms: 0.7392
+  type: 'test'
+  ...
+# Subtest: sidebar compacto conserva nombres accesibles, URLs y página actual
+ok 248 - sidebar compacto conserva nombres accesibles, URLs y página actual
+  ---
+  duration_ms: 1.9816
+  type: 'test'
+  ...
+# Subtest: dialog cerrado conserva trigger accesible y no inserta navegación modal oculta
+ok 249 - dialog cerrado conserva trigger accesible y no inserta navegación modal oculta
+  ---
+  duration_ms: 2.6068
+  type: 'test'
+  ...
+# Subtest: vaciado: mientras el DELETE está en curso el estado es en_curso, no exitoso
+ok 250 - vaciado: mientras el DELETE está en curso el estado es en_curso, no exitoso
+  ---
+  duration_ms: 0.8386
+  type: 'test'
+  ...
+# Subtest: vaciado: si el DELETE falla el estado es fallido y se puede reintentar
+ok 251 - vaciado: si el DELETE falla el estado es fallido y se puede reintentar
+  ---
+  duration_ms: 0.1877
+  type: 'test'
+  ...
+# Subtest: vaciado: dos solicitudes solapadas solo emiten un DELETE
+ok 252 - vaciado: dos solicitudes solapadas solo emiten un DELETE
+  ---
+  duration_ms: 0.1331
+  type: 'test'
+  ...
+# Subtest: vaciado tras 201: el pedidoId se conserva y no se repite POST
+ok 253 - vaciado tras 201: el pedidoId se conserva y no se repite POST
+  ---
+  duration_ms: 1.1985
+  type: 'test'
+  ...
+1..253
+# tests 253
+# suites 0
+# pass 253
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 4521.2639

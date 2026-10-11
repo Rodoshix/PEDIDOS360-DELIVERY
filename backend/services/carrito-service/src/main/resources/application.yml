@@ -46,6 +46,9 @@ entra:
   frontend-client-id: ${ENTRA_FRONTEND_CLIENT_ID:}
 
 management:
+  health:
+    rabbit:
+      enabled: false
   endpoints:
     web:
       exposure:
@@ -54,3 +57,14 @@ management:
     health:
       show-details: never
       show-components: never
+
+pedidos360:
+  messaging:
+    carrito:
+      mode: ${CARRITO_PEDIDOS_MODE:HTTP}
+      platform-ready: ${CARRITO_PEDIDOS_PLATFORM_READY:false}
+      host: ${CARRITO_PEDIDOS_RABBITMQ_HOST:localhost}
+      port: ${CARRITO_PEDIDOS_RABBITMQ_PORT:5672}
+      virtual-host: ${CARRITO_PEDIDOS_RABBITMQ_VHOST:pedidos360}
+      username: ${CARRITO_PEDIDOS_RABBITMQ_USERNAME:}
+      password: ${CARRITO_PEDIDOS_RABBITMQ_PASSWORD:}

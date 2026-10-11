@@ -1,0 +1,6 @@
+# Only public build inputs; no tests, reports, environment or private material.
+**
+!pom.xml
+!src/
+!src/main/
+!src/main/**

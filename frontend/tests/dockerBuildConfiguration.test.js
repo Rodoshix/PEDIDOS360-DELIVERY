@@ -30,3 +30,14 @@ test('build Docker acepta el formato público sin autenticar ni mostrar identifi
   assert.equal(result.status, 0)
   assert.equal(result.stderr + result.stdout, '')
 })
+
+
+test('build Docker permite preparar RabbitMQ sin activar servicios', () => {
+  assert.equal(validate({ ...fixture, VITE_PEDIDOS_CARRITO_MODE: 'RABBITMQ' }).status, 0)
+})
+
+test('build Docker rechaza modo desconocido sin fallback a HTTP', () => {
+  const result = validate({ ...fixture, VITE_PEDIDOS_CARRITO_MODE: 'otro' })
+  assert.equal(result.status, 1)
+  assert.match(result.stderr, /VITE_PEDIDOS_CARRITO_MODE debe ser HTTP o RABBITMQ/)
+})

@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: rabbit-admin-service
+  rabbitmq:
+    dynamic: false
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+server:
+  port: ${SERVER_PORT:8090}
+  address: ${SERVER_ADDRESS:127.0.0.1}
+rabbit-admin:
+  host: ${RABBIT_ADMIN_HOST:localhost}
+  port: ${RABBIT_ADMIN_PORT:5672}
+  username: ${RABBIT_ADMIN_USERNAME:p360-admin-demo}
+  password: ${RABBIT_ADMIN_PASSWORD:}
+  tls: ${RABBIT_ADMIN_TLS:false}
+entra:
+  tenant-id: ${ENTRA_TENANT_ID:}
+  api-client-id: ${ENTRA_API_CLIENT_ID:}
+  frontend-client-id: ${ENTRA_FRONTEND_CLIENT_ID:}

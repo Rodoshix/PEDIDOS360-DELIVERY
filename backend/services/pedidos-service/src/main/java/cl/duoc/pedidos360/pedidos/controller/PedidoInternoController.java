@@ -24,15 +24,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class PedidoInternoController {
 
     private final PedidoService pedidos;
+    private final cl.duoc.pedidos360.pedidos.security.TenantSistema tenant;
 
-    public PedidoInternoController(PedidoService pedidos) {
+    public PedidoInternoController(PedidoService pedidos, cl.duoc.pedidos360.pedidos.security.TenantSistema tenant) {
         this.pedidos = pedidos;
+        this.tenant = tenant;
     }
 
     @PutMapping("/internal/pedidos/{id}/confirmacion-pago")
-    public ResponseEntity<Void> confirmacionPago(@PathVariable Long id) {
+    public ResponseEntity<Void> confirmacionPago(@PathVariable Long id, org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken token) {
         try {
-            pedidos.confirmarPorPago(id);
+            var actorTenant=java.util.UUID.fromString(token.getToken().getClaimAsString("tid"));
+            if (!tenant.obtener().equals(actorTenant))
+                throw new org.springframework.security.access.AccessDeniedException("Tenant de worker discordante.");
+            pedidos.confirmarPorPago(actorTenant, id);
             return ResponseEntity.noContent().build();
         } catch (PedidoNoEncontradoException error) {
             return ResponseEntity.notFound().build();

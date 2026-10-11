@@ -1,0 +1,71 @@
+{
+  "base": "3a15c24eb80443b06b942b17d11833cb30b97f8b",
+  "date": "2026-10-09",
+  "timezone": "America/Santiago",
+  "evidence_directory": "C:/Users/Rodri/Documents/ChatGPT/Pedidos360 Delivery/evidence/issue60-read-recovery-20261009",
+  "focused": {
+    "failed": 0,
+    "passed": 22,
+    "skipped": 0
+  },
+  "frontend": {
+    "failed": 0,
+    "passed": 234,
+    "skipped": 0
+  },
+  "sources": [
+    {
+      "file": "frontend/src/features/pagos/RealPagoPanel.jsx",
+      "sha256": "e362ac9703d8500aef81248a3dc1744497ca2808c5b826b06f6c1905b5efba3e"
+    },
+    {
+      "file": "frontend/src/features/pedidos/RealConfirmarPedidoPanel.jsx",
+      "sha256": "11f92d1382563a038ea3161a7c63cad82858dd96d9dd26eb966fe635f90f8959"
+    },
+    {
+      "file": "frontend/tests/readRecovery.test.js",
+      "sha256": "53e523567ddbb1efbafff574e997f09c59852dbd163940e88baacae56c8009bf"
+    }
+  ],
+  "evidence": [
+    {
+      "file": "focused.log",
+      "sha256": "aa91ffee02b11128d2a6074592d96190b2ef253ac7ad80091066f3e708939924"
+    },
+    {
+      "file": "frontend.log",
+      "sha256": "9a8749f75d5c9447a17b0f893408862470ef35b8c6ea83f237da61c10879c5a0"
+    },
+    {
+      "file": "lint.log",
+      "sha256": "110aae6032e48b061350c5b8aed3121ff02d3c1ca4c26ec24633f8f0e46cb884"
+    },
+    {
+      "file": "build-http.log",
+      "sha256": "a6b03780adc5ce78e8643889d1e9a7386cbf5952ae8fec247b817dd3651d100a"
+    },
+    {
+      "file": "build-rabbit.log",
+      "sha256": "f11d7cf3aa31679b3ecddfb7df8857f3b239a08e299ed787f7f787aeacec29f2"
+    },
+    {
+      "file": "keyboard.json",
+      "sha256": "2993886dbb94d113d1ae40049609b2e5ab42a069d1fea98cff6f0df366dd2f45"
+    },
+    {
+      "file": "keyboard-error.png",
+      "sha256": "00f6b1c061277104c283b19646d2c00bf966c8695ce78e373c8909896af27a68"
+    },
+    {
+      "file": "keyboard-recovered.png",
+      "sha256": "9f7c332a6a803852a80cdedc70d537a670b9fc321bbe79f65258233395cacfdb"
+    }
+  ],
+  "limits": [
+    "transport/auth/hooks fixtures",
+    "keyboard checkout only, Opera",
+    "no Entra live",
+    "no real backend/broker/DB purchase",
+    "build chunk warning retained"
+  ]
+}

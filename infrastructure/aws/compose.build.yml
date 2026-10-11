@@ -11,21 +11,35 @@ services:
   bff:
     build:
       context: ../../backend/bff
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   usuarios:
     build:
       context: ../../backend/services/usuarios-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   restaurantes:
     build:
       context: ../../backend/services/restaurantes-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   productos:
     build:
       context: ../../backend/services/productos-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   carrito:
     build:
       context: ../../backend/services/carrito-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   pedidos:
     build:
       context: ../../backend/services/pedidos-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
   pagos:
     build:
       context: ../../backend/services/pagos-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core

@@ -41,10 +41,24 @@ public class UsuarioService {
     }
 
     public UsuarioResponse obtenerActual() {
-        var actor = actorActivo();
-        return usuarios.findByTenantIdAndEntraObjectId(actor.tenantId(), actor.objectId())
-                .map(UsuarioResponse::desde)
+        return obtenerActual(identidadActual.obtener());
+    }
+
+    /** Identidad previamente verificada por el transporte; no depende de contexto HTTP. */
+    public UsuarioResponse obtenerActual(IdentidadUsuario identidad) {
+        return resolverActual(identidad).perfil();
+    }
+
+    /** Marca capturada inmediatamente antes del SELECT: la latencia de lectura consume la vigencia. */
+    public PerfilActualVerificado resolverActual(IdentidadUsuario identidad) {
+        var verificadoEn = cl.duoc.pedidos360.messaging.identity.IdentityProofCodec.millis(java.time.Instant.now());
+        var usuario = usuarios.findByTenantIdAndEntraObjectId(identidad.tenantId(), identidad.objectId())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Todavía no tienes un perfil."));
+        if (!usuario.getTenantId().equals(identidad.tenantId()) || !usuario.getEntraObjectId().equals(identidad.objectId()))
+            throw new ApiException(HttpStatus.FORBIDDEN, "La identidad no corresponde al perfil.");
+        if (!usuario.isActivo()) throw new ApiException(HttpStatus.FORBIDDEN, "El perfil está desactivado.");
+        return new PerfilActualVerificado(usuario.getTenantId(), usuario.getEntraObjectId(),
+                UsuarioResponse.desde(usuario), verificadoEn);
     }
 
     @Transactional
@@ -77,7 +91,10 @@ public class UsuarioService {
     }
 
     private IdentidadUsuario actorActivo() {
-        var actor = identidadActual.obtener();
+        return actorActivo(identidadActual.obtener());
+    }
+
+    private IdentidadUsuario actorActivo(IdentidadUsuario actor) {
         usuarios.findByTenantIdAndEntraObjectId(actor.tenantId(), actor.objectId())
                 .filter(usuario -> !usuario.isActivo())
                 .ifPresent(usuario -> {

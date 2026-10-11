@@ -1,0 +1,220 @@
+TAP version 13
+# Subtest: modo de checkout predeterminado y valores estrictos
+ok 1 - modo de checkout predeterminado y valores estrictos
+  ---
+  duration_ms: 0.6369
+  type: 'test'
+  ...
+# Subtest: HTTP conserva DELETE tras 201 y reintenta solo DELETE sin POST duplicado
+ok 2 - HTTP conserva DELETE tras 201 y reintenta solo DELETE sin POST duplicado
+  ---
+  duration_ms: 466.2638
+  type: 'test'
+  ...
+# Subtest: HTTP exitoso mantiene anuncio de vaciado tras DELETE
+ok 3 - HTTP exitoso mantiene anuncio de vaciado tras DELETE
+  ---
+  duration_ms: 275.4777
+  type: 'test'
+  ...
+# Subtest: RabbitMQ solo registra, consulta cambios posteriores y nunca borra ni repite POST
+ok 4 - RabbitMQ solo registra, consulta cambios posteriores y nunca borra ni repite POST
+  ---
+  duration_ms: 244.9323
+  type: 'test'
+  ...
+# Subtest: Checkout: UI etiquetada, POST único y DELETE exclusivo tras 201
+ok 5 - Checkout: UI etiquetada, POST único y DELETE exclusivo tras 201
+  ---
+  duration_ms: 488.2935
+  type: 'test'
+  ...
+# Subtest: Checkout: incertidumbre anuncia bloqueo, foco y nunca repite POST
+ok 6 - Checkout: incertidumbre anuncia bloqueo, foco y nunca repite POST
+  ---
+  duration_ms: 315.5892
+  type: 'test'
+  ...
+# Subtest: Checkout RabbitMQ: 201 no anuncia vaciado, no DELETE ni otro pedido
+ok 7 - Checkout RabbitMQ: 201 no anuncia vaciado, no DELETE ni otro pedido
+  ---
+  duration_ms: 276.6955
+  type: 'test'
+  ...
+# Subtest: Pago: EFECTIVO conserva selección, un POST y estado pendiente
+ok 8 - Pago: EFECTIVO conserva selección, un POST y estado pendiente
+  ---
+  duration_ms: 249.1721
+  type: 'test'
+  ...
+# Subtest: Pago incierto: reintento explícito mantiene clave y no genera cobro automático
+ok 9 - Pago incierto: reintento explícito mantiene clave y no genera cobro automático
+  ---
+  duration_ms: 215.5544
+  type: 'test'
+  ...
+# Subtest: Pago: presentación APROBADO, monto y acción existente
+ok 10 - Pago: presentación APROBADO, monto y acción existente
+  ---
+  duration_ms: 201.1409
+  type: 'test'
+  ...
+# Subtest: Pago: presentación PENDIENTE, monto y acción existente
+ok 11 - Pago: presentación PENDIENTE, monto y acción existente
+  ---
+  duration_ms: 202.1941
+  type: 'test'
+  ...
+# Subtest: Pago: presentación RECHAZADO, monto y acción existente
+ok 12 - Pago: presentación RECHAZADO, monto y acción existente
+  ---
+  duration_ms: 199.9424
+  type: 'test'
+  ...
+# Subtest: history: lectura propia, navegación y ausencia de acciones ADMIN
+ok 13 - history: lectura propia, navegación y ausencia de acciones ADMIN
+  ---
+  duration_ms: 214.5631
+  type: 'test'
+  ...
+# Subtest: detail: lectura propia, navegación y ausencia de acciones ADMIN
+ok 14 - detail: lectura propia, navegación y ausencia de acciones ADMIN
+  ---
+  duration_ms: 203.7405
+  type: 'test'
+  ...
+# Subtest: Historial vacío conserva acceso al catálogo sin escrituras
+ok 15 - Historial vacío conserva acceso al catálogo sin escrituras
+  ---
+  duration_ms: 201.0909
+  type: 'test'
+  ...
+# Subtest: history: 503 con foco y recuperación GET
+ok 16 - history: 503 con foco y recuperación GET
+  ---
+  duration_ms: 215.9279
+  type: 'test'
+  ...
+# Subtest: detail: 503 con foco y recuperación GET
+ok 17 - detail: 503 con foco y recuperación GET
+  ---
+  duration_ms: 215.679
+  type: 'test'
+  ...
+# Subtest: crear: la respuesta válida se proyecta y no envía usuarioId
+ok 18 - crear: la respuesta válida se proyecta y no envía usuarioId
+  ---
+  duration_ms: 0.9881
+  type: 'test'
+  ...
+# Subtest: crear: dos envíos simultáneos solo producen un POST
+ok 19 - crear: dos envíos simultáneos solo producen un POST
+  ---
+  duration_ms: 0.2315
+  type: 'test'
+  ...
+# Subtest: crear: un fallo de red es un resultado incierto, no un éxito
+ok 20 - crear: un fallo de red es un resultado incierto, no un éxito
+  ---
+  duration_ms: 0.2027
+  type: 'test'
+  ...
+# Subtest: crear: un 400 de validación es un fallo definitivo (no incierto)
+ok 21 - crear: un 400 de validación es un fallo definitivo (no incierto)
+  ---
+  duration_ms: 0.1614
+  type: 'test'
+  ...
+# Subtest: RESULTADO INCIERTO: el servidor crea pero se pierde la respuesta; no hay un segundo POST
+ok 22 - RESULTADO INCIERTO: el servidor crea pero se pierde la respuesta; no hay un segundo POST
+  ---
+  duration_ms: 0.1276
+  type: 'test'
+  ...
+# Subtest: lista HTTP vacía es ausencia de pago, no un error
+ok 23 - lista HTTP vacía es ausencia de pago, no un error
+  ---
+  duration_ms: 0.8414
+  type: 'test'
+  ...
+# Subtest: un error NOT_FOUND real se conserva
+ok 24 - un error NOT_FOUND real se conserva
+  ---
+  duration_ms: 0.3446
+  type: 'test'
+  ...
+# Subtest: una respuesta inválida no se interpreta como lista vacía
+ok 25 - una respuesta inválida no se interpreta como lista vacía
+  ---
+  duration_ms: 0.188
+  type: 'test'
+  ...
+# Subtest: null al registrar sigue siendo error, no ausencia de pago
+ok 26 - null al registrar sigue siendo error, no ausencia de pago
+  ---
+  duration_ms: 0.1977
+  type: 'test'
+  ...
+# Subtest: pago: GET 503, foco y recuperación sin escrituras
+ok 27 - pago: GET 503, foco y recuperación sin escrituras
+  ---
+  duration_ms: 450.3381
+  type: 'test'
+  ...
+# Subtest: checkout: GET 503, foco y recuperación sin escrituras
+ok 28 - checkout: GET 503, foco y recuperación sin escrituras
+  ---
+  duration_ms: 275.5606
+  type: 'test'
+  ...
+# Subtest: pago: GET timeout, foco y recuperación sin escrituras
+ok 29 - pago: GET timeout, foco y recuperación sin escrituras
+  ---
+  duration_ms: 227.4604
+  type: 'test'
+  ...
+# Subtest: checkout: GET timeout, foco y recuperación sin escrituras
+ok 30 - checkout: GET timeout, foco y recuperación sin escrituras
+  ---
+  duration_ms: 202.6517
+  type: 'test'
+  ...
+# Subtest: Pago: recuperación de lectura conserva la clave de un POST incierto y no genera otro pago
+ok 31 - Pago: recuperación de lectura conserva la clave de un POST incierto y no genera otro pago
+  ---
+  duration_ms: 202.2221
+  type: 'test'
+  ...
+# Subtest: vaciado: mientras el DELETE está en curso el estado es en_curso, no exitoso
+ok 32 - vaciado: mientras el DELETE está en curso el estado es en_curso, no exitoso
+  ---
+  duration_ms: 0.8435
+  type: 'test'
+  ...
+# Subtest: vaciado: si el DELETE falla el estado es fallido y se puede reintentar
+ok 33 - vaciado: si el DELETE falla el estado es fallido y se puede reintentar
+  ---
+  duration_ms: 0.1185
+  type: 'test'
+  ...
+# Subtest: vaciado: dos solicitudes solapadas solo emiten un DELETE
+ok 34 - vaciado: dos solicitudes solapadas solo emiten un DELETE
+  ---
+  duration_ms: 0.0818
+  type: 'test'
+  ...
+# Subtest: vaciado tras 201: el pedidoId se conserva y no se repite POST
+ok 35 - vaciado tras 201: el pedidoId se conserva y no se repite POST
+  ---
+  duration_ms: 0.6301
+  type: 'test'
+  ...
+1..35
+# tests 35
+# suites 0
+# pass 35
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3431.5753

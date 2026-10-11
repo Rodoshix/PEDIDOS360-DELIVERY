@@ -2,6 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
+import { readFileSync } from 'node:fs'
 
 const cwd = fileURLToPath(new URL('.', import.meta.url))
 const names = ['frontend', 'bff', 'usuarios', 'restaurantes', 'productos', 'carrito', 'pedidos', 'pagos']
@@ -115,4 +116,25 @@ test('missing mandatory deployment values fail before launch', () => {
     assert.ok(result.stderr.includes(key), result.stderr)
   }
   assert.notEqual(config(true, { PUBLIC_API_BASE_URL: '' }).status, 0)
+})
+
+test('all Java builds install the checkout core before packaging, without a developer Maven context', () => {
+  const c = model(true)
+  for (const name of names.slice(1)) {
+    const build = c.services[name].build
+    const contexts = build.additional_contexts
+    const core = Array.isArray(contexts) ? contexts.find(v => v.startsWith('messaging-core='))?.split('=')[1] : contexts['messaging-core']
+    assert.ok(core?.replaceAll('\\', '/').endsWith('/backend/shared/p360-messaging-core'), name)
+    const recipe = readFileSync(`${build.context}/Dockerfile`, 'utf8')
+    assert.ok(recipe.includes('COPY --from=messaging-core pom.xml /messaging-core/pom.xml'), name)
+    assert.ok(recipe.includes('COPY --from=messaging-core src/main /messaging-core/src/main'), name)
+    const install = recipe.indexOf('-f /messaging-core/pom.xml -Dmaven.test.skip=true install')
+    const packaging = recipe.indexOf('-Dmaven.test.skip=true package')
+    assert.ok(install >= 0 && packaging > install, name)
+    assert.ok(!/COPY[^\n]*\.m2/.test(recipe), name)
+  }
+  const ignore = readFileSync(new URL('../../backend/shared/p360-messaging-core/.dockerignore', import.meta.url), 'utf8')
+  for (const pattern of ['**', '!pom.xml', '!src/main/**', '**/.m2/**', '**/target/**', '**/.env*', '**/*.key', '**/*.p12']) {
+    assert.ok(ignore.split(/\r?\n/).includes(pattern), pattern)
+  }
 })

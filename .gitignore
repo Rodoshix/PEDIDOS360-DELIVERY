@@ -55,4 +55,23 @@ infrastructure/docker/stack/secrets/
 .terraform/
 *.tfstate
 *.tfstate.*
+*.tfvars
+*.tfplan
 docker-compose.override.yml
+
+# Reconstructores privados de entregas; nunca versionar su contenido
+/.local-infra/
+
+# Grafo local de Graphify
+/graphify-out/
+
+# Skills y agentes locales (raiz y cualquier subdirectorio)
+.agents/
+.claude/
+.cursor/
+.aider-desk/
+.codex/
+.aider/
+.continue/
+.windsurf/
+skills-lock.json

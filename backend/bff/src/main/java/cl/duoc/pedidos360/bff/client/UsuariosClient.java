@@ -18,8 +18,10 @@ public class UsuariosClient {
     private final HttpClient client;
     private final URI origin;
     private final long timeoutMs;
+    private final cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapter queries;
 
-    public UsuariosClient(HttpClient client, Environment env) {
+    public UsuariosClient(HttpClient client, Environment env, cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapter queries) {
+        this.queries = queries;
         this.client = client;
         this.origin = ConnectionConfiguration.origin(env.getProperty("bff.usuarios-url", "http://127.0.0.1:8081"));
         this.timeoutMs = env.getProperty("bff.upstream-timeout-ms", Long.class, 5000L);
@@ -30,6 +32,8 @@ public class UsuariosClient {
         // Defensa adicional: solo rutas construidas por el controlador, sin URL aportada por el usuario.
         if (!path.matches("/usuarios(?:/me|/[1-9][0-9]*|\\?pagina=[0-9]+&tamanio=[0-9]+)?"))
             throw new IllegalArgumentException("Ruta interna no permitida.");
+        var query = queries.consultar(method, path, token);
+        if (query.isPresent()) return query.get();
         var builder = HttpRequest.newBuilder(origin.resolve(path)).timeout(Duration.ofMillis(timeoutMs))
                 .header("Authorization", "Bearer " + token.getToken().getTokenValue())
                 .header("Accept", "application/json");

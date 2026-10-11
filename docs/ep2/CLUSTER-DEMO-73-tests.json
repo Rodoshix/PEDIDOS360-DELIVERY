@@ -1,0 +1,207 @@
+{
+  "issue": 73,
+  "base": "e34af8df9ab29a65553404c544750403504cb47f",
+  "branch": "codex/73-two-node-cluster",
+  "recorded_at_utc": "2026-10-10T03:00:22.651831+00:00",
+  "authorization": "Two synthetic Docker nodes; supersedes stale three-node issue text; no academic PDFs copied or issue edits.",
+  "environment": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "docker": "29.4.3",
+    "image": "rabbitmq:4.1.8-management-alpine@sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3",
+    "rabbitmq": "4.1.8",
+    "otp": "\"27\"",
+    "observed_running_containers_at_capture": [
+      "p360-cluster73-demo-rabbit-demo-2-1",
+      "p360-cluster73-demo-rabbit-demo-1-1",
+      "pedidos360-rabbitmq-local-rabbitmq-1",
+      "aulaboh-postgres"
+    ]
+  },
+  "commands": {
+    "init": "DEMO73_OPENSSL=<local OpenSSL>; python -B infrastructure/rabbitmq/cluster-demo/demo.py init",
+    "start": "python -B infrastructure/rabbitmq/cluster-demo/demo.py start",
+    "provision": "python -B infrastructure/rabbitmq/cluster-demo/demo.py provision",
+    "verify": "python -B infrastructure/rabbitmq/cluster-demo/demo.py verify",
+    "resources": "python -B infrastructure/rabbitmq/cluster-demo/demo.py resources",
+    "real_tests": "DEMO73_REAL_TESTS=1; python (pika 1.3.2 venv) -B -m unittest discover -s infrastructure/rabbitmq/cluster-demo -p test_cluster.py -v",
+    "offline_tests": "python -B -m unittest discover -s infrastructure/rabbitmq/cluster-demo -p test_config.py -v",
+    "stop": "python -B infrastructure/rabbitmq/cluster-demo/demo.py stop"
+  },
+  "results": {
+    "real_broker": {
+      "tests": 11,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 50.828,
+      "log": "cluster-tests.log"
+    },
+    "offline_read_only_compose_unit": {
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0,
+      "log": "config-tests.log"
+    },
+    "membership_focused": {
+      "passed": 1,
+      "overlap": "Already part of 11 cases; do not sum",
+      "log": "membership-focused.log"
+    },
+    "clean_boot": "Fresh labeled node1/node2 volumes, final Compose, cluster verified before declarations",
+    "cluster": "Both nodes in Management and both CLI cluster_status; 6 quorum queues each 2 online members; 3 exchanges, 7 custom bindings, 3 DLX policies and role ACLs checked",
+    "failure": {
+      "failure": "SIGKILL demo node 2",
+      "confirmed_before_failure": "5a1a3f34-aa29-4d3b-a48e-ebe29ea8fa04",
+      "read_probe": "transport/refusal, no successful delivery",
+      "node2_exit_code": 137,
+      "previous_confirmed_message": "recovered and ACKed after majority restored"
+    },
+    "protocol": {
+      "AMQP_1_0_SASL_header": "accepted; protocol is exposed on TLS listener",
+      "clients": "pika 1.3.2 uses AMQP 0-9-1",
+      "GHSA_exploit_tested": false,
+      "user_id_used_as_authority": false
+    },
+    "resource_sample_after_suite": {
+      "docker_stats": [
+        {
+          "BlockIO": "0B / 197kB",
+          "CPUPerc": "99.98%",
+          "Container": "p360-cluster73-demo-rabbit-demo-1-1",
+          "ID": "6edb80ac677e",
+          "MemPerc": "20.45%",
+          "MemUsage": "157.1MiB / 768MiB",
+          "Name": "p360-cluster73-demo-rabbit-demo-1-1",
+          "NetIO": "269kB / 292kB",
+          "PIDs": "75"
+        },
+        {
+          "BlockIO": "0B / 254kB",
+          "CPUPerc": "101.23%",
+          "Container": "p360-cluster73-demo-rabbit-demo-2-1",
+          "ID": "16a50e8df221",
+          "MemPerc": "21.19%",
+          "MemUsage": "162.8MiB / 768MiB",
+          "Name": "p360-cluster73-demo-rabbit-demo-2-1",
+          "NetIO": "264kB / 279kB",
+          "PIDs": "75"
+        }
+      ],
+      "broker_metrics": [
+        {
+          "name": "rabbit@rabbit-demo-1",
+          "running": true,
+          "mem_used": 112902144,
+          "mem_limit": 482344960,
+          "mem_alarm": false,
+          "disk_free": 1008808734720,
+          "disk_free_alarm": false
+        },
+        {
+          "name": "rabbit@rabbit-demo-2",
+          "running": true,
+          "mem_used": 111579136,
+          "mem_limit": 482344960,
+          "mem_alarm": false,
+          "disk_free": 1008808734720,
+          "disk_free_alarm": false
+        }
+      ]
+    },
+    "normal_shutdown": "Only both demo containers stopped; final two volumes kept; existing broker/PostgreSQL remained running"
+  },
+  "preparation_failures": [
+    {
+      "case": "Windows CRLF fixture marker",
+      "fix": "Marker without line ending; LF shell attributes",
+      "log": "start-marker-failed.log"
+    },
+    {
+      "case": "Discovery and healthy startup dependency",
+      "fix": "Single seed, both nodes started simultaneously without dependency",
+      "logs": [
+        "start-discovery-failed.log",
+        "start-final.log"
+      ]
+    },
+    {
+      "case": "Docker 29 internal-only network does not publish loopback ports",
+      "fix": "Dedicated local access bridge; TLS loopback only, no existing stack network",
+      "log": "start-access.log"
+    },
+    {
+      "case": "Compose mem_limit field was a string in test model",
+      "fix": "Compare numeric value using int, retain exact 768MiB expectation",
+      "log": "config-tests-initial.log"
+    },
+    {
+      "case": "Wrong API URL in added permission assertion returned 404",
+      "fix": "Use vhosts/demo73/permissions, focused and full suites then passed",
+      "log": "cluster-tests-permissions-endpoint-failed.log"
+    }
+  ],
+  "explicit_reset": {
+    "log": "explicit-demo-reset.log",
+    "reason": "Final clean boot validation on empty synthetic data",
+    "guards": "Exact names, project/volume labels, exclusive network, queues empty and no consumers before deleting only demo_node1/demo_node2 volumes",
+    "normal_recovery_does_not_reset": true
+  },
+  "limitations": [
+    "Not HA: quorum majority with two replicas is two; same-host failure affects both nodes.",
+    "No real network partition test; SIGKILL, transport/refusal or bounded read timeout, node recovery and full restart were real.",
+    "No production dedupe/exactly-once claim; explicit no-ACK redelivery and subsequent single ACK effect only.",
+    "TLS/CA are synthetic 14-day local fixtures; Erlang distribution is not TLS and is limited to own Docker demo networks.",
+    "Local access bridge permits egress; no physical host hermeticity claim.",
+    "AMQP 1.0 SASL header accepted; exploit not reproduced; user_id is not an authority in this demo; 4.1.8 not claimed immune to advisory.",
+    "No Entra/backend/frontend suites or AWS connectivity/deployment verified.",
+    "Resource figures are samples, not peaks, load benchmarks or EC2 capacity guarantees.",
+    "Raw logs local/ignored; hashes do not make absent logs downloadable."
+  ],
+  "source_sha256_normalized_lf": {
+    "infrastructure/rabbitmq/cluster-demo/.gitattributes": "9c48847d77230bf94151b931f4828dbd48ec4f635f95caf97c385f6abf394216",
+    "infrastructure/rabbitmq/cluster-demo/.gitignore": "52f7d453019bdb2a9229afa904117b3a3844be7601873521ce42c955bc2f7f40",
+    "infrastructure/rabbitmq/cluster-demo/README.md": "6d8b56a00a1e9632099a1fe4e9c64dab22f8fa890d2263c9c4c33edeae9e608a",
+    "infrastructure/rabbitmq/cluster-demo/bootstrap.sh": "c892b13f30d63fa7499ed462ca262674b26b465b5a5942654e5c87b12910da99",
+    "infrastructure/rabbitmq/cluster-demo/compose.yml": "9faca492c78375b288dd3955ce21c44f2c30009fd6300c6af04b093bf77c32c5",
+    "infrastructure/rabbitmq/cluster-demo/demo.py": "28accf322bfa8a3e28433e5564001f2c227509597bf9bffa4ccf121753370c44",
+    "infrastructure/rabbitmq/cluster-demo/enabled_plugins": "2cf1dc3c88c2e9c55a546c09ab7acf2e5396df3d462dc10f1867d32070e6863f",
+    "infrastructure/rabbitmq/cluster-demo/probe.py": "7bac97f226d2e570a133f2652df08493baa4293c6db874beb8b0adcf28827724",
+    "infrastructure/rabbitmq/cluster-demo/rabbitmq.conf": "70820b3fb1e8a7549edc736599d4514860703317707458f384b0f4df62b14809",
+    "infrastructure/rabbitmq/cluster-demo/requirements.txt": "94eb35fad5a610b1f2b20294c11f762fa2082b707ed24813eca5e95a52a9c5c7",
+    "infrastructure/rabbitmq/cluster-demo/test_cluster.py": "6ec3634e7832af8ebe5cb5b5353365397a2427dfe33e1e0368a00e54eaa9750c",
+    "infrastructure/rabbitmq/cluster-demo/test_config.py": "3cea23b04e5585e431611a3885e6ebc51835055154ebf0527ca0cfbc3d704ea4",
+    "infrastructure/rabbitmq/cluster-demo/topology.json": "32ff36044ca02989f2195a367d7a3758adc955ea4ef427419ee3cef1faa286b3"
+  },
+  "log_sha256_original_bytes": {
+    "clean-provision.log": "b8cda3f5a041eb89a2e27c6c24e7f11b7dc8d95cd79ae924baf99c0fced0ca33",
+    "clean-start.log": "8ef3573b102cb141475d9881824b469c4e08cb604d949a33938e374496923a24",
+    "cluster-tests-first10.log": "a119d910c56a1191d09b6a2864c1d3e6c54588a36594b7a0161c307903fd20a6",
+    "cluster-tests-mounts.log": "b32b03981e1eefd4d45948285352544d5cbc63a909984207b4c17de007e5f984",
+    "cluster-tests-permissions-endpoint-failed.log": "800ee8fc2494adb7df04087806170ed43be6a5a905def5418d8364979eb3a924",
+    "cluster-tests-protocol.log": "051a6dbf3cf7668d0851dacbbffe95cd9a8fdc9beab3f99fa03154838ffd128a",
+    "cluster-tests.log": "83d7333c52c301205c3bdf74cb0774411d1f550228101bbd08f43610c9ffba2e",
+    "config-tests-initial.log": "2fb2fa15a412a3c9c24d3e69d9e57343fdc9f487f667cdd2db4ea552348aeb13",
+    "config-tests.log": "721880cd11532f475338ea43fa7f1c3848587ad713113c2142e37a710f104264",
+    "environment.json": "c948dbcff18ed1325cbf5da3e4b20eaac25ee41db440c33f8b6557cc260dcc72",
+    "explicit-demo-reset.log": "516cfee69cf5585ede27e867fc465e21463ba9dd94ef9e578e7fa63c5fa8fea7",
+    "failure.json": "cb6c384db0d52fdfb106baeaeab747495f1c8b82c075b8e2b82c10057aeca913",
+    "membership-focused.log": "a3c122e107dfbb2f3bc79479f5d07470935c76c5bbca9ec8960193a51cad53d2",
+    "protocol.json": "25028e4444399334e913ef7ee1c20021d4788135de335f933972c9c830553e2b",
+    "provision-final.log": "b8cda3f5a041eb89a2e27c6c24e7f11b7dc8d95cd79ae924baf99c0fced0ca33",
+    "provision-retry.log": "b8cda3f5a041eb89a2e27c6c24e7f11b7dc8d95cd79ae924baf99c0fced0ca33",
+    "provision.log": "0546164da7ce351587443fc6548749b731a3aaab7ea9219616a6ea60dda1b3bd",
+    "resources-after.log": "72fc6283dceb4ebf73e87cc99832c71590de09e81adcd6d03d4a865e5c1db03e",
+    "resources-before.log": "c4af7064b8ec5ddb82b3c6684d1b80851135a250e7672d7bf247ae57054e17eb",
+    "resources-final.log": "52804f9829adf3bba42720b8b28b027775fd3193fc176947fa1299e42b524816",
+    "start-access.log": "5cbd4d21e0c566b61c39ca308ecbe6d732621eb95f1ee9537a4a78c708f0099d",
+    "start-discovery-failed.log": "27ca4ec60412088e85e9c4b901102eda0e066e6fe34775823419c2f127391fa8",
+    "start-final-mounts.log": "56443cd382490d10f9cc9faae34185818bcf82f2e48a2cacad1628124aa4e028",
+    "start-final.log": "f7420b2e02de93f13e83518e77d69c8fdaf7e8f1d0f8868aa9dd93b76275dee9",
+    "start-marker-failed.log": "4231b3621e03a97da8c066fe866e74b927d90f32c1f79a705daa160dbbb61c1d",
+    "start.log": "6a8393f39114263e2ab857df3475d54af187d6ab567831f37e193cb065a446dc",
+    "stop.log": "6d46169db4a69ced60836cab22edf6f7cc684bb1729d825383283ea25927bf80"
+  },
+  "hash_definition": "Sources normalized CRLF to LF, as Git blobs; logs original bytes. Manifest excluded to avoid self-reference."
+}

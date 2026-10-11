@@ -21,7 +21,7 @@ before(async () => {
   server = await createServer({
     cacheDir: 'node_modules/.vite-route-tests',
     optimizeDeps: { noDiscovery: true, include: [] },
-    server: { middlewareMode: true, hmr: false, watch: null },
+    server: { middlewareMode: true, hmr: false, ws: false, watch: null },
     appType: 'custom',
   })
   AppRouter = (await server.ssrLoadModule('/src/routes/AppRouter.jsx')).default
@@ -81,7 +81,7 @@ test('separa la identidad Microsoft del perfil, sin deducir datos ni cargar el e
   assert.match(html, /Cuenta Microsoft/)
   assert.match(html, /sesion@example.test/)
   assert.match(html, /Consultando tu perfil/)
-  assert.match(html, /Usuarios · API real/)
+  assert.match(html, /Datos de contacto/)
   assert.doesNotMatch(html, /Ver perfil de ejemplo|Crear perfil|Todavía no tienes un perfil registrado/)
   assert.doesNotMatch(html, /alex@example.test|TOKEN-NO-VISIBLE|OBJECT-NO-VISIBLE|TENANT-NO-VISIBLE/)
   assert.match(html, /Diagnóstico de acceso a la API/)

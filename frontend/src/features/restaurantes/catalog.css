@@ -1,0 +1,24 @@
+.client-catalog-page > h1 { margin-bottom: var(--space-2); }
+.client-catalog-page > p { margin-bottom: var(--space-8); color: var(--color-text-muted); }
+.client-catalog-panel { display: grid; gap: var(--space-4); }
+.client-catalog { display: grid; gap: var(--space-6); }
+.client-catalog h2 { font-size: var(--text-lg); margin: 0; }
+.client-catalog__toolbar { display: flex; justify-content: space-between; align-items: start; gap: var(--space-6); }
+.client-catalog__toolbar p, .client-catalog__hint { color: var(--color-text-muted); margin: var(--space-2) 0 0; font-size: var(--text-sm); }
+.client-catalog__toolbar > .ui-button { flex-shrink: 0; }
+.client-catalog__selection { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-6); align-items: start; }
+.client-catalog .ui-input { min-height: 44px; }
+.client-catalog__restaurant { display: grid; justify-items: start; gap: var(--space-2); padding: var(--space-4); background: var(--color-primary-soft); border-radius: var(--radius-md); overflow-wrap: anywhere; }
+.client-catalog__restaurant > span:first-child { color: var(--color-text-muted); font-size: var(--text-sm); }
+.client-catalog__restaurant p { margin: 0; font-size: var(--text-sm); }
+.client-catalog__products { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+.client-catalog__product { min-width: 0; display: flex; flex-direction: column; align-items: start; gap: var(--space-3); padding: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); overflow-wrap: anywhere; }
+.client-catalog__product h3 { font-size: var(--text-lg); margin: 0; }
+.client-catalog__price { margin: 0 0 var(--space-3); font-weight: 600; font-variant-numeric: tabular-nums; }
+.client-catalog__product .ui-button { margin-top: auto; width: 100%; min-height: 44px; white-space: normal; }
+.client-catalog__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+@media (max-width: 640px) {
+  .client-catalog__toolbar { flex-direction: column; gap: var(--space-4); }
+  .client-catalog__toolbar > .ui-button { width: 100%; }
+  .client-catalog__selection { grid-template-columns: minmax(0, 1fr); }
+}

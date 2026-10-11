@@ -1,0 +1,12 @@
+# Optional local packaging overlay. No publication or deployment.
+services:
+  rabbit-admin:
+    build:
+      context: ../../backend/services/rabbit-admin-service
+      dockerfile: ../../../infrastructure/aws/rabbitmq/Dockerfile.rabbit-admin
+      additional_contexts:
+        maven-wrapper: ../../backend/services/usuarios-service
+  frontend:
+    build:
+      args:
+        VITE_PEDIDOS_CARRITO_MODE: HTTP

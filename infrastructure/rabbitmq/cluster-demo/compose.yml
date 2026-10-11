@@ -1,0 +1,69 @@
+name: p360-cluster73-demo
+x-node: &node
+  image: rabbitmq:4.1.8-management-alpine@sha256:b586ea9784425774ac56f3d4919e4f723edb3287ef8a6c4c8f0df8fe569747c3
+  entrypoint: [sh, /demo/bootstrap.sh]
+  environment:
+    RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 2:2"
+  networks: [demo, local-access]
+  secrets:
+    - {source: demo_admin, target: /demo/private/ADMIN_PASSWORD}
+    - {source: demo_cookie, target: /demo/private/ERLANG_COOKIE}
+    - {source: demo_marker, target: /demo/private/LOCAL_SYNTHETIC_CLUSTER_73}
+    - {source: demo_ca, target: /demo/private/tls/ca.pem}
+    - {source: demo_cert, target: /demo/private/tls/server.pem}
+    - {source: demo_key, target: /demo/private/tls/server-key.pem}
+  mem_limit: 768m
+  cpus: 1
+  pids_limit: 256
+  security_opt: [no-new-privileges:true]
+  restart: "no"
+  healthcheck:
+    test: [CMD-SHELL, "rabbitmq-diagnostics -q ping && rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_local_alarms"]
+    interval: 10s
+    timeout: 10s
+    start_period: 35s
+    retries: 12
+services:
+  rabbit-demo-1:
+    <<: *node
+    hostname: rabbit-demo-1
+    environment:
+      RABBITMQ_NODENAME: rabbit@rabbit-demo-1
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 2:2"
+    ports: ["127.0.0.1:5783:5671", "127.0.0.1:15783:15671"]
+    volumes:
+      - node1:/var/lib/rabbitmq
+      - ./bootstrap.sh:/demo/bootstrap.sh:ro
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+  rabbit-demo-2:
+    <<: *node
+    hostname: rabbit-demo-2
+    environment:
+      RABBITMQ_NODENAME: rabbit@rabbit-demo-2
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 2:2"
+    ports: ["127.0.0.1:5784:5671", "127.0.0.1:15784:15671"]
+    volumes:
+      - node2:/var/lib/rabbitmq
+      - ./bootstrap.sh:/demo/bootstrap.sh:ro
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+networks:
+  demo:
+    name: p360-cluster73-demo
+    internal: true
+  # Docker 29 does not publish ports on internal-only networks. Dedicated access
+  # bridge enables loopback TLS probes; it is not shared with any other stack.
+  local-access:
+    name: p360-cluster73-demo-access
+    driver: bridge
+volumes:
+  node1:
+  node2:
+secrets:
+  demo_admin: {file: ./.local/private/ADMIN_PASSWORD}
+  demo_cookie: {file: ./.local/private/ERLANG_COOKIE}
+  demo_marker: {file: ./.local/private/LOCAL_SYNTHETIC_CLUSTER_73}
+  demo_ca: {file: ./.local/private/tls/ca.pem}
+  demo_cert: {file: ./.local/private/tls/server.pem}
+  demo_key: {file: ./.local/private/tls/server-key.pem}

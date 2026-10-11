@@ -4,6 +4,8 @@ import { useAuthSession } from '../../auth/useAuthSession.js'
 import { createCartController } from '../carrito/cartService.js'
 import { createCartHttpAdapter, createCatalogHttpAdapter, commerceFailure } from '../carrito/cartHttpAdapter.js'
 import RealCatalog from '../carrito/RealCatalog.jsx'
+import Button from '../../components/ui/Button.jsx'
+import { Alert } from '../../components/feedback/Feedback.jsx'
 
 /** Catálogo de restaurantes y productos, con agregado al carrito real vía BFF. */
 export default function RealCatalogPanel() {
@@ -43,20 +45,21 @@ export default function RealCatalogPanel() {
     if (ok) setMessage('Producto agregado a tu carrito.')
   }
 
-  return <div aria-busy={busy}>
-    <p>Catálogo consultado mediante el BFF.</p>
-    {busy && <p role="status">Consultando catálogo…</p>}
-    {error && <div role="alert" className="cart-error">
-      <p>{error.message}</p>
-      {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
-        onClick={() => authorizeApi(destination)}>Continuar con Microsoft</button>}
-      {error.code === 'UNAUTHORIZED' && <button type="button" className="button button--primary" disabled={busy}
-        onClick={() => login(destination)}>Volver a iniciar sesión</button>}
+  return <div className="client-catalog-panel" aria-busy={busy}>
+    {busy && <p role="status">{state.status === 'saving' ? 'Agregando producto al carrito…' : 'Preparando tu carrito…'}</p>}
+    {error && <div>
+      {(state.error || !catalog) && <Alert>{error.message}</Alert>}
+      <div className="client-catalog__actions">
+      {error.code === 'INTERACTION_REQUIRED' && <Button disabled={busy}
+        onClick={() => authorizeApi(destination)}>Continuar con Microsoft</Button>}
+      {error.code === 'UNAUTHORIZED' && <Button disabled={busy}
+        onClick={() => login(destination)}>Volver a iniciar sesión</Button>}
       {loadFailed && !['INTERACTION_REQUIRED', 'UNAUTHORIZED'].includes(error.code)
-        && <button type="button" className="button button--secondary" disabled={busy}
-          onClick={() => controller.load()}>Reintentar consulta</button>}
+        && <Button variant="secondary" disabled={busy}
+          onClick={() => controller.load()}>Reintentar consulta</Button>}
+      </div>
     </div>}
-    {message && <p role="status">{message}</p>}
+    {message && <Alert tone="success">{message}</Alert>}
     {catalog && !sessionBusy && <RealCatalog adapter={catalog} disabled={busy || Boolean(state.error) || !state.cart}
       onError={setCatalogError} onAdd={add} />}
   </div>

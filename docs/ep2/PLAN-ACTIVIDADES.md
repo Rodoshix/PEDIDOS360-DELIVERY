@@ -1,0 +1,132 @@
+# Plan de Actividades — Pedidos360 EP2
+
+> El seguimiento oficial de EP2 se realiza mediante GitHub Issues, Pull Requests, este plan versionado y ramas de trabajo por integrante cuando corresponda.
+
+## Corte de aceptación al 11-10-2026
+
+| Etapa | Estado técnico del cierre |
+|---|---|
+| Consultas de cuatro dominios | Acreditadas AWS; actualmente HTTP compatible |
+| Pago→Pedido | Evento y persistencia acreditados AWS; POST CLIENTE parcial por 502 |
+| Pedido→Carrito | Implementado/local; pendiente aceptación funcional AWS |
+| Gate Edge y ACK_SENT | #116/#117 Draft, probados localmente, no desplegados |
+| Admin / clúster demo | Evidencia local; DELETE queue deshabilitado por seguridad; no afirmar cumplimiento integral cloud |
+| Integración/release | #113–#117 Draft; validación conjunta local y documentación de cierre preparadas, sin merge/tag/release |
+
+Este corte distingue aceptación de ejecución e integración Git; no edita estados de Issues. [Matriz actual](CIERRE-V080.md). La tabla inicial siguiente se conserva como histórica.
+
+## Estados sugeridos
+
+```text
+Backlog
+Ready
+In Progress
+Review
+Testing
+Done
+```
+
+## Actividades históricas de planificación
+
+| Issue | Actividad | Responsable | Dependencias | Estado inicial |
+|---|---|---|---|---|
+| [#64](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/64) | Arquitectura RabbitMQ y contrato de mensajería | Integrante 1 | — | Done |
+| [#65](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/65) | Transactional Outbox y Publisher en Pagos | Integrante 1 | #64 | Done |
+| [#66](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/66) | Consumer principal de confirmación en Pedidos | Integrante 1 | #64 | Done |
+| [#67](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/67) | RabbitAdmin | Integrante 2 | #64 / #69 | Ready |
+| [#68](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/68) | ACK/NACK, Retry, DLX/DLQ y pruebas de fallos | Integrante 3 | #66; policies de plataforma coordinadas con #69 | Done — PR #84 integrado |
+| [#69](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/69) | Plataforma RabbitMQ | Integrante 4 | #64 / adenda PR #83 / núcleo PR #84; coordinar #77 | Review — plataforma local en esta rama, sin merge |
+| [#70](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/70) | Integración y corte HTTP → RabbitMQ | Integrante 5 | #65 / #66 / #68 / #69 / #77–#82 | Backlog |
+| [#71](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/71) | Integración AWS | Integrante 5 | #69 para infraestructura; #70 para E2E funcional | Review — infraestructura validada; artefactos reproducibles en PR, sin merge; E2E pendiente #70 |
+| [#72](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/72) | Pruebas E2E y regresión de Entrega 1 | Integrante 3 + Integrante 5 | #70 / #71 | Backlog |
+| [#73](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/73) | Cluster demostrativo, solo si se confirma como requisito | Integrante 4 | Confirmación explícita del requisito / #69 | Backlog |
+| [#74](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/74) | Defensa técnica y evidencias finales | Todos; integrador: Integrante 5 | #67 / #72 / #73 (solo si se confirma obligatorio) | Backlog |
+
+
+## Hitos internos propuestos
+
+Las fechas deben ajustarse al calendario real del grupo.
+
+### Hito A — Arquitectura cerrada
+- topología;
+- contrato;
+- ownership;
+- issues/ramas.
+
+### Hito B — Desarrollo paralelo
+- I1: outbox/publisher/consumer;
+- I2: RabbitAdmin;
+- I3: reliability/tests;
+- I4: broker/plataforma.
+
+### Hito C — Integración local
+- merge controlado;
+- RabbitMQ real;
+- Testcontainers;
+- happy path;
+- fallos.
+
+### Hito D — AWS
+- medir recursos;
+- desplegar broker;
+- secretos;
+- persistencia;
+- validación E2E.
+
+### Hito E — Entrega
+- regresión;
+- evidencias;
+- defensa;
+- plan actualizado;
+- revisión contra pauta.
+
+## Actualización del plan
+
+Al inicio de cada clase hasta la fecha indicada por el docente:
+
+- actualizar el seguimiento en GitHub Issues y Pull Requests;
+- actualizar este archivo si corresponde;
+- conservar evidencia/captura del estado;
+- no marcar `Done` sin PR integrado y pruebas.
+
+## Definition of Done de una actividad
+
+- [ ] Implementación.
+- [ ] Tests.
+- [ ] Documentación.
+- [ ] Evidencia.
+- [ ] PR.
+- [ ] Review.
+- [ ] Integración comprobada.
+
+## Trazabilidad de esta incorporación
+
+- Los números de la tabla corresponden a issues reales; nuevos issues OPEN sin assignee por ausencia de mapeo confirmado.
+- #64 CLOSED/COMPLETED: documentación integrada por PR #75; #65/#66 CLOSED/COMPLETED: núcleo integrado por PR #76 (22f5c4d). Los estados Ready/Backlog restantes son planificación, no implementación comprobada.
+- Ready expresa el estado inicial planificado; deben satisfacerse las dependencias antes de implementar o integrar la pieza correspondiente.
+- #73 permanece condicionado a la confirmación explícita del requisito de cluster; no autoriza desplegarlo.
+- No se crean ramas de integrantes en esta incorporación. Los nombres en misiones/issues son recomendaciones futuras.
+
+## Ampliación posterior: seis microservicios
+
+Fuente: [adenda aprobada](ADENDA-RABBITMQ-6-SERVICIOS.md). Objetivo 21 queues/7 exchanges; sin implementación en este PR.
+
+| Issue | Actividad | Responsable | Dependencias | Estado inicial |
+|---|---|---|---|---|
+| [#77](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/77) | EP2-12 — Base común request/reply y reliability simple | Ejecución por confirmar; coordinación I1/I5 | Documentación aprobada en este PR; coordinación con #69 para pruebas/plataforma. No depende de consumers posteriores. | Backlog |
+| [#78](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/78) | EP2-13 — Usuarios RabbitMQ: consulta de perfil actual | Responsable del proyecto; auditoría técnica Codex | #77; #69; documentación aprobada. | Implementado — PR #89 MERGED; auditado sin blockers funcionales; cierre documental pendiente |
+| [#79](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/79) | EP2-14 — Restaurantes RabbitMQ: consulta de listado | Auditoría técnica del responsable; sin atribuir aprobaciones internas | #77; #69; documentación aprobada. | Implementado en feature/ep2-restaurantes-rabbit; pendiente de revisión e integración. [Evidencia](RESTAURANTES-RABBITMQ.md) |
+| [#80](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/80) | EP2-15 — Productos RabbitMQ: disponibles por restaurante | Responsable del proyecto; auditoría técnica Codex | #77; #69; documentación aprobada. | Implementado — PR #88 MERGED; auditado sin blockers funcionales; cierre documental pendiente |
+| [#81](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/81) | EP2-16 — Pagos RabbitMQ query: consulta por ID | Ejecución por confirmar; coordinación I1/I5 | #77; #69; #65 completado; documentación aprobada. | Backlog |
+| [#82](https://github.com/Rodoshix/PEDIDOS360-DELIVERY/issues/82) | EP2-17 — Carrito RabbitMQ y coordinación desde Pedidos | Ejecución por confirmar; coordinación I1/I5 | #77 para base de mensajería/handoff simple; #69 plataforma suficiente; contrato/vinculación aprobados. Outbox de Pedidos es entregable de este issue, no dependencia de sí mismo. | Backlog |
+
+#68 conserva reliability avanzada de Pedidos. #69 plataforma ampliada; #70 cortes graduales. #77 entrega base simple separada. No reasignar misiones anteriores sin confirmar responsable.
+
+Estado 7 de octubre de 2026: #68 CLOSED/COMPLETED, PR #84 integrado en ff40c7d;
+#69 integrado mediante PR #85 (d96e247), con plataforma local y evidencia en
+[PLATAFORMA-RABBITMQ.md](PLATAFORMA-RABBITMQ.md). #77–#82 conservan alcance y
+dependencias; #70 no fue iniciado ni se cambiaron flags del stack. AWS final en #71.
+
+Nota de avance para #78/#80: la base común vive en `backend/shared/p360-messaging-core` y su diseño está en [REQUEST-REPLY-RABBITMQ.md](REQUEST-REPLY-RABBITMQ.md). #78 y #80 tienen sus processors y pruebas de servicio integrados por PR #89 y #88, respectivamente. El registro de operaciones concretas y el corte BFF quedan en #70; no se presentan como ya implementados. #79/#81 siguen fuera de este cierre. La declaración operativa de topología y policies pertenece a #69. La decisión de cierre y sustitución de revisiones internas está en [CIERRE-78-80.md](CIERRE-78-80.md).
+
+Orden: adenda integrada → #77 y #69 coordinados → #78/#79/#80/#81; #68 en paralelo. #82 requiere contrato/vinculación revisados, base #77 y plataforma suficiente #69; su outbox es entregable propio. #70 depende de todas las piezas para cierre completo. Las ramas de los issues son sugerencias futuras; no creadas aquí. Seguimiento mediante Issues, PRs y este plan.

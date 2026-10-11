@@ -5,6 +5,9 @@ import { useAuthSession } from '../../auth/useAuthSession.js'
 import { createCartController } from './cartService.js'
 import { createCartHttpAdapter, commerceFailure } from './cartHttpAdapter.js'
 import CartSummary from './CartSummary.jsx'
+import LoadingState from '../../components/feedback/LoadingState.jsx'
+import Toast from '../../components/feedback/Toast.jsx'
+import Dialog from '../../components/ui/Dialog.jsx'
 
 export default function RealCartPanel() {
   const [controller] = useState(createCartController)
@@ -44,35 +47,13 @@ export default function RealCartPanel() {
     const ok = await controller.write(command)
     if (ok) {
       setConfirmation(null)
-      setMessage('Carrito actualizado en el servidor.')
+      setMessage('Carrito actualizado.')
     }
     return ok
   }
   function ask(command, button) { originButton.current = button; setConfirmation(command) }
-  return <div aria-busy={busy}>
-    <p>Carrito y catálogo reales mediante el BFF. No se utilizan ejemplos como respaldo.</p>
-    {busy && <p role="status">{state.status === 'saving' ? 'Guardando carrito…' : 'Consultando tu carrito…'}</p>}
-    {error && <div ref={notice} tabIndex={-1} role="alert" className="cart-error">
-      <p>{error.message}</p>
-      {state.operation === 'write' && <p>El estado mostrado puede estar desactualizado. Actualiza el carrito antes de otra operación; las cantidades sin aplicar se descartarán al consultar.</p>}
-      {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
-        onClick={() => authorizeApi(destination)}>Continuar con Microsoft</button>}
-      {error.code === 'UNAUTHORIZED' && <button type="button" className="button button--primary" disabled={busy}
-        onClick={() => login(destination)}>Volver a iniciar sesión</button>}
-    </div>}
-    {message && <p ref={notice} tabIndex={-1} role="status">{message}</p>}
-    {confirmation && <section ref={confirmNotice} tabIndex={-1} className="cart-card" aria-labelledby="cart-confirm-heading">
-      <h2 id="cart-confirm-heading">¿Confirmar eliminación?</h2>
-      <p>{confirmation.type === 'clear' ? 'Se quitarán todos los productos de tu carrito.' : 'Se quitará este producto de tu carrito.'}</p>
-      <button type="button" className="button button--secondary" disabled={busy} onClick={() => {
-        setConfirmation(null); originButton.current?.focus()
-      }}>Cancelar eliminación</button>
-      <button type="button" className="button button--primary" disabled={busy || Boolean(state.error)}
-        onClick={() => apply(confirmation)}>Confirmar eliminación</button>
-    </section>}
-    {state.cart && !failedRead && !sessionBusy && !['idle', 'loading'].includes(state.status) && <CartSummary mode="real" cart={state.cart} disabled={disabled} saving={state.status === 'saving'}
-      onQuantity={(id, cantidad) => apply({ type: 'quantity', productoId: id, cantidad })}
-      onRemove={(item, button) => ask({ type: 'remove', productoId: item.productoId }, button)} />}
+  const showSummary = Boolean(state.cart && !failedRead && !sessionBusy && !['idle', 'loading'].includes(state.status))
+  const actions = (
     <div className="cart-actions">
       {!disabled && state.cart?.items.length > 0 && <Link className="button button--primary"
         to={ROUTE_PATHS.confirmarPedido}>Continuar a confirmar pedido</Link>}
@@ -82,6 +63,35 @@ export default function RealCartPanel() {
       {state.cart?.items.length > 0 && !failedRead && <button type="button" className="button button--secondary" disabled={disabled}
         onClick={event => ask({ type: 'clear' }, event.currentTarget)}>Vaciar carrito</button>}
     </div>
+  )
+  return <div className="real-cart" aria-busy={busy}>
+    {busy && <LoadingState compact={state.status === 'saving'} label={state.status === 'saving' ? 'Guardando carrito…' : 'Consultando tu carrito…'} />}
+    {error && <div ref={notice} tabIndex={-1} role="alert" className="cart-error">
+      <p>{error.message}</p>
+      {state.operation === 'write' && <p>El estado mostrado puede estar desactualizado. Actualiza el carrito antes de otra operación; las cantidades sin aplicar se descartarán al consultar.</p>}
+      {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
+        onClick={() => authorizeApi(destination)}>Continuar con Microsoft</button>}
+      {error.code === 'UNAUTHORIZED' && <button type="button" className="button button--primary" disabled={busy}
+        onClick={() => login(destination)}>Volver a iniciar sesión</button>}
+    </div>}
+    {message && <Toast ref={notice} message={message} onDismiss={() => setMessage('')} />}
+    <Dialog open={Boolean(confirmation)} title="¿Confirmar eliminación?"
+      description={confirmation?.type === 'clear' ? 'Se quitarán todos los productos de tu carrito.' : 'Se quitará este producto de tu carrito.'}
+      contentRef={confirmNotice} returnFocusRef={originButton} dismissDisabled={busy}
+      onOpenChange={open => { if (!open && !busy) setConfirmation(null) }}>
+      <div className="cart-actions">
+      <button type="button" className="button button--secondary" disabled={busy} onClick={() => {
+        setConfirmation(null); originButton.current?.focus()
+      }}>Cancelar eliminación</button>
+      <button type="button" className="button button--primary cart-destructive" disabled={busy || Boolean(state.error)}
+        onClick={() => apply(confirmation)}>Confirmar eliminación</button>
+      </div>
+    </Dialog>
+    {showSummary && <CartSummary mode="real" cart={state.cart} disabled={disabled} saving={state.status === 'saving'}
+      onQuantity={(id, cantidad) => apply({ type: 'quantity', productoId: id, cantidad })}
+      onRemove={(item, button) => ask({ type: 'remove', productoId: item.productoId }, button)} actions={actions} />}
+
+    {!showSummary && actions}
     <p>Aplica los cambios de cantidad antes de continuar. Las cantidades sin aplicar se pierden al actualizar, salir o cambiar de cuenta. En el siguiente paso podrás revisar la dirección y confirmar el pedido.</p>
   </div>
 }

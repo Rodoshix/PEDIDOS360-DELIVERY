@@ -1,17 +1,17 @@
 import { Link, Outlet, useLocation } from 'react-router'
 import { useAuthSession } from './useAuthSession.js'
 import { ROUTE_PATHS } from '../routes/routePaths.js'
+import LoadingState from '../components/feedback/LoadingState.jsx'
 
 export default function RequireSession() {
   const { account, busy, login } = useAuthSession()
   const location = useLocation()
 
-  if (busy) return <section className="container account-section" role="status">Comprobando tu sesión…</section>
+  if (busy) return <section className="container account-section"><LoadingState label="Comprobando tu sesión…" /></section>
   if (account) return <Outlet />
 
   return (
-    <section className="container account-section">
-      <p className="eyebrow">Acceso a tu cuenta</p>
+    <section className="container account-section auth-entry">
       <h1>Inicia sesión para continuar</h1>
       <p>Esta página requiere una sesión. Después de entrar con Microsoft volverás aquí.</p>
       <div className="account-actions">

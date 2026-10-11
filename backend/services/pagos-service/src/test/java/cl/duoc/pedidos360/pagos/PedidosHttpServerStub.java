@@ -26,6 +26,10 @@ final class PedidosHttpServerStub implements AutoCloseable {
     private volatile int getStatus = 200;
     private volatile String getEstado = "CREADO";
     private volatile int internoStatus = 204;
+    private String rawBody;
+    private String ultimoPath;
+    void responderJson(String body) { rawBody=body; }
+    String ultimoPath() { return ultimoPath; }
 
     PedidosHttpServerStub() throws IOException {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -65,6 +69,7 @@ final class PedidosHttpServerStub implements AutoCloseable {
 
     private void handle(HttpExchange exchange) throws IOException {
         String path = exchange.getRequestURI().getPath();
+        ultimoPath=path;
         String method = exchange.getRequestMethod();
         String authorization = exchange.getRequestHeaders().getFirst("Authorization");
         ultimoAuthorization.set(authorization);
@@ -83,8 +88,9 @@ final class PedidosHttpServerStub implements AutoCloseable {
                     responder(exchange, putStatus, "{\"detail\":\"rechazado\"}");
                 }
             } else if ("GET".equals(method)) {
+                if (rawBody != null) { responder(exchange,200,rawBody); return; }
                 if (getStatus == 200) {
-                    responder(exchange, 200, "{\"pedidoId\":1,\"usuarioId\":10,\"estado\":\"" + getEstado
+                    responder(exchange, 200, "{\"pedidoId\":1,\"tenantId\":\"11111111-1111-1111-1111-111111111111\",\"tenantOrigin\":\"AUTHENTICATED_NEW\",\"usuarioId\":10,\"estado\":\"" + getEstado
                             + "\",\"total\":13980,\"moneda\":\"CLP\"}");
                 } else {
                     responder(exchange, getStatus, "{\"detail\":\"no disponible\"}");

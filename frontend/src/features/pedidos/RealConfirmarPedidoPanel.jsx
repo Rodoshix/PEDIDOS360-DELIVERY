@@ -6,7 +6,11 @@ import { createPedidoHttpAdapter, pedidoFailure } from './pedidoHttpAdapter.js'
 import { validatePedidoDraft } from './pedidoOperaciones.js'
 import { formatClp } from './pedidoFormat.js'
 import { ROUTE_PATHS } from '../../routes/routePaths.js'
+import { checkoutCoordination } from '../../config/checkoutCoordination.js'
 import './pedidos.css'
+import './clientCommerce.css'
+import LoadingState from '../../components/feedback/LoadingState.jsx'
+import { Alert, EmptyState } from '../../components/feedback/Feedback.jsx'
 
 /**
  * Códigos que representan un fallo DEFINITIVO: la creación no ocurrió y reintentar
@@ -38,13 +42,18 @@ export default function RealConfirmarPedidoPanel() {
   const [creado, setCreado] = useState(null)
   // 'pendiente' | 'en_curso' | 'exitoso' | 'fallido'
   const [vaciado, setVaciado] = useState(null)
+  const [consultandoCarrito, setConsultandoCarrito] = useState(false)
+  const [consultaCarritoFallida, setConsultaCarritoFallida] = useState(false)
+  const consultandoRef = useRef(false)
   // Resultado INCIERTO de la creación: bloquea nuevos intentos hasta reconciliar.
   const [incierto, setIncierto] = useState(false)
   const [creando, setCreando] = useState(false)
   // Guardas síncronas: evitan envíos concurrentes sin depender de un render pendiente.
   const enviandoRef = useRef(false)
+  const pedidoRegistradoRef = useRef(false)
   const vaciandoRef = useRef(false)
   const errorRender = useRef(null)
+  const recuperacionRef = useRef(null)
 
   useEffect(() => {
     let disposed = false
@@ -63,18 +72,62 @@ export default function RealConfirmarPedidoPanel() {
         if (!disposed) setCargando(false)
       }
     }).catch(error => { if (!disposed) { setCargando(false); setCartError(error) } })
-    return () => { disposed = true; controller.cancelPending() }
+    return () => { disposed = true; recuperacionRef.current?.abort(); controller.cancelPending() }
   }, [controller, sessionBusy])
 
   const busy = sessionBusy || cargando || creando || state.status === 'saving'
   const error = state.error || (cartError ? pedidoFailure(cartError) : null)
   useEffect(() => { if (error) errorRender.current?.focus() }, [error])
+  useEffect(() => {
+    if (incierto || vaciado === 'fallido' || consultaCarritoFallida) errorRender.current?.focus()
+  }, [incierto, vaciado, consultaCarritoFallida])
 
   const items = Array.isArray(cart?.items) ? cart.items : []
   const restauranteId = cart?.restauranteId ?? null
   const total = items.reduce((sum, item) => sum + (item.subtotal ?? 0), 0)
 
+  async function recuperarCarritoInicial() {
+    if (busy || recuperacionRef.current || !cartError || error?.code !== 'LOAD_FAILED'
+      || enviandoRef.current || pedidoRegistradoRef.current || incierto) return
+    const abort = new AbortController()
+    recuperacionRef.current = abort
+    setCargando(true)
+    setCartError(null)
+    try {
+      const client = (await import('../../services/httpClient.js')).default
+      abort.signal.throwIfAborted()
+      const response = await client.get('/carrito', { signal: abort.signal })
+      if (abort.signal.aborted) return
+      if (response.status !== 200) throw new Error('carrito')
+      setCart(response.data)
+    } catch (failure) {
+      if (!abort.signal.aborted) setCartError(failure)
+    } finally {
+      if (recuperacionRef.current === abort) recuperacionRef.current = null
+      if (!abort.signal.aborted) setCargando(false)
+    }
+  }
+
+  async function consultarCarrito() {
+    if (consultandoRef.current) return
+    consultandoRef.current = true
+    setConsultandoCarrito(true)
+    setConsultaCarritoFallida(false)
+    try {
+      const client = (await import('../../services/httpClient.js')).default
+      const response = await client.get('/carrito')
+      if (response.status !== 200) throw new Error('carrito')
+      setCart(response.data)
+    } catch {
+      setConsultaCarritoFallida(true)
+    } finally {
+      consultandoRef.current = false
+      setConsultandoCarrito(false)
+    }
+  }
+
   async function vaciarCarrito() {
+    if (checkoutCoordination !== 'HTTP') return false
     // Guarda síncrona: impide DELETE solapados (botón + automático).
     if (vaciandoRef.current) return false
     vaciandoRef.current = true
@@ -96,7 +149,7 @@ export default function RealConfirmarPedidoPanel() {
   async function confirmar(event) {
     event.preventDefault()
     // Guarda síncrona: bloquea doble clic, envíos solapados y reintentos tras resultado incierto.
-    if (busy || enviandoRef.current || incierto) return
+    if (busy || enviandoRef.current || incierto || pedidoRegistradoRef.current) return
     const draft = {
       restauranteId,
       direccionEntrega,
@@ -118,76 +171,94 @@ export default function RealConfirmarPedidoPanel() {
         return
       }
       const pedido = controller.getSnapshot().pedido
+      pedidoRegistradoRef.current = true
       setCreado({ pedidoId: pedido.pedidoId, total: pedido.total })
-      setVaciado('pendiente')
-      await vaciarCarrito()
+      if (checkoutCoordination === 'HTTP') {
+        setVaciado('pendiente')
+        await vaciarCarrito()
+      }
     } finally {
       enviandoRef.current = false
       setCreando(false)
     }
   }
 
-  return <div className="pedidos-section" aria-busy={busy}>
-    {cargando && <p role="status">Consultando tu carrito…</p>}
-    {error && !creado && !incierto && <div ref={errorRender} role="alert" className="pedidos-error">
+  return <div className="pedidos-section client-commerce" aria-busy={busy}>
+    {cargando && <LoadingState label="Consultando tu carrito…" compact />}
+    {error && !creado && !incierto && <div ref={errorRender} tabIndex={-1} role="alert" className="pedidos-error">
       <p>{error.message}</p>
-      {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="button button--primary" disabled={busy}
+      {cartError && error.code === 'LOAD_FAILED' && <button type="button" className="ui-button ui-button--secondary"
+        disabled={busy} onClick={() => recuperarCarritoInicial()}>Reintentar consulta del carrito</button>}
+      {error.code === 'INTERACTION_REQUIRED' && <button type="button" className="ui-button ui-button--primary" disabled={busy}
         onClick={() => authorizeApi(destination)}>Continuar con Microsoft</button>}
-      {error.code === 'UNAUTHORIZED' && <button type="button" className="button button--primary" disabled={busy}
+      {error.code === 'UNAUTHORIZED' && <button type="button" className="ui-button ui-button--primary" disabled={busy}
         onClick={() => login(destination)}>Volver a iniciar sesión</button>}
     </div>}
 
-    {incierto && <div role="alert" className="pedidos-error">
+    {incierto && <div ref={errorRender} tabIndex={-1} role="alert" className="pedidos-error">
       <h2>Resultado incierto al crear el pedido</h2>
       <p>No se pudo confirmar la respuesta del servidor. El pedido <strong>puede haberse creado</strong>.
         Para evitar duplicados, no se enviará otro pedido: revisa tu historial para reconciliar.</p>
       <div className="pedidos-actions">
-        <Link className="button button--primary" to={ROUTE_PATHS.misPedidos}>Ver mis pedidos</Link>
+        <Link className="ui-button ui-button--primary" to={ROUTE_PATHS.misPedidos}>Ver mis pedidos</Link>
       </div>
     </div>}
 
     {creado && <div className="pedidos-card">
       <h2>Pedido #{creado.pedidoId} creado</h2>
       <p>Total {formatClp(creado.total)}. Tu pedido ya está registrado; no se creará otro.</p>
+      {checkoutCoordination === 'RABBITMQ' && <div>
+        <p role="status">El pedido fue registrado. El vaciado del carrito se procesa separadamente; todavía no está confirmado.</p>
+        <button type="button" className="ui-button ui-button--secondary" disabled={busy || consultandoCarrito}
+          onClick={() => consultarCarrito()}>Consultar carrito</button>
+        {consultandoCarrito && <p role="status">Consultando tu carrito…</p>}
+        {consultaCarritoFallida && <p ref={errorRender} tabIndex={-1} className="ui-alert ui-alert--danger" role="alert">No se pudo consultar el carrito. Puedes volver a consultar sin crear otro pedido.</p>}
+        {!consultandoCarrito && !consultaCarritoFallida && <p>Última lectura: {items.length} producto(s) en el carrito. Una lectura vacía no confirma qué operación lo vació.</p>}
+      </div>}
       {vaciado === 'en_curso' && <p role="status">Vaciando el carrito…</p>}
-      {vaciado === 'exitoso' && <p role="status">Carrito vaciado.</p>}
-      {vaciado === 'fallido' && <div role="alert" className="pedidos-error">
+      {vaciado === 'exitoso' && <Alert tone="success">Carrito vaciado.</Alert>}
+      {vaciado === 'fallido' && <div ref={errorRender} tabIndex={-1} role="alert" className="pedidos-error">
         <p>El pedido se creó, pero no se pudo vaciar el carrito. Los productos siguen ahí.</p>
-        <button type="button" className="button button--secondary" disabled={busy}
+        <button type="button" className="ui-button ui-button--secondary" disabled={busy}
           onClick={() => vaciarCarrito()}>Reintentar vaciar carrito</button>
       </div>}
       <div className="pedidos-actions">
-        <Link className="button button--primary" to={ROUTE_PATHS.pago.replace(':pedidoId', creado.pedidoId)}>Ir al pago</Link>
-        <Link className="button button--secondary" to={ROUTE_PATHS.misPedidos}>Ver mis pedidos</Link>
+        <Link className="ui-button ui-button--primary" to={ROUTE_PATHS.pago.replace(':pedidoId', creado.pedidoId)}>Ir al pago</Link>
+        <Link className="ui-button ui-button--secondary" to={ROUTE_PATHS.misPedidos}>Ver mis pedidos</Link>
       </div>
     </div>}
 
     {!creado && !incierto && !cargando && items.length === 0 && !error && <div className="pedidos-card">
-      <p>Tu carrito está vacío. Agrega productos desde Restaurantes para confirmar un pedido.</p>
-      <Link className="button button--primary" to={ROUTE_PATHS.restaurantes}>Explorar restaurantes</Link>
+      <EmptyState title="Tu carrito está vacío.">Agrega productos desde Restaurantes para confirmar un pedido.</EmptyState>
+      <Link className="ui-button ui-button--primary" to={ROUTE_PATHS.restaurantes}>Explorar restaurantes</Link>
     </div>}
     {!creado && !incierto && !cargando && items.length > 0 && <form className="pedidos-card" onSubmit={confirmar} noValidate>
       <h2>Datos de entrega</h2>
       <p>Restaurante #{restauranteId} · {items.length} producto(s) · Total {formatClp(total)}</p>
-      <label>Dirección de entrega
-        <input type="text" value={direccionEntrega} maxLength={255} disabled={busy}
+      <label htmlFor="checkout-direccion">Dirección de entrega
+        <input id="checkout-direccion" className="ui-input" type="text" value={direccionEntrega} maxLength={255} disabled={busy}
+          aria-invalid={Boolean(errores.direccionEntrega)} aria-describedby={errores.direccionEntrega ? 'checkout-direccion-error' : undefined}
           onChange={event => setDireccionEntrega(event.target.value)} />
       </label>
-      {errores.direccionEntrega && <p role="alert" className="pedidos-error">{errores.direccionEntrega}</p>}
+      {errores.direccionEntrega && <p id="checkout-direccion-error" role="alert" className="pedidos-error">{errores.direccionEntrega}</p>}
       {errores.items && <p role="alert" className="pedidos-error">{errores.items}</p>}
-      <ul className="pedidos-list">
-        {items.map(item => <li key={item.productoId} className="pedidos-item">
+      <h3>Productos del carrito</h3>
+      <ul className="commerce-lines" aria-label="Productos del carrito">
+        {items.map(item => <li key={item.productoId}>
           <span>{item.nombre ?? ('Producto ' + item.productoId)} × {item.cantidad}</span>
           <span>{formatClp(item.subtotal ?? 0)}</span>
         </li>)}
       </ul>
+      <div className="commerce-total-row"><span>Total</span><strong>{formatClp(total)}</strong></div>
       <div className="pedidos-actions">
-        <button type="submit" className="button button--primary" disabled={busy}>
+        <button type="submit" className="ui-button ui-button--primary" disabled={busy}>
           {creando ? 'Creando pedido…' : 'Confirmar pedido'}
         </button>
-        <Link className="button button--secondary" to={ROUTE_PATHS.cart}>Volver al carrito</Link>
+        <Link className="ui-button ui-button--secondary" to={ROUTE_PATHS.cart}>Volver al carrito</Link>
       </div>
-      <p className="pedidos-notice">Al confirmar se crea el pedido y luego se vacía el carrito. Ante un error no se crea un segundo pedido.</p>
+      <p className="pedidos-notice">{checkoutCoordination === 'HTTP'
+        ? 'Al confirmar se crea el pedido y luego se vacía el carrito. Ante un error no se crea un segundo pedido.'
+        : 'Al confirmar se registra el pedido y se solicita el vaciado por separado. Los cambios posteriores del carrito pueden conservarse.'}</p>
     </form>}
   </div>
 }

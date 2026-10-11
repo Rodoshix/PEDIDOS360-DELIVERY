@@ -87,4 +87,48 @@ class DelegadoHttpTests {
   assertThat(call("GET","/pedidos",token,null).statusCode()).isEqualTo(403);
   assertThat(call("GET",path,EntraTestTokens.token(Map.of("roles",List.of("ADMIN"))),null).statusCode()).isEqualTo(200);
  }
+
+ @Test void proyeccionInternaSieteCamposYSinAmpliarDtoPublico() throws Exception {
+  String token=EntraTestTokens.token(Map.of());
+  var created=call("POST","/pedidos",token,"{\"restauranteId\":20,\"direccionEntrega\":\"Prueba\",\"items\":[{\"productoId\":101,\"cantidad\":2}]}");
+  assertThat(created.statusCode()).isEqualTo(201);
+  var mapper=tools.jackson.databind.json.JsonMapper.builder().build();
+  var pub=mapper.readTree(created.body());
+  assertThat(pub.size()).isEqualTo(9);
+  assertThat(pub.has("tenantId")).isFalse(); assertThat(pub.has("tenantOrigin")).isFalse();
+  var response=call("GET","/internal/pedidos/"+pub.path("pedidoId").longValue()+"/resumen-pago",token,null);
+  assertThat(response.statusCode()).isEqualTo(200);
+  assertThat(response.headers().firstValue("cache-control")).contains("no-store");
+  var tree=mapper.readTree(response.body());
+  assertThat(tree.size()).isEqualTo(7);
+  assertThat(tree.path("tenantOrigin").stringValue()).isEqualTo("AUTHENTICATED_NEW");
+  assertThat(tree.path("tenantId").stringValue()).isEqualTo(EntraTestTokens.TENANT);
+  assertThat(tree.has("direccionEntrega")).isFalse();
+ }
+ @Test void mismoOidEnOtroTenantNoEsLaMismaIdentidadAceptada() throws Exception {
+  assertThat(call("GET","/pedidos/me",EntraTestTokens.token(Map.of("tid","aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),null).statusCode()).isEqualTo(401);
+ }
+
+ @org.springframework.beans.factory.annotation.Autowired org.springframework.jdbc.core.JdbcTemplate jdbc;
+ @Test void unknown404UniformeYReconciledProjectionLegible() throws Exception {
+  String token=EntraTestTokens.token(Map.of());
+  long id;
+  jdbc.execute("ALTER TABLE pedidos.pedidos DISABLE TRIGGER guard_tenant_origin");
+  try {
+   id=jdbc.queryForObject("INSERT INTO pedidos.pedidos(usuario_id,restaurante_id,direccion_entrega,estado,total,moneda) VALUES(42,20,'Histórico','CREADO',13980,'CLP') RETURNING id",Long.class);
+  } finally { jdbc.execute("ALTER TABLE pedidos.pedidos ENABLE TRIGGER guard_tenant_origin"); }
+  var mapper=tools.jackson.databind.json.JsonMapper.builder().build();
+  var unknown=call("GET","/internal/pedidos/"+id+"/resumen-pago",token,null);
+  var missing=call("GET","/internal/pedidos/987654321/resumen-pago",token,null);
+  assertThat(unknown.statusCode()).isEqualTo(404); assertThat(missing.statusCode()).isEqualTo(404);
+  assertThat(mapper.readTree(unknown.body()).path("detail").stringValue())
+    .isEqualTo(mapper.readTree(missing.body()).path("detail").stringValue());
+  assertThat(call("GET","/pedidos/"+id,EntraTestTokens.token(Map.of("roles",List.of("ADMIN"))),null).statusCode()).isEqualTo(404);
+  jdbc.execute("SELECT pedidos.reconcile_tenant("+id+",0,'"+EntraTestTokens.TENANT+"','"+"a".repeat(64)+"')");
+  var reconciled=call("GET","/internal/pedidos/"+id+"/resumen-pago",token,null);
+  assertThat(reconciled.statusCode()).isEqualTo(200);
+  assertThat(mapper.readTree(reconciled.body()).size()).isEqualTo(7);
+  assertThat(mapper.readTree(reconciled.body()).path("tenantOrigin").stringValue()).isEqualTo("RECONCILED_LEGACY");
+  assertThat(call("PUT","/pedidos/"+id+"/estado",EntraTestTokens.token(Map.of("roles",List.of("ADMIN"))),"{\"estado\":\"CONFIRMADO\"}").statusCode()).isEqualTo(409);
+ }
 }

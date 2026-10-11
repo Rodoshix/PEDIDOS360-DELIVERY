@@ -1,0 +1,77 @@
+[
+  {
+    "path": ".gitattributes",
+    "sha256": "a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9",
+    "bytes": 14
+  },
+  {
+    "path": "aws-cierre-http.json",
+    "sha256": "f692bcb6efa953d1e07e191812d4cfaae3139fe1f0263c39357b058020b6899b",
+    "bytes": 560
+  },
+  {
+    "path": "aws-head500.json",
+    "sha256": "de2f1d1f9ad27792e65e47df5a89f2d3d2c1a2e16729cbce348d2e47c8e725e3",
+    "bytes": 771
+  },
+  {
+    "path": "aws-pago-pedido.json",
+    "sha256": "8cc87d3d4c32fa5024faf7d0abe6084268e3e28c4e132e2dcf70b86aaa13fa2c",
+    "bytes": 778
+  },
+  {
+    "path": "aws-pagos-consulta.json",
+    "sha256": "b7daefa8a4addbbb7399e0786f7a139ff4297a5b48eb1fa01b3220616ac52d54",
+    "bytes": 1005
+  },
+  {
+    "path": "aws-productos.json",
+    "sha256": "88c14622c9ae94cfa70e5ebefa46a66d3c44f41c90a60b53195e73d0daef867c",
+    "bytes": 644
+  },
+  {
+    "path": "aws-recuperacion-get.json",
+    "sha256": "fcfd32986fbce5c1e5075de21e65411d726a2e6fd440069610d08eabd3a1661a",
+    "bytes": 665
+  },
+  {
+    "path": "aws-usuarios-restaurantes.json",
+    "sha256": "cc7baf15bda1a428fe0b9bf8b2cd6f4917317e025646dbe43a5f45df7d9b5057",
+    "bytes": 798
+  },
+  {
+    "path": "local-carrito-candidata.json",
+    "sha256": "b12be28f16bde47373e16c70c632599ae6a78f64b8cc57ae84fab5cb907d4e18",
+    "bytes": 790
+  },
+  {
+    "path": "local-compose.json",
+    "sha256": "fb341e74baf6b4b7edf1ca36502e1619160c4680652fa31f561c29196f411187",
+    "bytes": 522
+  },
+  {
+    "path": "local-integracion.json",
+    "sha256": "6ba78708f058277d21a175edc6fadad65698066b05e7ba7922a031af6ff315cb",
+    "bytes": 2381
+  },
+  {
+    "path": "PROCEDENCIA.json",
+    "sha256": "d12c9d05b551ba3a677a36cebbc9fd7b9dcda08cc64b8a1f6f96d78a9309ddc8",
+    "bytes": 3465
+  },
+  {
+    "path": "README.md",
+    "sha256": "f0f65d49b46a4dbb843a280877e632f2eff94e3e10aff79197c632f9de60eb5f",
+    "bytes": 2806
+  },
+  {
+    "path": "reproduce-local.ps1",
+    "sha256": "7bc0e479eeda4a73e2a144dc2f699348b66c40491a477a2004107571e100d129",
+    "bytes": 1559
+  },
+  {
+    "path": "verify-evidence.py",
+    "sha256": "95d7d95355c85032f268408a69caae734a62e4e21b2ef6c2aa92ff01f296248a",
+    "bytes": 613
+  }
+]

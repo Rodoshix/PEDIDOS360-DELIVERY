@@ -3,13 +3,34 @@
   <modelVersion>4.0.0</modelVersion>
   <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>4.1.1</version><relativePath/></parent>
   <groupId>cl.duoc.pedidos360</groupId><artifactId>bff</artifactId><version>0.0.1-SNAPSHOT</version>
-  <properties><java.version>21</java.version></properties>
+  <properties>
+        <rabbit-amqp-client.version>5.37.0</rabbit-amqp-client.version>
+        <jackson-bom.version>3.1.7</jackson-bom.version>
+        <tomcat.version>11.0.26</tomcat.version>
+<java.version>21</java.version></properties>
   <dependencies>
+    <!-- Base comun de request/reply y reliability simple (EP2-12). -->
+    <dependency><groupId>cl.duoc.pedidos360</groupId><artifactId>p360-messaging-core</artifactId><version>0.0.1-SNAPSHOT</version></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-amqp</artifactId></dependency>
+    <dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers-rabbitmq</artifactId><scope>test</scope></dependency>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-testcontainers</artifactId><scope>test</scope></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-oauth2-resource-server</artifactId></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-webmvc</artifactId></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-security</artifactId></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-webmvc-test</artifactId><scope>test</scope></dependency>
   </dependencies>
-  <build><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin></plugins></build>
+  <build><plugins>
+    <plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId>
+      <executions><execution>
+        <id>classes-for-integration-tests</id><phase>package</phase><goals><goal>jar</goal></goals>
+        <configuration>
+          <classifier>classes</classifier>
+          <includes><include>cl/duoc/pedidos360/bff/**</include></includes>
+        </configuration>
+      </execution></executions>
+    </plugin>
+  </plugins></build>
 </project>

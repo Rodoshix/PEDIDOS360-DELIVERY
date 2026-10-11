@@ -32,8 +32,10 @@ public class PedidosClientStub implements PedidosClient {
     }
 
     public void registrarPedido(long pedidoId, long usuarioId, String estado, long total, String moneda) {
-        pedidos.put(pedidoId, new PedidoResumen(pedidoId, usuarioId, estado, total, moneda));
+        pedidos.put(pedidoId, new PedidoResumen(pedidoId, java.util.UUID.fromString("11111111-1111-1111-1111-111111111111"), usuarioId, estado, total, moneda, "AUTHENTICATED_NEW"));
     }
+
+    public void registrarResumen(PedidoResumen resumen) { pedidos.put(resumen.pedidoId(),resumen); }
 
     /** Simula que las próximas N confirmaciones se aplican en Pedidos pero pierden la respuesta. */
     public void simularPerdidaDeRespuesta(int veces) {
@@ -59,8 +61,8 @@ public class PedidosClientStub implements PedidosClient {
                     "Transición inválida desde " + actual.estado() + ".");
         }
         if (!yaConfirmado) {
-            pedidos.put(pedidoId, new PedidoResumen(actual.pedidoId(), actual.usuarioId(),
-                    "CONFIRMADO", actual.total(), actual.moneda()));
+            pedidos.put(pedidoId, new PedidoResumen(actual.pedidoId(), actual.tenantId(), actual.usuarioId(),
+                    "CONFIRMADO", actual.total(), actual.moneda(), actual.tenantOrigin()));
         }
         if (!yaConfirmado && fallosRespuestaConfirmacion > 0) {
             fallosRespuestaConfirmacion--;

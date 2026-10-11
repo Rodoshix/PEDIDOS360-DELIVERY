@@ -1,0 +1,663 @@
+{
+  "name": "pedidos360-aws",
+  "networks": {
+    "edge": {
+      "name": "pedidos360-aws_edge"
+    },
+    "egress": {
+      "name": "pedidos360-aws_egress"
+    },
+    "services": {
+      "internal": true,
+      "name": "pedidos360-aws_services"
+    }
+  },
+  "secrets": {
+    "ep2_actor_kid": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/PEDIDOS360_ACTOR_KEY_ID",
+      "name": "pedidos360-aws_ep2_actor_kid"
+    },
+    "ep2_actor_private": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/PEDIDOS360_ACTOR_PRIVATE_JWK",
+      "name": "pedidos360-aws_ep2_actor_private"
+    },
+    "ep2_actor_public": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/PEDIDOS360_ACTOR_PUBLIC_JWKS",
+      "name": "pedidos360-aws_ep2_actor_public"
+    },
+    "ep2_bff_password": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/BFF_PASSWORD",
+      "name": "pedidos360-aws_ep2_bff_password"
+    },
+    "ep2_identity_kid": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/USUARIOS_IDENTITY_PROOF_KEY_ID",
+      "name": "pedidos360-aws_ep2_identity_kid"
+    },
+    "ep2_identity_private": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/USUARIOS_IDENTITY_PROOF_PRIVATE_JWK",
+      "name": "pedidos360-aws_ep2_identity_private"
+    },
+    "ep2_identity_public": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/identity/USUARIOS_IDENTITY_PROOF_PUBLIC_JWKS",
+      "name": "pedidos360-aws_ep2_identity_public"
+    },
+    "ep2_pedidos_cart_password": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/PEDIDOS_CARRITO_PUBLISHER_PASSWORD",
+      "name": "pedidos360-aws_ep2_pedidos_cart_password"
+    },
+    "ep2_pedidos_password": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/PEDIDOS_CONSUMER_PASSWORD",
+      "name": "pedidos360-aws_ep2_pedidos_password"
+    },
+    "ep2_usuarios_password": {
+      "file": "${EP2_PRIVATE_DIR:?prepared private directory required}/secrets/USUARIOS_CONSUMER_PASSWORD",
+      "name": "pedidos360-aws_ep2_usuarios_password"
+    },
+    "pedidos_db_password": {
+      "file": "${AWS_SECRETS_DIR:-./secrets}/pedidos_db_password",
+      "name": "pedidos360-aws_pedidos_db_password"
+    },
+    "tls_password": {
+      "file": "${AWS_SECRETS_DIR:-./secrets}/tls_password",
+      "name": "pedidos360-aws_tls_password"
+    },
+    "usuarios_db_password": {
+      "file": "${AWS_SECRETS_DIR:-./secrets}/usuarios_db_password",
+      "name": "pedidos360-aws_usuarios_db_password"
+    }
+  },
+  "services": {
+    "bff": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "depends_on": {
+        "pedidos": {
+          "condition": "service_healthy",
+          "required": true
+        },
+        "usuarios": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "environment": [
+        "BFF_CORS_ORIGINS=${FRONTEND_ORIGIN:?Configura FRONTEND_ORIGIN}",
+        "BFF_PEDIDOS_PAGOS_ENABLED=true",
+        "CARRITO_SERVICE_URL=https://carrito:8084",
+        "ENTRA_API_CLIENT_ID=${ENTRA_API_CLIENT_ID:?Configura ENTRA_API_CLIENT_ID}",
+        "ENTRA_ENABLED=true",
+        "ENTRA_FRONTEND_CLIENT_ID=${ENTRA_FRONTEND_CLIENT_ID:?Configura ENTRA_FRONTEND_CLIENT_ID}",
+        "ENTRA_TENANT_ID=${ENTRA_TENANT_ID:?Configura ENTRA_TENANT_ID}",
+        "JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/run/ep2/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit",
+        "LOCAL_IDENTITY_ENABLED=false",
+        "MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=never",
+        "PAGOS_SERVICE_URL=https://pagos:8086",
+        "PEDIDOS_SERVICE_URL=https://pedidos:8085",
+        "PRODUCTOS_SERVICE_URL=https://productos:8083",
+        "RESTAURANTES_SERVICE_URL=https://restaurantes:8082",
+        "SERVER_ADDRESS=0.0.0.0",
+        "SERVER_PORT=8080",
+        "SERVER_SSL_ENABLED=true",
+        "SERVER_SSL_KEY_STORE=file:/run/tls/server.p12",
+        "SERVER_SSL_KEY_STORE_TYPE=PKCS12",
+        "SPRING_CONFIG_IMPORT=configtree:/run/secrets/",
+        "SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=5",
+        "SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1",
+        "USUARIOS_SERVICE_URL=https://usuarios:8081",
+        "BFF_QUERY_PAGOS_MODE=HTTP",
+        "BFF_QUERY_PRODUCTOS_MODE=HTTP",
+        "BFF_QUERY_RESTAURANTES_MODE=HTTP",
+        "BFF_QUERY_USUARIOS_MODE=HTTP",
+        "PEDIDOS360_DECLARE_TOPOLOGY=false",
+        "PEDIDOS360_IDENTITY_PROOF_ENABLED=false",
+        "PEDIDOS360_RELAY_MODE=DISABLED",
+        "SPRING_RABBITMQ_DYNAMIC=false",
+        "SPRING_RABBITMQ_HOST=p360-rabbitmq",
+        "SPRING_RABBITMQ_PORT=5671",
+        "SPRING_RABBITMQ_SSL_ENABLED=true",
+        "SPRING_RABBITMQ_SSL_VALIDATESERVERCERTIFICATE=true",
+        "SPRING_RABBITMQ_SSL_VERIFYHOSTNAME=true",
+        "SPRING_RABBITMQ_USERNAME=p360-bff",
+        "SPRING_RABBITMQ_VIRTUALHOST=pedidos360"
+      ],
+      "extra_hosts": {
+        "carrito": "${HOST_B_PRIVATE_IP:?private host B address required}",
+        "pagos": "${HOST_B_PRIVATE_IP:?private host B address required}",
+        "productos": "${HOST_B_PRIVATE_IP:?private host B address required}",
+        "restaurantes": "${HOST_B_PRIVATE_IP:?private host B address required}"
+      },
+      "healthcheck": {
+        "interval": "10s",
+        "retries": 12,
+        "start_period": "90s",
+        "test": [
+          "CMD",
+          "java",
+          "-cp",
+          "/app",
+          "Health"
+        ],
+        "timeout": "8s"
+      },
+      "image": "${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-bff:${IMAGE_TAG:?Configura IMAGE_TAG}",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "3",
+          "max-size": "10m"
+        }
+      },
+      "mem_limit": "512m",
+      "networks": {
+        "egress": null,
+        "services": null
+      },
+      "pids_limit": 256,
+      "platform": "linux/amd64",
+      "ports": [
+        {
+          "host_ip": "${HOST_A_PRIVATE_IP:?private bind address required}",
+          "protocol": "tcp",
+          "published": "8443",
+          "target": 8080
+        }
+      ],
+      "read_only": true,
+      "restart": "unless-stopped",
+      "secrets": [
+        {
+          "source": "tls_password",
+          "target": "server.ssl.key-store-password"
+        },
+        {
+          "source": "ep2_bff_password",
+          "target": "spring.rabbitmq.password"
+        },
+        {
+          "source": "ep2_actor_public",
+          "target": "pedidos360.messaging.actor.public-jwks"
+        },
+        {
+          "source": "ep2_actor_private",
+          "target": "pedidos360.messaging.actor.private-jwk"
+        },
+        {
+          "source": "ep2_actor_kid",
+          "target": "pedidos360.messaging.actor.clave-id"
+        },
+        {
+          "source": "ep2_identity_public",
+          "target": "pedidos360.messaging.identity-proof.public-jwks"
+        }
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "stop_grace_period": "90s",
+      "tmpfs": [
+        "/tmp:rw,noexec,nosuid,size=64m"
+      ],
+      "volumes": [
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${AWS_TLS_DIR:-./tls}/bff.p12",
+          "target": "/run/tls/server.p12",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${AWS_TLS_DIR:-./tls}/truststore.p12",
+          "target": "/run/tls/truststore.p12",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12",
+          "target": "/run/ep2/truststore.p12",
+          "type": "bind"
+        }
+      ]
+    },
+    "frontend": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "depends_on": {},
+      "extra_hosts": {},
+      "image": "${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-frontend:${IMAGE_TAG:?Configura IMAGE_TAG}",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "3",
+          "max-size": "10m"
+        }
+      },
+      "mem_limit": "128m",
+      "networks": {
+        "edge": {}
+      },
+      "platform": "linux/amd64",
+      "ports": [
+        {
+          "host_ip": "${HOST_A_PRIVATE_IP:?private bind address required}",
+          "protocol": "tcp",
+          "published": "8080",
+          "target": 8080
+        }
+      ],
+      "read_only": true,
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "tmpfs": [
+        "/tmp:rw,noexec,nosuid,size=16m"
+      ]
+    },
+    "pedidos": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "depends_on": {
+        "usuarios": {
+          "condition": "service_healthy",
+          "required": true
+        }
+      },
+      "environment": [
+        "DB_URL=jdbc:postgresql://${RDS_HOST:?Configura RDS_HOST}:5432/pedidos360_pedidos?sslmode=verify-full&sslrootcert=/run/tls/rds-ca.pem",
+        "DB_USERNAME=pedidos360_pedidos",
+        "ENTRA_API_CLIENT_ID=${ENTRA_API_CLIENT_ID:?Configura ENTRA_API_CLIENT_ID}",
+        "ENTRA_ENABLED=true",
+        "ENTRA_FRONTEND_CLIENT_ID=${ENTRA_FRONTEND_CLIENT_ID:?Configura ENTRA_FRONTEND_CLIENT_ID}",
+        "ENTRA_TENANT_ID=${ENTRA_TENANT_ID:?Configura ENTRA_TENANT_ID}",
+        "INTERNO_ENABLED=true",
+        "JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/run/ep2/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit",
+        "LOCAL_IDENTITY_ENABLED=false",
+        "MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=never",
+        "PAGOS_WORKER_CLIENT_ID=${PAGOS_WORKER_CLIENT_ID:?Configura PAGOS_WORKER_CLIENT_ID}",
+        "PRODUCTOS_SERVICE_URL=https://productos:8083",
+        "SERVER_ADDRESS=0.0.0.0",
+        "SERVER_PORT=8085",
+        "SERVER_SSL_ENABLED=true",
+        "SERVER_SSL_KEY_STORE=file:/run/tls/server.p12",
+        "SERVER_SSL_KEY_STORE_TYPE=PKCS12",
+        "SPRING_CONFIG_IMPORT=configtree:/run/secrets/",
+        "SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=5",
+        "SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1",
+        "USUARIOS_SERVICE_URL=https://usuarios:8081",
+        "PEDIDOS360_COORDINATION_MODE=HTTP",
+        "PEDIDOS360_DECLARE_TOPOLOGY=false",
+        "PEDIDOS360_IDENTITY_PROOF_ENABLED=false",
+        "PEDIDOS360_MESSAGING_CARRITO_HOST=p360-rabbitmq",
+        "PEDIDOS360_MESSAGING_CARRITO_PORT=5671",
+        "PEDIDOS360_MESSAGING_CARRITO_SSL_ENABLED=true",
+        "PEDIDOS360_MESSAGING_CARRITO_SSL_VALIDATESERVERCERTIFICATE=true",
+        "PEDIDOS360_MESSAGING_CARRITO_SSL_VERIFYHOSTNAME=true",
+        "PEDIDOS360_MESSAGING_CARRITO_USERNAME=p360-pedidos-carrito-publisher",
+        "PEDIDOS360_MESSAGING_CARRITO_VIRTUALHOST=pedidos360",
+        "PEDIDOS360_RELAY_MODE=DISABLED",
+        "PEDIDOS360_RELIABILITY_PLATFORM_READY=false",
+        "PEDIDOS_CARRITO_MODE=HTTP",
+        "PEDIDOS_CARRITO_PLATFORM_READY=false",
+        "SPRING_RABBITMQ_DYNAMIC=false",
+        "SPRING_RABBITMQ_HOST=p360-rabbitmq",
+        "SPRING_RABBITMQ_PORT=5671",
+        "SPRING_RABBITMQ_SSL_ENABLED=true",
+        "SPRING_RABBITMQ_SSL_VALIDATESERVERCERTIFICATE=true",
+        "SPRING_RABBITMQ_SSL_VERIFYHOSTNAME=true",
+        "SPRING_RABBITMQ_USERNAME=p360-pedidos-consumer",
+        "SPRING_RABBITMQ_VIRTUALHOST=pedidos360"
+      ],
+      "extra_hosts": {
+        "carrito": "${HOST_B_PRIVATE_IP:?private host B address required}",
+        "pagos": "${HOST_B_PRIVATE_IP:?private host B address required}",
+        "productos": "${HOST_B_PRIVATE_IP:?private host B address required}",
+        "restaurantes": "${HOST_B_PRIVATE_IP:?private host B address required}"
+      },
+      "healthcheck": {
+        "interval": "10s",
+        "retries": 12,
+        "start_period": "90s",
+        "test": [
+          "CMD",
+          "java",
+          "-cp",
+          "/app",
+          "Health"
+        ],
+        "timeout": "8s"
+      },
+      "image": "${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-pedidos:${IMAGE_TAG:?Configura IMAGE_TAG}",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "3",
+          "max-size": "10m"
+        }
+      },
+      "mem_limit": "512m",
+      "networks": {
+        "egress": null,
+        "services": null
+      },
+      "pids_limit": 256,
+      "platform": "linux/amd64",
+      "ports": [
+        {
+          "host_ip": "${HOST_A_PRIVATE_IP:?private bind address required}",
+          "protocol": "tcp",
+          "published": "8085",
+          "target": 8085
+        }
+      ],
+      "read_only": true,
+      "restart": "unless-stopped",
+      "secrets": [
+        {
+          "source": "tls_password",
+          "target": "server.ssl.key-store-password"
+        },
+        {
+          "source": "pedidos_db_password",
+          "target": "spring.datasource.password"
+        },
+        {
+          "source": "ep2_pedidos_password",
+          "target": "spring.rabbitmq.password"
+        },
+        {
+          "source": "ep2_pedidos_cart_password",
+          "target": "pedidos360.messaging.carrito.password"
+        }
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "stop_grace_period": "90s",
+      "tmpfs": [
+        "/tmp:rw,noexec,nosuid,size=64m"
+      ],
+      "volumes": [
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${AWS_TLS_DIR:-./tls}/rds-ca.pem",
+          "target": "/run/tls/rds-ca.pem",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${AWS_TLS_DIR:-./tls}/pedidos.p12",
+          "target": "/run/tls/server.p12",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${AWS_TLS_DIR:-./tls}/truststore.p12",
+          "target": "/run/tls/truststore.p12",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12",
+          "target": "/run/ep2/truststore.p12",
+          "type": "bind"
+        }
+      ]
+    },
+    "usuarios": {
+      "cap_drop": [
+        "ALL"
+      ],
+      "depends_on": {},
+      "environment": [
+        "DB_URL=jdbc:postgresql://${RDS_HOST:?Configura RDS_HOST}:5432/pedidos360_usuarios?sslmode=verify-full&sslrootcert=/run/tls/rds-ca.pem",
+        "DB_USERNAME=pedidos360_usuarios",
+        "ENTRA_API_CLIENT_ID=${ENTRA_API_CLIENT_ID:?Configura ENTRA_API_CLIENT_ID}",
+        "ENTRA_ENABLED=true",
+        "ENTRA_FRONTEND_CLIENT_ID=${ENTRA_FRONTEND_CLIENT_ID:?Configura ENTRA_FRONTEND_CLIENT_ID}",
+        "ENTRA_TENANT_ID=${ENTRA_TENANT_ID:?Configura ENTRA_TENANT_ID}",
+        "JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/run/ep2/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit",
+        "LOCAL_IDENTITY_ENABLED=false",
+        "MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=never",
+        "SERVER_ADDRESS=0.0.0.0",
+        "SERVER_PORT=8081",
+        "SERVER_SSL_ENABLED=true",
+        "SERVER_SSL_KEY_STORE=file:/run/tls/server.p12",
+        "SERVER_SSL_KEY_STORE_TYPE=PKCS12",
+        "SPRING_CONFIG_IMPORT=configtree:/run/secrets/",
+        "SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=5",
+        "SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE=1",
+        "PEDIDOS360_DECLARE_TOPOLOGY=false",
+        "PEDIDOS360_IDENTITY_PROOF_ENABLED=false",
+        "PEDIDOS360_RELAY_MODE=DISABLED",
+        "SPRING_RABBITMQ_DYNAMIC=false",
+        "SPRING_RABBITMQ_HOST=p360-rabbitmq",
+        "SPRING_RABBITMQ_PORT=5671",
+        "SPRING_RABBITMQ_SSL_ENABLED=true",
+        "SPRING_RABBITMQ_SSL_VALIDATESERVERCERTIFICATE=true",
+        "SPRING_RABBITMQ_SSL_VERIFYHOSTNAME=true",
+        "SPRING_RABBITMQ_USERNAME=p360-usuarios-consumer",
+        "SPRING_RABBITMQ_VIRTUALHOST=pedidos360"
+      ],
+      "extra_hosts": {
+        "carrito": "${HOST_B_PRIVATE_IP:?private host B address required}",
+        "pagos": "${HOST_B_PRIVATE_IP:?private host B address required}",
+        "productos": "${HOST_B_PRIVATE_IP:?private host B address required}",
+        "restaurantes": "${HOST_B_PRIVATE_IP:?private host B address required}"
+      },
+      "healthcheck": {
+        "interval": "10s",
+        "retries": 12,
+        "start_period": "90s",
+        "test": [
+          "CMD",
+          "java",
+          "-cp",
+          "/app",
+          "Health"
+        ],
+        "timeout": "8s"
+      },
+      "image": "${IMAGE_REGISTRY:?Configura IMAGE_REGISTRY}/pedidos360-usuarios:${IMAGE_TAG:?Configura IMAGE_TAG}",
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-file": "3",
+          "max-size": "10m"
+        }
+      },
+      "mem_limit": "512m",
+      "networks": {
+        "egress": null,
+        "services": null
+      },
+      "pids_limit": 256,
+      "platform": "linux/amd64",
+      "ports": [
+        {
+          "host_ip": "${HOST_A_PRIVATE_IP:?private bind address required}",
+          "protocol": "tcp",
+          "published": "8081",
+          "target": 8081
+        }
+      ],
+      "read_only": true,
+      "restart": "unless-stopped",
+      "secrets": [
+        {
+          "source": "tls_password",
+          "target": "server.ssl.key-store-password"
+        },
+        {
+          "source": "usuarios_db_password",
+          "target": "spring.datasource.password"
+        },
+        {
+          "source": "ep2_usuarios_password",
+          "target": "spring.rabbitmq.password"
+        },
+        {
+          "source": "ep2_actor_public",
+          "target": "pedidos360.messaging.actor.public-jwks"
+        },
+        {
+          "source": "ep2_identity_public",
+          "target": "pedidos360.messaging.identity-proof.public-jwks"
+        },
+        {
+          "source": "ep2_identity_private",
+          "target": "pedidos360.messaging.identity-proof.private-jwk"
+        },
+        {
+          "source": "ep2_identity_kid",
+          "target": "pedidos360.messaging.identity-proof.key-id"
+        }
+      ],
+      "security_opt": [
+        "no-new-privileges:true"
+      ],
+      "stop_grace_period": "90s",
+      "tmpfs": [
+        "/tmp:rw,noexec,nosuid,size=64m"
+      ],
+      "volumes": [
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${AWS_TLS_DIR:-./tls}/rds-ca.pem",
+          "target": "/run/tls/rds-ca.pem",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${AWS_TLS_DIR:-./tls}/usuarios.p12",
+          "target": "/run/tls/server.p12",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${AWS_TLS_DIR:-./tls}/truststore.p12",
+          "target": "/run/tls/truststore.p12",
+          "type": "bind"
+        },
+        {
+          "bind": {
+            "create_host_path": false
+          },
+          "read_only": true,
+          "source": "${EP2_PRIVATE_DIR:?prepared private directory required}/tls/apps-truststore.p12",
+          "target": "/run/ep2/truststore.p12",
+          "type": "bind"
+        }
+      ]
+    }
+  },
+  "x-entra": {
+    "ENTRA_API_CLIENT_ID": "${ENTRA_API_CLIENT_ID:?Configura ENTRA_API_CLIENT_ID}",
+    "ENTRA_ENABLED": "true",
+    "ENTRA_FRONTEND_CLIENT_ID": "${ENTRA_FRONTEND_CLIENT_ID:?Configura ENTRA_FRONTEND_CLIENT_ID}",
+    "ENTRA_TENANT_ID": "${ENTRA_TENANT_ID:?Configura ENTRA_TENANT_ID}"
+  },
+  "x-ep2-env": {
+    "JAVA_TOOL_OPTIONS": "-Djavax.net.ssl.trustStore=/run/ep2/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit",
+    "PEDIDOS360_DECLARE_TOPOLOGY": "false",
+    "PEDIDOS360_IDENTITY_PROOF_ENABLED": "false",
+    "PEDIDOS360_RELAY_MODE": "DISABLED",
+    "SPRING_RABBITMQ_DYNAMIC": "false",
+    "SPRING_RABBITMQ_HOST": "p360-rabbitmq",
+    "SPRING_RABBITMQ_PORT": "5671",
+    "SPRING_RABBITMQ_SSL_ENABLED": "true",
+    "SPRING_RABBITMQ_SSL_VALIDATESERVERCERTIFICATE": "true",
+    "SPRING_RABBITMQ_SSL_VERIFYHOSTNAME": "true",
+    "SPRING_RABBITMQ_VIRTUALHOST": "pedidos360"
+  },
+  "x-java": {
+    "cap_drop": [
+      "ALL"
+    ],
+    "healthcheck": {
+      "interval": "10s",
+      "retries": 12,
+      "start_period": "90s",
+      "test": [
+        "CMD",
+        "java",
+        "-cp",
+        "/app",
+        "Health"
+      ],
+      "timeout": "8s"
+    },
+    "logging": {
+      "driver": "json-file",
+      "options": {
+        "max-file": "3",
+        "max-size": "10m"
+      }
+    },
+    "mem_limit": "512m",
+    "pids_limit": 256,
+    "platform": "linux/amd64",
+    "read_only": true,
+    "restart": "unless-stopped",
+    "security_opt": [
+      "no-new-privileges:true"
+    ],
+    "tmpfs": [
+      "/tmp:rw,noexec,nosuid,size=64m"
+    ]
+  },
+  "x-java-env": {
+    "JAVA_TOOL_OPTIONS": "-Djavax.net.ssl.trustStore=/run/tls/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit",
+    "LOCAL_IDENTITY_ENABLED": "false",
+    "MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS": "never",
+    "SERVER_ADDRESS": "0.0.0.0",
+    "SERVER_SSL_ENABLED": "true",
+    "SERVER_SSL_KEY_STORE": "file:/run/tls/server.p12",
+    "SERVER_SSL_KEY_STORE_TYPE": "PKCS12",
+    "SPRING_CONFIG_IMPORT": "configtree:/run/secrets/",
+    "SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE": "5",
+    "SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE": "1"
+  },
+  "x-runtime": {
+    "logging": {
+      "driver": "json-file",
+      "options": {
+        "max-file": "3",
+        "max-size": "10m"
+      }
+    },
+    "restart": "unless-stopped"
+  }
+}

@@ -3,12 +3,17 @@ FROM eclipse-temurin:21-jdk-alpine@sha256:6ea5548706b60ac0a602eaf48af74792cbab01
 WORKDIR /build
 COPY .mvn/wrapper/maven-wrapper.properties .mvn/wrapper/maven-wrapper.properties
 COPY mvnw pom.xml ./
+# Contexto adicional: --build-context messaging-core=backend/shared/p360-messaging-core
+COPY --from=messaging-core pom.xml /messaging-core/pom.xml
+COPY --from=messaging-core src/main /messaging-core/src/main
 # El checkout de Windows puede usar CRLF; no modifica los archivos del host.
 RUN sed -i 's/\r$//' mvnw
 COPY src/main ./src/main
 COPY docker/Health.java ./Health.java
 RUN javac Health.java
 # Testcontainers se ejecuta fuera del build. Nunca montar el socket Docker aquí.
+RUN --mount=type=cache,id=pedidos360-maven,target=/root/.m2,sharing=locked \
+    sh mvnw -B -ntp -f /messaging-core/pom.xml -Dmaven.test.skip=true install
 RUN --mount=type=cache,id=pedidos360-maven,target=/root/.m2,sharing=locked \
     sh mvnw -B -ntp -Dmaven.test.skip=true package
 

@@ -1,0 +1,243 @@
+{
+  "base": "bbc2da6eb19d276d62e1a1c3d1dc3722db44f09b",
+  "branch": "codex/60-orders-payments",
+  "date": "2026-10-09",
+  "scope": "Fase 6 CLIENTE: Pedidos/Pagos, presentación y accesibilidad",
+  "results": {
+    "focused": {
+      "skipped": 0,
+      "fail": 0,
+      "pass": 35
+    },
+    "frontend": {
+      "skipped": 0,
+      "fail": 0,
+      "pass": 253
+    },
+    "newTests": 13,
+    "lint": "oxlint exit 0",
+    "buildHttp": "exit 0",
+    "buildRabbitmq": "exit 0",
+    "warning": "chunk >500 kB"
+  },
+  "limitations": [
+    "Sesión y transporte controlados en tests",
+    "Navegador con fixtures locales; no backend/Entra live",
+    "503 inyectados y timeouts controlados; no partición de red",
+    "Sin cambios de flags operativos ni infraestructura"
+  ],
+  "sources": [
+    {
+      "path": "docs/frontend-60-client-commerce.md",
+      "sha256": "1be4d899ab63a303f029c492e228bcc17fb150772bb495f0b610b11adf3c5506",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/DESIGN.md",
+      "sha256": "c51735da65533554de2fa5cb138ea181d9fc11e7d90656e059f2e4bb3692acb1",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pagos/PagoPage.jsx",
+      "sha256": "bc1d07e2cc225ad60302b7d6d3c2e015c12146373d54bea4f4fedd654d3b03bb",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pagos/RealPagoPanel.jsx",
+      "sha256": "71bf8b7de73ec3e2118ac6e967e4a23d6841876ac7c9a9df5cf83ee9771ab8e3",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pedidos/clientCommerce.css",
+      "sha256": "9935fbd2cd6ecf8def0b324cf7b932b229150ced0371275ffd7bd175f7e842b8",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pedidos/ClientPedidoView.jsx",
+      "sha256": "7349d99ccba4efbc56dec52bf72affa0f4fab1459ec836c8e9aac6433e4858e4",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pedidos/ConfirmarPedidoPage.jsx",
+      "sha256": "fef77ff648db5f5dea3290a53add8c6e69a82255a8e56a4527e7055319af4a8e",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pedidos/MisPedidosPage.jsx",
+      "sha256": "08bbb64bee46375fb3856dbad02d2479e0496f4c9bcd0dc4b37b98c91006f55d",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pedidos/PedidoDetallePage.jsx",
+      "sha256": "28cd8f41148c74a9d091a7804502e3b5c674cdf99f30112eba8f762f465698f6",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pedidos/RealConfirmarPedidoPanel.jsx",
+      "sha256": "ff49f28dfd4145e73e1937ad5c192e2ced151d995811598659f187c868bdfa42",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pedidos/RealMisPedidosPanel.jsx",
+      "sha256": "2d565a1ad838551df172c8433bd9af5951db0ac812c8919f96631be5db66c9b2",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/src/features/pedidos/RealPedidoDetallePanel.jsx",
+      "sha256": "ee1ebe8bc115638afc432b3feb6e5fb52cb4b44be0cffc6fd3dc5ced88ba58a6",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/tests/clientCommerce.test.js",
+      "sha256": "e0f38ff37ccbc435ebe5c2605079a7a89b1dcbc4ac2a5a748159d16214937bdc",
+      "normalization": "UTF-8 LF"
+    },
+    {
+      "path": "frontend/tools/fixtures/previewApi.mjs",
+      "sha256": "9d15161f3ec2850e1ddea6ba81dbfa466fb2cd08413fb912f3380a843e716d31",
+      "normalization": "UTF-8 LF"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/evidence/60-client-commerce/browser-review.json",
+      "sha256": "442d3dad98f4007f8640280dda6fc6bba5d582a78df9b189535b73a38e533012",
+      "bytes": 37459
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/build-http.log",
+      "sha256": "6604e31578cd24b02500eeae429672a477242176be53df085400b4c16782c48b",
+      "bytes": 2188
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/build-rabbitmq.log",
+      "sha256": "810dbee0153ab656aa56c556169aa6c677114e33f93b1fadb73d52728092be3a",
+      "bytes": 2228
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/checkout-created-delete-error.jpg",
+      "sha256": "79659da933286c2e837c65cb6542a99596e234206d6fbebe48ebd156e7bb0173",
+      "bytes": 32314
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/checkout-created-http.jpg",
+      "sha256": "4930d2c4d09de83c56528c1d90ac1c2f693ea6cfa2e28a0506eaaa2c3a75f028",
+      "bytes": 25216
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/checkout-desktop.jpg",
+      "sha256": "5e25ab09fada0636aacdb0e2953b64a6e7ec302ef191aa6c370e294fb6cad6c5",
+      "bytes": 63015
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/checkout-mobile-320.jpg",
+      "sha256": "9fa42f8828119cfbe8d0b50f5f2c4c61e048496e66380584766d2b61081914ba",
+      "bytes": 38503
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/checkout-uncertain-desktop.jpg",
+      "sha256": "4ce3904f2a866bc87ed39501b82a4d0fbf3168cd53badbf0d18038c2ff778460",
+      "bytes": 51832
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/checkout-uncertain-mobile.jpg",
+      "sha256": "bb38bdb47f04dec4f9655869319e3f77798420f82213632653756c72dbd7a446",
+      "bytes": 30833
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/detail-desktop.jpg",
+      "sha256": "bcc287923499643cb9cf195e5b164e6c8c16313a6e26e98417423fae1621f517",
+      "bytes": 55314
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/detail-mobile-320.jpg",
+      "sha256": "55e5b8a23d8619f3e208537d6ab66a84c7848d568917e600f1ee94314db13005",
+      "bytes": 34432
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/detail-mobile-390.jpg",
+      "sha256": "8bc682c5829eb807810033b393512aeff39f5d8d403eb9d3ae70fe81dd7645a3",
+      "bytes": 34947
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/focused.log",
+      "sha256": "5355b4235a6446a7d5746c0347cbd9bfed94ed67e1d1e3cb665ef3cf46163904",
+      "bytes": 6858
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/frontend.log",
+      "sha256": "cf44f301059301d2752d40c8f1dd44f87153f96317eac217e68659746ba99d57",
+      "bytes": 53297
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/history-desktop.jpg",
+      "sha256": "e0164ee76129fd21833ab520ce3bca5ea180c4a8d96f6807871a504d3bab02a9",
+      "bytes": 47680
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/history-empty-desktop.jpg",
+      "sha256": "037aa537d0e43fb804a6d4c690a7e0f7e0fb6b04f3d71eb116009c3e6e2d73f5",
+      "bytes": 41110
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/history-empty-mobile.jpg",
+      "sha256": "cd936ea28882d75b432d25e3b36bb48098fd529036771c292a521a1a26b3b41f",
+      "bytes": 17712
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/history-error-desktop.jpg",
+      "sha256": "b1ed8d74628f8f328126b7b006e706060b2ec0fbe26f4e47ebeedd0120449fbe",
+      "bytes": 46023
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/history-loading-mobile.jpg",
+      "sha256": "598c3efb2c6726e6c05737fa81e936768ac01a7a905b308500516b96e99e5ec5",
+      "bytes": 13261
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/history-mobile.jpg",
+      "sha256": "49cff6adfce9883f4f7f03017bfdcefee6fd50199018a69a01e0157f73da250a",
+      "bytes": 18677
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/lint.log",
+      "sha256": "458134f267f94ed7e03b3ef9e6ad3ff543b33faaaae99645e71e0738bc2f6006",
+      "bytes": 43
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/payment-approved-mobile.jpg",
+      "sha256": "aa499257dbbdea229471f4dc95e2464a8d1151c75a80ce4e898f8af17611daad",
+      "bytes": 19803
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/payment-empty-desktop.jpg",
+      "sha256": "f0f5f523bc85e3d4f14a0548c837da28d531399f8240ec43ef26b5436c944f29",
+      "bytes": 50986
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/payment-empty-mobile.jpg",
+      "sha256": "af1e48a22c275f821721bb5e6b61d721f4b5a392033d21747724114e7c491db4",
+      "bytes": 26091
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/payment-pending-desktop.jpg",
+      "sha256": "064cc1e2d91eb60f18a08086ab96f35cbf3e84ce14fa42b021df40e8512e12ea",
+      "bytes": 46015
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/payment-pending-mobile.jpg",
+      "sha256": "0a8e1eee66bf356dfefd3d804b4849f4ec4884e1179d306d5aab5e9734222a81",
+      "bytes": 23909
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/payment-rejected-mobile.jpg",
+      "sha256": "5fb2bb7f366e0a4e4bcc7cb507d448e4636fdb11df5555409ffdad5bd24ad5a0",
+      "bytes": 22407
+    },
+    {
+      "path": "docs/evidence/60-client-commerce/payment-uncertain-mobile.jpg",
+      "sha256": "b1b46d207e9da1d07ad8741c4c4066be69e8787c368f868db08ffa6987bda1d7",
+      "bytes": 20776
+    }
+  ]
+}

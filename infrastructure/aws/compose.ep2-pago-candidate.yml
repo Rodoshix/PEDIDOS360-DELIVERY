@@ -1,0 +1,13 @@
+# Add only after HTTP writers are stopped, outbox/history is accounted for,
+# and confirmed broker permissions/retention/recovery have been verified.
+services:
+  pedidos:
+    environment:
+      PEDIDOS360_COORDINATION_MODE: RABBITMQ
+      PEDIDOS360_RELIABILITY_PLATFORM_READY: "true"
+  pagos:
+    environment:
+      PEDIDOS360_COORDINATION_MODE: RABBITMQ
+      PEDIDOS360_RELIABILITY_PLATFORM_READY: "true"
+      PAGOS_WORKER_ENABLED: "false"
+      PEDIDOS_INTERNO_ENABLED: "false"

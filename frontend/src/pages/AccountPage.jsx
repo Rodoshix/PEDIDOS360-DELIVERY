@@ -9,7 +9,6 @@ export default function AccountPage() {
   const profileKey = JSON.stringify([account.tenantId, account.homeAccountId, account.localAccountId])
   return (
     <section className="container account-section">
-      <p className="eyebrow">Tu espacio en Pedidos360</p>
       <h1>Mi cuenta</h1>
       <p className="account-note">Consulta tus datos de contacto y la cuenta con la que iniciaste sesión.</p>
       <div className="profile-layout">

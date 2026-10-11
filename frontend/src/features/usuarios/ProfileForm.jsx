@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { PROFILE_FIELDS, createProfileDraft, hasProfileChanges, normalizeProfileDraft, validateProfileDraft } from './profileForm.js'
+import { Input } from '../../components/ui/Field.jsx'
 
 export default function ProfileForm({ initialProfile = null, onApply, onCancel, saving = false, submitError = null, mode = 'demo', saveEnabled = true }) {
   const [draft, setDraft] = useState(() => createProfileDraft(initialProfile))
@@ -74,7 +75,7 @@ export default function ProfileForm({ initialProfile = null, onApply, onCancel, 
           {PROFILE_FIELDS.map(field => (
             <div className="profile-form__field" key={field.name}>
               <label htmlFor={`${id}-${field.name}`}>{field.label}{field.required && <span aria-hidden="true"> *</span>}</label>
-              <input id={`${id}-${field.name}`} name={field.name} type={field.type} autoComplete={field.autoComplete}
+              <Input id={`${id}-${field.name}`} name={field.name} type={field.type} autoComplete={field.autoComplete}
                 ref={field.name === 'nombre' ? firstField : undefined}
                 required={field.required} maxLength={field.maxLength} value={draft[field.name]}
                 aria-invalid={errors[field.name] ? true : undefined}

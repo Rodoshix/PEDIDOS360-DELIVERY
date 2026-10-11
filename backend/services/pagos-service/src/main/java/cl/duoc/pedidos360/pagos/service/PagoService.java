@@ -2,6 +2,8 @@ package cl.duoc.pedidos360.pagos.service;
 
 import java.util.List;
 
+import cl.duoc.pedidos360.pagos.messaging.RabbitProperties;
+import cl.duoc.pedidos360.pagos.messaging.OutboxStore;
 import cl.duoc.pedidos360.pagos.client.PedidoResumen;
 import cl.duoc.pedidos360.pagos.client.PedidosClient;
 import cl.duoc.pedidos360.pagos.dto.CrearPagoRequest;
@@ -26,11 +28,18 @@ public class PagoService {
     /** Estados que se consideran "activos": impiden un segundo pago para el mismo pedido. */
     private static final List<EstadoPago> ACTIVOS = List.of(EstadoPago.PENDIENTE, EstadoPago.APROBADO);
 
+    private final RabbitProperties messaging;
+    private final OutboxStore outbox;
     private final PagoRepository pagos;
     private final PedidosClient pedidos;
     private final TransactionTemplate transaccion;
+    private final cl.duoc.pedidos360.pagos.security.TenantSistema tenant;
 
-    public PagoService(PagoRepository pagos, PedidosClient pedidos, PlatformTransactionManager txManager) {
+    public PagoService(PagoRepository pagos, PedidosClient pedidos, PlatformTransactionManager txManager,
+                       RabbitProperties messaging, OutboxStore outbox, cl.duoc.pedidos360.pagos.security.TenantSistema tenant) {
+        this.tenant = tenant;
+        this.messaging = messaging;
+        this.outbox = outbox;
         this.pagos = pagos;
         this.pedidos = pedidos;
         this.transaccion = new TransactionTemplate(txManager);
@@ -39,15 +48,15 @@ public class PagoService {
     /**
      * Registra un pago simulado de forma recuperable.
      *
-     * <p>No usa una transacción que abarque la llamada remota: primero persiste el pago (commit local)
-     * y luego intenta confirmar el pedido. Si la confirmación falla o se pierde la respuesta, el pago
-     * queda persistido con {@code pedido_confirmado=false} para que la reconciliación lo reintente.
+     * <p>La consulta remota precede al commit local. En modo RABBITMQ, Pago e intención se guardan
+     * juntos sin esperar al broker. Los pagos HTTP conservan la confirmación y reconciliación
+     * existentes. El modo persistido impide coordinar el mismo pago por ambos transportes.
      *
      * <p>Autorización: el pedido debe pertenecer a la identidad autenticada (o ser ADMIN).
      * Idempotencia: la clave tiene alcance por identidad y debe corresponder a la misma operación.
      */
     public PagoResponse registrar(IdentidadUsuario identidad, String claveIdempotencia, CrearPagoRequest request) {
-        var existente = pagos.findByUsuarioIdAndClaveIdempotencia(identidad.usuarioId(), claveIdempotencia);
+        var existente = pagos.findByTenantIdAndUsuarioIdAndClaveIdempotencia(identidad.tenantId(), identidad.usuarioId(), claveIdempotencia);
         if (existente.isPresent()) {
             return resolverReintento(existente.get(), request);
         }
@@ -56,11 +65,18 @@ public class PagoService {
         if (pedido == null) {
             throw new PagoException(HttpStatus.NOT_FOUND, "Pedido no encontrado: " + request.pedidoId());
         }
+        validarPedido(identidad, pedido, request.pedidoId());
         if (!identidad.puedeAccederA(pedido.usuarioId())) {
             throw new PagoException(HttpStatus.FORBIDDEN,
                     "No puedes registrar un pago para un pedido de otro usuario.");
         }
-        if (pagos.existsByPedidoIdAndEstadoIn(request.pedidoId(), ACTIVOS)) {
+        if (!"AUTHENTICATED_NEW".equals(pedido.tenantOrigin()))
+            throw new PagoException(HttpStatus.CONFLICT,"Recurso histórico retenido.");
+        ocultarColisiones(identidad, claveIdempotencia, request.pedidoId());
+        if (pagos.existsByTenantIdAndPedidoIdAndEstadoIn(identidad.tenantId(),request.pedidoId(), ACTIVOS)) {
+            // The same-key transaction can commit between the initial lookup and this check.
+            var concurrente = pagos.findByTenantIdAndUsuarioIdAndClaveIdempotencia(identidad.tenantId(), identidad.usuarioId(), claveIdempotencia);
+            if (concurrente.isPresent()) return resolverReintento(concurrente.get(), request);
             throw new PagoException(HttpStatus.CONFLICT,
                     "El pedido " + request.pedidoId() + " ya tiene un pago activo.");
         }
@@ -69,26 +85,35 @@ public class PagoService {
         try {
             pago = transaccion.execute(status -> {
                 EstadoPago estadoInicial = resolverEstadoInicial(request.metodo());
-                return pagos.saveAndFlush(new Pago(request.pedidoId(), identidad.usuarioId(),
-                        pedido.total(), pedido.moneda(), request.metodo(), estadoInicial, claveIdempotencia));
+                Pago nuevo = new Pago(pedido.tenantId(), request.pedidoId(), identidad.usuarioId(),
+                        pedido.total(), pedido.moneda(), request.metodo(), estadoInicial, claveIdempotencia);
+                nuevo.asignarCoordinacion(messaging.coordinationMode());
+                pagos.saveAndFlush(nuevo);
+                if (nuevo.getCoordinacion() == RabbitProperties.Mode.RABBITMQ) {
+                    outbox.crear(nuevo);
+                }
+                return nuevo;
             });
         } catch (DataIntegrityViolationException error) {
             // Carrera: la misma clave (identidad) o un pago activo ya fue insertado por otra transacción.
-            var porClave = pagos.findByUsuarioIdAndClaveIdempotencia(identidad.usuarioId(), claveIdempotencia);
+            var porClave = pagos.findByTenantIdAndUsuarioIdAndClaveIdempotencia(identidad.tenantId(), identidad.usuarioId(), claveIdempotencia);
             if (porClave.isPresent()) {
                 return resolverReintento(porClave.get(), request);
             }
+            // An outbox constraint/storage failure is not a business conflict.
+            ocultarColisiones(identidad, claveIdempotencia, request.pedidoId());
+            if (!pagos.existsByTenantIdAndPedidoIdAndEstadoIn(identidad.tenantId(),request.pedidoId(), ACTIVOS)) throw error;
             throw new PagoException(HttpStatus.CONFLICT,
                     "El pedido " + request.pedidoId() + " ya tiene un pago activo.");
         }
 
         intentarConfirmacion(pago);
-        return toResponse(recargar(pago.getId()));
+        return toResponse(buscar(identidad.tenantId(),pago.getId()));
     }
 
     @Transactional(readOnly = true)
     public PagoResponse obtener(IdentidadUsuario identidad, Long id) {
-        Pago pago = buscar(id);
+        Pago pago = buscar(identidad.tenantId(),id);
         if (!identidad.puedeAccederA(pago.getUsuarioId())) {
             throw new PagoException(HttpStatus.FORBIDDEN, "No tienes acceso a este pago.");
         }
@@ -101,19 +126,21 @@ public class PagoService {
         if (pedido == null) {
             throw new PagoException(HttpStatus.NOT_FOUND, "Pedido no encontrado: " + pedidoId);
         }
+        validarPedido(identidad, pedido, pedidoId);
         if (!identidad.puedeAccederA(pedido.usuarioId())) {
             throw new PagoException(HttpStatus.FORBIDDEN, "No tienes acceso a los pagos de este pedido.");
         }
-        return pagos.findByPedidoId(pedidoId).stream().map(this::toResponse).toList();
+        return pagos.findByTenantIdAndPedidoId(identidad.tenantId(),pedidoId).stream().map(this::toResponse).toList();
     }
 
-    /** Aprueba/cobra un pago pendiente. Requiere permiso explícito (REPARTIDOR o ADMIN). */
+    /** Aprueba/cobra un pago nuevo pendiente del tenant. Requiere ADMIN. */
     @Transactional
     public PagoResponse aprobar(IdentidadUsuario identidad, Long id) {
+        Pago pago = buscar(identidad.tenantId(),id);
         if (!identidad.puedeAprobarCobros()) {
             throw new PagoException(HttpStatus.FORBIDDEN, "No tienes permiso para aprobar cobros.");
         }
-        Pago pago = buscar(id);
+        exigirNuevo(pago);
         if (pago.getEstado() != EstadoPago.PENDIENTE) {
             throw new PagoException(HttpStatus.CONFLICT,
                     "Solo un pago PENDIENTE puede aprobarse. Estado actual: " + pago.getEstado());
@@ -130,7 +157,7 @@ public class PagoService {
      */
     public int reconciliarConfirmacionesPendientes() {
         int recuperados = 0;
-        for (Pago pago : pagos.findByPedidoConfirmadoFalseAndEstadoIn(ACTIVOS)) {
+        for (Pago pago : pagos.findByTenantIdAndTenantOriginAndPedidoConfirmadoFalseAndEstadoInAndCoordinacion(tenant.obtener(), cl.duoc.pedidos360.pagos.entity.TenantOrigin.AUTHENTICATED_NEW, ACTIVOS, RabbitProperties.Mode.HTTP)) {
             if (intentarConfirmacion(pago)) {
                 recuperados++;
             }
@@ -140,6 +167,7 @@ public class PagoService {
 
     /** Valida que la clave reutilizada corresponda a la misma operación (pedido y método). */
     private PagoResponse resolverReintento(Pago existente, CrearPagoRequest request) {
+        exigirNuevo(existente);
         boolean mismaOperacion = existente.getPedidoId().equals(request.pedidoId())
                 && existente.getMetodo() == request.metodo();
         if (!mismaOperacion) {
@@ -151,6 +179,8 @@ public class PagoService {
 
     /** Confirma el pedido de forma recuperable; deja el estado pendiente si falla. */
     private boolean intentarConfirmacion(Pago pago) {
+        if (!pago.esNuevoAutenticado() || !pago.getTenantId().equals(tenant.obtener())) return false;
+        if (pago.getCoordinacion() != RabbitProperties.Mode.HTTP) return false;
         if (pago.isPedidoConfirmado()) {
             return true;
         }
@@ -163,21 +193,35 @@ public class PagoService {
             return false; // pedido_confirmado queda en false; la reconciliación reintenta
         }
         transaccion.executeWithoutResult(status -> {
-            var actual = pagos.findById(pago.getId()).orElseThrow();
+            var actual = buscar(pago.getTenantId(),pago.getId());
+            exigirNuevo(actual);
             actual.marcarPedidoConfirmado();
             pagos.saveAndFlush(actual);
         });
         return true;
     }
 
-    private Pago buscar(Long id) {
-        return pagos.findById(id)
-                .orElseThrow(() -> new PagoNoEncontradoException("Pago no encontrado: " + id));
+    private Pago buscar(java.util.UUID tenantId,Long id) {
+        java.util.Objects.requireNonNull(tenantId,"tenant");
+        return pagos.findByTenantIdAndId(tenantId,id)
+            .orElseThrow(() -> new PagoNoEncontradoException("Recurso no encontrado."));
     }
-
-    private Pago recargar(Long id) {
-        return pagos.findById(id)
-                .orElseThrow(() -> new PagoNoEncontradoException("Pago no encontrado: " + id));
+    private void exigirNuevo(Pago pago) {
+        if (!pago.esNuevoAutenticado())
+            throw new PagoException(HttpStatus.CONFLICT,"Recurso histórico retenido.");
+    }
+    private void validarPedido(IdentidadUsuario actor,PedidoResumen pedido,Long id) {
+        if (!id.equals(pedido.pedidoId()))
+            throw new PagoException(HttpStatus.BAD_GATEWAY,"Resumen inválido.");
+        if (!actor.tenantId().equals(pedido.tenantId()))
+            throw new PagoException(HttpStatus.NOT_FOUND,"Recurso no encontrado.");
+    }
+    private void ocultarColisiones(IdentidadUsuario actor,String clave,Long pedidoId) {
+        if (pagos.existsByUsuarioIdAndClaveIdempotencia(actor.usuarioId(),clave)
+            && pagos.findByTenantIdAndUsuarioIdAndClaveIdempotencia(actor.tenantId(),actor.usuarioId(),clave).isEmpty()
+            || pagos.existsByPedidoIdAndEstadoIn(pedidoId,ACTIVOS)
+            && !pagos.existsByTenantIdAndPedidoIdAndEstadoIn(actor.tenantId(),pedidoId,ACTIVOS))
+            throw new PagoException(HttpStatus.NOT_FOUND,"Recurso no encontrado.");
     }
 
     /**

@@ -23,6 +23,15 @@ import jakarta.persistence.Version;
 @Entity
 @Table(name = "pedidos", schema = "pedidos")
 public class Pedido {
+    @Column(name="tenant_id", updatable=false)
+    private java.util.UUID tenantId;
+    @Enumerated(EnumType.STRING)
+    @Column(name="tenant_origin", nullable=false, updatable=false, length=24)
+    private TenantOrigin tenantOrigin = TenantOrigin.UNKNOWN;
+    public java.util.UUID getTenantId() { return tenantId; }
+    public TenantOrigin getTenantOrigin() { return tenantOrigin; }
+    public boolean esNuevoAutenticado() { return tenantId != null && tenantOrigin == TenantOrigin.AUTHENTICATED_NEW; }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,7 +72,9 @@ public class Pedido {
     protected Pedido() {
     }
 
-    public Pedido(Long usuarioId, Long restauranteId, String direccionEntrega, String moneda) {
+    public Pedido(java.util.UUID tenantId, Long usuarioId, Long restauranteId, String direccionEntrega, String moneda) {
+        this.tenantId = java.util.Objects.requireNonNull(tenantId, "tenant");
+        this.tenantOrigin = TenantOrigin.AUTHENTICATED_NEW;
         this.usuarioId = usuarioId;
         this.restauranteId = restauranteId;
         this.direccionEntrega = direccionEntrega;

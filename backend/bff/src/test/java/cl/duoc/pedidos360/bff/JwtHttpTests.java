@@ -263,7 +263,7 @@ class JwtHttpTests {
         assertThat(response.headers().firstValue("access-control-allow-origin")).hasValue("http://localhost:5173");
         assertThat(hits.get()).isZero();
     }
-    @Test void catalogoSoloLecturaSinCredencialesNiCabecerasDelNavegador() throws Exception {
+    @Test void catalogoConsultasSinCredencialesNiCabecerasDelNavegador() throws Exception {
         String token = EntraTestTokens.token(Map.of());
         for (String path : List.of("/restaurantes", "/restaurantes/20", "/productos",
                 "/productos/101", "/productos/restaurante/20", "/productos/restaurante/20/disponibles")) {
@@ -276,9 +276,70 @@ class JwtHttpTests {
         assertThat(call("GET", "/restaurantes/20/productos", token, null).statusCode()).isEqualTo(200);
         assertThat(lastPath).isEqualTo("/productos/restaurante/20");
         int before = hits.get();
-        assertThat(call("POST", "/productos", token, "{}").statusCode()).isEqualTo(405);
+        assertThat(call("POST", "/productos", token, "{}").statusCode()).isEqualTo(403);
         assertThat(call("GET", "/productos/0", token, null).statusCode()).isEqualTo(400);
         assertThat(hits.get()).isEqualTo(before);
+    }
+    private static final String RESTAURANTE = "{\"nombre\":\"Local de prueba\",\"descripcion\":\"\",\"direccion\":\"\",\"estado\":\"ABIERTO\"}";
+    private static final String PRODUCTO = "{\"restauranteId\":1,\"nombre\":\"Producto de prueba\",\"descripcion\":\"\",\"precio\":10.25,\"categoria\":\"Principal\",\"disponible\":true}";
+    @Test void administracionRequiereAdminScopeYTokenValidoSinConfiarEnCabeceras() throws Exception {
+        for (var token : List.of(EntraTestTokens.token(Map.of()), EntraTestTokens.token(Map.of("roles", List.of("ADMIN"), "scp", "otro")))) {
+            assertThat(call("GET", "/restaurantes/admin/acceso", token, null).statusCode()).isEqualTo(403);
+            for (var route : List.of(new String[]{"POST", "/restaurantes", RESTAURANTE}, new String[]{"PUT", "/restaurantes/1", RESTAURANTE},
+                    new String[]{"DELETE", "/restaurantes/1", null}, new String[]{"POST", "/productos", PRODUCTO},
+                    new String[]{"PUT", "/productos/1", PRODUCTO}, new String[]{"PATCH", "/productos/1/disponibilidad?disponible=false", null}))
+                assertThat(call(route[0], route[1], token, route[2]).statusCode()).isEqualTo(403);
+        }
+        assertThat(call("POST", "/restaurantes", null, RESTAURANTE).statusCode()).isEqualTo(401);
+        assertThat(call("GET", "/restaurantes/admin/acceso", EntraTestTokens.token(Map.of("roles", List.of("ADMIN"))), null).statusCode()).isEqualTo(204);
+        assertThat(hits.get()).isZero();
+    }
+    @Test void crudCatalogoAdminReenviaSoloMetodoRutaYCuerpoSinIdentidadDelNavegador() throws Exception {
+        var token = EntraTestTokens.token(Map.of("roles", List.of("ADMIN")));
+        for (var route : List.of(new String[]{"POST", "/restaurantes", RESTAURANTE}, new String[]{"PUT", "/restaurantes/1", RESTAURANTE},
+                new String[]{"DELETE", "/restaurantes/1", null}, new String[]{"POST", "/productos", PRODUCTO},
+                new String[]{"PUT", "/productos/1", PRODUCTO}, new String[]{"PATCH", "/productos/1/disponibilidad?disponible=false", null},
+                new String[]{"PATCH", "/productos/1/disponibilidad?disponible=true", null})) {
+            status = route[0].equals("POST") ? 201 : route[0].equals("DELETE") ? 204 : 200;
+            assertThat(call(route[0], route[1], token, route[2]).statusCode()).isEqualTo(status);
+            assertThat(lastMethod).isEqualTo(route[0]); assertThat(lastPath).isEqualTo(route[1]);
+            assertThat(lastBody).isEqualTo(route[2] == null ? "" : route[2]);
+            assertThat(lastToken).isNull(); assertThat(lastCookie).isNull(); assertThat(lastUser).isNull(); assertThat(lastRoles).isNull();
+        }
+        assertThat(call("GET", "/restaurantes/1", token, null).statusCode()).isEqualTo(200);
+        assertThat(call("GET", "/productos/1", token, null).statusCode()).isEqualTo(200);
+        assertThat(call("GET", "/productos/restaurante/1", token, null).statusCode()).isEqualTo(200);
+    }
+    @Test void datosInvalidosNoLleganAlCatalogo() throws Exception {
+        var token = EntraTestTokens.token(Map.of("roles", List.of("ADMIN")));
+        for (String body : List.of("{}", "[]", RESTAURANTE.replace("ABIERTO", "DESCONOCIDO"), RESTAURANTE.replace("Local de prueba", " "),
+                RESTAURANTE.replace("\"nombre\"", "\"roles\"")))
+            assertThat(call("POST", "/restaurantes", token, body).statusCode()).isEqualTo(400);
+        for (String body : List.of("{}", PRODUCTO.replace("10.25", "0"), PRODUCTO.replace("\"restauranteId\":1", "\"restauranteId\":-1"),
+                PRODUCTO.replace("true", "\"true\""), PRODUCTO.replace("\"categoria\"", "\"usuarioId\"")))
+            assertThat(call("POST", "/productos", token, body).statusCode()).isEqualTo(400);
+        assertThat(call("PUT", "/productos/0", token, PRODUCTO).statusCode()).isEqualTo(400);
+        assertThat(call("PATCH", "/productos/1/disponibilidad?disponible=incorrecto", token, null).statusCode()).isEqualTo(400);
+        assertThat(hits.get()).isZero();
+    }
+    @Test void escriturasCatalogoNoReintentanNiFiltranErroresUpstream() throws Exception {
+        var token = EntraTestTokens.token(Map.of("roles", List.of("ADMIN")));
+        for (int code : List.of(400, 401, 403, 404, 409, 429, 500, 302)) {
+            status = code; int before = hits.get();
+            var response = call("POST", "/restaurantes", token, RESTAURANTE);
+            assertThat(response.statusCode()).isEqualTo(code >= 500 || code == 302 ? 502 : code);
+            assertThat(response.body()).doesNotContain("INTERNAL_SECRET");
+            assertThat(response.headers().firstValue("set-cookie")).isEmpty();
+            assertThat(hits.get()).isEqualTo(before + 1);
+        }
+    }
+    @Test void corsPermitePatchSoloDesdeOrigenConfigurado() throws Exception {
+        var headers = Map.of("Origin", "http://localhost:5173", "Access-Control-Request-Method", "PATCH", "Access-Control-Request-Headers", "authorization");
+        var response = call("OPTIONS", "/productos/1/disponibilidad", null, null, headers);
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.headers().firstValue("access-control-allow-methods").orElse("")).contains("PATCH");
+        assertThat(call("OPTIONS", "/productos/1/disponibilidad", null, null, Map.of("Origin", "https://malicioso.test", "Access-Control-Request-Method", "PATCH")).statusCode()).isEqualTo(403);
+        assertThat(hits.get()).isZero();
     }
     @Test void carritoReenviaSoloTokenYCuerpoValidado() throws Exception {
         String token = EntraTestTokens.token(Map.of());

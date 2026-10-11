@@ -1,0 +1,447 @@
+{
+  "source": "f6a9540e5db9890a7716184b917c718d35a21de6",
+  "branch": "codex/ep2-minimal-runtime-preparation",
+  "date": "2026-10-10",
+  "cloud_execution": false,
+  "builds": {
+    "source": "f6a9540e5db9890a7716184b917c718d35a21de6",
+    "publication": false,
+    "cache": "BuildKit cache allowed; core comes from same git archive",
+    "frontend_public_configuration": {
+      "VITE_API_BASE_URL": "https://l7wtit9zmj.execute-api.us-east-1.amazonaws.com/api",
+      "VITE_ENTRA_CLIENT_ID": "5388c832-53e4-45c8-a3be-6875b69e1a51",
+      "VITE_ENTRA_TENANT_ID": "a048ca4e-cd7f-4a01-a43e-cb4deccf1ff2",
+      "VITE_ENTRA_REDIRECT_URI": "https://l7wtit9zmj.execute-api.us-east-1.amazonaws.com",
+      "VITE_ENTRA_API_SCOPE": "api://13c0f63f-2007-41c4-8d9f-02640b8a1886/access_as_user"
+    },
+    "images": [
+      {
+        "service": "bff",
+        "checkout": null,
+        "tag": "p360-local/bff:ep2-react-f6a9540e5db9",
+        "exit_code": 0,
+        "id": "sha256:1baf4af084d13ee1ecfb6622ca9b18cba1c4934ce6d9e3d5670939eb67da6a99",
+        "platform": "linux/amd64",
+        "user": "10001:10001",
+        "size": 105084775
+      },
+      {
+        "service": "usuarios",
+        "checkout": null,
+        "tag": "p360-local/usuarios:ep2-react-f6a9540e5db9",
+        "exit_code": 0,
+        "id": "sha256:c4d1c2612273f862fa175b8a4bdca3bc089ef6d73540ab48c370cc7b1b835572",
+        "platform": "linux/amd64",
+        "user": "10001:10001",
+        "size": 133690167
+      },
+      {
+        "service": "restaurantes",
+        "checkout": null,
+        "tag": "p360-local/restaurantes:ep2-react-f6a9540e5db9",
+        "exit_code": 0,
+        "id": "sha256:973c1aa262297c95558beaedfdded275ef8003209d13551d73ad8c19868a0bc0",
+        "platform": "linux/amd64",
+        "user": "10001:10001",
+        "size": 135543507
+      },
+      {
+        "service": "productos",
+        "checkout": null,
+        "tag": "p360-local/productos:ep2-react-f6a9540e5db9",
+        "exit_code": 0,
+        "id": "sha256:1d86c57b2b7d9a8c6adbdf471c3215c4008cabea39a2fcbd490561324443ecda",
+        "platform": "linux/amd64",
+        "user": "10001:10001",
+        "size": 135545243
+      },
+      {
+        "service": "carrito",
+        "checkout": null,
+        "tag": "p360-local/carrito:ep2-react-f6a9540e5db9",
+        "exit_code": 0,
+        "id": "sha256:6cc5cdbc66c116ff83277492fc4a98e85b2c968a354ac83f54909841375a044f",
+        "platform": "linux/amd64",
+        "user": "10001:10001",
+        "size": 133710542
+      },
+      {
+        "service": "pedidos",
+        "checkout": null,
+        "tag": "p360-local/pedidos:ep2-react-f6a9540e5db9",
+        "exit_code": 0,
+        "id": "sha256:29903377696f8e1794cf716b3fe16bff78f9e8e4cab7834007f0385d591ef4ed",
+        "platform": "linux/amd64",
+        "user": "10001:10001",
+        "size": 133758704
+      },
+      {
+        "service": "pagos",
+        "checkout": null,
+        "tag": "p360-local/pagos:ep2-react-f6a9540e5db9",
+        "exit_code": 0,
+        "id": "sha256:4fbe91932881fb2091100b5f4ba85ee328abf2763882fd01dc32685cfae4d6b9",
+        "platform": "linux/amd64",
+        "user": "10001:10001",
+        "size": 133738568
+      },
+      {
+        "service": "frontend",
+        "checkout": "HTTP",
+        "tag": "p360-local/frontend:ep2-react-f6a9540e5db9",
+        "exit_code": 0,
+        "id": "sha256:c6c158aa33954c3ab477d6eb356d99af87da0e76131d2f9a4f15822bd0c83180",
+        "platform": "linux/amd64",
+        "user": "101:101",
+        "size": 25786944
+      },
+      {
+        "service": "frontend",
+        "checkout": "RABBITMQ",
+        "tag": "p360-local/frontend:ep2-react-f6a9540e5db9-checkout-rabbit",
+        "exit_code": 0,
+        "id": "sha256:815923f001ef9f82da30f043f1bad98aa795f0be83765d79fc5af71853a33a34",
+        "platform": "linux/amd64",
+        "user": "101:101",
+        "size": 25786949
+      }
+    ]
+  },
+  "migration_tools": [
+    {
+      "id": "sha256:12b4eaa4c536031a158edbfc206b566d37e1371fb50625b08f9d5c4c04e7b62a",
+      "tag": "p360-local/carrito-migrator-ready:ep2-f6a9540e5db9"
+    },
+    {
+      "id": "sha256:8b42c9707ab6505ee864fc3dff44ff1e34b6b5c6297e54fab8174e86127191d9",
+      "tag": "p360-local/pedidos-migrator-ready:ep2-f6a9540e5db9"
+    },
+    {
+      "id": "sha256:9e1cf92cb7c656d9951806d9fe35528b889c29dab679321a50443eb83622a668",
+      "tag": "p360-local/pagos-migrator-ready:ep2-f6a9540e5db9"
+    }
+  ],
+  "migration_runner_results": [
+    {
+      "service": "carrito",
+      "action": "bootstrap-prior",
+      "exit_code": 0
+    },
+    {
+      "service": "carrito",
+      "action": "prevalidate",
+      "exit_code": 0
+    },
+    {
+      "service": "carrito",
+      "action": "migrate",
+      "exit_code": 0
+    },
+    {
+      "service": "carrito",
+      "action": "postvalidate",
+      "exit_code": 0
+    },
+    {
+      "service": "pedidos",
+      "action": "bootstrap-prior",
+      "exit_code": 0
+    },
+    {
+      "service": "pedidos",
+      "action": "prevalidate",
+      "exit_code": 0
+    },
+    {
+      "service": "pedidos",
+      "action": "migrate",
+      "exit_code": 0
+    },
+    {
+      "service": "pedidos",
+      "action": "postvalidate",
+      "exit_code": 0
+    },
+    {
+      "service": "pagos",
+      "action": "bootstrap-prior",
+      "exit_code": 0
+    },
+    {
+      "service": "pagos",
+      "action": "prevalidate",
+      "exit_code": 0
+    },
+    {
+      "service": "pagos",
+      "action": "migrate",
+      "exit_code": 0
+    },
+    {
+      "service": "pagos",
+      "action": "postvalidate",
+      "exit_code": 0
+    }
+  ],
+  "tests": {
+    "frontend": {
+      "warning": "existing chunk >500 kB",
+      "production_builds": "HTTP and RabbitMQ PASS",
+      "lint": "oxlint PASS",
+      "http": 253,
+      "rabbit_checkout": 253
+    },
+    "cluster": {
+      "restart_defect_reproduced": false,
+      "full_passed": 11,
+      "isolated_restart_passed": 1,
+      "static_passed": 5,
+      "final_state": "stopped, persistent volumes preserved"
+    },
+    "backend": {
+      "initial_failure": "Pedidos actualBrokerOutageRetainsIntentUntilBrokerRestart timeout; unchanged whole class repeated 6/6 PASS",
+      "pedidos": 14,
+      "pagos": 78,
+      "carrito": 27,
+      "core": 268,
+      "initial_runner_failures": "Missing prior schema; then known pending migrations; fixture bootstrap and prevalidate sequence corrected, no production migration changes",
+      "final_distinct_passed": 387,
+      "scope": "Core complete; other backend modules selected integration/migration classes, not complete suites"
+    },
+    "compose": {
+      "new_regressions": 3,
+      "passed": 8
+    },
+    "omitted": [
+      "Entra live login",
+      "Cloud authenticated E2E",
+      "Production RDS restore",
+      "EP2 sustained load on EC2"
+    ]
+  },
+  "pending": [
+    "RDS restoration accreditation and migration/runtime roles",
+    "Identity signing/public keys and verified truststore placement",
+    "p360.dlx publish permission for five consumers",
+    "Retirement of old checkout clients before cart activation",
+    "Operational load/CPU acceptance"
+  ],
+  "cleanup_112": {
+    "pr": "CLOSED, not merged",
+    "branches": "local and remote deleted",
+    "images_removed": 9,
+    "residual_files": "Deletion blocked by automatic policy; frontend-angular and exclusive evidence/cache leftovers remain outside archived build context"
+  },
+  "evidence_hashes": [
+    {
+      "sha256": "245e6fb027126bce8e6dedb11966159bf0520e066f780664ff4de54a79f3b77c",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\bff-build.log"
+    },
+    {
+      "sha256": "bdbf3848d41e6be88004efc156267a6243497f21bfc45812c753eb419a0d4fdb",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\builds.json"
+    },
+    {
+      "sha256": "11a1d11a154cc6829be54120502a3a9e3d8da938687fc002b059413eebc26456",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-build.log"
+    },
+    {
+      "sha256": "a63fd63cf3176b953d305eb24e194a192f4d5bf1da2ef52f7ee937be9a0f6e4d",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-migrator-build.log"
+    },
+    {
+      "sha256": "c982303f79eb8f6743443387ebfd1513220b5f9c5e96c347a8718c8b00b7dd1d",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-migrator-ready.log"
+    },
+    {
+      "sha256": "f426e1cd9bc76c8e49e41044ec94ea938a0ea55a39939b4b1415d04c8a722fcd",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-runner-bootstrap-prior-0.log"
+    },
+    {
+      "sha256": "250c7e107cc696e6658def868c89b186b088ee6c0591d2062e7593eeccadd680",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-runner-migrate-2.log"
+    },
+    {
+      "sha256": "3035e67e55741b1444952f6279014595aadceace08f36216804220da6f64cafe",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-runner-postvalidate-3.log"
+    },
+    {
+      "sha256": "04119f5f05d794bee678323d72d731b8ceeb63ff2f4c3f48026c13760a69c0a4",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-runner-prevalidate-1.log"
+    },
+    {
+      "sha256": "f2531ca96a00da28874a0f55e152ad1da3c10e3d7671ef7d48d3209fa73380ba",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-runner-validate-0.log"
+    },
+    {
+      "sha256": "70b4c77f15ccb34e4a7a5bb1f19a6226e9b718e1795b224c99fcbd1f35d2f0e1",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-runner-validate-1.log"
+    },
+    {
+      "sha256": "fd7e5ab25f1f155620cb2b94e6bb3c4ef7bd003971b619aad631bf64eaee7e30",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\carrito-tests.log"
+    },
+    {
+      "sha256": "e48b28bb204ab2bde53ebfaeccb0015734968a69ba4372c581edb2394169190c",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\cluster-full.log"
+    },
+    {
+      "sha256": "a60b119df7e19370eade4b416cd6fb338f9a0c645942cb31d37921524f4e28ac",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\cluster-restart.log"
+    },
+    {
+      "sha256": "b34a1105605f030b94b7ee84ea2658b6d911d727ce38e9e8b0ac344e441488d9",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\compose-tests.log"
+    },
+    {
+      "sha256": "41c2fd498d4c7d159756615bce5a42dfab40e2a7aa6c20b41de11cf1d719eef9",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\core-tests.log"
+    },
+    {
+      "sha256": "8a591de172129feb18fd966e41a797a346eb89a50e388571587b9e9d90ab4106",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\cpu-a.json"
+    },
+    {
+      "sha256": "4b11d5b4cd7eaa085b2fd1427ac62510d9c01106b83d5d41d1972920ef0d4d4b",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\flyway-plugin-help-repeat.log"
+    },
+    {
+      "sha256": "9adcc5c79c52a67e412904909767dbcd5a5f513ddefece7a5f9aebc475b294c2",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\flyway-plugin-help.log"
+    },
+    {
+      "sha256": "2dbf99b5aebf6ebd61795b8f492e5ad9deb333e7bcbfcefc746169cf0a8d3a4d",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\frontend-build.log"
+    },
+    {
+      "sha256": "71e294d8b0efc47735d295f7549b5ad081cbe4f7864ee2d9023c7f56a3a397dc",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\frontend-checkout-rabbit-build.log"
+    },
+    {
+      "sha256": "c0bb45def2d0dd0d3028302a0dd31068c1716fb887e3fa25553f34efef28aac6",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\migration-runners.json"
+    },
+    {
+      "sha256": "ee114906a441de63fa1e3b8d64ba1e5f476aab99932ccae2e89381e6ada24802",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pagos-build.log"
+    },
+    {
+      "sha256": "c58d63908241b8bb6ebd8e201b7a2ec6ae4be254e48dce62280899de2c90aa33",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pagos-migrator-build.log"
+    },
+    {
+      "sha256": "21f8a80600f5577763514a814940950fdf6e483fdbfe73b29e2f9085c00f17f9",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pagos-migrator-ready.log"
+    },
+    {
+      "sha256": "5162072ff4957c63273c2d126b4c467a32386d0a5cae595cdbab670508bbf1ca",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pagos-runner-bootstrap-prior-8.log"
+    },
+    {
+      "sha256": "545cd97f188a75bfcb58dcc3e2fb41df73653078a78ec7ec772fd73ecf54f774",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pagos-runner-migrate-10.log"
+    },
+    {
+      "sha256": "7e114e62609eac34d96892ff0f32b2cfd0398405689627a41545036e23dcd21d",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pagos-runner-postvalidate-11.log"
+    },
+    {
+      "sha256": "f169aa00072c8cd49341090fcdcd787b808b2123a500a6337657952202518786",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pagos-runner-prevalidate-9.log"
+    },
+    {
+      "sha256": "9d60ec8d21a9526608f84e10a96859f8fa5a7ed47452f2bc7ba9c7235f9adacb",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pagos-tests.log"
+    },
+    {
+      "sha256": "2971c17f48399c9112a9aaa5e9715e8d8bf587c4e848550d0706b5112ae432ea",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pedidos-broker-repeat.log"
+    },
+    {
+      "sha256": "e9d50e4af8fc59d679f943ad95cf0afcbf0c97c73e1191e0ef4a0bc992d4afec",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pedidos-build.log"
+    },
+    {
+      "sha256": "d6a0e3bf75be4a9b1a5a219a358d173757f87ff846e3bc73bead057211c00803",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pedidos-migrator-build.log"
+    },
+    {
+      "sha256": "a638273a436a2be10de5de5b71c9916068bc4409eedd1c48a2065a36347ea748",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pedidos-migrator-ready.log"
+    },
+    {
+      "sha256": "86febaa4463cab4e0d0678bd13940dbc279559373c9c197488cf0045f3011057",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pedidos-runner-bootstrap-prior-4.log"
+    },
+    {
+      "sha256": "839174e0f4be0c5d0eef49a03fba59484296e7a6f266d2891477ce8d0b765ffd",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pedidos-runner-migrate-6.log"
+    },
+    {
+      "sha256": "9b8355efba320177173f6a9905a68f64cd7e5ca09efaa34aae79af75377aa51f",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pedidos-runner-postvalidate-7.log"
+    },
+    {
+      "sha256": "f2bf14222963cea46f92aadf6e157abbbe82e251f1a203b21bd5e929a02b5ecf",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pedidos-runner-prevalidate-5.log"
+    },
+    {
+      "sha256": "c163ae1c0908c1e95c73f287f0fc3d3a5ad619cb66aba781f96ff1b43dd20029",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\pedidos-tests.log"
+    },
+    {
+      "sha256": "afc20182c7b080e64c76206a16311a759ec735c73baa275ad2ae03597d7bfd61",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\productos-build.log"
+    },
+    {
+      "sha256": "9ade7136f232ecbaec1a6da0c59f2612abddae349f09bcf2759e55633764832d",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\restaurantes-build.log"
+    },
+    {
+      "sha256": "3461f3d44aaee4ed7c58481dfed40ff7fed8d29e4ea3753f74523c9144cb12ff",
+      "path": "C:\\Users\\Rodri\\Documents\\ChatGPT\\Pedidos360 Delivery\\operational-evidence\\EP2-MINIMAL-REACT-BUILDS-2026-10-10\\usuarios-build.log"
+    }
+  ],
+  "source_hashes": [
+    {
+      "sha256": "f801f653184fcbce0ca11d1ebffef0bba070b8103655093419e4027915400823",
+      "path": "docs/ep2/EP2-MINIMAL-WINDOW.md"
+    },
+    {
+      "sha256": "63ab7b1ce5eeaefd1fd5835136f74ff8acd028b3532102eef3ac8cf11d187f14",
+      "path": "infrastructure/aws/build-minimal-local.py"
+    },
+    {
+      "sha256": "d803812d50e60f925a5fbc6a0cf45f5437cfbbb930c70a38040dd18297c4d3e5",
+      "path": "infrastructure/aws/ep2-minimal-readonly.py"
+    },
+    {
+      "sha256": "d0830ce82cce97c1473e02e55d06ec44a67f53a3ca779ef97a380dd08ac2f958",
+      "path": "infrastructure/aws/ep2-minimal.test.mjs"
+    },
+    {
+      "sha256": "06acfd0c88e274f13779fe23cbd8eb78af1dd14bacf3e698f83ea7b526916d93",
+      "path": "infrastructure/aws/compose.ep2-runtime-roles.yml"
+    },
+    {
+      "sha256": "fa797de1d103ad606fc6e7587a0048a568e0b7e80310881eefff18eefb79376d",
+      "path": "infrastructure/aws/compose.ep2-query-candidate.yml"
+    },
+    {
+      "sha256": "1cc483e768eccc4f1888d5fce99e549c5980ee48ffbdf31862b97ce9ec405751",
+      "path": "infrastructure/aws/compose.ep2-pago-candidate.yml"
+    },
+    {
+      "sha256": "883ad6b36f17cbc810b77626ffea9e9588570f84be3b13e08c86e89f4745af18",
+      "path": "infrastructure/aws/compose.ep2-carrito-candidate.yml"
+    },
+    {
+      "sha256": "5d3858ac172b3533e5afe6e4c16819c4553f6f1e412784cabe889a83b0c81e46",
+      "path": "infrastructure/aws/migrator/Dockerfile"
+    },
+    {
+      "sha256": "f4fadf580dcd33221ab59a234ed5995ab146328f6967e98d3c8d31b21ee0d610",
+      "path": "infrastructure/aws/migrator/test_runners.py"
+    }
+  ]
+}

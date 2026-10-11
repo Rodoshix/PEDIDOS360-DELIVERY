@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { parseQuantity } from './cartOperations.js'
+import { Input } from '../../components/ui/Field.jsx'
 
 export default function CartQuantityForm({ item, onChange, disabled = false, saving = false }) {
   const id = useId()
@@ -29,7 +30,7 @@ export default function CartQuantityForm({ item, onChange, disabled = false, sav
         <legend className="cart-field-legend">Editar cantidad</legend>
         <label htmlFor={id}>Nueva cantidad de {item.nombre}</label>
         <div className="cart-quantity-actions">
-          <input ref={inputRef} id={id} name="cantidad" inputMode="numeric" value={draft} onChange={event => setDraft(event.target.value)}
+          <Input ref={inputRef} id={id} name="cantidad" inputMode="numeric" value={draft} onChange={event => setDraft(event.target.value)}
             required maxLength={3} aria-invalid={error ? true : undefined} aria-describedby={`${id}-hint${error ? ` ${id}-error` : ''}`} />
           <button type="submit" className="button button--secondary" disabled={draft === String(item.cantidad)}>Aplicar cantidad</button>
           {draft !== String(item.cantidad) && <button type="button" className="button button--secondary" onClick={() => {

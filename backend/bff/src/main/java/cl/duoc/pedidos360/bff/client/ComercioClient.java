@@ -18,8 +18,10 @@ public class ComercioClient {
     private final HttpClient client;
     private final java.util.Map<String, URI> origins;
     private final long timeoutMs;
+    private final cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapter queries;
 
-    public ComercioClient(HttpClient client, Environment env) {
+    public ComercioClient(HttpClient client, Environment env, cl.duoc.pedidos360.bff.messaging.BffQueryHttpAdapter queries) {
+        this.queries = queries;
         this.client = client;
         this.origins = java.util.Map.of(
             "restaurantes", ConnectionConfiguration.origin(env.getProperty("bff.restaurantes-url", "http://127.0.0.1:8082")),
@@ -43,6 +45,8 @@ public class ComercioClient {
         // Defensa adicional: solo rutas construidas por el controlador, sin URL aportada por el usuario.
         if (!allowed(method, path))
             throw new IllegalArgumentException("Ruta interna no permitida.");
+        var query = queries.consultar(method, path, token);
+        if (query.isPresent()) return query.get();
         var origin = origins.get(path.split("/")[1]);
         var builder = HttpRequest.newBuilder(origin.resolve(path)).timeout(Duration.ofMillis(timeoutMs))
                 .header("Accept", "application/json");
@@ -78,6 +82,10 @@ public class ComercioClient {
     }
 
     static boolean allowed(String method, String path) {
+        if ("POST".equals(method) && Set.of("/restaurantes", "/productos").contains(path)) return true;
+        if ("PUT".equals(method) && path.matches("/(?:restaurantes|productos)/[1-9][0-9]*")) return true;
+        if ("DELETE".equals(method) && path.matches("/restaurantes/[1-9][0-9]*")) return true;
+        if ("PATCH".equals(method) && path.matches("/productos/[1-9][0-9]*/disponibilidad\\?disponible=(?:true|false)")) return true;
         if ("POST".equals(method) && Set.of("/pedidos", "/pagos").contains(path)) return true;
         if ("PUT".equals(method) && path.matches("/(?:pedidos/[1-9][0-9]*/estado|pagos/[1-9][0-9]*/aprobar)")) return true;
         if ("GET".equals(method) && path.matches("/(?:pedidos(?:/me|/[1-9][0-9]*)?|pagos/(?:pedido/)?[1-9][0-9]*)")) return true;

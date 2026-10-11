@@ -1,0 +1,14 @@
+{
+  "vhost": "demo73",
+  "exchanges": [
+    {"name": "demo73.direct", "type": "direct"},
+    {"name": "demo73.topic", "type": "topic"},
+    {"name": "demo73.dlx", "type": "direct"}
+  ],
+  "queues": [
+    {"name": "demo73.orders.q", "dlq": "demo73.orders.dlq", "exchange": "demo73.direct", "key": "order.created", "failed": "order.failed"},
+    {"name": "demo73.payments.q", "dlq": "demo73.payments.dlq", "exchange": "demo73.direct", "key": "payment.created", "failed": "payment.failed"},
+    {"name": "demo73.events.q", "dlq": "demo73.events.dlq", "exchange": "demo73.topic", "key": "demo.*.created", "failed": "event.failed"}
+  ],
+  "additional_topic_binding": "audit.#"
+}
