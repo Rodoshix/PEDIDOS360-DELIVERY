@@ -28,7 +28,7 @@ class KafkaRuntimeIntegrationTests {
   static JdbcTemplate db;
   static TransactionTemplate tx;
   static EventCodec codec = new EventCodec();
-  static String servers = "localhost:19092";
+  static String servers = System.getenv().getOrDefault("P360_KAFKA_IT_BOOTSTRAP_SERVERS", "localhost:19092");
   static List<KafkaRuntime> workers = new ArrayList<>();
   static KafkaStores restaurants, products, cart;
 

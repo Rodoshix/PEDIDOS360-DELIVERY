@@ -33,7 +33,7 @@ java -jar backend/services/kafka-admin-service/target/kafka-admin-service-0.0.1-
 java -jar backend/services/kafka-admin-service/target/kafka-admin-service-0.0.1-SNAPSHOT.jar --p360.kafka.admin.command=groups
 ```
 
-`describe` es el valor predeterminado; `plan` no escribe. `apply` valida el catálogo completo antes de efectuar cambios. Un fallo de conexión puede dejar cambios parciales: revisar y repetir el plan. Solo se permiten los dos topics aprobados y sus destinos `.dlt`. Tres particiones, replicación 1. Topics de negocio: `compact`, `retention.ms=-1`. DLT: `delete`, retención 604800000 ms. No se exponen eliminación, reset de offsets ni nombres arbitrarios. El broker también deshabilita eliminación de topics.
+`describe` es el valor predeterminado; `list` enumera el catálogo autorizado; `plan` no escribe. `apply` valida el catálogo completo antes de efectuar cambios. Un fallo de conexión puede dejar cambios parciales: revisar y repetir el plan. Solo se permiten los dos topics aprobados y sus destinos `.dlt`. Tres particiones, replicación 1. Topics de negocio: `compact`, `retention.ms=-1`. DLT: `delete`, retención 604800000 ms. El catálogo operativo no expone eliminación, reset de offsets ni nombres arbitrarios. El broker de desarrollo mantiene deshabilitada la eliminación de topics. Los comandos `test-*` se limitan a recursos de una ejecución desechable, con confirmaciones e identidad de clúster/broker verificadas; solo se prueban en un fixture aislado. Consultar [operaciones y demostración reproducible](../../backend/services/kafka-admin-service/README.md).
 
 Kafka UI es solo observación, no el administrador:
 
@@ -128,3 +128,10 @@ Límites configurables por propiedades Spring (también mediante su forma habitu
 Valores entre 1 y 120000 ms; el plazo runtime debe cubrir al menos tarea + consumidor. El cierre del productor tiene un presupuesto separado y puede sumarse al plazo runtime. Estas opciones no se transmiten como configuración del cliente Kafka.
 
 Si una tarea no termina dentro del plazo, se intenta interrumpir, se registra ERROR de cierre incompleto y no se confirma su offset. shutdownNow no garantiza terminar JDBC. isShutdownComplete() comprueba ejecutores, trabajo y cierre de clientes; no equivale a isRunning(). Un runtime incompleto rechaza start para evitar solapar generaciones. No se promete terminar un hilo que ignore interrupciones: se necesita recuperar el recurso/liberar la llamada y verificar nuevamente el estado; un cierre de proceso forzado requiere autorización operativa. No se borran offsets ni datos para reparar este caso.
+
+
+### Consentimiento de administración desechable
+
+Las actualizaciones de configuración exigen `UPDATE:<topic>:<config>:<value>` incluso cuando parezcan no destructivas. Reset y eliminación conservan `RESET:<topic>:<config>` y `DELETE:<topic>`. Las mutaciones test exigen argumentos explícitos de operación, conexión, identidad de ejecución, recurso y consentimiento en la invocación actual; no reutilizan autorizaciones heredadas de configuración o entorno. Sin argumentos, una operación mutante heredada se rechaza; sin operación configurada se conserva describe. Apply también requiere command explícito.
+
+Los controles de ID de clúster, rack y endpoint son barreras contra accidentes, no una prueba de aislamiento físico o lógico. Las demostraciones destructivas quedan restringidas al fixture documentado en backend/services/kafka-admin-service/README.md, con inspección de montajes y sin volúmenes operativos. No habilitar delete.topic.enable en el broker de desarrollo.

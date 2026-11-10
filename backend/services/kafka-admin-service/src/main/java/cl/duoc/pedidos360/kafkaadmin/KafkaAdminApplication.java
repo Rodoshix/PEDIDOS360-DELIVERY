@@ -17,20 +17,30 @@ public class KafkaAdminApplication {
   @Bean
   ApplicationRunner adminCommand(Environment env) {
     return args -> {
-      String command = env.getProperty("p360.kafka.admin.command", "describe");
-      if (!Set.of("describe", "plan", "apply", "groups").contains(command))
-        throw new IllegalArgumentException(
-            "Operation disabled; only describe/plan/apply/groups allowed");
+      AdminRequest request;
+      try { request = AdminRequest.parse(env, args); }
+      catch (IllegalArgumentException failure) {
+        org.slf4j.LoggerFactory.getLogger(getClass()).warn("AUDIT kafka-admin operation=UNKNOWN outcome=REJECTED");
+        throw failure;
+      }
+      String command = request.command();
+      org.slf4j.LoggerFactory.getLogger(getClass()).info("AUDIT kafka-admin operation={} resource={} run={} outcome=STARTED", command, request.topic() == null ? "catalog" : request.topic(), request.runId() == null ? "none" : request.runId());
       Properties properties = new Properties();
       properties.put(
-          "bootstrap.servers", env.getProperty("p360.kafka.bootstrap-servers", "localhost:19092"));
+          "bootstrap.servers", request.servers());
       properties.put("default.api.timeout.ms", "10000");
       properties.put("request.timeout.ms", "5000");
       try (Admin admin = Admin.create(properties)) {
-        if (command.equals("groups")) {
+        if (command.startsWith("test-")) {
+          new DisposableTopicAdmin(admin).execute(request).forEach(System.out::println);
+        } else if (command.equals("list")) {
+          var names = admin.listTopics().names().get(10, TimeUnit.SECONDS);
+          TopicCatalog.topics().stream().map(TopicCatalog.Spec::name).filter(names::contains)
+              .sorted().forEach(name -> System.out.println("TOPIC " + name));
+        } else if (command.equals("groups")) {
           for (var group : admin.listConsumerGroups().all().get(10, TimeUnit.SECONDS)) {
             String id = group.groupId();
-            if (!id.startsWith("p360-")) continue;
+            if (!id.matches("p360-[A-Za-z0-9._-]{1,160}")) continue;
             var description =
                 admin.describeConsumerGroups(List.of(id)).all().get(10, TimeUnit.SECONDS).get(id);
             System.out.println(
@@ -53,7 +63,8 @@ public class KafkaAdminApplication {
                 .keySet()
                 .forEach(
                     tp -> requests.put(tp, org.apache.kafka.clients.admin.OffsetSpec.latest()));
-            var ends = admin.listOffsets(requests).all().get(10, TimeUnit.SECONDS);
+            var ends = requests.isEmpty() ? java.util.Map.<org.apache.kafka.common.TopicPartition, org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo>of()
+                : admin.listOffsets(requests).all().get(10, TimeUnit.SECONDS);
             for (var e : offsets.entrySet())
               System.out.println(
                   "OFFSET "
@@ -102,6 +113,10 @@ public class KafkaAdminApplication {
           new TopicReconciler(admin)
               .reconcile(command.equals("apply"))
               .forEach(System.out::println);
+        org.slf4j.LoggerFactory.getLogger(getClass()).info("AUDIT kafka-admin operation={} resource={} run={} outcome=SUCCEEDED", command, request.topic() == null ? "catalog" : request.topic(), request.runId() == null ? "none" : request.runId());
+      } catch (Exception failure) {
+        org.slf4j.LoggerFactory.getLogger(getClass()).error("AUDIT kafka-admin operation={} resource={} run={} outcome=FAILED", command, request.topic() == null ? "catalog" : request.topic(), request.runId() == null ? "none" : request.runId());
+        throw failure;
       }
     };
   }
