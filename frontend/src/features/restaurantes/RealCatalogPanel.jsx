@@ -1,3 +1,4 @@
+import KafkaObservations from '../carrito/KafkaObservations.jsx'
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useLocation } from 'react-router'
 import { useAuthSession } from '../../auth/useAuthSession.js'
@@ -12,6 +13,7 @@ export default function RealCatalogPanel() {
   const [controller] = useState(createCartController)
   // Suscripción real al estado: sin esto el panel no reacciona a la carga ni a los errores.
   const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot, controller.getSnapshot)
+  const [observedRestaurant, setObservedRestaurant] = useState(null)
   const [catalog, setCatalog] = useState(null)
   const [catalogError, setCatalogError] = useState(null)
   const [message, setMessage] = useState('')
@@ -60,7 +62,8 @@ export default function RealCatalogPanel() {
       </div>
     </div>}
     {message && <Alert tone="success">{message}</Alert>}
-    {catalog && !sessionBusy && <RealCatalog adapter={catalog} disabled={busy || Boolean(state.error) || !state.cart}
+    {observedRestaurant && !sessionBusy && <KafkaObservations restaurantId={observedRestaurant} />}
+    {catalog && !sessionBusy && <RealCatalog onRestaurantSelect={setObservedRestaurant} adapter={catalog} disabled={busy || Boolean(state.error) || !state.cart}
       onError={setCatalogError} onAdd={add} />}
   </div>
 }

@@ -6,13 +6,24 @@ import cl.duoc.pedidos360.productos.entity.Producto;
 import cl.duoc.pedidos360.productos.exception.ProductoNoEncontradoException;
 import cl.duoc.pedidos360.productos.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import cl.duoc.pedidos360.kafka.EventCodec;
+import cl.duoc.pedidos360.kafka.KafkaStores;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+
+    private KafkaStores kafka;
+    @Autowired
+    void configureKafka(ObjectProvider<KafkaStores> stores) {
+        kafka = stores.getIfAvailable();
+    }
 
     public ProductoService(ProductoRepository productoRepository) {
         this.productoRepository = productoRepository;
@@ -44,6 +55,7 @@ public class ProductoService {
         return toResponse(producto);
     }
 
+    @Transactional
     public ProductoResponse crear(ProductoRequest request) {
         Producto producto = new Producto(
                 request.getRestauranteId(),
@@ -54,11 +66,16 @@ public class ProductoService {
                 request.getDisponible()
         );
 
-        return toResponse(productoRepository.save(producto));
+        Producto guardado = productoRepository.save(producto);
+        if (kafka != null) {
+            kafka.record(EventCodec.PRODUCTOS, guardado.getId(), Boolean.toString(guardado.isDisponible()), false);
+        }
+        return toResponse(guardado);
     }
 
+    @Transactional
     public ProductoResponse actualizar(Long id, ProductoRequest request) {
-        Producto producto = buscarEntidad(id);
+        Producto producto = buscarParaModificar(id);
 
         producto.setRestauranteId(request.getRestauranteId());
         producto.setNombre(request.getNombre());
@@ -67,14 +84,29 @@ public class ProductoService {
         producto.setCategoria(request.getCategoria());
         producto.setDisponible(request.getDisponible());
 
-        return toResponse(productoRepository.save(producto));
+        Producto guardado = productoRepository.save(producto);
+        if (kafka != null) {
+            kafka.record(EventCodec.PRODUCTOS, guardado.getId(), Boolean.toString(guardado.isDisponible()), false);
+        }
+        return toResponse(guardado);
     }
 
+    @Transactional
     public ProductoResponse cambiarDisponibilidad(Long id, boolean disponible) {
-        Producto producto = buscarEntidad(id);
+        Producto producto = buscarParaModificar(id);
         producto.setDisponible(disponible);
 
-        return toResponse(productoRepository.save(producto));
+        Producto guardado = productoRepository.save(producto);
+        if (kafka != null) {
+            kafka.record(EventCodec.PRODUCTOS, guardado.getId(), Boolean.toString(guardado.isDisponible()), false);
+        }
+        return toResponse(guardado);
+    }
+
+    private Producto buscarParaModificar(Long id) {
+        if (kafka == null) return buscarEntidad(id);
+        return productoRepository.findForUpdate(id)
+                .orElseThrow(() -> new ProductoNoEncontradoException(id));
     }
 
     private Producto buscarEntidad(Long id) {

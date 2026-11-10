@@ -8,12 +8,16 @@ COPY --from=messaging-core pom.xml /messaging-core/pom.xml
 COPY --from=messaging-core src/main /messaging-core/src/main
 # El checkout de Windows puede usar CRLF; no modifica los archivos del host.
 RUN sed -i 's/\r$//' mvnw
+COPY --from=kafka-core pom.xml /kafka-core/pom.xml
+COPY --from=kafka-core src/main /kafka-core/src/main
 COPY src/main ./src/main
 COPY docker/Health.java ./Health.java
 RUN javac Health.java
 # Testcontainers se ejecuta fuera del build. Nunca montar el socket Docker aquí.
 RUN --mount=type=cache,id=pedidos360-maven,target=/root/.m2,sharing=locked \
     sh mvnw -B -ntp -f /messaging-core/pom.xml -Dmaven.test.skip=true install
+RUN --mount=type=cache,id=pedidos360-maven,target=/root/.m2,sharing=locked \
+    sh mvnw -B -ntp -f /kafka-core/pom.xml -Dmaven.test.skip=true install
 RUN --mount=type=cache,id=pedidos360-maven,target=/root/.m2,sharing=locked \
     sh mvnw -B -ntp -Dmaven.test.skip=true package
 

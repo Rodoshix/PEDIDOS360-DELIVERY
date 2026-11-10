@@ -1,0 +1,589 @@
+{
+  "branch": "feature/kafka-integration",
+  "base": "6ef8d5c30c0f6f2b985c79fce2a624c9f3baefc5",
+  "commit_proposed": "feat(kafka): integrate event streaming into Pedidos360",
+  "staged": false,
+  "java_test_results": {
+    "shared/p360-kafka-core": {
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "shared/p360-messaging-core": {
+      "tests": 286,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "services/kafka-admin-service": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "services/restaurantes-service": {
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "services/productos-service": {
+      "tests": 47,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "services/carrito-service": {
+      "tests": 106,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "bff": {
+      "tests": 206,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "frontend_tests": 258,
+  "files": [
+    {
+      "path": "backend/bff/src/main/java/cl/duoc/pedidos360/bff/client/ComercioClient.java",
+      "change": "modified",
+      "sha256": "34fbac446cc0331ce31407066a37352e009902ff3763c083f4a0e12dd1ed5568"
+    },
+    {
+      "path": "backend/bff/src/main/java/cl/duoc/pedidos360/bff/controller/KafkaObservacionesController.java",
+      "change": "new",
+      "sha256": "133dfcdd7acc48579ae29995a8c1a0a981063a164b54e5e5c142c73b0e4ad654"
+    },
+    {
+      "path": "backend/bff/src/test/java/cl/duoc/pedidos360/bff/JwtHttpTests.java",
+      "change": "modified",
+      "sha256": "1bae336beae2121c6101b960e463cb98e8bf26aa4f0b800adea5e64710786063"
+    },
+    {
+      "path": "backend/services/carrito-service/Dockerfile",
+      "change": "modified",
+      "sha256": "024a9b7f92212ee78b0fb933157a56087a79f51e5fbade8f3118c4714e883cec"
+    },
+    {
+      "path": "backend/services/carrito-service/pom.xml",
+      "change": "modified",
+      "sha256": "00a348105630840f339f87b56696bf5a2f06ffffb8ff4782293654197d97f8d2"
+    },
+    {
+      "path": "backend/services/carrito-service/src/main/java/cl/duoc/pedidos360/carrito/kafka/CarritoDisponibilidadController.java",
+      "change": "new",
+      "sha256": "d3bf1fcbcd184c8efca93fedc590052892670efcd0edd05bcd08ad3dceefae82"
+    },
+    {
+      "path": "backend/services/carrito-service/src/main/java/cl/duoc/pedidos360/carrito/kafka/KafkaConfiguration.java",
+      "change": "new",
+      "sha256": "0612dce58602ff791b414907f68b1e84771c23a2bec59352ef79b186008299db"
+    },
+    {
+      "path": "backend/services/carrito-service/src/main/resources/db/migration/V3__kafka_state_outbox_projection.sql",
+      "change": "new",
+      "sha256": "8bdee9d6d612fca016f42a505154ae820698b1337d5e63d04580c43385257163"
+    },
+    {
+      "path": "backend/services/carrito-service/src/test/java/cl/duoc/pedidos360/carrito/CarritoKafkaObservacionTests.java",
+      "change": "new",
+      "sha256": "099a44556d062c3b3ea35afd0c308fd6ddef0aea96b99fd5ae0acc237b4418c1"
+    },
+    {
+      "path": "backend/services/kafka-admin-service/.dockerignore",
+      "change": "new",
+      "sha256": "5331bcb57b31ae137d05a1f7d9f0574609bdbcbce653b2000249dca724901e89"
+    },
+    {
+      "path": "backend/services/kafka-admin-service/Dockerfile",
+      "change": "new",
+      "sha256": "ebd71f420a77aa79a163532a922e2f6901e2dab02b60a2a743e65be37011fbe2"
+    },
+    {
+      "path": "backend/services/kafka-admin-service/pom.xml",
+      "change": "new",
+      "sha256": "56b01e63379054d9538d303bac61bba3173a1767e876e665f8f2469645c6d681"
+    },
+    {
+      "path": "backend/services/kafka-admin-service/src/main/java/cl/duoc/pedidos360/kafkaadmin/KafkaAdminApplication.java",
+      "change": "new",
+      "sha256": "ff7f3496221907a745066526b0f51a6e18e33f3c97b6ccd7aece0a3b61d714f2"
+    },
+    {
+      "path": "backend/services/kafka-admin-service/src/main/java/cl/duoc/pedidos360/kafkaadmin/TopicCatalog.java",
+      "change": "new",
+      "sha256": "597720922dfab38768b486f8e9177992bc384a1b93e8ae4a4e418e38bb468f1e"
+    },
+    {
+      "path": "backend/services/kafka-admin-service/src/main/java/cl/duoc/pedidos360/kafkaadmin/TopicReconciler.java",
+      "change": "new",
+      "sha256": "635f9f93952de22d7ddb941801e86d88f3a0385f3bb10b8af865ba29683f4c17"
+    },
+    {
+      "path": "backend/services/kafka-admin-service/src/main/resources/application.yml",
+      "change": "new",
+      "sha256": "d1da1325035c606bd22005c3a8ab2547b4efe40bc277a72ff8e07de343aff2f5"
+    },
+    {
+      "path": "backend/services/kafka-admin-service/src/test/java/cl/duoc/pedidos360/kafkaadmin/TopicCatalogTests.java",
+      "change": "new",
+      "sha256": "21ae16d31595afbcd92995d7f9cb36aa6fc6d75e4a0a50fedbdd635566ab7fc2"
+    },
+    {
+      "path": "backend/services/kafka-admin-service/src/test/java/cl/duoc/pedidos360/kafkaadmin/TopicReconcilerTests.java",
+      "change": "new",
+      "sha256": "e4d5c7777be31cb4c467e0aa82d427bb25e629183e6a9e9bf0b6819de436b39d"
+    },
+    {
+      "path": "backend/services/productos-service/Dockerfile",
+      "change": "modified",
+      "sha256": "c9dbd1bb5d2c8dad0ed6d996840b094ae83dc2ac0c72bb1e467a83b38d26e02d"
+    },
+    {
+      "path": "backend/services/productos-service/pom.xml",
+      "change": "modified",
+      "sha256": "ada5ff03244b6c2134c4521713ff965cf8736ad9845614530d461b2517b29512"
+    },
+    {
+      "path": "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/kafka/KafkaConfiguration.java",
+      "change": "new",
+      "sha256": "54d90ac9f7851d8923e73a8d754d0ccb616778ab2bb8d7dddf9df3c376bf94dc"
+    },
+    {
+      "path": "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/kafka/KafkaSnapshotCommand.java",
+      "change": "new",
+      "sha256": "2f78c969145eeb75e56c8b9e0e38bae85b56bacbddeebec970b4ce5520d819e3"
+    },
+    {
+      "path": "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/kafka/RestauranteEstadoController.java",
+      "change": "new",
+      "sha256": "97aa99c72f784d3acc281f1a8df59b37d5664f225a863c3203875f2ee6044869"
+    },
+    {
+      "path": "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/repository/ProductoRepository.java",
+      "change": "modified",
+      "sha256": "5c5401be5087d81f2689b5e7224d5eeb9cf7ee18cf8175ad5783dc434c2864fc"
+    },
+    {
+      "path": "backend/services/productos-service/src/main/java/cl/duoc/pedidos360/productos/service/ProductoService.java",
+      "change": "modified",
+      "sha256": "71a7355e9eda51e6ba137e6f7ca242bdf627eebadcb23f42143508ae867a6dcf"
+    },
+    {
+      "path": "backend/services/productos-service/src/main/resources/db/migration/V4__kafka_state_outbox_projection.sql",
+      "change": "new",
+      "sha256": "36bdd9d2fb38c835b03bd7d666a23b994cfd92d1c0fef44cf08ea5feebc79831"
+    },
+    {
+      "path": "backend/services/productos-service/src/test/java/cl/duoc/pedidos360/productos/KafkaProducerIntegrationTests.java",
+      "change": "new",
+      "sha256": "0b5aa2f802e9cd83768fa3b15835f6497c435e86ee7a4318d030cfdc2c222606"
+    },
+    {
+      "path": "backend/services/restaurantes-service/Dockerfile",
+      "change": "modified",
+      "sha256": "2e41e74e427163f0465729740256a064a8a651f6c09d2c3298f3bbadfe82841f"
+    },
+    {
+      "path": "backend/services/restaurantes-service/pom.xml",
+      "change": "modified",
+      "sha256": "0b1aaa2a31ec5f9b0299c08c579eda5a084f8229e62bd7cd07f3871db4beb9bd"
+    },
+    {
+      "path": "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/kafka/KafkaConfiguration.java",
+      "change": "new",
+      "sha256": "8f4f8aee9d7d2b6c8e117fa308dedbafd3809131c0a5829885a656dbc7206a4b"
+    },
+    {
+      "path": "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/kafka/KafkaSnapshotCommand.java",
+      "change": "new",
+      "sha256": "73f781eee570771bc944fc428ed3c38fc805529788ad29d83f8bb70c8158db53"
+    },
+    {
+      "path": "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/repository/RestauranteRepository.java",
+      "change": "modified",
+      "sha256": "f88f994b3c816387398cc9c3631dba9eb6eb88d8e031881388eb75257db80d55"
+    },
+    {
+      "path": "backend/services/restaurantes-service/src/main/java/cl/duoc/pedidos360/restaurantes/service/RestauranteService.java",
+      "change": "modified",
+      "sha256": "238edc2adb6a36c810b42c13acaf377e25a0a65048500f927b27253a00134dd8"
+    },
+    {
+      "path": "backend/services/restaurantes-service/src/main/resources/db/migration/V3__kafka_state_outbox_projection.sql",
+      "change": "new",
+      "sha256": "32f48ea81655cbb7a193dc380213d9aa87b015c8901f438c4e0fd4345991c635"
+    },
+    {
+      "path": "backend/services/restaurantes-service/src/test/java/cl/duoc/pedidos360/restaurantes/KafkaProducerIntegrationTests.java",
+      "change": "new",
+      "sha256": "ddf3d9c483b7184fcfaa4a62c928d811648d0098ad0a267ff756635b7ab0024c"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/.dockerignore",
+      "change": "new",
+      "sha256": "e5fcab04e1698b0fff66774ae3b9538956df52dd360fa62e2448938912f6c0fb"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/pom.xml",
+      "change": "new",
+      "sha256": "c6caf8f586b39284df0e21f590b0d2bc0f0c942e09973dc5de99e0ccedff5936"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/main/java/cl/duoc/pedidos360/kafka/EventCodec.java",
+      "change": "new",
+      "sha256": "90bcb7f4303ba691c175a88508767651ac577234a5a8c08e4285f79e7a875da9"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/main/java/cl/duoc/pedidos360/kafka/KafkaConsumerLoop.java",
+      "change": "new",
+      "sha256": "ac6d6d0a08852167f1db861cf20b789127b8a80ec321cfb2e40250675f226751"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/main/java/cl/duoc/pedidos360/kafka/KafkaRuntime.java",
+      "change": "new",
+      "sha256": "bf555b0b92a172b1adc40a0bf520623a619413f5b8a9cbf3a27dcb9cd968e516"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/main/java/cl/duoc/pedidos360/kafka/KafkaStores.java",
+      "change": "new",
+      "sha256": "9048e637825c4474a05f09e40f7c1604095cd2d0d7f9f2e45fcb756fec08c3b0"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/main/resources/contracts/producto-disponibilidad-v1.schema.json",
+      "change": "new",
+      "sha256": "25a01c67871c2b5259c35cb41359eaa3c0df5fe55525e86506623addc6432cbb"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/main/resources/contracts/restaurante-estado-v1.schema.json",
+      "change": "new",
+      "sha256": "94dad494c61d8ef5734159cd4070bfbeb35bfc80da188d4756f721664aeca726"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/test/java/cl/duoc/pedidos360/kafka/EventCodecTests.java",
+      "change": "new",
+      "sha256": "dacfc1821f84e77eae84437951be29b01104423faa84c87ff79309c046c9e5fd"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/test/java/cl/duoc/pedidos360/kafka/KafkaConsumerLoopTests.java",
+      "change": "new",
+      "sha256": "253181f4736ba25fb832cbac40389819283018be3e55cc63b8afb3652398ef3e"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/test/java/cl/duoc/pedidos360/kafka/KafkaRuntimeIntegrationTests.java",
+      "change": "new",
+      "sha256": "d5213d7fe74a00e1a550163ca4178c1678e390cbac4b1b8a484940ff45714bfd"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/test/java/cl/duoc/pedidos360/kafka/KafkaStoresIntegrationTests.java",
+      "change": "new",
+      "sha256": "c76d0f7d3c346a0287e561a0e14ba2ccd80d1852726f137180bd4b8900a9a4c5"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/test/java/cl/duoc/pedidos360/kafka/KafkaTransactionRecoveryTests.java",
+      "change": "new",
+      "sha256": "f641f46f1e43a9ceed0c3a46a1abe90b1882794d9a2a6db3c3c696f42bc39d02"
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/src/test/java/cl/duoc/pedidos360/kafka/ServiceProcessesIntegrationTests.java",
+      "change": "new",
+      "sha256": "0505885f878be94a7c91a5859f47fff1f91bc002bd380e2be29c61dc995eebe9"
+    },
+    {
+      "path": "docs/kafka-change-manifest.json",
+      "change": "new",
+      "sha256": null
+    },
+    {
+      "path": "docs/kafka-implementation-review.md",
+      "change": "new",
+      "sha256": "58415ca70577dca3b7139294a3474b5d1cfb1a6a50dca230e06a041c7d904845"
+    },
+    {
+      "path": "frontend/.env.example",
+      "change": "modified",
+      "sha256": "86b620d3d4a424442b0187730bddb6a84360fe28e36ee28fede35b8aef5da767"
+    },
+    {
+      "path": "frontend/Dockerfile",
+      "change": "modified",
+      "sha256": "09ba9577eab3e421141dfca01ae6461c6b6de9a2c6eed15dc975a3945ad55951"
+    },
+    {
+      "path": "frontend/src/features/carrito/KafkaObservations.jsx",
+      "change": "new",
+      "sha256": "6179675b060be198be239972ba74357e2cdc90645f77c4ad9deae6d54b951fca"
+    },
+    {
+      "path": "frontend/src/features/carrito/RealCartPanel.jsx",
+      "change": "modified",
+      "sha256": "5e1b27ce793db3624eaf73e233bb1147937af403153390c1988bb1a6fb4e8952"
+    },
+    {
+      "path": "frontend/src/features/carrito/RealCatalog.jsx",
+      "change": "modified",
+      "sha256": "8305c210442a3ceabd40c51d28a5986c01ba07b32f5ba4a36975eaaa6d9a90e5"
+    },
+    {
+      "path": "frontend/src/features/carrito/kafkaObservations.js",
+      "change": "new",
+      "sha256": "78cad8b02a4ff9ee6c9ac27115ef60a50ed7254d75f21b64e84a039f41e5af82"
+    },
+    {
+      "path": "frontend/src/features/restaurantes/RealCatalogPanel.jsx",
+      "change": "modified",
+      "sha256": "d211feeab184ee2c3cbf5db15a25d8f1dc482326f1a23b01b48a40f5f3a07683"
+    },
+    {
+      "path": "frontend/tests/kafkaObservations.test.js",
+      "change": "new",
+      "sha256": "cf054075a434463f64b0734e5caa39183ace77a16b8adb6952954113269a1aec"
+    },
+    {
+      "path": "frontend/tests/kafkaObservationsUi.test.js",
+      "change": "new",
+      "sha256": "1d0c3f239fa8b8aa7a295dced1249c4eb1218f0fcee720850b667bee304c371b"
+    },
+    {
+      "path": "infrastructure/aws/compose.build.yml",
+      "change": "modified",
+      "sha256": "e490d1a4ce7b1632863534a979d6d671fefbce5e17b014bb58467658b1335c33"
+    },
+    {
+      "path": "infrastructure/aws/compose.test.mjs",
+      "change": "modified",
+      "sha256": "3faf9fd90d86fead698b9c534095bc7b3c401aad4e48498dc69b7c04c7f3b6c7"
+    },
+    {
+      "path": "infrastructure/kafka/README.md",
+      "change": "new",
+      "sha256": "f41078f500096256a6b761cd00eaa1e5d118805130f5d14e1f2928cb36317820"
+    },
+    {
+      "path": "infrastructure/kafka/broker.properties",
+      "change": "new",
+      "sha256": "44691e706d4d6b3c89f066ccddd2c28b768017a76f0242eb30bbc09b1d85b449"
+    },
+    {
+      "path": "infrastructure/kafka/compose.build.yml",
+      "change": "new",
+      "sha256": "8e0bf1b4ace7e97eba68d49ab367eab913f39a92cb46b025a8a313b20ee649f5"
+    },
+    {
+      "path": "infrastructure/kafka/compose.yml",
+      "change": "new",
+      "sha256": "ae8f0dfe02b7d91ae2f7deb06705d95c5df13219be9fe854ff872f6ce6571a74"
+    }
+  ],
+  "note": "Self-manifest SHA-256 intentionally null. No generated artifacts are included.",
+  "correction_verification": {
+    "completed_at_utc": "2026-11-09T23:45:36.191558+00:00",
+    "java_total": 703,
+    "compose_tests": 13,
+    "frontend_tests": 258,
+    "git_diff_check": true,
+    "historical_migrations_unchanged": 7,
+    "active_containers_at_finish": 0,
+    "independent_review_required": true,
+    "automatic_outbox_purge": false,
+    "note": "Latest XML per class, not one monolithic execution. Integration fault injection uses a 1-second test poll deadline; no physical five-minute PostgreSQL outage is claimed. Initial transient/harness failures and corrected retries are documented in the review."
+  },
+  "verification_evidence": [
+    {
+      "path": "backend/shared/p360-kafka-core/target/correction-final-rebalance.log",
+      "sha256": "e0d9d23fb97442b7c5bb8c1b9cc94d67349899294bdade3fcdf8115a84db65c3",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/correction-old-final-build.log",
+      "sha256": "2f2294e0c2beef5f662fca0bcd205b5fa789bfc0a41983dbf8f12b3c38185287",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/correction-new-final-build.log",
+      "sha256": "163af0d36f532ad9806b3671197854d9756a505d1b1e82aaba10cd23700e1ad1",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/correction-compose-final.log",
+      "sha256": "91314dfc20dc2d817ab5aed597e195ac8bae1ccc3e1d8d890a9f4719c6eec801",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/correction-admin-build.log",
+      "sha256": "49a5d12df1d1bca534b8aea96775b956017a007af539e4d8b31f0c2e918ce6bb",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/correction-admin-plan.log",
+      "sha256": "daa5b742bc20aaf61b8b001a90d52b5e12a87d2b304842fb70fafef77eef3f67",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/correction-rabbit-core.log",
+      "sha256": "56e2db3957adc5299bf623400854c1f4ec9e4e37fe93babf5fa1540605308ae5",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/correction-rabbit-install.log",
+      "sha256": "3bf452294c7461cec642495d90fee3c34e01801c82182428b2ee2d8738aee7af",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/correction-stop.log",
+      "sha256": "4fd7d63fe1ba0269f2d8c1a32395e86ce4baaf321c41dd7111fb418ea047e973",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/restaurantes-service/target/correction-verification-retry.log",
+      "sha256": "7c297a74e0d773a1cee45648bb7b4364a79c8fcc2879176f81eb895c9b965594",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/productos-service/target/correction-verification.log",
+      "sha256": "95991a007cc0a7bacd408fe43f752d97929d49db756e43591c51458e3b6b90ca",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/productos-service/target/correction-kafka.log",
+      "sha256": "bfed1cbd1ffc2230be2e93e538df48a35eaf45454ab733925d9a2ca8539d7a35",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/carrito-service/target/correction-verification.log",
+      "sha256": "eba04058d4abe9afcf56465bb479bde2b853a1bc1b7de7f23eabd4bbe72e1c41",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/carrito-service/target/correction-kafka.log",
+      "sha256": "5f8a5ee2c1c5254327aef4b069c6ee0abdef78d9e9458301aaf1e6a564a59522",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/kafka-admin-service/target/correction-verification.log",
+      "sha256": "80d4ab3b38638815b28420815adeb8bf8ce529a72d53fe10f2e22ca77308233f",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/bff/target/correction-verification.log",
+      "sha256": "0fce26d2007ac815d18d5bd9cb324bd45e72ac7a1a907638fad75c506d87cbab",
+      "included_in_commit": false
+    },
+    {
+      "path": "frontend/correction-tests.log",
+      "sha256": "363fd37d006fed10631599b3d049366d7e070a1e964ca7abf61fb334447a3d79",
+      "included_in_commit": false
+    },
+    {
+      "path": "frontend/correction-lint.log",
+      "sha256": "110aae6032e48b061350c5b8aed3121ff02d3c1ca4c26ec24633f8f0e46cb884",
+      "included_in_commit": false
+    },
+    {
+      "path": "frontend/correction-build.log",
+      "sha256": "acf21377a27d8515b6656aa49a77fa0b41546abede82008819487d3ffdb72e1c",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/final-fix-complete.log",
+      "sha256": "465bfeafec1a03b30d21811c1246cf4dc5224b4f643a393c01464704e4bc2686",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/final-fix-real-jdbc.log",
+      "sha256": "c5ba9a07cbad132da76860d6ee2210de9c6bcaee599d2dbb7e2859f2fce282a0",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/final-fix-rabbit.log",
+      "sha256": "1324987e721bf8cee2dcc83a8838da929c21ea861fa99a87a64d0221511ea92d",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/final-fix-old-build.log",
+      "sha256": "3855de0466b5869bce3af6c740a5e8e644a137c512bef1d70524992268508b7f",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/final-fix-new-build.log",
+      "sha256": "f92802fd61843fd7c24ab453facd67e96629fdd5fbf74a71f786dfde55afe8eb",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/final-fix-compose.log",
+      "sha256": "65ab34e1b8a94e2f28d1bdb686c29e27e59716fff5f3348420a34109860ed6b5",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/shared/p360-kafka-core/target/final-fix-stop.log",
+      "sha256": "4fd7d63fe1ba0269f2d8c1a32395e86ce4baaf321c41dd7111fb418ea047e973",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/restaurantes-service/target/final-fix-verification.log",
+      "sha256": "d02c189b201edf797ae9b1acedc245eb371dd682cff1dc30bb2c04015e48746b",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/productos-service/target/final-fix-verification.log",
+      "sha256": "9be4cfba412e46b4ddcdf0a06bbdc27bf164683bf37fcb4740299aa98492fa6a",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/carrito-service/target/final-fix-verification.log",
+      "sha256": "d70f754af82274bacdd4ec5b39acb309872e79eb4f68f8c4c3ab27edbc928174",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/services/kafka-admin-service/target/final-fix-verification.log",
+      "sha256": "b331e09c27c79ebd7db0d80dd57cc19b0b6ea2583cb1c814e5df7b95b5fd1a8d",
+      "included_in_commit": false
+    },
+    {
+      "path": "backend/bff/target/final-fix-verification.log",
+      "sha256": "8826c3be242f27fb3d0e37b61afb1b2e40a968375d44af24693b5e7f6162d035",
+      "included_in_commit": false
+    },
+    {
+      "path": "frontend/final-fix-tests.log",
+      "sha256": "fb106a33c2cc8d23af91d7b54c52d807ceaf24e6766dd602f929cfd99ad7a375",
+      "included_in_commit": false
+    },
+    {
+      "path": "frontend/final-fix-lint.log",
+      "sha256": "110aae6032e48b061350c5b8aed3121ff02d3c1ca4c26ec24633f8f0e46cb884",
+      "included_in_commit": false
+    },
+    {
+      "path": "frontend/final-fix-build.log",
+      "sha256": "1c76513bd7fce76e5fa8413fc1164c55a16f06ebec7ad1d49d76abb1583dd88b",
+      "included_in_commit": false
+    }
+  ],
+  "final_consumer_fix_verification": {
+    "completed_at_utc": "2026-11-10T00:36:12.096258+00:00",
+    "java_total": 712,
+    "frontend_tests": 258,
+    "compose_tests": 13,
+    "files": 66,
+    "transaction_opening_failure_test": "Real TransactionTemplate and PostgreSQL, SQLTransientConnectionException injected by DataSource.getConnection; Kafka consumer mocked. No DLT/commit before recovery.",
+    "real_jdbc_close_test": "PostgreSQL pg_sleep(0.8), 50ms close deadline; task survives interruption and persists later without offset acknowledgement.",
+    "real_kafka_redelivery_test": "Real broker/group offsets and real recovered projection; initial blocked KafkaStores is a deliberate test double.",
+    "unknown_failure_policy": "Three attempts, then suspend without DLT/commit; operator repair required.",
+    "shutdown_status": "Actual executor/client termination checked; incomplete deadlines are explicitly logged; no promise of forcibly terminating unresponsive JDBC.",
+    "normal_coordinator_close_errors": 0,
+    "embedded_core_sha256": {
+      "restaurantes": "4b77fd57b4b8e4d2358e8e3aa6d0cbe9d7730643ba4c32db7d3de701af102bc9",
+      "productos": "4b77fd57b4b8e4d2358e8e3aa6d0cbe9d7730643ba4c32db7d3de701af102bc9",
+      "carrito": "4b77fd57b4b8e4d2358e8e3aa6d0cbe9d7730643ba4c32db7d3de701af102bc9"
+    },
+    "historical_migrations_unchanged": 7,
+    "git_index_empty": true,
+    "independent_review_required": true
+  }
+}
