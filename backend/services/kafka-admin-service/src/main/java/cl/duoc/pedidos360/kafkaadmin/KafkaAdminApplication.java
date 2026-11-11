@@ -30,6 +30,7 @@ public class KafkaAdminApplication {
           "bootstrap.servers", request.servers());
       properties.put("default.api.timeout.ms", "10000");
       properties.put("request.timeout.ms", "5000");
+      KafkaTlsProperties.apply(env, properties);
       try (Admin admin = Admin.create(properties)) {
         if (command.startsWith("test-")) {
           new DisposableTopicAdmin(admin).execute(request).forEach(System.out::println);

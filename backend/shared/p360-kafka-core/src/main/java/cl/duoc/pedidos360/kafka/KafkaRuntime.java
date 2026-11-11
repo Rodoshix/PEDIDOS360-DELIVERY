@@ -62,6 +62,7 @@ public final class KafkaRuntime implements SmartLifecycle {
 
   public static Properties properties(org.springframework.core.env.Environment env) {
     var p = properties(env.getProperty("p360.kafka.bootstrap-servers", "localhost:19092"));
+    KafkaTlsProperties.apply(env, p);
     p.setProperty("p360.shutdown.ms", env.getProperty("p360.kafka.shutdown-timeout-ms", "30000"));
     p.setProperty("p360.task.shutdown.ms", env.getProperty("p360.kafka.task-shutdown-timeout-ms", "5000"));
     p.setProperty("p360.consumer.close.ms", env.getProperty("p360.kafka.consumer-close-timeout-ms", "5000"));

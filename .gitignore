@@ -75,3 +75,6 @@ docker-compose.override.yml
 .continue/
 .windsurf/
 skills-lock.json
+
+# Terraform exclusivamente local; no publicar ningun archivo
+/infrastructure/aws/terraform/
