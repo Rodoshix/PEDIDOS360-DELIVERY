@@ -95,6 +95,12 @@ Detener solo este proyecto con `docker compose -f infrastructure/kafka/compose.y
 
 ## Recuperación del consumidor
 
+La publicación outbox (espera de 30 s tras fallo), el consumidor (espera de 5 s) y el
+tratamiento terminal son mecanismos distintos. Ver [política efectiva y límites de
+evidencia](../../docs/kafka-error-policy.md). No interpretar estas esperas como tres
+reintentos adicionales uniformes de 1/5/30 s. La política efectiva fue adoptada
+expresamente y conciliada en KP-67/KP-72; no cambia los contratos JSON v1.
+
 Un único trabajo en vuelo se ejecuta fuera del hilo propietario de KafkaConsumer. Se pausa la entrega de todas las particiones asignadas mientras ese registro está pendiente y se llama a poll cada 100 ms; las esperas de base de datos o DLT no bloquean ese sondeo. Esto conserva orden con un coste deliberado de throughput: una incidencia detiene la entrega en esa instancia, no los heartbeats. No se incrementó max.poll.interval.ms.
 
 Errores de contrato, conflictos de versión e integridad de datos pasan al terminal. Errores desconocidos de procesamiento tienen tres intentos y después suspenden ese registro/instancia sin DLT ni commit; requieren reparación y reinicio seguro. Errores de acceso a datos (conectividad, recuperación o configuración/permisos) conservan el registro y se reintentan cada cinco segundos, sin convertir una indisponibilidad del sistema en pérdida de eventos válidos. Una conexión bloqueada mantiene un solo trabajo en vuelo. Requiere reparación operativa si la configuración es incorrecta.
