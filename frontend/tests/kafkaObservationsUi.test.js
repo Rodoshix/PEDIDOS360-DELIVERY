@@ -17,7 +17,16 @@ async function fixture(props, read) {
  }] })
  const Component = (await server.ssrLoadModule('/src/features/carrito/KafkaObservations.jsx')).default
  function render() { index = 0; const tree = Component(props); for (const effect of effects.splice(0)) effect(); return tree }
- return { props, render, async settle() { render(); await new Promise(resolve => setTimeout(resolve, 25)); return render() }, async close() { cleanups.forEach(fn => fn?.()); await server.close(); delete globalThis.__kafkaUiFixture } }
+ return { props, render, async settle() {
+  let tree = render()
+  const deadline = Date.now() + 2000
+  while (nodes(tree).some(n => n.type === 'button' && n.props.disabled)) {
+   if (Date.now() >= deadline) throw new Error('Las observaciones no finalizaron su carga dentro del plazo del fixture.')
+   await new Promise(resolve => setTimeout(resolve, 5))
+   tree = render()
+  }
+  return tree
+ }, async close() { cleanups.forEach(fn => fn?.()); await server.close(); delete globalThis.__kafkaUiFixture } }
 }
 const nodes = tree => !tree || typeof tree !== 'object' ? [] : Array.isArray(tree) ? tree.flatMap(nodes) : [tree, ...nodes(tree.props?.children)]
 const known = { id: '42', conocido: true, valor: 'CERRADO', version: '2', observadoEn: '2026-11-09T15:00:00Z' }
