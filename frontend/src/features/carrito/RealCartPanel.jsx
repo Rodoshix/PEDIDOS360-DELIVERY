@@ -1,3 +1,4 @@
+import KafkaObservations from './KafkaObservations.jsx'
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { Link, useLocation } from 'react-router'
 import { ROUTE_PATHS } from '../../routes/routePaths.js'
@@ -91,6 +92,7 @@ export default function RealCartPanel() {
       onQuantity={(id, cantidad) => apply({ type: 'quantity', productoId: id, cantidad })}
       onRemove={(item, button) => ask({ type: 'remove', productoId: item.productoId }, button)} actions={actions} />}
 
+    {showSummary && <KafkaObservations cart={state.cart} />}
     {!showSummary && actions}
     <p>Aplica los cambios de cantidad antes de continuar. Las cantidades sin aplicar se pierden al actualizar, salir o cambiar de cuenta. En el siguiente paso podrás revisar la dirección y confirmar el pedido.</p>
   </div>

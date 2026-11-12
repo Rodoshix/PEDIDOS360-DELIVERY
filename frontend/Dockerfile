@@ -11,6 +11,7 @@ COPY tools/validate-docker-build.mjs ./tools/validate-docker-build.mjs
 
 # Solo configuración PÚBLICA incorporada al JavaScript. Nunca secretos en ARG/VITE_*.
 ARG VITE_PEDIDOS_CARRITO_MODE=HTTP
+ARG VITE_KAFKA_INFORMATION_ENABLED=false
 ARG VITE_API_BASE_URL
 ARG VITE_ENTRA_CLIENT_ID
 ARG VITE_ENTRA_TENANT_ID

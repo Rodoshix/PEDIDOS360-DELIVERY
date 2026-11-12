@@ -29,6 +29,7 @@
     </properties>
 
     <dependencies>
+        <dependency><groupId>cl.duoc.pedidos360</groupId><artifactId>p360-kafka-core</artifactId><version>0.0.1-SNAPSHOT</version></dependency>
         <dependency>
             <groupId>cl.duoc.pedidos360</groupId>
             <artifactId>p360-messaging-core</artifactId>

@@ -384,4 +384,14 @@ class JwtHttpTests {
         assertThat(call("GET", "/usuarios/me", EntraTestTokens.token(Map.of()), null).statusCode()).isEqualTo(504);
         Thread.sleep(500); // permitir terminar el handler temporal antes de la siguiente prueba
     }
+
+    @Test void kafkaObservationRoutesPreserveExistingAuthorization() throws Exception {
+        for (String path : List.of("/productos/restaurante/42/estado-restaurante", "/carrito/disponibilidad")) {
+            assertThat(call("GET", path, null, null).statusCode()).isEqualTo(401);
+            assertThat(call("GET", path, EntraTestTokens.token(Map.of("scp", "otro")), null).statusCode()).isEqualTo(403);
+            assertThat(call("GET", path, EntraTestTokens.token(Map.of()), null).statusCode()).isEqualTo(200);
+            assertThat(lastPath).isEqualTo(path);
+        }
+        assertThat(call("GET", "/productos/restaurante/0/estado-restaurante", EntraTestTokens.token(Map.of()), null).statusCode()).isEqualTo(400);
+    }
 }

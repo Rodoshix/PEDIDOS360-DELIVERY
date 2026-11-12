@@ -7,7 +7,7 @@ import { Field, Select } from '../../components/ui/Field.jsx'
 import { EmptyState } from '../../components/feedback/Feedback.jsx'
 import LoadingState from '../../components/feedback/LoadingState.jsx'
 
-export default function RealCatalog({ adapter, disabled, onAdd, onError }) {
+export default function RealCatalog({ adapter, disabled, onAdd, onError, onRestaurantSelect }) {
   const [restaurants, setRestaurants] = useState(null)
   const [restaurant, setRestaurant] = useState('')
   const [products, setProducts] = useState(null)
@@ -55,7 +55,7 @@ export default function RealCatalog({ adapter, disabled, onAdd, onError }) {
     {restaurants?.length > 0 && <div className="client-catalog__selection">
       <Field as={Select} label="Restaurante" hint="Los productos corresponden al restaurante seleccionado."
         value={restaurant} disabled={disabled || loading} onChange={event => {
-        setLoading(true); setError(null); onError(null); setProducts(null); setRestaurant(event.target.value)
+        setLoading(true); setError(null); onError(null); setProducts(null); setRestaurant(event.target.value); onRestaurantSelect?.(Number(event.target.value) || null)
       }}>
         <option value="">Selecciona un restaurante</option>
         {restaurants.map(item => <option key={item.id} value={item.id}>{item.nombre} — {states[item.estado]}</option>)}

@@ -45,7 +45,8 @@ public class ComercioClient {
         // Defensa adicional: solo rutas construidas por el controlador, sin URL aportada por el usuario.
         if (!allowed(method, path))
             throw new IllegalArgumentException("Ruta interna no permitida.");
-        var query = queries.consultar(method, path, token);
+        // Additive Kafka observations always use HTTP; never dispatch them as Rabbit queries.
+        var query = informational(path) ? java.util.Optional.<ResponseEntity<?>>empty() : queries.consultar(method, path, token);
         if (query.isPresent()) return query.get();
         var origin = origins.get(path.split("/")[1]);
         var builder = HttpRequest.newBuilder(origin.resolve(path)).timeout(Duration.ofMillis(timeoutMs))
@@ -81,7 +82,12 @@ public class ComercioClient {
         }
     }
 
+    static boolean informational(String path) {
+        return path.equals("/carrito/disponibilidad") || path.matches("/productos/restaurante/[1-9][0-9]*/estado-restaurante");
+    }
+
     static boolean allowed(String method, String path) {
+        if ("GET".equals(method) && informational(path)) return true;
         if ("POST".equals(method) && Set.of("/restaurantes", "/productos").contains(path)) return true;
         if ("PUT".equals(method) && path.matches("/(?:restaurantes|productos)/[1-9][0-9]*")) return true;
         if ("DELETE".equals(method) && path.matches("/restaurantes/[1-9][0-9]*")) return true;
