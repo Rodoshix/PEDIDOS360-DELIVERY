@@ -39,44 +39,7 @@ public class KafkaAdminApplication {
           TopicCatalog.topics().stream().map(TopicCatalog.Spec::name).filter(names::contains)
               .sorted().forEach(name -> System.out.println("TOPIC " + name));
         } else if (command.equals("groups")) {
-          for (var group : admin.listConsumerGroups().all().get(10, TimeUnit.SECONDS)) {
-            String id = group.groupId();
-            if (!id.matches("p360-[A-Za-z0-9._-]{1,160}")) continue;
-            var description =
-                admin.describeConsumerGroups(List.of(id)).all().get(10, TimeUnit.SECONDS).get(id);
-            System.out.println(
-                "GROUP "
-                    + id
-                    + " "
-                    + description.state()
-                    + " members="
-                    + description.members().size());
-            var offsets =
-                admin
-                    .listConsumerGroupOffsets(id)
-                    .partitionsToOffsetAndMetadata()
-                    .get(10, TimeUnit.SECONDS);
-            var requests =
-                new HashMap<
-                    org.apache.kafka.common.TopicPartition,
-                    org.apache.kafka.clients.admin.OffsetSpec>();
-            offsets
-                .keySet()
-                .forEach(
-                    tp -> requests.put(tp, org.apache.kafka.clients.admin.OffsetSpec.latest()));
-            var ends = requests.isEmpty() ? java.util.Map.<org.apache.kafka.common.TopicPartition, org.apache.kafka.clients.admin.ListOffsetsResult.ListOffsetsResultInfo>of()
-                : admin.listOffsets(requests).all().get(10, TimeUnit.SECONDS);
-            for (var e : offsets.entrySet())
-              System.out.println(
-                  "OFFSET "
-                      + id
-                      + " "
-                      + e.getKey()
-                      + " committed="
-                      + e.getValue().offset()
-                      + " lag="
-                      + Math.max(0, ends.get(e.getKey()).offset() - e.getValue().offset()));
-          }
+          ConsumerGroupInspection.read(admin).forEach(System.out::println);
         } else if (command.equals("describe")) {
           var names = admin.listTopics().names().get(10, TimeUnit.SECONDS);
           for (var spec : TopicCatalog.topics()) {

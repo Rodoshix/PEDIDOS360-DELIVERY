@@ -10,7 +10,7 @@ Aplicación Spring Boot sin servidor HTTP. Usa AdminClient con lista cerrada de 
 | `describe` | Describe los cuatro tópicos del catálogo y sus configuraciones efectivas; informa los ausentes. |
 | `plan` | Calcula creación o restauración de configuraciones, sin escribir. |
 | `apply` | Crea los ausentes o restaura configuraciones aprobadas; realiza preflight del catálogo antes de escribir. |
-| `groups` | Consulta grupos `p360-…`, estado, miembros, offsets confirmados y lag, sin alterarlos. |
+| `groups` | Consulta grupos `p360-…`, estado, miembros seudonimizados/asignaciones, offsets confirmados y lag, sin alterarlos. |
 
 Se conserva `TopicCatalog`: dos tópicos de negocio `p360.catalogo.*.v1` y sus DLT, tres particiones, una réplica. Negocio usa compactación y retención ilimitada; DLT usa borrado por retención de siete días. No se ofrecen parámetros para cambiar libremente este catálogo. La deriva de particiones/réplicas requiere otro plan, no una reasignación automática.
 
@@ -23,6 +23,33 @@ java -jar backend/services/kafka-admin-service/target/kafka-admin-service-0.0.1-
 java -jar backend/services/kafka-admin-service/target/kafka-admin-service-0.0.1-SNAPSHOT.jar --p360.kafka.admin.command=plan
 java -jar backend/services/kafka-admin-service/target/kafka-admin-service-0.0.1-SNAPSHOT.jar --p360.kafka.admin.command=groups
 ```
+
+### Salida consultiva de grupos
+
+Se conserva `GROUP ... members=N` y `OFFSET ... committed=N lag=N` para offsets
+conocidos. `MEMBER ... member_hash=<SHA-256> assignment=[topic-partición,...]` permite
+correlacionar miembros/asignaciones sin imprimir consumerId, clientId ni host originales.
+Un grupo sin miembros muestra `MEMBERS ... NONE`; sin offsets, `OFFSETS ... NONE`.
+Una partición asignada sin commit muestra `committed=UNKNOWN lag=UNKNOWN`, nunca cero
+inventado. Se ordena la salida para facilitar comparaciones; no se consumen eventos.
+
+`GROUPS NO_VISIBLE_GROUPS` indica ausencia de grupos permitidos visibles. Los dos grupos
+de negocio esperados que no aparecen se señalan `NOT_LISTED`: no demuestra inexistencia
+global cuando la visibilidad puede estar limitada por permisos. Si un grupo desaparece
+entre listado y descripción se informa `MISSING_DURING_QUERY`. Otros fallos/timeouts
+interrumpen la consulta con error sanitizado y resultado incompleto, sin declarar éxito
+ni devolver una lista vacía ficticia. Las líneas se reúnen antes de imprimir el resultado.
+Las lecturas sucesivas no son un snapshot atómico de Kafka; una reasignación concurrente
+puede cambiar lo observado y no habilita retries o mutaciones automáticas.
+
+La ampliación está verificada mediante ocho casos de `ConsumerGroupInspectionTests`
+con AdminClient simulado y el comando `groups` real contra Kafka 3.9.2/ZooKeeper 3.8.4
+en un fixture local desechable. Se observaron miembros/asignaciones, offsets y lag,
+particiones sin commit, grupos no visibles y un grupo vacío con offsets conservados.
+Los errores y la desaparición concurrente de grupos se acreditaron solo con mocks.
+El fixture usó PLAINTEXT en loopback: no acredita TLS/ACL ni ejecución AWS. Se conserva
+el intento inicial fallido del harness y la comprobación posterior válida. No revalida
+operaciones destructivas ni añade comandos, endpoints, permisos o reset de offsets.
 
 `apply` escribe; ejecutar solo en el entorno autorizado. Es repetible: un segundo apply sin deriva informa UNCHANGED. Un fallo puede dejar cambios parciales; inspeccionar y volver a planificar. El broker de desarrollo sigue con `delete.topic.enable=false`; esta ampliación no modifica su Compose, configuración ni volúmenes.
 
