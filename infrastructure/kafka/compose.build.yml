@@ -1,0 +1,23 @@
+services:
+  restaurantes:
+    build:
+      context: ../../backend/services/restaurantes-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
+        kafka-core: ../../backend/shared/p360-kafka-core
+  productos:
+    build:
+      context: ../../backend/services/productos-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
+        kafka-core: ../../backend/shared/p360-kafka-core
+  carrito:
+    build:
+      context: ../../backend/services/carrito-service
+      additional_contexts:
+        messaging-core: ../../backend/shared/p360-messaging-core
+        kafka-core: ../../backend/shared/p360-kafka-core
+  frontend:
+    build:
+      args:
+        VITE_KAFKA_INFORMATION_ENABLED: "true"

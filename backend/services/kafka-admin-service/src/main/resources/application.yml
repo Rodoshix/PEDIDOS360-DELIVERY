@@ -1,0 +1,13 @@
+spring:
+  main:
+    web-application-type: none
+    banner-mode: off
+p360:
+  kafka:
+    bootstrap-servers: ${P360_KAFKA_BOOTSTRAP_SERVERS:localhost:19092}
+    admin:
+      command: ${P360_KAFKA_ADMIN_COMMAND:describe}
+
+logging:
+  level:
+    org.apache.kafka: WARN

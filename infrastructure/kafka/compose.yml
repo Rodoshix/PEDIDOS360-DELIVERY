@@ -1,0 +1,59 @@
+name: p360-kafka-dev
+services:
+  zookeeper:
+    user: "1000:1000"
+    image: zookeeper:3.8.4-jre-17@sha256:20d3c93ebda093d0c90911493396975e0e04523af225d8053d42bab781f9ca48
+    volumes: ["zk-data:/data", "zk-log:/datalog"]
+    networks: [kafka]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+  kafka:
+    image: apache/kafka:3.9.2@sha256:05b4616e0702ef2729327705d54ad6b50ea70b271c4b730fabd2320789fb7b02
+    user: "1000:1000"
+    entrypoint: ["/opt/kafka/bin/kafka-server-start.sh", "/etc/p360/broker.properties"]
+    depends_on: [zookeeper]
+    ports: ["127.0.0.1:19092:19092"]
+    volumes: ["./broker.properties:/etc/p360/broker.properties:ro", "kafka-data:/var/lib/kafka/data"]
+    networks: [kafka, host-access]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    healthcheck:
+      test: ["CMD", "/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+  admin:
+    image: pedidos360-kafka-admin:dev
+    build:
+      context: ../../backend/services/kafka-admin-service
+    profiles: [tools]
+    environment:
+      P360_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_healthy
+    user: "10001:10001"
+    read_only: true
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=64m"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [kafka]
+  ui:
+    image: ghcr.io/kafbat/kafka-ui:v1.3.0@sha256:edd59f51a992cf79c16a394fd141a6ab47eb9c1deeb77a3e360035ac3e7bc30c
+    profiles: [ui]
+    ports: ["127.0.0.1:18090:8080"]
+    environment:
+      KAFKA_CLUSTERS_0_NAME: p360-local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_READONLY: "true"
+      DYNAMIC_CONFIG_ENABLED: "false"
+    networks: [kafka, host-access]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+networks:
+  host-access: {}
+  kafka: {internal: true}
+volumes:
+  zk-data:
+  zk-log:
+  kafka-data:

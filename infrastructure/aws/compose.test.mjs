@@ -138,3 +138,18 @@ test('all Java builds install the checkout core before packaging, without a deve
     assert.ok(ignore.split(/\r?\n/).includes(pattern), pattern)
   }
 })
+
+test('existing build overlay supplies Kafka core only to participating services, flags remain opt-in', () => {
+  const c = model(true)
+  for (const name of names.slice(1)) {
+    const contexts = c.services[name].build.additional_contexts
+    const core = Array.isArray(contexts) ? contexts.find(v => v.startsWith('kafka-core='))?.slice('kafka-core='.length) : contexts['kafka-core']
+    if (['restaurantes', 'productos', 'carrito'].includes(name)) {
+      assert.ok(core?.replaceAll('\\', '/').endsWith('/backend/shared/p360-kafka-core'), name)
+      const recipe = readFileSync(`${c.services[name].build.context}/Dockerfile`, 'utf8')
+      const install = recipe.indexOf('-f /kafka-core/pom.xml -Dmaven.test.skip=true install')
+      assert.ok(install >= 0 && recipe.indexOf('-Dmaven.test.skip=true package') > install)
+    } else assert.equal(core, undefined, name)
+    assert.notEqual(c.services[name].environment.P360_KAFKA_ENABLED, 'true', name)
+  }
+})

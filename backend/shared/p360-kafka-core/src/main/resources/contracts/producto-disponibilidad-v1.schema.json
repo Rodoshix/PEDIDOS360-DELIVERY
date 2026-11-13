@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "producto-disponibilidad v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "eventType",
+    "producer",
+    "occurredAt",
+    "aggregateVersion",
+    "reason",
+    "data"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "eventType": {
+      "const": "ProductoDisponibilidadPublicada"
+    },
+    "producer": {
+      "const": "productos-service"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "aggregateVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9223372036854775807
+    },
+    "reason": {
+      "enum": [
+        "INITIALIZED",
+        "CHANGED",
+        "SNAPSHOT"
+      ]
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "productoId",
+        "disponible"
+      ],
+      "properties": {
+        "productoId": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,18}$"
+        },
+        "disponible": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
